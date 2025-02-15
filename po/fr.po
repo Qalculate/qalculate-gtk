@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate!\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-30 14:26+0100\n"
+"POT-Creation-Date: 2025-02-15 08:01+0100\n"
 "PO-Revision-Date: 2024-11-25 09:09+0100\n"
 "Last-Translator: Polakrity\n"
 "Language-Team: none\n"
@@ -76,8 +76,8 @@ msgstr "Règles d'argument"
 #: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
 #: ../src/mainwindow.cc:709 ../src/mainwindow.cc:6547 ../src/mainwindow.cc:6549
-#: ../src/mainwindow.cc:7506 ../src/matrixdialog.cc:389 ../src/menubar.cc:1191
-#: ../src/menubar.cc:1249 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
+#: ../src/mainwindow.cc:7506 ../src/matrixdialog.cc:389 ../src/menubar.cc:1193
+#: ../src/menubar.cc:1234 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
 #: ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Cancel"
 msgstr "_Fermer"
@@ -263,7 +263,7 @@ msgstr "Type"
 #: ../data/matrixedit.ui.h:6 ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:5
 #: ../data/variableedit.ui.h:5 ../src/conversionview.cc:508
 #: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:443
-#: ../src/historyview.cc:2877 ../src/menubar.cc:1198
+#: ../src/historyview.cc:2877 ../src/menubar.cc:1200
 #: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1006
 msgid "Name"
 msgstr "Nom"
@@ -310,7 +310,7 @@ msgstr "Bouton d'action"
 
 #: ../data/buttonsedit.ui.h:11 ../data/floatingpoint.ui.h:3
 #: ../data/shortcuts.ui.h:10 ../data/variableedit.ui.h:7
-#: ../src/insertfunctiondialog.cc:513 ../src/shortcutsdialog.cc:584
+#: ../src/insertfunctiondialog.cc:513 ../src/shortcutsdialog.cc:579
 #: ../src/stackview.cc:791
 msgid "Value"
 msgstr "Valeur"
@@ -537,7 +537,7 @@ msgid "_Edit"
 msgstr "_Éditer"
 
 #: ../data/datasetedit.ui.h:29 ../data/functions.ui.h:10 ../data/units.ui.h:15
-#: ../data/variables.ui.h:10 ../src/menubar.cc:1249
+#: ../data/variables.ui.h:10 ../src/menubar.cc:1234
 msgid "_Delete"
 msgstr "_Supprimer"
 
@@ -1917,343 +1917,339 @@ msgstr "STO"
 msgid "Convert number bases"
 msgstr "Convertir des bases numériques"
 
-#: ../data/main.ui.h:283
-msgid "Imaginary unit i (√-1)"
-msgstr "Unité imaginaire i (√-1)"
-
-#: ../data/main.ui.h:284 ../src/util.cc:921
+#: ../data/main.ui.h:283 ../src/util.cc:921
 msgid "Manage units"
 msgstr "Gérer les unités"
 
-#: ../data/main.ui.h:286
+#: ../data/main.ui.h:285
 msgid "Conversion operator"
 msgstr "Opérateur de conversion"
 
-#: ../data/main.ui.h:288
+#: ../data/main.ui.h:287
 msgid "Kilogram"
 msgstr "Kilogramme"
 
-#: ../data/main.ui.h:289 ../data/preferences.ui.h:70
+#: ../data/main.ui.h:288 ../data/preferences.ui.h:70
 msgid "Two's complement input"
 msgstr "Entrée du complément à deux"
 
-#: ../data/main.ui.h:290 ../data/preferences.ui.h:69
+#: ../data/main.ui.h:289 ../data/preferences.ui.h:69
 msgid "Two's complement output"
 msgstr "Sortie du complément à deux"
 
-#: ../data/main.ui.h:291 ../data/nbases.ui.h:26 ../src/buttonseditdialog.cc:371
+#: ../data/main.ui.h:290 ../data/nbases.ui.h:26 ../src/buttonseditdialog.cc:371
 #: ../src/keypad.cc:387 ../src/keypad.cc:388 ../src/keypad.cc:516
 #: ../src/keypad.cc:693
 msgid "Bitwise Exclusive OR"
 msgstr "Bitwise Exclusive OR"
 
-#: ../data/main.ui.h:292 ../data/nbases.ui.h:32 ../src/keypad.cc:689
+#: ../data/main.ui.h:291 ../data/nbases.ui.h:32 ../src/keypad.cc:689
 msgid "Bitwise Left Shift"
 msgstr "Décalage gauche Bitwise"
 
-#: ../data/main.ui.h:293 ../data/nbases.ui.h:33 ../src/keypad.cc:690
+#: ../data/main.ui.h:292 ../data/nbases.ui.h:33 ../src/keypad.cc:690
 msgid "Bitwise Right Shift"
 msgstr "Décalage droite Bitwise"
 
-#: ../data/main.ui.h:294
+#: ../data/main.ui.h:293
 msgid "Floating point conversion"
 msgstr "Conversion en virgule flottante"
 
-#: ../data/main.ui.h:295
+#: ../data/main.ui.h:294
 msgid "Show/hide left keypad"
 msgstr "Afficher/masquer le clavier gauche"
 
-#: ../data/main.ui.h:296
+#: ../data/main.ui.h:295
 msgid "Show/hide right keypad"
 msgstr "Afficher/masquer le clavier droite"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:298 ../data/nbases.ui.h:29 ../src/keypad.cc:523
+#: ../data/main.ui.h:297 ../data/nbases.ui.h:29 ../src/keypad.cc:523
 msgid "DEL"
 msgstr "DEL"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:300 ../data/nbases.ui.h:31 ../src/keypad.cc:522
+#: ../data/main.ui.h:299 ../data/nbases.ui.h:31 ../src/keypad.cc:522
 msgid "AC"
 msgstr "AC"
 
-#: ../data/main.ui.h:301 ../src/buttonseditdialog.cc:378 ../src/keypad.cc:524
+#: ../data/main.ui.h:300 ../src/buttonseditdialog.cc:378 ../src/keypad.cc:524
 msgid "Previous result"
 msgstr "Résultat précédent"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:303 ../src/keypad.cc:524
+#: ../data/main.ui.h:302 ../src/keypad.cc:524
 msgid "ANS"
 msgstr "ANS"
 
-#: ../data/main.ui.h:304 ../src/keypad.cc:477
+#: ../data/main.ui.h:303 ../src/keypad.cc:477
 msgid "EXP"
 msgstr "EXP"
 
-#: ../data/main.ui.h:305
+#: ../data/main.ui.h:304
 msgid "Add to Expression"
 msgstr "Ajouter à l'expression"
 
-#: ../data/main.ui.h:306
+#: ../data/main.ui.h:305
 msgid "Persistent Keypad"
 msgstr "Clavier permanent"
 
-#: ../data/main.ui.h:307
+#: ../data/main.ui.h:306
 msgid "Edit"
 msgstr "Éditer"
 
-#: ../data/main.ui.h:308 ../data/nbases.ui.h:28 ../src/buttonseditdialog.cc:377
+#: ../data/main.ui.h:307 ../data/nbases.ui.h:28 ../src/buttonseditdialog.cc:377
 #: ../src/keypad.cc:523
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../data/main.ui.h:309
+#: ../data/main.ui.h:308
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: ../data/main.ui.h:310
+#: ../data/main.ui.h:309
 msgid "Insert Value"
 msgstr "Insérer valeur"
 
-#: ../data/main.ui.h:311
+#: ../data/main.ui.h:310
 msgid "Insert Text"
 msgstr "Insérer texte"
 
-#: ../data/main.ui.h:312
+#: ../data/main.ui.h:311
 msgid "Insert Parsed Text"
 msgstr "Insérer texte analysé"
 
-#: ../data/main.ui.h:313 ../src/searchprovider.cc:210
+#: ../data/main.ui.h:312 ../src/searchprovider.cc:210
 msgid "Copy"
 msgstr "Copier"
 
-#: ../data/main.ui.h:314
+#: ../data/main.ui.h:313
 msgid "Copy Unformatted ASCII"
 msgstr "Copier ASCII non formaté"
 
-#: ../data/main.ui.h:315
+#: ../data/main.ui.h:314
 msgid "Copy Full Text"
 msgstr "Copier le texte entier"
 
-#: ../data/main.ui.h:316
+#: ../data/main.ui.h:315
 msgid "Search…"
 msgstr "Rechercher…"
 
-#: ../data/main.ui.h:317 ../src/historyview.cc:3076 ../src/historyview.cc:3091
+#: ../data/main.ui.h:316 ../src/historyview.cc:3076 ../src/historyview.cc:3091
 msgid "Search by Date…"
 msgstr "Rechercher par date…"
 
-#: ../data/main.ui.h:318 ../src/historyview.cc:3073
+#: ../data/main.ui.h:317 ../src/historyview.cc:3073
 msgid "Add Bookmark…"
 msgstr "Ajouter favoris…"
 
-#: ../data/main.ui.h:319
+#: ../data/main.ui.h:318
 msgid "Bookmarks"
 msgstr "Favoris"
 
-#: ../data/main.ui.h:320
+#: ../data/main.ui.h:319
 msgid "Protect"
 msgstr "Protéger"
 
-#: ../data/main.ui.h:321
+#: ../data/main.ui.h:320
 msgid "Move To Top"
 msgstr "Se déplacer en haut"
 
-#: ../data/main.ui.h:322
+#: ../data/main.ui.h:321
 msgid "Remove"
 msgstr "Supprimer"
 
-#: ../data/main.ui.h:323
+#: ../data/main.ui.h:322
 msgid "Clear All"
 msgstr "Effacer tout"
 
-#: ../data/main.ui.h:324
+#: ../data/main.ui.h:323
 msgid "Show Parsed Expression"
 msgstr "Afficher l'expression analysée"
 
-#: ../data/main.ui.h:325
+#: ../data/main.ui.h:324
 msgid "Show Result"
 msgstr "Afficher le résultat"
 
-#: ../data/main.ui.h:326
+#: ../data/main.ui.h:325
 msgid "_Copy"
 msgstr "_Copier"
 
-#: ../data/main.ui.h:327
+#: ../data/main.ui.h:326
 msgid "_Store…"
 msgstr "_Enregistrer…"
 
-#: ../data/main.ui.h:328
+#: ../data/main.ui.h:327
 msgid "Save Image…"
 msgstr "Sauvegarder l'image…"
 
-#: ../data/main.ui.h:329
+#: ../data/main.ui.h:328
 msgid "_Factorize"
 msgstr "_Factoriser"
 
-#: ../data/main.ui.h:330
+#: ../data/main.ui.h:329
 msgid "_Expand"
 msgstr "_Développer"
 
-#: ../data/main.ui.h:331
+#: ../data/main.ui.h:330
 msgid "_Normal"
 msgstr "_Normal"
 
-#: ../data/main.ui.h:332
+#: ../data/main.ui.h:331
 msgid "Sc_ientific"
 msgstr "Sc_ientifique"
 
-#: ../data/main.ui.h:333
+#: ../data/main.ui.h:332
 msgid "Purel_y Scientific"
 msgstr "Puremen_t scientifique"
 
-#: ../data/main.ui.h:334
+#: ../data/main.ui.h:333
 msgid "Simp_le"
 msgstr "Simp_le"
 
-#: ../data/main.ui.h:335
+#: ../data/main.ui.h:334
 msgid "_Binary"
 msgstr "_Binaire"
 
-#: ../data/main.ui.h:336
+#: ../data/main.ui.h:335
 msgid "_Octal"
 msgstr "_Octal"
 
-#: ../data/main.ui.h:337
+#: ../data/main.ui.h:336
 msgid "_Decimal"
 msgstr "_Décimal"
 
-#: ../data/main.ui.h:338
+#: ../data/main.ui.h:337
 msgid "_Hexadecimal"
 msgstr "_Hexadécimal"
 
-#: ../data/main.ui.h:339 ../src/expressioncompletion.cc:1904
+#: ../data/main.ui.h:338 ../src/expressioncompletion.cc:1904
 msgid "Decimal Fraction"
 msgstr "Fraction décimale"
 
-#: ../data/main.ui.h:340
+#: ../data/main.ui.h:339
 msgid "Exact Decimal Fraction"
 msgstr "Fraction décimale exacte"
 
-#: ../data/main.ui.h:341
+#: ../data/main.ui.h:340
 msgid "Simple Fraction"
 msgstr "Fraction simple"
 
-#: ../data/main.ui.h:342
+#: ../data/main.ui.h:341
 msgid "Mixed Fraction"
 msgstr "Fraction mixte"
 
-#: ../data/main.ui.h:343
+#: ../data/main.ui.h:342
 msgid "_Abbreviate Names"
 msgstr "_Noms abrégés"
 
-#: ../data/main.ui.h:344
+#: ../data/main.ui.h:343
 msgid "C_onvert…"
 msgstr "C_onvertir…"
 
-#: ../data/main.ui.h:345
+#: ../data/main.ui.h:344
 msgid "Convert to Base _Units"
 msgstr "Convertir en _unités de base"
 
-#: ../data/main.ui.h:346
+#: ../data/main.ui.h:345
 msgid "Convert _to Optimal Unit"
 msgstr "Convertir _en unité optimale"
 
-#: ../data/main.ui.h:347
+#: ../data/main.ui.h:346
 msgid "Use Optimal Prefix"
 msgstr "Utiliser le préfixe optimal"
 
-#: ../data/main.ui.h:348
+#: ../data/main.ui.h:347
 msgid "Convert to"
 msgstr "Convertir vers"
 
-#: ../data/main.ui.h:349
+#: ../data/main.ui.h:348
 msgid "Convert to UTC"
 msgstr "Convertir vers UTC"
 
-#: ../data/main.ui.h:350
+#: ../data/main.ui.h:349
 msgid "Convert to Calendars"
 msgstr "Convertir vers calendriers"
 
-#: ../data/main.ui.h:351
+#: ../data/main.ui.h:350
 msgid "Use prefixes for all units"
 msgstr "Utiliser des préfixes pour toutes les unités"
 
-#: ../data/main.ui.h:352
+#: ../data/main.ui.h:351
 msgid "Enable All SI Prefi_xes"
 msgstr "Activer tous SI Prefi_xes"
 
-#: ../data/main.ui.h:353
+#: ../data/main.ui.h:352
 msgid "View/Edit Matrix"
 msgstr "Afficher/éditer matrice"
 
-#: ../data/main.ui.h:354
+#: ../data/main.ui.h:353
 msgid "View/Edit Vector"
 msgstr "Afficher/Éditer vecteur"
 
-#: ../data/main.ui.h:355
+#: ../data/main.ui.h:354
 msgid "Show Parsed Expression in Result Field"
 msgstr "Afficher l'expression analysée dans le champ de résultat"
 
-#: ../data/main.ui.h:356
+#: ../data/main.ui.h:355
 msgid "Copy Text"
 msgstr "Copier texte"
 
-#: ../data/main.ui.h:357
+#: ../data/main.ui.h:356
 msgid "To Top"
 msgstr "En haut"
 
-#: ../data/main.ui.h:358
+#: ../data/main.ui.h:357
 msgid "Swap"
 msgstr "Échanger"
 
-#: ../data/main.ui.h:359
+#: ../data/main.ui.h:358
 msgid "Up"
 msgstr "Haut"
 
-#: ../data/main.ui.h:360
+#: ../data/main.ui.h:359
 msgid "Down"
 msgstr "Bas"
 
-#: ../data/main.ui.h:361
+#: ../data/main.ui.h:360
 msgid "Negate"
 msgstr "Rejeter"
 
-#: ../data/main.ui.h:362
+#: ../data/main.ui.h:361
 msgid "Invert"
 msgstr "Intervertir"
 
-#: ../data/main.ui.h:363
+#: ../data/main.ui.h:362
 msgid "Square"
 msgstr "Carré"
 
-#: ../data/main.ui.h:364
+#: ../data/main.ui.h:363
 msgid "Square Root"
 msgstr "Racine carrée"
 
-#: ../data/main.ui.h:365
+#: ../data/main.ui.h:364
 msgid "Clear Stack"
 msgstr "Vider pile"
 
-#: ../data/main.ui.h:366
+#: ../data/main.ui.h:365
 msgid "Select Number Base…"
 msgstr "Sélectionner la base numérique…"
 
-#: ../data/main.ui.h:367
+#: ../data/main.ui.h:366
 msgid "Display Expression Status"
 msgstr "Afficher l'état de l'expression"
 
-#: ../data/main.ui.h:368 ../src/util.cc:923
+#: ../data/main.ui.h:367 ../src/util.cc:923
 msgid "Store result"
 msgstr "Enregistrer résultat"
 
 #. Add current result to variable value
-#: ../data/main.ui.h:370
+#: ../data/main.ui.h:369
 msgid "Add result"
 msgstr "Ajouter résultat"
 
 #. Subtruct current result from variable value
-#: ../data/main.ui.h:372
+#: ../data/main.ui.h:371
 msgid "Subtract result"
 msgstr "Soustraire résultat"
 
@@ -2444,7 +2440,7 @@ msgstr "Différence de 2 à 1"
 msgid "Plot"
 msgstr "Graph"
 
-#: ../data/plot.ui.h:3 ../src/menubar.cc:1191 ../src/plotdialog.cc:378
+#: ../data/plot.ui.h:3 ../src/menubar.cc:1193 ../src/plotdialog.cc:378
 #: ../src/plotdialog.cc:380 ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Save"
 msgstr "_Sauvegarder"
@@ -2871,7 +2867,7 @@ msgstr "Résultat"
 msgid "Application name + result"
 msgstr "Nom de l'application + résultat"
 
-#: ../data/preferences.ui.h:44 ../src/menubar.cc:1256
+#: ../data/preferences.ui.h:44 ../src/menubar.cc:1241
 msgid "Mode"
 msgstr "Mode"
 
@@ -3050,16 +3046,16 @@ msgstr ""
 "Si logique et/ou doit être affiché comme \"&&\"/\"||\" ou \"et\"/\"ou\""
 
 #: ../data/preferences.ui.h:83
-msgid "If \"e\" shall be used instead of \"E\" in numbers"
-msgstr "Si \"e\" doit être utilisé à la place de \"E\" dans les chiffres"
-
-#: ../data/preferences.ui.h:84
 msgid "Use E-notation instead of 10<sup><i>n</i></sup>"
 msgstr "Utilisez la notation E au lieu de 10<sup><i>n</i></sup>"
 
-#: ../data/preferences.ui.h:85
+#: ../data/preferences.ui.h:84
 msgid "Use lower case \"e\" (as in 1e10)"
 msgstr "Utilisez un \"e\" minuscule (comme dans 1e10)"
+
+#: ../data/preferences.ui.h:85
+msgid "If \"e\" shall be used instead of \"E\" in numbers"
+msgstr "Si \"e\" doit être utilisé à la place de \"E\" dans les chiffres"
 
 #: ../data/preferences.ui.h:86
 msgid "Use comma as decimal separator"
@@ -3271,6 +3267,14 @@ msgid "Custom history font"
 msgstr "Police de l'historique personnalisée"
 
 #: ../data/preferences.ui.h:131
+#, fuzzy
+msgid ""
+"If you want to use a font other than the default for in the history list"
+msgstr ""
+"Si vous voulez utiliser une police différence que celle utilisée par défaut "
+"pour toute l'application"
+
+#: ../data/preferences.ui.h:132
 msgid "Fonts & Colors"
 msgstr "Polices et couleurs"
 
@@ -3299,13 +3303,13 @@ msgstr "<b>Expression base</b>"
 msgid "New Keyboard Shortcut"
 msgstr "Nouveau raccourci clavier"
 
-#: ../data/shortcuts.ui.h:8 ../src/shortcutsdialog.cc:201
-#: ../src/shortcutsdialog.cc:298 ../src/shortcutsdialog.cc:452
-#: ../src/shortcutsdialog.cc:546
+#: ../data/shortcuts.ui.h:8 ../src/shortcutsdialog.cc:196
+#: ../src/shortcutsdialog.cc:293 ../src/shortcutsdialog.cc:447
+#: ../src/shortcutsdialog.cc:541
 msgid "Add Action"
 msgstr "Ajouter action"
 
-#: ../data/unitedit.ui.h:1 ../src/uniteditdialog.cc:188
+#: ../data/unitedit.ui.h:1 ../src/uniteditdialog.cc:190
 msgid "Edit Unit"
 msgstr "Éditer unité"
 
@@ -3401,10 +3405,23 @@ msgid "Minimum base unit number"
 msgstr "Numéro d'unité de base minimum"
 
 #: ../data/unitedit.ui.h:31
+msgid ""
+"Example: priority of the unit \"hand\" is set to 2, while priority of ft "
+"(foot) and in (inch) is set to 1, which results in \"17 in = 1 ft + 5 in\", "
+"instead of \"17 in = 1 ft + 1 hand + 1 in\"."
+msgstr ""
+
+#: ../data/unitedit.ui.h:32
+msgid ""
+"Example: minimum base unit number of yd (yard) is set to 12, which results "
+"in \"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
+msgstr ""
+
+#: ../data/unitedit.ui.h:33
 msgid "Exponent of the base unit"
 msgstr "Exposant de l'unité de base"
 
-#: ../data/unitedit.ui.h:32
+#: ../data/unitedit.ui.h:34
 msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit is defined in relation to"
@@ -3412,7 +3429,7 @@ msgstr ""
 "Unité (pour une unité dérivée nommée) ou expression d'unité (pour une unité "
 "dérivée non nommée) par rapport à laquelle cette unité est définie"
 
-#: ../data/unitedit.ui.h:33
+#: ../data/unitedit.ui.h:35
 msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
@@ -3427,13 +3444,13 @@ msgstr ""
 "l'exposant (par exemple \"\\x + 273,15\" pour la relation entre les degrés "
 "Celsius et Kelvin)."
 
-#: ../data/unitedit.ui.h:36
+#: ../data/unitedit.ui.h:38
 msgid "Specify for non-linear relation, for conversion back to the base unit."
 msgstr ""
 "Spécifiez pour une relation non linéaire, pour la reconversion vers l'unité "
 "de base."
 
-#: ../data/unitedit.ui.h:37
+#: ../data/unitedit.ui.h:39
 msgid "Use with prefixes by default"
 msgstr "Utiliser avec des préfixes par défaut"
 
@@ -3558,40 +3575,40 @@ msgstr "Insérer la variable sélectionnée dans l'expression entrée"
 msgid "E_xport"
 msgstr "E_xporter"
 
-#: ../src/buttonseditdialog.cc:220 ../src/shortcutsdialog.cc:222
-#: ../src/shortcutsdialog.cc:470
+#: ../src/buttonseditdialog.cc:220 ../src/shortcutsdialog.cc:217
+#: ../src/shortcutsdialog.cc:465
 msgid "Empty value."
 msgstr "La valeur est vide."
 
-#: ../src/buttonseditdialog.cc:230 ../src/shortcutsdialog.cc:231
-#: ../src/shortcutsdialog.cc:479
+#: ../src/buttonseditdialog.cc:230 ../src/shortcutsdialog.cc:226
+#: ../src/shortcutsdialog.cc:474
 msgid "Function not found."
 msgstr "La fonction n'a pas été trouvée."
 
-#: ../src/buttonseditdialog.cc:238 ../src/shortcutsdialog.cc:239
-#: ../src/shortcutsdialog.cc:487
+#: ../src/buttonseditdialog.cc:238 ../src/shortcutsdialog.cc:234
+#: ../src/shortcutsdialog.cc:482
 msgid "Variable not found."
 msgstr "La variable n'a pas été trouvée."
 
-#: ../src/buttonseditdialog.cc:250 ../src/shortcutsdialog.cc:251
-#: ../src/shortcutsdialog.cc:499
+#: ../src/buttonseditdialog.cc:250 ../src/shortcutsdialog.cc:246
+#: ../src/shortcutsdialog.cc:494
 msgid "Unit not found."
 msgstr "L'unité n'a pas été trouvée."
 
 #: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7033
-#: ../src/shortcutsdialog.cc:260 ../src/shortcutsdialog.cc:508
+#: ../src/shortcutsdialog.cc:255 ../src/shortcutsdialog.cc:503
 msgid "Mode not found."
 msgstr "Le mode n'a pas été trouvé."
 
 #: ../src/buttonseditdialog.cc:271 ../src/setbasedialog.cc:78
 #: ../src/setbasedialog.cc:154 ../src/setbasedialog.cc:210
-#: ../src/setbasedialog.cc:256 ../src/shortcutsdialog.cc:272
-#: ../src/shortcutsdialog.cc:520
+#: ../src/setbasedialog.cc:256 ../src/shortcutsdialog.cc:267
+#: ../src/shortcutsdialog.cc:515
 msgid "Unsupported base."
 msgstr "La base n'est pas supportée."
 
-#: ../src/buttonseditdialog.cc:283 ../src/shortcutsdialog.cc:284
-#: ../src/shortcutsdialog.cc:532
+#: ../src/buttonseditdialog.cc:283 ../src/shortcutsdialog.cc:279
+#: ../src/shortcutsdialog.cc:527
 msgid "Unsupported value."
 msgstr "Valeur non prise en charge."
 
@@ -3708,8 +3725,8 @@ msgstr "MR (rappel de mémoire)"
 msgid "MS (memory store)"
 msgstr "MS (magasin de mémoire)"
 
-#: ../src/buttonseditdialog.cc:455 ../src/shortcutsdialog.cc:579
-#: ../src/shortcutsdialog.cc:606
+#: ../src/buttonseditdialog.cc:455 ../src/shortcutsdialog.cc:574
+#: ../src/shortcutsdialog.cc:601
 msgid "Action"
 msgstr "Action"
 
@@ -3823,8 +3840,8 @@ msgstr "clé"
 
 #: ../src/dataseteditdialog.cc:306 ../src/dataseteditdialog.cc:442
 #: ../src/functioneditdialog.cc:907 ../src/importcsvdialog.cc:149
-#: ../src/matrixeditdialog.cc:550 ../src/menubar.cc:1217
-#: ../src/uniteditdialog.cc:326 ../src/unknowneditdialog.cc:191
+#: ../src/matrixeditdialog.cc:550 ../src/menubar.cc:1219
+#: ../src/uniteditdialog.cc:328 ../src/unknowneditdialog.cc:191
 #: ../src/variableeditdialog.cc:276
 msgid "Empty name field."
 msgstr "Nom du champ vide."
@@ -4097,7 +4114,7 @@ msgstr "Unités optimales"
 msgid "Expanded Partial Fractions"
 msgstr "Fractions partielles développées"
 
-#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1736
+#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1716
 msgid "Optimal Prefix"
 msgstr "Préfixe optimal"
 
@@ -4528,7 +4545,7 @@ msgstr "Expression du champ vide."
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
 #: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7339
-#: ../src/menubar.cc:1595 ../src/util.cc:1268 ../src/util.cc:1269
+#: ../src/menubar.cc:1575 ../src/util.cc:1268 ../src/util.cc:1269
 msgid "User functions"
 msgstr "Fonctions utilisateur"
 
@@ -4658,7 +4675,7 @@ msgid "Select file to import"
 msgstr "Sélectionner le fichier à importer"
 
 #: ../src/importcsvdialog.cc:155 ../src/matrixeditdialog.cc:557
-#: ../src/uniteditdialog.cc:333 ../src/unknowneditdialog.cc:198
+#: ../src/uniteditdialog.cc:335 ../src/unknowneditdialog.cc:198
 #: ../src/variableeditdialog.cc:289
 msgid ""
 "A unit or variable with the same name already exists.\n"
@@ -4734,7 +4751,7 @@ msgstr "Définir inconnues"
 
 #. Show further items in a submenu
 #: ../src/keypad.cc:858 ../src/keypad.cc:946 ../src/keypad.cc:949
-#: ../src/keypad.cc:2458 ../src/menubar.cc:1392 ../src/menubar.cc:1487
+#: ../src/keypad.cc:2458 ../src/menubar.cc:1372 ../src/menubar.cc:1467
 #: ../src/resultview.cc:894
 msgid "more"
 msgstr "plus"
@@ -5133,13 +5150,13 @@ msgstr "Ne peut pas copier le fichier vers %s."
 msgid "translator-credits"
 msgstr "crédits-traducteur"
 
-#: ../src/mainwindow.cc:7371 ../src/menubar.cc:1677 ../src/util.cc:1264
+#: ../src/mainwindow.cc:7371 ../src/menubar.cc:1657 ../src/util.cc:1264
 #: ../src/util.cc:1265 ../src/variablesdialog.cc:137
 #: ../src/variablesdialog.cc:138 ../src/variablesdialog.cc:203
 msgid "User variables"
 msgstr "Variables utilisateur"
 
-#: ../src/mainwindow.cc:7395 ../src/menubar.cc:1423 ../src/menubar.cc:1518
+#: ../src/mainwindow.cc:7395 ../src/menubar.cc:1403 ../src/menubar.cc:1498
 #: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
 #: ../src/unitsdialog.cc:237 ../src/util.cc:1266 ../src/util.cc:1267
 msgid "User units"
@@ -5232,27 +5249,27 @@ msgstr "Nouvelle matrice"
 msgid "Unit does not exist"
 msgstr "L'unité n'existe pas"
 
-#: ../src/menubar.cc:1191
+#: ../src/menubar.cc:1193
 msgid "Save Mode"
 msgstr "Sauvegarder mode"
 
-#: ../src/menubar.cc:1221
+#: ../src/menubar.cc:1223
 msgid "Preset mode cannot be overwritten."
 msgstr "Le mode préréglage ne peut pas être écrasé."
 
-#: ../src/menubar.cc:1249
+#: ../src/menubar.cc:1234
 msgid "Delete Mode"
 msgstr "Supprimer mode"
 
-#: ../src/menubar.cc:1431
+#: ../src/menubar.cc:1411
 msgid "Prefixes"
 msgstr "Préfixes"
 
-#: ../src/menubar.cc:1735
+#: ../src/menubar.cc:1715
 msgid "No Prefix"
 msgstr "Pas de préfixe"
 
-#: ../src/menubar.cc:2684
+#: ../src/menubar.cc:2672
 msgid "Open Settings Folder"
 msgid_plural "Open Settings Folders"
 msgstr[0] "Ouvrir le dossier de paramètres"
@@ -5470,12 +5487,12 @@ msgstr "Copié"
 msgid "Copy result to clipboard"
 msgstr "Copier le résultat dans le presse-papier"
 
-#: ../src/shortcutsdialog.cc:159
+#: ../src/shortcutsdialog.cc:154
 msgid "Set key combination"
 msgstr "Définir la combinaison de touches"
 
 #. Make the line reasonably long, but not to short (at least around 40 characters)
-#: ../src/shortcutsdialog.cc:163
+#: ../src/shortcutsdialog.cc:158
 msgid ""
 "Press the key combination you wish to use for the action\n"
 "(press Escape to cancel)."
@@ -5484,11 +5501,11 @@ msgstr ""
 "l'action\n"
 "(appuyer sur Echap pour annuler)."
 
-#: ../src/shortcutsdialog.cc:173
+#: ../src/shortcutsdialog.cc:168
 msgid "No keys"
 msgstr "Pas de touches"
 
-#: ../src/shortcutsdialog.cc:312 ../src/shortcutsdialog.cc:380
+#: ../src/shortcutsdialog.cc:307 ../src/shortcutsdialog.cc:375
 msgid ""
 "The key combination is already in use.\n"
 "Do you wish to replace the current action?"
@@ -5496,7 +5513,7 @@ msgstr ""
 "La combinaison de touches est déjà utilisée.\n"
 "Souhaitez-vous remplacer l'action en cours ?"
 
-#: ../src/shortcutsdialog.cc:588
+#: ../src/shortcutsdialog.cc:583
 msgid "Key combination"
 msgstr "Combinaison de touches"
 
@@ -5506,15 +5523,15 @@ msgctxt "Keypad"
 msgid "Add the two top values together"
 msgstr ""
 
-#: ../src/uniteditdialog.cc:190
+#: ../src/uniteditdialog.cc:192
 msgid "Edit Unit (global)"
 msgstr "Éditer unité (global)"
 
-#: ../src/uniteditdialog.cc:192
+#: ../src/uniteditdialog.cc:194
 msgid "New Unit"
 msgstr "Nouvelle unité"
 
-#: ../src/uniteditdialog.cc:360 ../src/uniteditdialog.cc:412
+#: ../src/uniteditdialog.cc:362 ../src/uniteditdialog.cc:414
 msgid "Base unit does not exist."
 msgstr "L'unité de base n'existe pas."
 
@@ -5862,6 +5879,9 @@ msgstr "un vecteur"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "pas de matrice"
+
+#~ msgid "Imaginary unit i (√-1)"
+#~ msgstr "Unité imaginaire i (√-1)"
 
 #~ msgid "Add"
 #~ msgstr "Ajouter"

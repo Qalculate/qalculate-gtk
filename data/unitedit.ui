@@ -18,7 +18,7 @@
   </object>
   <object class="GtkAdjustment" id="adjustment3">
     <property name="lower">1</property>
-    <property name="upper">100</property>
+    <property name="upper">100000</property>
     <property name="value">1</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
@@ -433,6 +433,7 @@
                   <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_priority">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Example: priority of the unit "hand" is set to 2, while priority of ft (foot) and in (inch) is set to 1, which results in "17 in = 1 ft + 5 in", instead of "17 in = 1 ft + 1 hand + 1 in".</property>
                     <property name="primary-icon-activatable">False</property>
                     <property name="secondary-icon-activatable">False</property>
                     <property name="adjustment">adjustment2</property>
@@ -449,6 +450,7 @@
                   <object class="GtkSpinButton" id="unit_edit_spinbutton_mix_min">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="tooltip-text" translatable="yes">Example: minimum base unit number of yd (yard) is set to 12, which results in "3 × 3 ft = 9 ft" (instead of "3 yd") and "4 × 3 ft = 4 yd".</property>
                     <property name="primary-icon-activatable">False</property>
                     <property name="secondary-icon-activatable">False</property>
                     <property name="adjustment">adjustment3</property>
