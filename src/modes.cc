@@ -54,9 +54,7 @@ bool load_mode(string name) {
 
 void save_initial_modes() {
 	save_mode_as(_("Preset"));
-	modes[0].description = _("Default mode loaded at first startup for new users");
 	save_mode_as(_("Default"));
-	modes[1].description = _("Mode loaded at each startup and, by default, saved at exit");
 }
 
 void save_default_mode(const char *custom_angle_unit) {
@@ -91,6 +89,7 @@ size_t initialize_mode_as(string name) {
 	size_t index = modes.size() - 1;
 	modes[index].name = name;
 	modes[index].implicit_question_asked = false;
+	modes[index].description = "";
 	return index;
 }
 
@@ -130,6 +129,9 @@ size_t save_mode_as(string name, bool *new_mode, bool set_as_current) {
 	modes[index].implicit_question_asked = implicit_question_asked;
 	modes[index].simplified_percentage = simplified_percentage;
 	modes[index].custom_angle_unit = "";
+	if(index == 0) modes[index].description = _("Default mode loaded at first startup for new users");
+	else if(index == 1) modes[index].description = _("Mode loaded at each startup and, by default, saved at exit");
+	else modes[index].description = "";
 	if(CALCULATOR->customAngleUnit()) modes[index].custom_angle_unit = CALCULATOR->customAngleUnit()->referenceName();
 	if(set_as_current) current_mode = modes[index].name;
 	return index;

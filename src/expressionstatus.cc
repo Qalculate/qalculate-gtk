@@ -904,7 +904,7 @@ void display_parse_status() {
 					parsed_expression += _("optimal unit");
 				} else if(equalsIgnoreCase(str_u, "prefix") || equalsIgnoreCase(str_u, _("prefix")) || str_u == "?" || (str_u.length() == 2 && str_u[1] == '?' && (str_u[0] == 'b' || str_u[0] == 'a' || str_u[0] == 'd'))) {
 					parsed_expression += _("optimal prefix");
-				} else if(equalsIgnoreCase(str_u, "base") || equalsIgnoreCase(str_u, _("base"))) {
+				} else if(equalsIgnoreCase(str_u, "base") || equalsIgnoreCase(str_u, _c("Units", "base"))) {
 					parsed_expression += _("base units");
 				} else if(equalsIgnoreCase(str_u, "mixed") || equalsIgnoreCase(str_u, _("mixed"))) {
 					parsed_expression += _("mixed units");
@@ -977,7 +977,7 @@ void display_parse_status() {
 				} else if(str_u == "CET") {
 					parsed_expression += "UTC";
 					parsed_expression += "+01";
-				} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
+				} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _c("Number base", "base"))) {
 					gchar *gstr = g_strdup_printf(_("number base %s"), to_str2.c_str());
 					parsed_expression += gstr;
 					g_free(gstr);

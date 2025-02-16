@@ -1400,7 +1400,8 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					evalops.parse_options.units_enabled = true;
 					to_prefix = 1;
 					do_to = true;
-				} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _("base"))) {
+				// base units
+				} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _c("Units", "base"))) {
 					evalops.parse_options.units_enabled = true;
 					evalops.auto_post_conversion = POST_CONVERSION_BASE;
 					str_conv = "";
@@ -1416,7 +1417,8 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 				} else if(equalsIgnoreCase(to_str, "partial fraction") || equalsIgnoreCase(to_str, _("partial fraction"))) {
 					do_pfe = true;
 					str = from_str;
-				} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
+				// number base #
+				} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _c("Number base", "base"))) {
 					base_from_string(to_str2, to_base, to_nbase);
 					to_duo_syms = false;
 					do_to = true;
@@ -4828,7 +4830,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				evalops.parse_options.units_enabled = true;
 				to_prefix = 1;
 				do_to = true;
-			} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _("base"))) {
+			} else if(equalsIgnoreCase(to_str, "base") || equalsIgnoreCase(to_str, _c("Units", "base"))) {
 				if(from_str.empty()) {
 					b_busy = false;
 					b_busy_expression = false;
@@ -4875,7 +4877,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				}
 				do_pfe = true;
 				execute_str = from_str;
-			} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _("base"))) {
+			} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _c("Number base", "base"))) {
 				base_from_string(to_str2, to_base, to_nbase);
 				to_duo_syms = false;
 				do_to = true;
