@@ -27,6 +27,7 @@ void preferences_update_expression_status();
 void preferences_update_exchange_rates();
 void preferences_update_completion(bool initial = false);
 void preferences_rpn_mode_changed();
+void preferences_parsing_mode_changed();
 
 void preferences_dialog_set(const gchar *obj, gboolean b);
 

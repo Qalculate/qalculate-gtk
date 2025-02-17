@@ -877,7 +877,7 @@ return TRUE;}
 		}
 		case GDK_KEY_asciicircum: {
 			bool input_xor = (caret_as_xor != ((state & GDK_CONTROL_MASK) > 0));
-			if(rpn_mode && rpn_keys) {
+			if(rpn_mode && rpn_keys && evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				calculateRPN(input_xor ? OPERATION_BITWISE_XOR : OPERATION_RAISE);
 				return TRUE;
 			}
@@ -911,7 +911,7 @@ return TRUE;}
 				overwrite_expression_selection("/");
 				return TRUE;
 			}
-			if(rpn_mode && rpn_keys) {
+			if(rpn_mode && rpn_keys && evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				calculateRPN(OPERATION_DIVIDE);
 				return TRUE;
 			}
@@ -925,7 +925,7 @@ return TRUE;}
 		}
 		case GDK_KEY_plus: {}
 		case GDK_KEY_KP_Add: {
-			if(rpn_mode && rpn_keys) {
+			if(rpn_mode && rpn_keys && evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				calculateRPN(OPERATION_ADD);
 				return TRUE;
 			}
@@ -943,7 +943,7 @@ return TRUE;}
 				insert_button_function(CALCULATOR->getActiveFunction("neg"));
 				return TRUE;
 			}
-			if(rpn_mode && rpn_keys) {
+			if(rpn_mode && rpn_keys && evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				if(!expression_is_empty()) {
 					GtkTextIter icur;
 					if(gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
@@ -971,7 +971,7 @@ return TRUE;}
 		case GDK_KEY_KP_Multiply: {}
 		case GDK_KEY_asterisk: {
 			if(state & GDK_CONTROL_MASK) {
-				if(rpn_mode && rpn_keys) {
+				if(rpn_mode && rpn_keys && evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 					calculateRPN(OPERATION_RAISE);
 					return TRUE;
 				}
@@ -982,7 +982,7 @@ return TRUE;}
 				overwrite_expression_selection("^");
 				return TRUE;
 			}
-			if(rpn_mode && rpn_keys) {
+			if(rpn_mode && rpn_keys && evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 				calculateRPN(OPERATION_MULTIPLY);
 				return TRUE;
 			}
@@ -996,7 +996,7 @@ return TRUE;}
 		}
 		case GDK_KEY_E: {
 			if(state & GDK_CONTROL_MASK) {
-				if(rpn_mode && rpn_keys) {
+				if(rpn_mode && rpn_keys && evalops.parse_options.parsing_mode != PARSING_MODE_RPN) {
 					calculateRPN(OPERATION_EXP10);
 					return TRUE;
 				}

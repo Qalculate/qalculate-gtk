@@ -3492,6 +3492,7 @@ void set_option(string str) {
 			else if(v == PARSING_MODE_CHAIN) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_chain_syntax")), TRUE);
 			else if(v == PARSING_MODE_RPN) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_rpn_syntax")), TRUE);
 		}
+
 	} else if(equalsIgnoreCase(svar, "update exchange rates") || svar == "upxrates") {
 		int v = -2;
 		if(equalsIgnoreCase(svalue, "never")) {

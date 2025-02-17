@@ -930,6 +930,7 @@ void on_menu_item_rpn_mode_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_rpn_syntax_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.parse_options.parsing_mode = PARSING_MODE_RPN;
+	preferences_parsing_mode_changed();
 	update_status_menu();
 	expression_format_updated(false);
 }
@@ -946,12 +947,14 @@ void on_menu_item_simplified_percentage_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_adaptive_parsing_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
+	preferences_parsing_mode_changed();
 	update_status_menu();
 	expression_format_updated(true);
 }
 void on_menu_item_ignore_whitespace_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.parse_options.parsing_mode = PARSING_MODE_IMPLICIT_MULTIPLICATION_FIRST;
+	preferences_parsing_mode_changed();
 	update_status_menu();
 	implicit_question_asked = true;
 	expression_format_updated(true);
@@ -959,6 +962,7 @@ void on_menu_item_ignore_whitespace_activate(GtkMenuItem *w, gpointer) {
 void on_menu_item_no_special_implicit_multiplication_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.parse_options.parsing_mode = PARSING_MODE_CONVENTIONAL;
+	preferences_parsing_mode_changed();
 	update_status_menu();
 	implicit_question_asked = true;
 	expression_format_updated(true);
@@ -966,6 +970,7 @@ void on_menu_item_no_special_implicit_multiplication_activate(GtkMenuItem *w, gp
 void on_menu_item_chain_syntax_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
 	evalops.parse_options.parsing_mode = PARSING_MODE_CHAIN;
+	preferences_parsing_mode_changed();
 	update_status_menu();
 	expression_format_updated(true);
 }

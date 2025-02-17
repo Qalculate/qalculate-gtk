@@ -782,6 +782,13 @@ void preferences_rpn_mode_changed() {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_parsed_in_result_toggled, NULL);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), display_expression_status && !rpn_mode);
 }
+void preferences_parsing_mode_changed() {
+	if(!preferences_builder) return;
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_rpn_keys"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_rpn_keys_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_rpn_keys")), rpn_keys && evalops.parse_options.parsing_mode != PARSING_MODE_RPN);
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_rpn_keys"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_rpn_keys_toggled, NULL);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_rpn_keys")), evalops.parse_options.parsing_mode != PARSING_MODE_RPN);
+}
 void on_preferences_button_result_font_font_set(GtkFontButton *w, gpointer) {
 	set_result_font(gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w)));
 }
@@ -848,7 +855,8 @@ GtkWidget* get_preferences_dialog() {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_binary_prefixes")), CALCULATOR->usesBinaryPrefixes() > 0);
 		preferences_update_temperature_calculation(true);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_save_defs")), save_defs_on_exit);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_rpn_keys")), rpn_keys);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_rpn_keys")), rpn_keys && evalops.parse_options.parsing_mode != PARSING_MODE_RPN);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_rpn_keys")), evalops.parse_options.parsing_mode != PARSING_MODE_RPN);
 		preferences_update_dot(true);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_result_font")), result_font() != NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_expression_font")), expression_font() != NULL);
