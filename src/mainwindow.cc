@@ -2958,7 +2958,7 @@ void result_format_updated() {
 	if(result_blocked()) return;
 	update_message_print_options();
 	if(result_autocalculated) print_auto_calc();
-	else setResult(NULL, true, false, false);
+	else if(current_displayed_result()) setResult(NULL, true, false, false);
 	update_status_text();
 	set_expression_output_updated(true);
 	display_parse_status();
