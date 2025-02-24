@@ -2033,12 +2033,15 @@ void on_button_idiv_clicked(GtkButton*, gpointer) {
 	}
 }
 
+bool block_update_programming_base = false;
 void on_button_bin_toggled(GtkToggleButton *w, gpointer) {
 	if(!gtk_toggle_button_get_active(w)) {
 		update_keypad_programming_base();
 		return;
 	}
+	block_update_programming_base = true;
 	set_output_base(BASE_BINARY);
+	block_update_programming_base = false;
 	set_input_base(BASE_BINARY, false, false);
 	focus_keeping_selection();
 }
@@ -2047,7 +2050,9 @@ void on_button_oct_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_programming_base();
 		return;
 	}
+	block_update_programming_base = true;
 	set_output_base(BASE_OCTAL);
+	block_update_programming_base = false;
 	set_input_base(BASE_OCTAL, false, false);
 	focus_keeping_selection();
 }
@@ -2056,7 +2061,9 @@ void on_button_dec_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_programming_base();
 		return;
 	}
+	block_update_programming_base = true;
 	set_output_base(BASE_DECIMAL);
+	block_update_programming_base = false;
 	set_input_base(BASE_DECIMAL, false, false);
 	focus_keeping_selection();
 }
@@ -2065,7 +2072,9 @@ void on_button_hex_toggled(GtkToggleButton *w, gpointer) {
 		update_keypad_programming_base();
 		return;
 	}
+	block_update_programming_base = true;
 	set_output_base(BASE_HEXADECIMAL);
+	block_update_programming_base = false;
 	set_input_base(BASE_HEXADECIMAL, false, false);
 	update_setbase();
 	focus_keeping_selection();
@@ -2818,6 +2827,8 @@ void on_button_twos_in_toggled(GtkToggleButton *w, gpointer) {
 }
 
 void update_keypad_programming_base() {
+
+	if(block_update_programming_base) return;
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_bin"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_bin_toggled, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_oct"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_oct_toggled, NULL);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_dec"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_dec_toggled, NULL);
@@ -2834,6 +2845,22 @@ void update_keypad_programming_base() {
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_oct"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_oct_toggled, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_dec"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_dec_toggled, NULL);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "button_hex"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_hex_toggled, NULL);
+
+	if(printops.base == 2 && evalops.parse_options.base != 2) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_bin")), (string("<span underline=\"single\">") + string(_("BIN")) + "</span>").c_str());
+	else if(printops.base != 2 && evalops.parse_options.base == 2 && pango_version() >= 14600) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_bin")), (string("<span overline=\"single\">") + string(_("BIN")) + "</span>").c_str());
+	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_bin")), _("BIN"));
+
+	if(printops.base == 8 && evalops.parse_options.base != 8) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_oct")), (string("<span underline=\"single\">") + string(_("OCT")) + "</span>").c_str());
+	else if(printops.base != 8 && evalops.parse_options.base == 8 && pango_version() >= 14600) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_oct")), (string("<span overline=\"single\">") + string(_("OCT")) + "</span>").c_str());
+	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_oct")), _("OCT"));
+
+	if(printops.base == 10 && evalops.parse_options.base != 10) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dec")), (string("<span underline=\"single\">") + string(_("DEC")) + "</span>").c_str());
+	else if(printops.base != 10 && evalops.parse_options.base == 10 && pango_version() >= 14600) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dec")), (string("<span overline=\"single\">") + string(_("DEC")) + "</span>").c_str());
+	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_dec")), _("DEC"));
+
+	if(printops.base == 16 && evalops.parse_options.base != 16) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_hex")), (string("<span underline=\"single\">") + string(_("HEX")) + "</span>").c_str());
+	else if(printops.base != 16 && evalops.parse_options.base == 16 && pango_version() >= 14600) gtk_label_set_markup(GTK_LABEL(gtk_builder_get_object(main_builder, "label_hex")), (string("<span overline=\"single\">") + string(_("HEX")) + "</span>").c_str());
+	else gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_hex")), _("HEX"));
 
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "button_twos_out"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_button_twos_out_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(main_builder, "button_twos_out")), (printops.base == 16 && printops.hexadecimal_twos_complement) || (printops.base == 2 && printops.twos_complement));

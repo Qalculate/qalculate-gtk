@@ -50,6 +50,27 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.5.1" date="2025-02-24">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Fix segfault when deleting object</li>
+      <li>Fix mode menu items sometimes not functioning properly after a mode has been added or removed</li>
+      <li>Fix right status context menu not updated</li>
+      <li>Fix keyboard shortcut input dialog when modifier is released first</li>
+      <li>Fix date (month off by one) in history context menu</li>
+      <li>Fix copy unformatted ASCII without units when unit is placed before quantity</li>
+      <li>Fix roman numerals shown as "Other"</li>
+      <li>Fix previous result displayed with changed output format despite cleared result after modified input format</li>
+      <li>Fix and improve tooltips</li>
+      <li>Indicate input and output base using overline and underline in programming keypad when input and output base differs</li>
+      <li>Fix solve() function with replace() function as first argument (fixes solve2() function)</li>
+      <li>Fix "where" operator using (in)equality in variable</li>
+      <li>Return x=a*e^(i*r) (with r instead of n) for abs(x)=x</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.5.0" date="2025-01-13">
    <description>
     <p>Changes:</p>

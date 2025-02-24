@@ -1722,8 +1722,10 @@ void create_expression_edit() {
 #else
 	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(expression_edit_widget()), 12);
 	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(expression_edit_widget()), 6);
-	gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(expression_edit_widget()), GTK_TEXT_WINDOW_TOP, 6);
-	gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(expression_edit_widget()), GTK_TEXT_WINDOW_BOTTOM, 6);
+	if(RUNTIME_CHECK_GTK_VERSION_LESS(3, 22)) {
+		gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(expression_edit_widget()), GTK_TEXT_WINDOW_TOP, 6);
+		gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(expression_edit_widget()), GTK_TEXT_WINDOW_BOTTOM, 6);
+	}
 #endif
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION > 22 || (GTK_MINOR_VERSION == 22 && GTK_MICRO_VERSION >= 20)
@@ -1766,6 +1768,7 @@ void create_expression_edit() {
 	gtk_style_context_add_provider(gtk_widget_get_style_context(expression_edit_widget()), GTK_STYLE_PROVIDER(expressionborder_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	string border_css = topframe_css; border_css += "}";
 	gsub("*", "textview.view > border", border_css);
+	if(RUNTIME_CHECK_GTK_VERSION(3, 22)) border_css += "\ntextview.view {padding-top: 6px; padding-bottom: 6px;}";
 	gtk_css_provider_load_from_data(expressionborder_provider, border_css.c_str(), -1, NULL);
 #endif
 	GtkCssProvider *expression_provider2 = gtk_css_provider_new();

@@ -1,10 +1,78 @@
+2025-02-22 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Indicate input and output base using overline and underline in programming keypad when input and output base differs
+
+2025-02-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix previous result displayed with changed output format despite cleared result after modified input format
+
+2025-02-18 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix expression field appearance with Breeze theme when compiled against gtk < 3.18 and run agains gtk >= 3.22 (e.g. with self-contained GNU/Linux binaries)
+
+2025-02-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Disable "Use keyboard keys for RPN" when RPN syntax is enabled
+
+2025-02-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix roman numerals in number base keypad menu
+	* Fix roman numerals expression base button in number bases dialog
+
+2025-02-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix keyboard shortcut input dialog when modifier is released first
+
+2025-02-11 Frédéric Brière <fbriere@fbriere.net>
+
+	* Various manual languange fixes
+
+2025-02-09 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Enable Ok button when unit descriptions has changed
+
+2025-02-06 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Tooltips improvements and fixes
+
+2025-02-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix updating of show parsed expression in result field in preferences in some cases when changed from context menu
+	* Update show expression status in preferences when changed from context menu
+
+2025-02-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix mode menu items sometimes not functioning properly after a mode has been added or removed
+
+2025-01-30 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix right status context menu not updated (one step behind)
+	* Fix mnemonics conflicts
+
+2025-01-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix segfault when deleting object
+
+2025-01-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not add hidden or inactive user object to menu
+	* Do not add new/edited hidden or inactive object to recent objects in menu
+
+2025-01-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix copy unformatted ASCII without units when unit is placed before quantity (when unit is a currency)
+
+2025-01-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix date (month off by one), after "Search by Date…", in history context menu
+
 2024-12-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Set ans variable, and return value of answer(), to solution(s) of equation (as if solve() were used)
 
 2024-12-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
-	Add option to disable cursor blinking
+	* Add option to disable cursor blinking
 
 2024-11-24 Hanna Knutsson <hanna.knutsson@protonmail.com>
 

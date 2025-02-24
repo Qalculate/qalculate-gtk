@@ -6,7 +6,7 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK UI)],[5.5.0],[],[qalculate-gtk])
+AC_INIT([Qalculate! (GTK UI)],[5.5.1],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/main.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS(config.h)
