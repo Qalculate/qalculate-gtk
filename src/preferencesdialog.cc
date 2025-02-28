@@ -170,7 +170,7 @@ void on_preferences_checkbutton_keep_above_toggled(GtkToggleButton *w, gpointer)
 void preferences_update_keep_above() {
 	if(!preferences_builder) return;
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_keep_above_toggled, NULL);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above")), !always_on_top);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above")), always_on_top);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_keep_above_toggled, NULL);
 }
 void on_preferences_combo_tooltips_changed(GtkComboBox *w, gpointer) {

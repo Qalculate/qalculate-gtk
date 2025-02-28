@@ -8441,8 +8441,8 @@ void initialize_variables_and_functions() {
 	ename.case_sensitive = true;
 	ename.abbreviation = true;
 	v_memory->addName(ename);
-	ename.name = "MRC";
-	v_memory->addName(ename);
+	/*ename.name = "MRC";
+	v_memory->addName(ename);*/
 	CALCULATOR->addVariable(v_memory);
 	CALCULATOR->addFunction(new SetTitleFunction());
 	initialize_history_functions();
