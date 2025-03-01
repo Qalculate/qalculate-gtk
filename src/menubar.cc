@@ -1753,7 +1753,7 @@ void recreate_recent_functions() {
 	recent_function_items.clear();
 	bool b = false;
 	for(size_t i = 0; i < recent_functions.size(); i++) {
-		if(!CALCULATOR->stillHasFunction(recent_functions[i])) {
+		if(!CALCULATOR->stillHasFunction(recent_functions[i]) || !recent_functions[i]->isActive()) {
 			recent_functions.erase(recent_functions.begin() + i);
 			i--;
 		} else {
@@ -1776,7 +1776,7 @@ void recreate_recent_variables() {
 	recent_variable_items.clear();
 	bool b = false;
 	for(size_t i = 0; i < recent_variables.size(); i++) {
-		if(!CALCULATOR->stillHasVariable(recent_variables[i])) {
+		if(!CALCULATOR->stillHasVariable(recent_variables[i]) || !recent_variables[i]->isActive()) {
 			recent_variables.erase(recent_variables.begin() + i);
 			i--;
 		} else {
@@ -1799,7 +1799,7 @@ void recreate_recent_units() {
 	recent_unit_items.clear();
 	bool b = false;
 	for(size_t i = 0; i < recent_units.size(); i++) {
-		if(!CALCULATOR->stillHasUnit(recent_units[i])) {
+		if(!CALCULATOR->stillHasUnit(recent_units[i]) || !recent_units[i]->isActive()) {
 			recent_units.erase(recent_units.begin() + i);
 			i--;
 		} else {
