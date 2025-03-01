@@ -33,6 +33,7 @@
 #include "variableeditdialog.h"
 #include "openhelp.h"
 #include "matrixeditdialog.h"
+#include "menubar.h"
 
 using std::string;
 using std::cout;
@@ -413,6 +414,8 @@ void edit_matrix(const char *category, Variable *var, MathStructure *mstruct_, G
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(matrixedit_builder, "matrix_edit_tabs")), 0);
 	gtk_text_buffer_set_text(description_buffer, "", -1);
 
+	bool was_hidden = v && v->isHidden();
+
 	int r = 4, c = 4;
 	const MathStructure *old_vctr = NULL;
 	if(v) {
@@ -639,6 +642,7 @@ run_matrix_edit_dialog:
 			if(add_var) {
 				CALCULATOR->addVariable(v);
 			}
+			if(!was_hidden && v->isHidden()) remove_from_recent_variables(v);
 			variable_edited(v);
 		}
 	} else if(response == GTK_RESPONSE_HELP) {

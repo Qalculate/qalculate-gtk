@@ -31,6 +31,7 @@
 #include "openhelp.h"
 #include "nameseditdialog.h"
 #include "uniteditdialog.h"
+#include "menubar.h"
 
 using std::string;
 using std::cout;
@@ -208,6 +209,8 @@ void edit_unit(const char *category, Unit *u, GtkWindow *win) {
 	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(unitedit_builder, "unit_edit_combo_system")))), "");
 	//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(unitedit_builder, "unit_edit_label_names")), "");
 	gtk_text_buffer_set_text(description_buffer, "", -1);
+
+	bool was_hidden = u && u->isHidden();
 
 	if(u) {
 		//fill in original parameters
@@ -466,6 +469,7 @@ run_unit_edit_dialog:
 			if(add_unit) {
 				CALCULATOR->addUnit(u);
 			}
+			if(!was_hidden && u->isHidden()) remove_from_recent_units(u);
 			unit_edited(u);
 		}
 	} else if(response == GTK_RESPONSE_HELP) {

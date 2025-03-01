@@ -32,6 +32,7 @@
 #include "nameseditdialog.h"
 #include "dataseteditdialog.h"
 #include "functioneditdialog.h"
+#include "menubar.h"
 
 using std::string;
 using std::cout;
@@ -861,6 +862,8 @@ void edit_function(const char *category, MathFunction *f, GtkWindow *win, const 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_remove_subfunction")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_add_subfunction")), !f || !f->isBuiltin());
 
+	bool was_hidden = f && f->isHidden();
+
 	last_subfunction_index = 0;
 	if(f) {
 		//fill in original paramaters
@@ -991,6 +994,7 @@ run_function_edit_dialog:
 			if(add_func) {
 				CALCULATOR->addFunction(f);
 			}
+			if(!was_hidden && f->isHidden()) remove_from_recent_functions(f);
 			function_edited(f);
 		}
 	} else if(response == GTK_RESPONSE_HELP) {

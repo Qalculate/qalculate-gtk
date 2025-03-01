@@ -33,6 +33,7 @@
 #include "matrixeditdialog.h"
 #include "unknowneditdialog.h"
 #include "variableeditdialog.h"
+#include "menubar.h"
 
 using std::string;
 using std::cout;
@@ -185,6 +186,8 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 	gtk_text_buffer_set_text(value_buffer, "", -1);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_hidden")), false);
 
+	bool was_hidden = v && v->isHidden();
+
 	if(v) {
 		//fill in original parameters
 		set_name_label_and_entry(v, GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
@@ -333,6 +336,7 @@ run_variable_edit_dialog:
 			if(add_var) {
 				CALCULATOR->addVariable(v);
 			}
+			if(!was_hidden && v->isHidden()) remove_from_recent_variables(v);
 			variable_edited(v);
 		}
 	} else if(response == GTK_RESPONSE_HELP) {
