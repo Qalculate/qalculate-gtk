@@ -1,14 +1,14 @@
 # Portuguese (Portugal) translations for Qalculate! package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the qalculate-gtk package.
-# Hugo Carvalho <hugokarvalho@hotmail.com>, 2024.
+# Hugo Carvalho <hugokarvalho@hotmail.com>, 2024, 2025.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-23 07:48+0100\n"
-"PO-Revision-Date: 2024-08-11 16:23+0100\n"
+"PO-Revision-Date: 2025-03-02 18:37+0000\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: \n"
 "Language: pt_PT\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 3.0.1\n"
 
 #: ../data/qalculate-gtk.desktop.in.h:1
 msgid "Calculator"
@@ -644,11 +644,12 @@ msgid "Maximal number of decimals to display (and round to)"
 msgstr "Número máximo de casas decimais a serem exibidas (e arredondadas)"
 
 #: ../data/decimals.ui.h:9
-#, fuzzy
 msgid ""
 "Maximal number of significant digits to display (by default determined by "
 "precision)"
-msgstr "Número máximo de casas decimais a serem exibidas (e arredondadas)"
+msgstr ""
+"Número máximo de algarismos significativos a apresentar (por defeito, "
+"determinado pela precisão)"
 
 #: ../data/floatingpoint.ui.h:1
 msgid "Floating Point Conversion"
@@ -784,9 +785,8 @@ msgid "Precalculate"
 msgstr "Pré-calcular"
 
 #: ../data/functionedit.ui.h:28
-#, fuzzy
 msgid "Calculate the subfunction once only, before the main function"
-msgstr "Calcular a função para cada elemento separado no vetor."
+msgstr "Calcular a subfunção apenas uma vez, antes da função principal"
 
 #: ../data/functions.ui.h:1 ../data/main.ui.h:46
 msgid "Functions"
@@ -2947,7 +2947,7 @@ msgstr "Teclado persistente"
 
 #: ../data/preferences.ui.h:63
 msgid "Disable cursor blinking"
-msgstr ""
+msgstr "Desativar o cursor intermitente"
 
 #: ../data/preferences.ui.h:64
 msgid "Look & Feel"
@@ -3128,8 +3128,8 @@ msgstr "Usar prefixos binários para unidades de informações"
 
 #: ../data/preferences.ui.h:102
 msgid ""
-"Use binary, instead of decimal, prefixes by default for information units "
-"(e.g. bytes)."
+"Use binary, instead of decimal, prefixes by default for information units (e."
+"g. bytes)."
 msgstr ""
 "Usar prefixos binários, em vez de decimais, como padrão para unidades de "
 "informação (ex. bytes)."
@@ -3255,10 +3255,11 @@ msgid "Custom history font"
 msgstr "Fonte do histórico personalizado"
 
 #: ../data/preferences.ui.h:131
-#, fuzzy
 msgid ""
 "If you want to use a font other than the default for in the history list"
-msgstr "Se pretender usar uma fonte diferente da padrão em todo o programa"
+msgstr ""
+"Se pretender utilizar um tipo de letra diferente do predefinido para a lista "
+"de histórico"
 
 #: ../data/preferences.ui.h:132
 msgid "Fonts & Colors"
@@ -3396,12 +3397,17 @@ msgid ""
 "(foot) and in (inch) is set to 1, which results in \"17 in = 1 ft + 5 in\", "
 "instead of \"17 in = 1 ft + 1 hand + 1 in\"."
 msgstr ""
+"Exemplo: a prioridade da unidade “hand” está definida para 2, enquanto a "
+"prioridade de ft (pé) e in (polegada) está definida para 1, o que resulta em "
+"“17 in = 1 ft + 5 in”, em vez de “17 in = 1 ft + 1 hand + 1 in”."
 
 #: ../data/unitedit.ui.h:32
 msgid ""
 "Example: minimum base unit number of yd (yard) is set to 12, which results "
 "in \"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
 msgstr ""
+"Exemplo: o número mínimo da unidade de base yd (jarda) é fixado em 12, o que "
+"resulta em “3 × 3 ft = 9 ft” (em vez de “3 yd”) e “4 × 3 ft = 4 yd”."
 
 #: ../data/unitedit.ui.h:33
 msgid "Exponent of the base unit"
@@ -3420,8 +3426,8 @@ msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
 "\n"
-"For non-linear relations use \\x for the factor and \\y for the exponent "
-"(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
+"For non-linear relations use \\x for the factor and \\y for the exponent (e."
+"g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
 "Relação com a unidade base. Para relações lineares, isto deve ser apenas um "
 "número.\n"
@@ -3667,7 +3673,6 @@ msgstr "Aumentar"
 #. Mathematical operation
 #: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
 #: ../src/numberbasesdialog.cc:866
-#, fuzzy
 msgctxt "Keypad"
 msgid "Add"
 msgstr "Adicionar"
@@ -4401,7 +4406,6 @@ msgstr "prefixo ideal"
 #. base units
 #: ../src/expressionstatus.cc:907 ../src/mainwindow.cc:1404
 #: ../src/mainwindow.cc:4834
-#, fuzzy
 msgctxt "Units"
 msgid "base"
 msgstr "base"
@@ -4494,7 +4498,6 @@ msgstr "Fuso horário UTC"
 #. number base #
 #: ../src/expressionstatus.cc:980 ../src/mainwindow.cc:1421
 #: ../src/mainwindow.cc:4881
-#, fuzzy
 msgctxt "Number base"
 msgid "base"
 msgstr "base"
@@ -4794,12 +4797,12 @@ msgstr "ENTER"
 #: ../src/keypad.cc:3766
 msgctxt "Manage units button"
 msgid "u"
-msgstr ""
+msgstr "u"
 
 #: ../src/keypad.cc:3767
 msgctxt "Button for convert to operator"
 msgid "to"
-msgstr ""
+msgstr "para"
 
 #: ../src/main.cc:59
 msgid "Execute expressions and commands from a file"
@@ -5175,6 +5178,9 @@ msgid ""
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
+"Contém o resultado do cálculo mais recente. Os resultados múltiplos de uma "
+"equação são representados como um vetor. Aceder a soluções separadas "
+"utilizando ans(n) (por exemplo, ans(1) para a primeira solução)."
 
 #: ../src/mainwindow.cc:8425
 msgid "Answer 2"
@@ -5259,8 +5265,8 @@ msgstr "Nenhum prefixo"
 #: ../src/menubar.cc:2677
 msgid "Open Settings Folder"
 msgid_plural "Open Settings Folders"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Abrir a pasta de definições"
+msgstr[1] "Abrir as pastas de definições"
 
 #: ../src/modes.cc:46 ../src/modes.cc:56
 msgid "Preset"
@@ -5269,10 +5275,11 @@ msgstr "Predefinição"
 #: ../src/modes.cc:132
 msgid "Default mode loaded at first startup for new users"
 msgstr ""
+"Modo predefinido carregado no primeiro arranque para novos utilizadores"
 
 #: ../src/modes.cc:133
 msgid "Mode loaded at each startup and, by default, saved at exit"
-msgstr ""
+msgstr "Modo carregado em cada arranque e, por defeito, guardado ao sair"
 
 #: ../src/nameseditdialog.cc:101
 msgid "Illegal name"
@@ -5504,7 +5511,7 @@ msgstr "Combinação de teclas"
 #: ../src/stackview.cc:836
 msgctxt "Keypad"
 msgid "Add the two top values together"
-msgstr ""
+msgstr "Adicionar os dois valores superiores"
 
 #: ../src/uniteditdialog.cc:192
 msgid "Edit Unit (global)"
