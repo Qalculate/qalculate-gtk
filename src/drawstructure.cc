@@ -489,6 +489,19 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						ips_n.exp_minus = NULL;
 					}
 					value_str = m.number().print(po, ips_n);
+					if(po.indicate_infinite_series == REPEATING_DECIMALS_OVERLINE && m.number().isRational() && !m.number().isInteger() && po.base != BASE_CUSTOM && po.base != BASE_UNICODE) {
+						size_t i = value_str.find("¯");
+						if(i != string::npos) {
+							size_t i_number_end = value_str.length();
+							if(po.base == BASE_DECIMAL) {
+								size_t i2 = value_str.find_first_of("Ee", i);
+								if(i2 != string::npos) i_number_end = i2;
+							}
+							value_str.insert(i_number_end, "</span>");
+							value_str.erase(i, strlen("¯"));
+							value_str.insert(i, "<span overline=\"single\">");
+						}
+					}
 					gsub(NNBSP, THIN_SPACE, value_str);
 					if(po.base == BASE_HEXADECIMAL && po.base_display == BASE_DISPLAY_NORMAL) {
 						gsub("0x", "", value_str);

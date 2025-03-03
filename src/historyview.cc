@@ -673,11 +673,13 @@ string fix_history_string_new(const string &str2) {
 	string str = str2;
 	gsub("<sub class=\"nous\">", "<sub>", str);
 	gsub("<i class=\"symbol\">", "<i>", str);
+	gsub("<span style=\"text-decoration: overline\">", "<span overline=\"single\">", str);
 	return str;
 }
 void fix_history_string_new2(string &str) {
 	gsub("<sub class=\"nous\">", "<sub>", str);
 	gsub("<i class=\"symbol\">", "<i>", str);
+	gsub("<span style=\"text-decoration: overline\">", "<span overline=\"single\">", str);
 }
 
 void fix_history_string2(string &str) {

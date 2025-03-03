@@ -3445,8 +3445,24 @@ void set_option(string str) {
 	else if(equalsIgnoreCase(svar, "variables") || svar == "var") SET_BOOL_MENU("menu_item_enable_variables")
 	else if(equalsIgnoreCase(svar, "abbreviations") || svar == "abbr" || svar == "abbrev") SET_BOOL_MENU("menu_item_abbreviate_names")
 	else if(equalsIgnoreCase(svar, "show ending zeroes") || svar == "zeroes") SET_BOOL_MENU("menu_item_show_ending_zeroes")
-	else if(equalsIgnoreCase(svar, "repeating decimals") || svar == "repdeci") SET_BOOL_MENU("menu_item_indicate_infinite_series")
-	else if(equalsIgnoreCase(svar, "angle unit") || svar == "angle") {
+	else if(equalsIgnoreCase(svar, "repeating decimals") || svar == "repdeci") {
+		int v = -1;
+		if(equalsIgnoreCase(svalue, "off")) v = REPEATING_DECIMALS_OFF;
+		else if(equalsIgnoreCase(svalue, "on") || equalsIgnoreCase(svalue, "ellipsis")) v = REPEATING_DECIMALS_ELLIPSIS;
+		else if(equalsIgnoreCase(svalue, "overline")) v = REPEATING_DECIMALS_OVERLINE;
+		else if(svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
+			v = s2i(svalue);
+		}
+		if(v < REPEATING_DECIMALS_OFF || v > REPEATING_DECIMALS_OVERLINE) {
+			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
+		} else if(v != printops.indicate_infinite_series) {
+			block_result();
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_indicate_infinite_series")), v);
+			unblock_result();
+			printops.indicate_infinite_series = v;
+			result_display_updated();
+		}
+	} else if(equalsIgnoreCase(svar, "angle unit") || svar == "angle") {
 		int v = -1;
 		if(equalsIgnoreCase(svalue, "rad") || equalsIgnoreCase(svalue, "radians")) v = ANGLE_UNIT_RADIANS;
 		else if(equalsIgnoreCase(svalue, "deg") || equalsIgnoreCase(svalue, "degrees")) v = ANGLE_UNIT_DEGREES;
