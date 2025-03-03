@@ -310,6 +310,15 @@ void on_preferences_checkbutton_copy_ascii_toggled(GtkToggleButton *w, gpointer)
 void on_preferences_checkbutton_copy_ascii_without_units_toggled(GtkToggleButton *w, gpointer) {
 	copy_ascii_without_units = gtk_toggle_button_get_active(w);
 }
+void on_preferences_checkbutton_repdeci_overline_toggled(GtkToggleButton *w, gpointer) {
+	if(printops.indicate_infinite_series) {
+		if(gtk_toggle_button_get_active(w)) printops.indicate_infinite_series = REPEATING_DECIMALS_OVERLINE;
+		else printops.indicate_infinite_series = REPEATING_DECIMALS_ELLIPSIS;
+		result_format_updated();
+	} else {
+		repdeci_overline = gtk_toggle_button_get_active(w);
+	}
+}
 void on_preferences_checkbutton_lower_case_numbers_toggled(GtkToggleButton *w, gpointer) {
 	printops.lower_case_numbers = gtk_toggle_button_get_active(w);
 	result_format_updated();
@@ -848,6 +857,7 @@ GtkWidget* get_preferences_dialog() {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_lower_case_e")), printops.exp_display != EXP_POWER_OF_10);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_imaginary_j")), CALCULATOR->v_i->hasName("j") > 0);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_alternative_base_prefixes")), printops.base_display == BASE_DISPLAY_ALTERNATIVE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_repdeci_overline")), repdeci_overline || printops.indicate_infinite_series == REPEATING_DECIMALS_OVERLINE);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_history_expression")), history_expression_type);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_spell_out_logical_operators")), printops.spell_out_logical_operators);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_caret_as_xor")), caret_as_xor);
@@ -1015,7 +1025,7 @@ GtkWidget* get_preferences_dialog() {
 		G_CALLBACK(on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled), "on_preferences_combobox_bits_changed", G_CALLBACK(on_preferences_combobox_bits_changed),
 		"on_preferences_checkbutton_lower_case_numbers_toggled", G_CALLBACK(on_preferences_checkbutton_lower_case_numbers_toggled), "on_preferences_checkbutton_duodecimal_symbols_toggled", G_CALLBACK(on_preferences_checkbutton_duodecimal_symbols_toggled), "on_preferences_checkbutton_alternative_base_prefixes_toggled",
 		G_CALLBACK(on_preferences_checkbutton_alternative_base_prefixes_toggled), "on_preferences_checkbutton_spell_out_logical_operators_toggled", G_CALLBACK(on_preferences_checkbutton_spell_out_logical_operators_toggled), "on_preferences_checkbutton_e_notation_toggled", G_CALLBACK(on_preferences_checkbutton_e_notation_toggled),
-		"on_preferences_checkbutton_lower_case_e_toggled", G_CALLBACK(on_preferences_checkbutton_lower_case_e_toggled), "on_preferences_checkbutton_decimal_comma_toggled", G_CALLBACK(on_preferences_checkbutton_decimal_comma_toggled), "on_preferences_checkbutton_imaginary_j_toggled", G_CALLBACK(on_preferences_checkbutton_imaginary_j_toggled),
+		"on_preferences_checkbutton_lower_case_e_toggled", G_CALLBACK(on_preferences_checkbutton_lower_case_e_toggled), "on_preferences_checkbutton_repdeci_overline_toggled", G_CALLBACK(on_preferences_checkbutton_repdeci_overline_toggled), "on_preferences_checkbutton_decimal_comma_toggled", G_CALLBACK(on_preferences_checkbutton_decimal_comma_toggled), "on_preferences_checkbutton_imaginary_j_toggled", G_CALLBACK(on_preferences_checkbutton_imaginary_j_toggled),
 		"on_preferences_checkbutton_comma_as_separator_toggled", G_CALLBACK(on_preferences_checkbutton_comma_as_separator_toggled), "on_preferences_checkbutton_copy_ascii_toggled", G_CALLBACK(on_preferences_checkbutton_copy_ascii_toggled), "on_preferences_checkbutton_dot_as_separator_toggled", G_CALLBACK(on_preferences_checkbutton_dot_as_separator_toggled),
 		"on_preferences_radiobutton_digit_grouping_none_toggled", G_CALLBACK(on_preferences_radiobutton_digit_grouping_none_toggled), "on_preferences_radiobutton_digit_grouping_standard_toggled", G_CALLBACK(on_preferences_radiobutton_digit_grouping_standard_toggled), "on_preferences_radiobutton_digit_grouping_locale_toggled",
 		G_CALLBACK(on_preferences_radiobutton_digit_grouping_locale_toggled), "on_preferences_radiobutton_dot_toggled", G_CALLBACK(on_preferences_radiobutton_dot_toggled), "on_preferences_radiobutton_ex_toggled", G_CALLBACK(on_preferences_radiobutton_ex_toggled), "on_preferences_radiobutton_altdot_toggled", G_CALLBACK(on_preferences_radiobutton_altdot_toggled),

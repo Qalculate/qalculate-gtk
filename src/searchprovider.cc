@@ -559,7 +559,7 @@ void load_preferences_search() {
 				} else if(svar == "division_sign") {
 					if(v >= DIVISION_SIGN_SLASH && v <= DIVISION_SIGN_DIVISION) search_po.division_sign = (DivisionSign) v;
 				} else if(svar == "indicate_infinite_series") {
-					search_po.indicate_infinite_series = v;
+					search_po.indicate_infinite_series = v < 0 ? 0 : v;
 				} else if(svar == "show_ending_zeroes") {
 					if(version_numbers[0] > 2 || (version_numbers[0] == 2 && version_numbers[1] >= 9)) search_po.show_ending_zeroes = v;
 				} else if(svar == "digit_grouping") {

@@ -1216,24 +1216,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_imaginary_j">
-                    <property name="label" translatable="yes">Use 'j' as imaginary unit</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place it in front of the imaginary part.</property>
-                    <property name="margin-top">12</property>
-                    <property name="use-underline">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_imaginary_j_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">9</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_comma_as_separator">
                     <property name="label" translatable="yes">Ignore comma in numbers</property>
                     <property name="visible">True</property>
@@ -1251,23 +1233,6 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="preferences_checkbutton_copy_ascii">
-                    <property name="label" translatable="yes">Copy result as unformatted ASCII by default</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="use-underline">True</property>
-                    <property name="active">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_preferences_checkbutton_copy_ascii_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">12</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="preferences_checkbutton_dot_as_separator">
                     <property name="label" translatable="yes">Ignore dots in numbers</property>
                     <property name="visible">True</property>
@@ -1281,7 +1246,62 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
+                    <property name="position">10</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_imaginary_j">
+                    <property name="label" translatable="yes">Use 'j' as imaginary unit</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place it in front of the imaginary part.</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_imaginary_j_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">11</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_copy_ascii">
+                    <property name="label" translatable="yes">Copy result as unformatted ASCII by default</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+		    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="active">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_copy_ascii_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">12</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_repdeci_overline">
+                    <property name="label" translatable="yes">Use overline for repeating decimals</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text" translatable="yes">Use overline (vinculum), instead of ellipsis, for repeating decimals when indicate repeating decimals is enabled.</property>
+                    <property name="margin-top">12</property>
+                    <property name="use-underline">True</property>
+                    <property name="active">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_repdeci_overline_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">13</property>
                   </packing>
                 </child>
                 <child>
@@ -1541,7 +1561,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">13</property>
+                    <property name="position">14</property>
                   </packing>
                 </child>
               </object>

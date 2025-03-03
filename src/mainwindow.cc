@@ -110,6 +110,8 @@ PrintOptions printops;
 EvaluationOptions evalops;
 bool dot_question_asked = false, implicit_question_asked = false;
 
+bool repdeci_overline = false;
+
 bool rpn_mode, rpn_keys;
 bool adaptive_interval_display;
 
@@ -3459,8 +3461,10 @@ void set_option(string str) {
 			block_result();
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "menu_item_indicate_infinite_series")), v);
 			unblock_result();
+			if(v == REPEATING_DECIMALS_OFF) repdeci_overline = (printops.indicate_infinite_series == REPEATING_DECIMALS_OVERLINE);
 			printops.indicate_infinite_series = v;
-			result_display_updated();
+			preferences_dialog_set("preferences_checkbutton_repdeci_overline", repdeci_overline || printops.indicate_infinite_series == REPEATING_DECIMALS_OVERLINE);
+			result_format_updated();
 		}
 	} else if(equalsIgnoreCase(svar, "angle unit") || svar == "angle") {
 		int v = -1;
@@ -5625,6 +5629,7 @@ void load_preferences() {
 	printops.negative_exponents = false;
 	printops.sort_options.minus_last = true;
 	printops.indicate_infinite_series = false;
+	repdeci_overline = false;
 	printops.show_ending_zeroes = true;
 	printops.round_halfway_to_even = false;
 	printops.rounding = ROUNDING_HALF_AWAY_FROM_ZERO;

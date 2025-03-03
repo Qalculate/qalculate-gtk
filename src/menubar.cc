@@ -513,7 +513,12 @@ void on_menu_item_display_prefixes_for_all_units_activate(GtkMenuItem *w, gpoint
 	set_prefix_mode(PREFIX_MODE_ALL_UNITS);
 }
 void on_menu_item_indicate_infinite_series_activate(GtkMenuItem *w, gpointer) {
-	printops.indicate_infinite_series = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {
+		printops.indicate_infinite_series = repdeci_overline ? REPEATING_DECIMALS_OVERLINE : REPEATING_DECIMALS_ELLIPSIS;
+	} else {
+		repdeci_overline = (printops.indicate_infinite_series == REPEATING_DECIMALS_OVERLINE);
+		printops.indicate_infinite_series = REPEATING_DECIMALS_OFF;
+	}
 	result_format_updated();
 }
 void on_menu_item_show_ending_zeroes_activate(GtkMenuItem *w, gpointer) {

@@ -441,6 +441,10 @@ bool read_mode_line(size_t mode_index, string &svar, string &svalue, int &v) {
 			else modes[mode_index].eo.mixed_units_conversion = (MixedUnitsConversion) v;
 		}
 	} else if(svar == "indicate_infinite_series") {
+		if(v < 0) {
+			if(mode_index == 1) repdeci_overline = true;
+			v = 0;
+		}
 		if(mode_index == 1) printops.indicate_infinite_series = v;
 		else modes[mode_index].po.indicate_infinite_series = v;
 	} else if(svar == "show_ending_zeroes") {
@@ -594,7 +598,7 @@ void write_mode(FILE *file, size_t i) {
 	fprintf(file, "units_enabled=%i\n", modes[i].eo.parse_options.units_enabled);
 	fprintf(file, "allow_complex=%i\n", modes[i].eo.allow_complex);
 	fprintf(file, "allow_infinite=%i\n", modes[i].eo.allow_infinite);
-	fprintf(file, "indicate_infinite_series=%i\n", modes[i].po.indicate_infinite_series);
+	fprintf(file, "indicate_infinite_series=%i\n", modes[i].po.indicate_infinite_series == REPEATING_DECIMALS_OFF && repdeci_overline ? -1 : modes[i].po.indicate_infinite_series);
 	fprintf(file, "show_ending_zeroes=%i\n", modes[i].po.show_ending_zeroes);
 	fprintf(file, "rounding_mode=%i\n", modes[i].po.rounding);
 	fprintf(file, "approximation=%i\n", modes[i].eo.approximation);

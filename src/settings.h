@@ -41,6 +41,7 @@ extern int close_with_esc;
 extern bool check_version;
 extern bool persistent_keypad;
 extern bool minimal_mode;
+extern bool repdeci_overline;
 extern std::string themestr;
 extern int version_numbers[3];
 
