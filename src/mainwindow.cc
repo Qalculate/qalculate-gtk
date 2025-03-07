@@ -3455,7 +3455,7 @@ void set_option(string str) {
 		else if(svalue.find_first_not_of(SPACES NUMBERS) == string::npos) {
 			v = s2i(svalue);
 		}
-		if(v < REPEATING_DECIMALS_OFF || v > REPEATING_DECIMALS_OVERLINE) {
+		if(v < REPEATING_DECIMALS_OFF || v > (pango_version() >= 14600 ? REPEATING_DECIMALS_OVERLINE : REPEATING_DECIMALS_ELLIPSIS)) {
 			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
 		} else if(v != printops.indicate_infinite_series) {
 			block_result();

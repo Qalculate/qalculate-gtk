@@ -255,6 +255,7 @@ void on_preferences_combo_language_changed(GtkComboBox *w, gpointer) {
 		case 12: {custom_lang = "sl"; break;}
 		case 13: {custom_lang = "sv"; break;}
 		case 14: {custom_lang = "zh_CN"; break;}
+		case 15: {custom_lang = "zh_TW"; break;}
 	}
 #else
 	switch(gtk_combo_box_get_active(w)) {
@@ -273,6 +274,7 @@ void on_preferences_combo_language_changed(GtkComboBox *w, gpointer) {
 		case 12: {custom_lang = "sl_SI.UTF8"; break;}
 		case 13: {custom_lang = "sv_SE.UTF8"; break;}
 		case 14: {custom_lang = "zh_CN.UTF8"; break;}
+		case 15: {custom_lang = "zh_TW.UTF8"; break;}
 	}
 #endif
 	if(!custom_lang.empty()) {
@@ -858,6 +860,7 @@ GtkWidget* get_preferences_dialog() {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_imaginary_j")), CALCULATOR->v_i->hasName("j") > 0);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_alternative_base_prefixes")), printops.base_display == BASE_DISPLAY_ALTERNATIVE);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_repdeci_overline")), repdeci_overline || printops.indicate_infinite_series == REPEATING_DECIMALS_OVERLINE);
+		if(pango_version() < 14600) gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_repdeci_overline")));
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_history_expression")), history_expression_type);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_spell_out_logical_operators")), printops.spell_out_logical_operators);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_caret_as_xor")), caret_as_xor);
@@ -992,6 +995,7 @@ GtkWidget* get_preferences_dialog() {
 		else if(lang == "sl") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 12);
 		else if(lang == "sv") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 13);
 		else if(custom_lang.length() >= 5 && custom_lang.substr(0, 5) == "zh_CN") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 14);
+		else if(custom_lang.length() >= 5 && custom_lang.substr(0, 5) == "zh_TW") gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 15);
 		else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), 0);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_combo_language")), !ignore_locale);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_theme")), gtk_theme < 0 ? 0 : gtk_theme + 1);

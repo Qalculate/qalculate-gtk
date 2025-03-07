@@ -3524,6 +3524,7 @@ void update_keypad_state(bool initial_update) {
 void keypad_rpn_mode_changed() {
 	if(rpn_mode) {
 		gtk_label_set_angle(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), 90.0);
+		// RPN Enter (calculate and add to stack)
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_equals")), _("ENTER"));
 		gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_equals")), _("Calculate expression and add to stack"));
 	} else {
