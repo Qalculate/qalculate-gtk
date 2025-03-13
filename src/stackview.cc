@@ -448,7 +448,7 @@ string get_register_text(int index) {
 	return str;
 }
 
-void stack_view_swap(int index) {
+void stack_view_swap(int index, bool use_selection) {
 	if(index > 0) {
 		GtkTreeIter iter;
 		if(gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, index - 1)) {
@@ -457,11 +457,11 @@ void stack_view_swap(int index) {
 			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
 		}
 	} else {
-		gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
+		if(!use_selection) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
 		on_button_registerswap_clicked(NULL, NULL);
 	}
 }
-void stack_view_copy(int index) {
+void stack_view_copy(int index, bool use_selection) {
 	if(index > 0) {
 		GtkTreeIter iter;
 		if(gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, index - 1)) {
@@ -470,11 +470,11 @@ void stack_view_copy(int index) {
 			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
 		}
 	} else {
-		gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
+		if(!use_selection) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
 		on_button_copyregister_clicked(NULL, NULL);
 	}
 }
-void stack_view_pop(int index) {
+void stack_view_pop(int index, bool use_selection) {
 	if(index > 0) {
 		GtkTreeIter iter;
 		if(gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(stackstore), &iter, NULL, index - 1)) {
@@ -483,12 +483,12 @@ void stack_view_pop(int index) {
 			gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
 		}
 	} else {
-		gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
+		if(!use_selection) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
 		on_button_deleteregister_clicked(NULL, NULL);
 	}
 }
-void stack_view_rotate(bool up) {
-	gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
+void stack_view_rotate(bool up, bool use_selection) {
+	if(!use_selection) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)));
 	if(up) on_button_registerup_clicked(NULL, NULL);
 	else on_button_registerdown_clicked(NULL, NULL);
 }

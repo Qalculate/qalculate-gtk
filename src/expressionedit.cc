@@ -792,57 +792,6 @@ return TRUE;}
 	}
 	if(do_keyboard_shortcut(keyval, state)) return TRUE;
 	FIX_ALT_GR
-	if(rpn_mode && state & GDK_CONTROL_MASK) {
-		switch(keyval) {
-			case GDK_KEY_Up: {
-				stack_view_rotate(true);
-				return TRUE;
-			}
-			case GDK_KEY_Down: {
-				stack_view_rotate(false);
-				return TRUE;
-			}
-			case GDK_KEY_Right: {
-				stack_view_swap();
-				return TRUE;
-			}
-			case GDK_KEY_Left: {
-				stack_view_lastx();
-				return TRUE;
-			}
-			case GDK_KEY_Delete: {}
-			case GDK_KEY_KP_Delete: {
-				if(state & GDK_SHIFT_MASK) {
-					stack_view_clear();
-				} else {
-					stack_view_pop();
-				}
-				return TRUE;
-			}
-			case GDK_KEY_C: {
-				if(state & GDK_SHIFT_MASK) {
-					stack_view_copy();
-					return TRUE;
-				}
-				break;
-			}
-			case GDK_KEY_S: {
-				if(state & GDK_SHIFT_MASK) {
-					stack_view_swap();
-					return TRUE;
-				}
-				break;
-			}
-			case GDK_KEY_L: {
-				if(state & GDK_SHIFT_MASK) {
-					stack_view_lastx();
-					return TRUE;
-				}
-				break;
-			}
-			default: {}
-		}
-	}
 	switch(keyval) {
 		case GDK_KEY_Escape: {
 			if(completion_visible()) {

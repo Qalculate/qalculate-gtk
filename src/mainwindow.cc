@@ -7020,22 +7020,22 @@ bool do_shortcut(int type, string value) {
 		}
 		case SHORTCUT_TYPE_RPN_UP: {
 			if(!rpn_mode) return false;
-			stack_view_rotate(true);
+			stack_view_rotate(true, gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)));
 			return true;
 		}
 		case SHORTCUT_TYPE_RPN_DOWN: {
 			if(!rpn_mode) return false;
-			stack_view_rotate(false);
+			stack_view_rotate(false, gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)));
 			return true;
 		}
 		case SHORTCUT_TYPE_RPN_SWAP: {
 			if(!rpn_mode) return false;
-			stack_view_swap();
+			stack_view_swap(-1, gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)));
 			return true;
 		}
 		case SHORTCUT_TYPE_RPN_COPY: {
 			if(!rpn_mode) return false;
-			stack_view_copy();
+			stack_view_copy(-1, gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)));
 			return true;
 		}
 		case SHORTCUT_TYPE_RPN_LASTX: {
@@ -7045,7 +7045,7 @@ bool do_shortcut(int type, string value) {
 		}
 		case SHORTCUT_TYPE_RPN_DELETE: {
 			if(!rpn_mode) return false;
-			stack_view_pop();
+			stack_view_pop(-1, gtk_expander_get_expanded(GTK_EXPANDER(expander_stack)));
 			return true;
 		}
 		case SHORTCUT_TYPE_RPN_CLEAR: {

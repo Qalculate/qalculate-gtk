@@ -17,10 +17,10 @@
 void create_stack_view();
 void update_stack_accels(int type);
 std::string get_register_text(int index);
-void stack_view_swap(int index = -1);
-void stack_view_copy(int index = -1);
-void stack_view_pop(int index = -1);
-void stack_view_rotate(bool up = false);
+void stack_view_swap(int index = -1, bool use_selected = false);
+void stack_view_copy(int index = -1, bool use_selected = false);
+void stack_view_pop(int index = -1, bool use_selected = false);
+void stack_view_rotate(bool up = false, bool use_selected = false);
 void stack_view_lastx();
 void stack_view_clear();
 void RPNStackCleared();
