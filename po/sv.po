@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-23 07:48+0100\n"
+"POT-Creation-Date: 2025-03-27 07:18+0100\n"
 "PO-Revision-Date: 2006-05-04 12:29+0200\n"
 "Last-Translator: Hanna Knutsson <hanna.knutsson@protonmail.com>\n"
 "Language-Team: Swedish\n"
@@ -21,7 +21,7 @@ msgid "Calculator"
 msgstr "Kalkylator"
 
 #: ../data/qalculate-gtk.desktop.in.h:2
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:6846
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:6867
 msgid "Powerful and easy to use calculator"
 msgstr "Kraftfull och användarvänlig miniräknare"
 
@@ -59,154 +59,146 @@ msgstr "Parameterregler"
 #: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
 #: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
-#: ../src/expressionedit.cc:1321 ../src/historyview.cc:2775
-#: ../src/historyview.cc:2870 ../src/importcsvdialog.cc:49
+#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2777
+#: ../src/historyview.cc:2872 ../src/importcsvdialog.cc:49
 #: ../src/importcsvdialog.cc:51 ../src/insertfunctiondialog.cc:65
 #: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
-#: ../src/mainwindow.cc:709 ../src/mainwindow.cc:6550 ../src/mainwindow.cc:6552
-#: ../src/mainwindow.cc:7509 ../src/matrixdialog.cc:389 ../src/menubar.cc:1198
-#: ../src/menubar.cc:1239 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
+#: ../src/mainwindow.cc:711 ../src/mainwindow.cc:6571 ../src/mainwindow.cc:6573
+#: ../src/mainwindow.cc:7530 ../src/matrixdialog.cc:389 ../src/menubar.cc:1203
+#: ../src/menubar.cc:1244 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
 #: ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Cancel"
 msgstr "_Avbryt"
 
-#: ../data/argumentrules.ui.h:3 ../data/functionedit.ui.h:26
-msgid "Do not save modifications"
-msgstr "Spara inte modifikationerna"
-
-#: ../data/argumentrules.ui.h:4 ../data/buttonsedit.ui.h:10
+#: ../data/argumentrules.ui.h:3 ../data/buttonsedit.ui.h:10
 #: ../data/csvexport.ui.h:3 ../data/csvimport.ui.h:4 ../data/datasetedit.ui.h:3
-#: ../data/datasets.ui.h:4 ../data/functionedit.ui.h:4
-#: ../data/matrixedit.ui.h:4 ../data/shortcuts.ui.h:9 ../data/unitedit.ui.h:5
+#: ../data/datasets.ui.h:3 ../data/functionedit.ui.h:4
+#: ../data/matrixedit.ui.h:4 ../data/shortcuts.ui.h:9 ../data/unitedit.ui.h:4
 #: ../data/unknownedit.ui.h:4 ../data/variableedit.ui.h:4
-#: ../src/expressionedit.cc:1321 ../src/historyview.cc:2775
-#: ../src/historyview.cc:2870 ../src/insertfunctiondialog.cc:65
+#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2777
+#: ../src/historyview.cc:2872 ../src/insertfunctiondialog.cc:65
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
-#: ../src/mainwindow.cc:709 ../src/mainwindow.cc:802 ../src/mainwindow.cc:859
-#: ../src/mainwindow.cc:912 ../src/mainwindow.cc:969 ../src/mainwindow.cc:1025
-#: ../src/mainwindow.cc:7509
+#: ../src/mainwindow.cc:711 ../src/mainwindow.cc:804 ../src/mainwindow.cc:861
+#: ../src/mainwindow.cc:914 ../src/mainwindow.cc:971 ../src/mainwindow.cc:1027
+#: ../src/mainwindow.cc:7530
 msgid "_OK"
 msgstr "_OK"
 
-#: ../data/argumentrules.ui.h:5
-msgid "Accept the modification of argument rules"
-msgstr "Godkänn modifiering av parameterregler"
-
-#: ../data/argumentrules.ui.h:6 ../data/buttonsedit.ui.h:12
+#: ../data/argumentrules.ui.h:4 ../data/buttonsedit.ui.h:12
 #: ../data/shortcuts.ui.h:11
 msgid "Argument name"
 msgstr "Parameternamn"
 
-#: ../data/argumentrules.ui.h:7
+#: ../data/argumentrules.ui.h:5
 msgid "Free"
 msgstr "Valfri"
 
-#: ../data/argumentrules.ui.h:8 ../data/datasetedit.ui.h:15 ../data/main.ui.h:7
+#: ../data/argumentrules.ui.h:6 ../data/datasetedit.ui.h:15 ../data/main.ui.h:7
 #: ../data/unknownedit.ui.h:9
 msgid "Number"
 msgstr "Nummer"
 
-#: ../data/argumentrules.ui.h:9 ../data/main.ui.h:11
+#: ../data/argumentrules.ui.h:7 ../data/main.ui.h:11
 #: ../data/unknownedit.ui.h:12
 msgid "Integer"
 msgstr "Heltal"
 
-#: ../data/argumentrules.ui.h:10
+#: ../data/argumentrules.ui.h:8
 msgid "Symbol"
 msgstr "Symbol"
 
-#: ../data/argumentrules.ui.h:11 ../data/datasetedit.ui.h:14
+#: ../data/argumentrules.ui.h:9 ../data/datasetedit.ui.h:14
 msgid "Text"
 msgstr "Text"
 
-#: ../data/argumentrules.ui.h:12
+#: ../data/argumentrules.ui.h:10
 msgid "Date"
 msgstr "Datum"
 
-#: ../data/argumentrules.ui.h:13 ../data/main.ui.h:22 ../data/matrix.ui.h:10
-#: ../data/matrixedit.ui.h:13 ../src/matrixdialog.cc:392
+#: ../data/argumentrules.ui.h:11 ../data/main.ui.h:22 ../data/matrix.ui.h:10
+#: ../data/matrixedit.ui.h:12 ../src/matrixdialog.cc:392
 msgid "Vector"
 msgstr "Vektor"
 
-#: ../data/argumentrules.ui.h:14 ../data/csvimport.ui.h:13 ../data/main.ui.h:21
-#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:11 ../src/matrixdialog.cc:394
+#: ../data/argumentrules.ui.h:12 ../data/csvimport.ui.h:13 ../data/main.ui.h:21
+#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:10 ../src/matrixdialog.cc:394
 msgid "Matrix"
 msgstr "Matris"
 
-#: ../data/argumentrules.ui.h:15
+#: ../data/argumentrules.ui.h:13
 msgid "Positive number"
 msgstr "Positivt nummer"
 
-#: ../data/argumentrules.ui.h:16
+#: ../data/argumentrules.ui.h:14
 msgid "Non-zero number"
 msgstr "Icke-noll nummer"
 
-#: ../data/argumentrules.ui.h:17
+#: ../data/argumentrules.ui.h:15
 msgid "Non-negative number"
 msgstr "Icke-negativt nummer"
 
-#: ../data/argumentrules.ui.h:18
+#: ../data/argumentrules.ui.h:16
 msgid "Positive integer"
 msgstr "Positivt heltal"
 
-#: ../data/argumentrules.ui.h:19
+#: ../data/argumentrules.ui.h:17
 msgid "Non-zero integer"
 msgstr "Icke-noll heltal"
 
-#: ../data/argumentrules.ui.h:20
+#: ../data/argumentrules.ui.h:18
 msgid "Non-negative integer"
 msgstr "Icke-negativt nummer"
 
-#: ../data/argumentrules.ui.h:21 ../data/main.ui.h:12
+#: ../data/argumentrules.ui.h:19 ../data/main.ui.h:12
 #: ../data/unknownedit.ui.h:13
 msgid "Boolean"
 msgstr "Booleskt värde"
 
-#: ../data/argumentrules.ui.h:22 ../src/dataseteditdialog.cc:478
+#: ../data/argumentrules.ui.h:20 ../src/dataseteditdialog.cc:478
 msgid "Object"
 msgstr "Objekt"
 
-#: ../data/argumentrules.ui.h:23 ../data/datasetedit.ui.h:35
+#: ../data/argumentrules.ui.h:21 ../data/datasetedit.ui.h:35
 #: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/functionsdialog.cc:579
 msgid "Function"
 msgstr "Funktion"
 
-#: ../data/argumentrules.ui.h:24 ../data/main.ui.h:26
+#: ../data/argumentrules.ui.h:22 ../data/main.ui.h:26
 msgid "Unit"
 msgstr "Enhet"
 
-#: ../data/argumentrules.ui.h:25 ../data/main.ui.h:20
+#: ../data/argumentrules.ui.h:23 ../data/main.ui.h:20
 #: ../src/variablesdialog.cc:515
 msgid "Variable"
 msgstr "Variabel"
 
-#: ../data/argumentrules.ui.h:26 ../data/csvexport.ui.h:12
+#: ../data/argumentrules.ui.h:24 ../data/csvexport.ui.h:12
 #: ../data/csvimport.ui.h:6
 msgid "File"
 msgstr "Fil"
 
-#: ../data/argumentrules.ui.h:27
+#: ../data/argumentrules.ui.h:25
 msgid "Angle"
 msgstr "Vinkel"
 
-#: ../data/argumentrules.ui.h:28 ../src/expressioncompletion.cc:981
+#: ../data/argumentrules.ui.h:26 ../src/expressioncompletion.cc:981
 msgid "Data object"
 msgstr "Dataobjekt"
 
-#: ../data/argumentrules.ui.h:29
+#: ../data/argumentrules.ui.h:27
 msgid "Data property"
 msgstr "Dataegenskap"
 
-#: ../data/argumentrules.ui.h:30
+#: ../data/argumentrules.ui.h:28
 msgid "Enable rules and type test"
 msgstr "Aktivera villkor- och klass-test"
 
-#: ../data/argumentrules.ui.h:31
+#: ../data/argumentrules.ui.h:29
 msgid "Custom condition"
 msgstr "Anpassat villkor"
 
-#: ../data/argumentrules.ui.h:32
+#: ../data/argumentrules.ui.h:30
 msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
@@ -214,45 +206,45 @@ msgstr ""
 "Till exempel om parametern är en matris och måste ha lika antal rader och "
 "kolumner: rows(\\x) = columns(\\x)"
 
-#: ../data/argumentrules.ui.h:33
+#: ../data/argumentrules.ui.h:31
 msgid "Allow matrix"
 msgstr "Tillåt matriser"
 
-#: ../data/argumentrules.ui.h:34
+#: ../data/argumentrules.ui.h:32
 msgid "Forbid zero"
 msgstr "Förbjud noll"
 
-#: ../data/argumentrules.ui.h:35
+#: ../data/argumentrules.ui.h:33
 msgid "Handle vector"
 msgstr "Hantera vektor"
 
-#: ../data/argumentrules.ui.h:36
+#: ../data/argumentrules.ui.h:34
 msgid "Calculate function for each separate element in vector."
 msgstr "Beräkna funktionen för varje separat element i vektor."
 
-#: ../data/argumentrules.ui.h:37
+#: ../data/argumentrules.ui.h:35
 msgid "Min"
 msgstr "Min"
 
-#: ../data/argumentrules.ui.h:38
+#: ../data/argumentrules.ui.h:36
 msgid "Include equals"
 msgstr "Inkludera lika med"
 
-#: ../data/argumentrules.ui.h:39
+#: ../data/argumentrules.ui.h:37
 msgid "Max"
 msgstr "Max"
 
-#: ../data/argumentrules.ui.h:40 ../data/unknownedit.ui.h:7
-#: ../src/dataseteditdialog.cc:230 ../src/functioneditdialog.cc:449
+#: ../data/argumentrules.ui.h:38 ../data/unknownedit.ui.h:7
+#: ../src/dataseteditdialog.cc:230 ../src/functioneditdialog.cc:450
 msgid "Type"
 msgstr "Typ"
 
-#: ../data/argumentrules.ui.h:41 ../data/csvimport.ui.h:8
+#: ../data/argumentrules.ui.h:39 ../data/csvimport.ui.h:8
 #: ../data/datasetedit.ui.h:4 ../data/functionedit.ui.h:5
-#: ../data/matrixedit.ui.h:6 ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:5
+#: ../data/matrixedit.ui.h:5 ../data/unitedit.ui.h:5 ../data/unknownedit.ui.h:5
 #: ../data/variableedit.ui.h:5 ../src/conversionview.cc:508
-#: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:443
-#: ../src/historyview.cc:2877 ../src/menubar.cc:1205
+#: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:444
+#: ../src/historyview.cc:2879 ../src/menubar.cc:1210
 #: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1006
 msgid "Name"
 msgstr "Namn"
@@ -262,13 +254,13 @@ msgid "Customize Keypad Buttons"
 msgstr "Anpassa knappar i knappsatsen"
 
 #: ../data/buttonsedit.ui.h:2 ../data/calendarconversion.ui.h:2
-#: ../data/datasets.ui.h:7 ../data/decimals.ui.h:2 ../data/floatingpoint.ui.h:2
+#: ../data/datasets.ui.h:5 ../data/decimals.ui.h:2 ../data/floatingpoint.ui.h:2
 #: ../data/functions.ui.h:2 ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2
 #: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:2
 #: ../data/preferences.ui.h:2 ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2
-#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2740
-#: ../src/insertfunctiondialog.cc:449 ../src/mainwindow.cc:713
-#: ../src/mainwindow.cc:714 ../src/mainwindow.cc:716 ../src/matrixdialog.cc:381
+#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2742
+#: ../src/insertfunctiondialog.cc:449 ../src/mainwindow.cc:715
+#: ../src/mainwindow.cc:716 ../src/mainwindow.cc:718 ../src/matrixdialog.cc:381
 #: ../src/periodictabledialog.cc:86
 msgid "_Close"
 msgstr "_Stäng"
@@ -361,13 +353,13 @@ msgid "Import as"
 msgstr "Importera som"
 
 #: ../data/csvimport.ui.h:9 ../data/datasetedit.ui.h:5
-#: ../data/functionedit.ui.h:19 ../data/matrixedit.ui.h:19
-#: ../data/unitedit.ui.h:9 ../data/variableedit.ui.h:13
+#: ../data/functionedit.ui.h:19 ../data/matrixedit.ui.h:20
+#: ../data/unitedit.ui.h:7 ../data/variableedit.ui.h:13
 msgid "Descriptive name"
 msgstr "Beskrivande namn"
 
 #: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:18 ../data/main.ui.h:251
-#: ../data/matrixedit.ui.h:18 ../data/unitedit.ui.h:8
+#: ../data/matrixedit.ui.h:18 ../data/unitedit.ui.h:6
 #: ../data/variableedit.ui.h:11 ../src/conversionview.cc:519
 #: ../src/functionsdialog.cc:593 ../src/unitsdialog.cc:1020
 #: ../src/variablesdialog.cc:529
@@ -400,7 +392,7 @@ msgid ""
 msgstr ""
 "Namn (eller namnprefix) för referenser till genererade variabler i uttryck"
 
-#: ../data/csvimport.ui.h:18 ../data/matrixedit.ui.h:20
+#: ../data/csvimport.ui.h:18 ../data/matrixedit.ui.h:21
 #: ../data/variableedit.ui.h:12
 msgid "Title displayed in menus and in variable manager"
 msgstr "Rubrik som skall visas i menyer och variabelhanteraren"
@@ -430,7 +422,7 @@ msgid "Edit Data Property"
 msgstr "Redigera dataegenskap"
 
 #: ../data/datasetedit.ui.h:6 ../data/functionedit.ui.h:23
-#: ../data/matrixedit.ui.h:21 ../data/unitedit.ui.h:11
+#: ../data/matrixedit.ui.h:22 ../data/unitedit.ui.h:9
 #: ../data/variableedit.ui.h:14
 msgid "Description"
 msgstr "Beskrivning"
@@ -464,7 +456,7 @@ msgid "Unit expression"
 msgstr "Enhetsuttryck"
 
 #: ../data/datasetedit.ui.h:16 ../data/functionedit.ui.h:8 ../data/plot.ui.h:8
-#: ../src/functioneditdialog.cc:469 ../src/plotdialog.cc:776
+#: ../src/functioneditdialog.cc:470 ../src/plotdialog.cc:776
 msgid "Expression"
 msgstr "Uttryck"
 
@@ -496,7 +488,7 @@ msgstr "Upphovsrätt"
 msgid "Description of this data set"
 msgstr "Beskrivning av detta dataset"
 
-#: ../data/datasetedit.ui.h:24 ../data/unitedit.ui.h:18
+#: ../data/datasetedit.ui.h:24 ../data/unitedit.ui.h:16
 msgid "General"
 msgstr "Allmänt"
 
@@ -520,7 +512,7 @@ msgid "_Edit"
 msgstr "_Redigera"
 
 #: ../data/datasetedit.ui.h:29 ../data/functions.ui.h:10 ../data/units.ui.h:15
-#: ../data/variables.ui.h:10 ../src/menubar.cc:1239
+#: ../data/variables.ui.h:10 ../src/menubar.cc:1244
 msgid "_Delete"
 msgstr "_Ta bort"
 
@@ -549,55 +541,47 @@ msgstr "Namn som används för att referera till funktionen i uttryck"
 msgid "Edit Data Object"
 msgstr "Redigera dataobjekt"
 
-#: ../data/datasets.ui.h:3
-msgid "Do not create/modify this data object"
-msgstr "Avbryt skapande/modifiering av dataobjektet"
-
-#: ../data/datasets.ui.h:5
-msgid "Accept the creation/modification of this data object"
-msgstr "Godkänn skapande/modifiering av dataobjektet"
-
-#: ../data/datasets.ui.h:6 ../data/main.ui.h:48 ../src/dataseteditdialog.cc:470
+#: ../data/datasets.ui.h:4 ../data/main.ui.h:48 ../src/dataseteditdialog.cc:470
 msgid "Data Sets"
 msgstr "Dataset"
 
-#: ../data/datasets.ui.h:8 ../data/main.ui.h:25 ../src/datasetsdialog.cc:432
+#: ../data/datasets.ui.h:6 ../data/main.ui.h:25 ../src/datasetsdialog.cc:432
 msgid "Data Set"
 msgstr "Dataset"
 
-#: ../data/datasets.ui.h:9
+#: ../data/datasets.ui.h:7
 msgid "Create a new data set"
 msgstr "Skapa ett nytt dataset"
 
-#: ../data/datasets.ui.h:10
+#: ../data/datasets.ui.h:8
 msgid "Edit the selected data set"
 msgstr "Redigera valt dataset"
 
-#: ../data/datasets.ui.h:11
+#: ../data/datasets.ui.h:9
 msgid "Delete the selected data set"
 msgstr "Ta bort valt dataset"
 
-#: ../data/datasets.ui.h:12
+#: ../data/datasets.ui.h:10
 msgid "Objects"
 msgstr "Objekt"
 
-#: ../data/datasets.ui.h:13
+#: ../data/datasets.ui.h:11
 msgid "Create a new data object"
 msgstr "Skapa ett nytt dataobjekt"
 
-#: ../data/datasets.ui.h:14
+#: ../data/datasets.ui.h:12
 msgid "Edit the selected data object"
 msgstr "Redigera valt dataobjekt"
 
-#: ../data/datasets.ui.h:15
+#: ../data/datasets.ui.h:13
 msgid "Remove the selected data object"
 msgstr "Ta bort valt dataobjekt"
 
-#: ../data/datasets.ui.h:16
+#: ../data/datasets.ui.h:14
 msgid "Data Set Description"
 msgstr "Beskrivning av dataset"
 
-#: ../data/datasets.ui.h:17
+#: ../data/datasets.ui.h:15
 msgid "Object Attributes"
 msgstr "Objektegenskaper"
 
@@ -690,7 +674,7 @@ msgstr ""
 msgid "Microchip 32-bit"
 msgstr ""
 
-#: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:834
+#: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:835
 msgid "Edit Function"
 msgstr "Redigera funktion"
 
@@ -712,7 +696,7 @@ msgstr ""
 "Använd \\x för den första, \\y för den andra och \\z för den tredje "
 "parametern. För mer information klicka på hjälpknappen."
 
-#: ../data/functionedit.ui.h:9 ../data/matrixedit.ui.h:16
+#: ../data/functionedit.ui.h:9 ../data/matrixedit.ui.h:15
 #: ../data/variableedit.ui.h:9
 msgid "Required"
 msgstr "Nödvändigt"
@@ -767,7 +751,11 @@ msgstr "Huruvida funktionen skall döljas i menyer"
 msgid "Example"
 msgstr "Exempel"
 
-#: ../data/functionedit.ui.h:27 ../src/functioneditdialog.cc:474
+#: ../data/functionedit.ui.h:26
+msgid "Do not save modifications"
+msgstr "Spara inte modifikationerna"
+
+#: ../data/functionedit.ui.h:27 ../src/functioneditdialog.cc:475
 msgid "Precalculate"
 msgstr "Förberäkna"
 
@@ -821,7 +809,7 @@ msgstr "_Beräkna"
 msgid "Insert (or execute) the selected function into the expression entry"
 msgstr "Infoga (eller exekvera) vald funktion i uttrycket"
 
-#: ../data/functions.ui.h:16
+#: ../data/functions.ui.h:16 ../data/plot.ui.h:36
 msgid "A_pply"
 msgstr "_Applicera"
 
@@ -966,13 +954,13 @@ msgstr "Variabler"
 msgid "Units"
 msgstr "Enheter"
 
-#: ../data/main.ui.h:49 ../src/keypad.cc:815 ../src/keypad.cc:3297
-#: ../src/keypad.cc:3415
+#: ../data/main.ui.h:49 ../src/keypad.cc:815 ../src/keypad.cc:3296
+#: ../src/keypad.cc:3414
 msgid "Factorize"
 msgstr "Faktorisera"
 
-#: ../data/main.ui.h:50 ../src/keypad.cc:813 ../src/keypad.cc:3306
-#: ../src/keypad.cc:3418
+#: ../data/main.ui.h:50 ../src/keypad.cc:813 ../src/keypad.cc:3305
+#: ../src/keypad.cc:3417
 msgid "Expand"
 msgstr "Expandera"
 
@@ -1008,15 +996,15 @@ msgstr "Omvandla till basenheter"
 msgid "Convert to Optimal Unit"
 msgstr "Omvandla till optimal enhet"
 
-#: ../data/main.ui.h:59 ../src/expressionedit.cc:1503
+#: ../data/main.ui.h:59 ../src/expressionedit.cc:1452
 msgid "Insert Date…"
 msgstr "Infoga datum…"
 
-#: ../data/main.ui.h:60 ../src/expressionedit.cc:1504
+#: ../data/main.ui.h:60 ../src/expressionedit.cc:1453
 msgid "Insert Matrix…"
 msgstr "Infoga matris…"
 
-#: ../data/main.ui.h:61 ../src/expressionedit.cc:1505
+#: ../data/main.ui.h:61 ../src/expressionedit.cc:1454
 msgid "Insert Vector…"
 msgstr "Infoga vektor…"
 
@@ -1041,7 +1029,7 @@ msgid "_Mode"
 msgstr "_Läge"
 
 #: ../data/main.ui.h:68 ../src/expressioncompletion.cc:1871
-#: ../src/expressionedit.cc:1475
+#: ../src/expressionedit.cc:1424
 msgid "Number Base"
 msgstr "Talbas"
 
@@ -1050,36 +1038,36 @@ msgid "Select Result and Expression Base…"
 msgstr "Välj bas i resultat och uttryck…"
 
 #: ../data/main.ui.h:70 ../data/nbases.ui.h:4 ../data/preferences.ui.h:65
-#: ../data/setbase.ui.h:3 ../src/expressionedit.cc:1478 ../src/keypad.cc:1012
+#: ../data/setbase.ui.h:3 ../src/expressionedit.cc:1427 ../src/keypad.cc:1012
 #: ../src/numberbasesdialog.cc:209 ../src/numberbasesdialog.cc:251
 msgid "Binary"
 msgstr "Binär"
 
 #: ../data/main.ui.h:71 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/expressionedit.cc:1479 ../src/keypad.cc:1013
+#: ../src/expressionedit.cc:1428 ../src/keypad.cc:1013
 #: ../src/numberbasesdialog.cc:210 ../src/numberbasesdialog.cc:252
 msgid "Octal"
 msgstr "Oktal"
 
 #: ../data/main.ui.h:72 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/expressionedit.cc:1480 ../src/keypad.cc:1014
+#: ../src/expressionedit.cc:1429 ../src/keypad.cc:1014
 #: ../src/numberbasesdialog.cc:211 ../src/numberbasesdialog.cc:253
 msgid "Decimal"
 msgstr "Decimal"
 
 #: ../data/main.ui.h:73 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/expressionedit.cc:1481 ../src/numberbasesdialog.cc:212
+#: ../src/expressionedit.cc:1430 ../src/numberbasesdialog.cc:212
 #: ../src/numberbasesdialog.cc:254
 msgid "Duodecimal"
 msgstr "Duodecimal"
 
 #: ../data/main.ui.h:74 ../data/nbases.ui.h:11 ../data/preferences.ui.h:67
-#: ../data/setbase.ui.h:7 ../src/expressionedit.cc:1482 ../src/keypad.cc:1015
+#: ../data/setbase.ui.h:7 ../src/expressionedit.cc:1431 ../src/keypad.cc:1015
 #: ../src/numberbasesdialog.cc:213 ../src/numberbasesdialog.cc:255
 msgid "Hexadecimal"
 msgstr "Hexadecimal"
 
-#: ../data/main.ui.h:75 ../src/expressionedit.cc:1484
+#: ../data/main.ui.h:75 ../src/expressionedit.cc:1433
 msgid "Other…"
 msgstr "Annan…"
 
@@ -1092,7 +1080,7 @@ msgid "Time Format"
 msgstr "Tidsformat"
 
 #: ../data/main.ui.h:78 ../src/expressioncompletion.cc:1926
-#: ../src/expressionedit.cc:1483
+#: ../src/expressionedit.cc:1432
 msgid "Roman Numerals"
 msgstr "Romerska siffror"
 
@@ -1261,7 +1249,7 @@ msgstr "Blandad"
 msgid "Interval Display"
 msgstr "Intervallvisning"
 
-#: ../data/main.ui.h:121 ../src/mainwindow.cc:998
+#: ../data/main.ui.h:121 ../src/mainwindow.cc:1000
 msgid "Adaptive"
 msgstr "Adaptiv"
 
@@ -1277,7 +1265,7 @@ msgstr "Intervall"
 msgid "Plus/Minus"
 msgstr "Plus/minus"
 
-#: ../data/main.ui.h:125 ../data/preferences.ui.h:109 ../src/mainwindow.cc:822
+#: ../data/main.ui.h:125 ../data/preferences.ui.h:111 ../src/mainwindow.cc:824
 msgid "Relative"
 msgstr "Relativ"
 
@@ -1498,7 +1486,7 @@ msgstr "Varna när okända nämnare är antagna som ej noll"
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "Varna om nämnare antagna som ej noll"
 
-#: ../data/main.ui.h:179 ../src/expressionedit.cc:1465 ../src/mainwindow.cc:969
+#: ../data/main.ui.h:179 ../src/expressionedit.cc:1414 ../src/mainwindow.cc:971
 msgid "Parsing Mode"
 msgstr "Tolkningsläge"
 
@@ -1549,17 +1537,17 @@ msgstr "Begränsa implicit multiplikation"
 
 #: ../data/main.ui.h:192
 msgid ""
-"Parse decimal numbers as approximate with precision equal to the number of "
-"digits.\n"
+"Parse decimal numbers as approximations with precision equal to the number "
+"of digits.\n"
 "\n"
-"Off: 1.10 × 1.10 = 1.21\n"
-"On: 1.10 × 1.10 ≈ 1.2"
+"Off: 1.1 × 3.20 = 3.52\n"
+"On: 1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.16"
 msgstr ""
-"Behandla decimala tal som approximativa med en precision lika med antalet "
+"Behandla decimala tal som approximationer med en precision lika med antalet "
 "siffror.\n"
 "\n"
-"Av: 1,10 × 1,10 = 1,21\n"
-"På: 1,10 × 1,10 ≈ 1,2"
+"Av: 1,1 × 3,20 = 3,52\n"
+"På: 1,1 × 3,20 = 1,1±0,05 × 3,20±0,005 ≈ 3,5±0,16"
 
 #: ../data/main.ui.h:196
 msgid "Read Precision"
@@ -1589,11 +1577,11 @@ msgstr "Aktivera RPN-stacken."
 msgid "RPN Mode"
 msgstr "RPN-läge"
 
-#: ../data/main.ui.h:203 ../src/expressionedit.cc:1486
+#: ../data/main.ui.h:203 ../src/expressionedit.cc:1435
 msgid "Meta Modes"
 msgstr "Metalägen"
 
-#: ../data/main.ui.h:204 ../src/expressionedit.cc:1500
+#: ../data/main.ui.h:204 ../src/expressionedit.cc:1449
 msgid "Save Mode…"
 msgstr "Spara läge…"
 
@@ -1701,7 +1689,7 @@ msgstr "Höj med det valda värdet"
 msgid "Calculate the square root of the selected value"
 msgstr "Beräkna kvadratroten av det valda värdet"
 
-#: ../data/main.ui.h:231 ../src/historyview.cc:3554
+#: ../data/main.ui.h:231 ../src/historyview.cc:3556
 msgid "History"
 msgstr "Historik"
 
@@ -1910,17 +1898,17 @@ msgid "Kilogram"
 msgstr "Kilogram"
 
 #: ../data/main.ui.h:288 ../data/nbases.ui.h:14 ../src/expressionstatus.cc:370
-#: ../src/keypad.cc:2850 ../src/keypad.cc:2851 ../src/keypad.cc:2852
+#: ../src/keypad.cc:2849 ../src/keypad.cc:2850 ../src/keypad.cc:2851
 msgid "BIN"
 msgstr "BIN"
 
 #: ../data/main.ui.h:289 ../data/nbases.ui.h:15 ../src/expressionstatus.cc:375
-#: ../src/keypad.cc:2854 ../src/keypad.cc:2855 ../src/keypad.cc:2856
+#: ../src/keypad.cc:2853 ../src/keypad.cc:2854 ../src/keypad.cc:2855
 msgid "OCT"
 msgstr "OKT"
 
-#: ../data/main.ui.h:290 ../data/nbases.ui.h:16 ../src/keypad.cc:2858
-#: ../src/keypad.cc:2859 ../src/keypad.cc:2860
+#: ../data/main.ui.h:290 ../data/nbases.ui.h:16 ../src/keypad.cc:2857
+#: ../src/keypad.cc:2858 ../src/keypad.cc:2859
 msgid "DEC"
 msgstr "DEC"
 
@@ -2030,11 +2018,11 @@ msgstr "Kopiera hel text"
 msgid "Search…"
 msgstr "Sök…"
 
-#: ../data/main.ui.h:319 ../src/historyview.cc:3076 ../src/historyview.cc:3091
+#: ../data/main.ui.h:319 ../src/historyview.cc:3078 ../src/historyview.cc:3093
 msgid "Search by Date…"
 msgstr "Sök efter datum…"
 
-#: ../data/main.ui.h:320 ../src/historyview.cc:3073
+#: ../data/main.ui.h:320 ../src/historyview.cc:3075
 msgid "Add Bookmark…"
 msgstr "Lägg till bokmärke…"
 
@@ -2257,47 +2245,51 @@ msgstr "_Infoga"
 msgid "Insert the matrix/vector into the expression"
 msgstr "Infoga matrisen/vektorn i uttrycket"
 
-#: ../data/matrix.ui.h:6 ../data/matrixedit.ui.h:7 ../src/matrixdialog.cc:280
+#: ../data/matrix.ui.h:6 ../data/matrixedit.ui.h:6 ../src/matrixdialog.cc:280
 #: ../src/matrixdialog.cc:288
 msgid "Elements"
 msgstr "Element"
 
-#: ../data/matrix.ui.h:7 ../data/matrixedit.ui.h:9
+#: ../data/matrix.ui.h:7 ../data/matrixedit.ui.h:8
 msgid "Number of rows in this matrix (rows displayed for vectors)"
 msgstr "Antal rader i matrisen (visade rader för vektorer)"
 
-#: ../data/matrix.ui.h:8 ../data/matrixedit.ui.h:10
+#: ../data/matrix.ui.h:8 ../data/matrixedit.ui.h:9
 msgid "Number of columns in this matrix (columns displayed for vectors)"
 msgstr "Antal kolumner i matrisen (visade kolumner för vektorer)"
 
-#: ../data/matrix.ui.h:9 ../data/matrixedit.ui.h:12
+#: ../data/matrix.ui.h:9 ../data/matrixedit.ui.h:11
 msgid "If this is a matrix or vector"
 msgstr "Huruvida det är en matris eller vektor"
 
-#: ../data/matrix.ui.h:11 ../data/matrixedit.ui.h:14
+#: ../data/matrix.ui.h:11 ../data/matrixedit.ui.h:13
 msgid "Current element:"
 msgstr "Nuvarande element:"
 
-#: ../data/matrixedit.ui.h:1 ../src/matrixeditdialog.cc:403
+#: ../data/matrixedit.ui.h:1 ../src/matrixeditdialog.cc:404
 msgid "Edit Matrix"
 msgstr "Redigera matris"
 
-#: ../data/matrixedit.ui.h:5
-msgid "Accept the creation/modification of this matrix/vector"
-msgstr "Godkänn skapande/modifiering av matrisen/vektorn"
-
-#: ../data/matrixedit.ui.h:8 ../data/variableedit.ui.h:6
+#: ../data/matrixedit.ui.h:7 ../data/variableedit.ui.h:6
 msgid "Name used to reference this variable in expressions"
 msgstr "Namn för att referera till variabeln i uttryck"
 
-#: ../data/matrixedit.ui.h:15 ../data/unknownedit.ui.h:21
+#: ../data/matrixedit.ui.h:14 ../data/unknownedit.ui.h:21
 #: ../data/variableedit.ui.h:8
 msgid "Temporary"
 msgstr "Temporär"
 
-#: ../data/matrixedit.ui.h:17 ../data/variableedit.ui.h:15
+#: ../data/matrixedit.ui.h:16 ../data/variableedit.ui.h:15
 msgid "Hide variable"
 msgstr "Göm variabel"
+
+#: ../data/matrixedit.ui.h:17 ../data/variableedit.ui.h:16
+msgid "If this variable shall be hidden in menus"
+msgstr "Huruvida variabeln skall döljas i menyer"
+
+#: ../data/matrixedit.ui.h:19 ../data/variableedit.ui.h:10
+msgid "The category this variable belongs to"
+msgstr "Kategorin som variabeln tillhör"
 
 #: ../data/namesedit.ui.h:1
 msgid "Names"
@@ -2337,8 +2329,8 @@ msgstr "Visa/dölj knappsats"
 msgid "DUO"
 msgstr "DUO"
 
-#: ../data/nbases.ui.h:18 ../src/expressionstatus.cc:385 ../src/keypad.cc:2862
-#: ../src/keypad.cc:2863 ../src/keypad.cc:2864
+#: ../data/nbases.ui.h:18 ../src/expressionstatus.cc:385 ../src/keypad.cc:2861
+#: ../src/keypad.cc:2862 ../src/keypad.cc:2863
 msgid "HEX"
 msgstr "HEX"
 
@@ -2373,7 +2365,7 @@ msgid "Bitwise NOT"
 msgstr "Bitvist NOT"
 
 #: ../data/nbases.ui.h:30 ../data/percentage.ui.h:4
-#: ../src/buttonseditdialog.cc:376 ../src/expressionedit.cc:1417
+#: ../src/buttonseditdialog.cc:376 ../src/expressionedit.cc:1366
 #: ../src/keypad.cc:522
 msgid "Clear"
 msgstr "Rensa"
@@ -2422,7 +2414,7 @@ msgstr "Förändring från 2 till 1"
 msgid "Plot"
 msgstr "Diagram"
 
-#: ../data/plot.ui.h:3 ../src/menubar.cc:1198 ../src/plotdialog.cc:378
+#: ../data/plot.ui.h:3 ../src/menubar.cc:1203 ../src/plotdialog.cc:378
 #: ../src/plotdialog.cc:380 ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Save"
 msgstr "_Spara"
@@ -2530,10 +2522,6 @@ msgstr "Primär"
 #: ../data/plot.ui.h:34
 msgid "Secondary"
 msgstr "Sekundär"
-
-#: ../data/plot.ui.h:36 ../src/mainwindow.cc:7509
-msgid "_Apply"
-msgstr "_Applicera"
 
 #: ../data/plot.ui.h:38
 msgid "Data"
@@ -2843,7 +2831,7 @@ msgstr "Resultat"
 msgid "Application name + result"
 msgstr "Programnamn + resultat"
 
-#: ../data/preferences.ui.h:44 ../src/menubar.cc:1246
+#: ../data/preferences.ui.h:44 ../src/menubar.cc:1251
 msgid "Mode"
 msgstr "Läge"
 
@@ -3028,22 +3016,10 @@ msgid "Use comma as decimal separator"
 msgstr "Använd komma som decimaltecken"
 
 #: ../data/preferences.ui.h:87
-msgid "Use 'j' as imaginary unit"
-msgstr "Använd 'j' som imaginär enhet"
-
-#: ../data/preferences.ui.h:88
-msgid ""
-"Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
-"it in front of the imaginary part."
-msgstr ""
-"Använd 'j' (istället för 'i') som förvald symbol för den imaginära enheten "
-"och placera den framför den imaginära delen av komplexa tal."
-
-#: ../data/preferences.ui.h:89
 msgid "Ignore comma in numbers"
 msgstr "Bortse från komma i nummer"
 
-#: ../data/preferences.ui.h:90
+#: ../data/preferences.ui.h:88
 msgid ""
 "Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
@@ -3051,15 +3027,11 @@ msgstr ""
 "Tillåt att kommatecken, ',', används som tusentalsavgränsare istället för "
 "som avskiljare för funktionsargument"
 
-#: ../data/preferences.ui.h:91
-msgid "Copy result as unformatted ASCII by default"
-msgstr "Kopiera resultat som oformaterad ASCII som förval"
-
-#: ../data/preferences.ui.h:92
+#: ../data/preferences.ui.h:89
 msgid "Ignore dots in numbers"
 msgstr "Bortse från punkter i nummer"
 
-#: ../data/preferences.ui.h:93
+#: ../data/preferences.ui.h:90
 msgid ""
 "Allow dots, '.', to be used as thousands separator instead of as an "
 "alternative decimal sign"
@@ -3067,39 +3039,67 @@ msgstr ""
 "Tillåt att punkter, '.', används som tusentalsavgränsare istället för som "
 "ett alternativt decimaltecken"
 
+#: ../data/preferences.ui.h:91
+msgid "Use 'j' as imaginary unit"
+msgstr "Använd 'j' som imaginär enhet"
+
+#: ../data/preferences.ui.h:92
+msgid ""
+"Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
+"it in front of the imaginary part."
+msgstr ""
+"Använd 'j' (istället för 'i') som förvald symbol för den imaginära enheten "
+"och placera den framför den imaginära delen av komplexa tal."
+
+#: ../data/preferences.ui.h:93
+msgid "Copy result as unformatted ASCII by default"
+msgstr "Kopiera resultat som oformaterad ASCII som förval"
+
 #: ../data/preferences.ui.h:94
+msgid "Use overline for repeating decimals"
+msgstr "Använd överstreck för upprepande decimaler "
+
+#: ../data/preferences.ui.h:95
+msgid ""
+"Use overline (vinculum), instead of ellipsis, for repeating decimals when "
+"indicate repeating decimals is enabled."
+msgstr ""
+"Använd ett streck över upprepande decimaler, istället för tre punkter, när "
+"indikera upprepande decimaler är aktiverat."
+
+#: ../data/preferences.ui.h:96
 msgid "Digit grouping"
 msgstr "Siffergruppering"
 
-#: ../data/preferences.ui.h:95
+#: ../data/preferences.ui.h:97
 msgid "off"
 msgstr "av"
 
-#: ../data/preferences.ui.h:96
+#: ../data/preferences.ui.h:98
 msgid "standard"
 msgstr "standard"
 
-#: ../data/preferences.ui.h:97
+#: ../data/preferences.ui.h:99
 msgid "local"
 msgstr "lokal"
 
-#: ../data/preferences.ui.h:98
+#: ../data/preferences.ui.h:100
 msgid "Multiplication sign"
 msgstr "Multiplikationstecken"
 
-#: ../data/preferences.ui.h:99
+#: ../data/preferences.ui.h:101
 msgid "Division sign"
 msgstr "Divisionstecken"
 
-#: ../data/preferences.ui.h:100
+#: ../data/preferences.ui.h:102
 msgid "Numbers & Operators"
 msgstr "Nummer och operatorer"
 
-#: ../data/preferences.ui.h:101
+#: ../data/preferences.ui.h:103
 msgid "Use binary prefixes for information units"
 msgstr "Använd binära prefix för informationsenheter"
 
-#: ../data/preferences.ui.h:102
+#: ../data/preferences.ui.h:104
 msgid ""
 "Use binary, instead of decimal, prefixes by default for information units "
 "(e.g. bytes)."
@@ -3107,15 +3107,15 @@ msgstr ""
 "Använd binära, istället för decimala, prefix som förval för "
 "informationsenheter (t.ex. byte)."
 
-#: ../data/preferences.ui.h:103
+#: ../data/preferences.ui.h:105
 msgid "Copy unformatted ASCII without units"
 msgstr "Kopiera oformaterad ASCII utan enheter"
 
-#: ../data/preferences.ui.h:104
+#: ../data/preferences.ui.h:106
 msgid "Conversion to local currency"
 msgstr "Omvandling till lokal valuta"
 
-#: ../data/preferences.ui.h:105
+#: ../data/preferences.ui.h:107
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
@@ -3123,51 +3123,51 @@ msgstr ""
 "Omvandla automatiskt till den lokala valutan när optimal enhetsomvandling är "
 "aktiverad."
 
-#: ../data/preferences.ui.h:106
+#: ../data/preferences.ui.h:108
 msgid "Exchange rates updates"
 msgstr "Växelkursuppdatering"
 
-#: ../data/preferences.ui.h:107
+#: ../data/preferences.ui.h:109
 msgid "Temperature calculation mode:"
 msgstr "Läge för temperaturberäkningar:"
 
-#: ../data/preferences.ui.h:108 ../src/mainwindow.cc:815
+#: ../data/preferences.ui.h:110 ../src/mainwindow.cc:817
 msgid "Absolute"
 msgstr "Absolut"
 
-#: ../data/preferences.ui.h:110 ../src/mainwindow.cc:829
+#: ../data/preferences.ui.h:112 ../src/mainwindow.cc:831
 msgid "Hybrid"
 msgstr "Hybrid"
 
-#: ../data/preferences.ui.h:111
+#: ../data/preferences.ui.h:113
 msgid "Units & Currencies"
 msgstr "Enheter och valutor"
 
-#: ../data/preferences.ui.h:112
+#: ../data/preferences.ui.h:114
 msgid "Show expression completion suggestions"
 msgstr "Visa uttryckskompletteringsförslag"
 
-#: ../data/preferences.ui.h:113
+#: ../data/preferences.ui.h:115
 msgid "Search titles and countries"
 msgstr "Sök i titlar och länder"
 
-#: ../data/preferences.ui.h:114
+#: ../data/preferences.ui.h:116
 msgid "Minimum characters"
 msgstr "Lägsta antal tecken"
 
-#: ../data/preferences.ui.h:115
+#: ../data/preferences.ui.h:117
 msgid "Popup delay (ms)"
 msgstr "Popupfördröjning (ms)"
 
-#: ../data/preferences.ui.h:116
+#: ../data/preferences.ui.h:118
 msgid "Completion"
 msgstr "Komplettering"
 
-#: ../data/preferences.ui.h:117
+#: ../data/preferences.ui.h:119
 msgid "Custom status font"
 msgstr "Anpassat teckensnitt för status"
 
-#: ../data/preferences.ui.h:118
+#: ../data/preferences.ui.h:120
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
@@ -3175,72 +3175,71 @@ msgstr ""
 "Huruvida du vill använda ett annat teckensnitt än det som är standard i "
 "statusvisningen under uttrycksfältet"
 
-#: ../data/preferences.ui.h:119
+#: ../data/preferences.ui.h:121
 msgid "Custom expression font"
 msgstr "Anpassat teckensnitt för uttryck"
 
-#: ../data/preferences.ui.h:120
+#: ../data/preferences.ui.h:122
 msgid ""
 "If you want to use a font other than the default in the expression entry"
 msgstr ""
 "Huruvida du vill använda ett annat teckensnitt än det som är standard vid "
 "skrivning av uttryck"
 
-#: ../data/preferences.ui.h:121
+#: ../data/preferences.ui.h:123
 msgid "Custom result font"
 msgstr "Anpassat teckensnitt för resultat"
 
-#: ../data/preferences.ui.h:122
+#: ../data/preferences.ui.h:124
 msgid "If you want to use a font other than the default in the result display"
 msgstr ""
 "Huruvida du vill använda ett annat teckensnitt än det som är standard vid "
 "visning av resultat"
 
-#: ../data/preferences.ui.h:123
+#: ../data/preferences.ui.h:125
 msgid "Custom keypad font"
 msgstr "Anpassat teckensnitt för knappsats"
 
-#: ../data/preferences.ui.h:124
+#: ../data/preferences.ui.h:126
 msgid "If you want to use a font other than the default in the keypad"
 msgstr ""
 "Huruvida du vill använda ett annat teckensnitt än det som är standard på "
 "knappsatsen"
 
-#: ../data/preferences.ui.h:125
+#: ../data/preferences.ui.h:127
 msgid "Status warning color"
 msgstr "Färg för statusvarning"
 
-#: ../data/preferences.ui.h:126
+#: ../data/preferences.ui.h:128
 msgid "Status error color"
 msgstr "Färg för statusfel"
 
-#: ../data/preferences.ui.h:127
+#: ../data/preferences.ui.h:129
 msgid "Text color"
 msgstr "Textfärg"
 
-#: ../data/preferences.ui.h:128
+#: ../data/preferences.ui.h:130
 msgid "Custom application font"
 msgstr "Anpassat programteckensnitt"
 
-#: ../data/preferences.ui.h:129
+#: ../data/preferences.ui.h:131
 msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr ""
-"Huruvida du vill använda ett annat teckensnitt än det som är standard på för "
+"Huruvida du vill använda ett annat teckensnitt än det som är standard för "
 "hela programmet"
 
-#: ../data/preferences.ui.h:130
+#: ../data/preferences.ui.h:132
 msgid "Custom history font"
 msgstr "Anpassat teckensnitt för historik"
 
-#: ../data/preferences.ui.h:131
-msgid ""
-"If you want to use a font other than the default for in the history list"
+#: ../data/preferences.ui.h:133
+msgid "If you want to use a font other than the default in the history list"
 msgstr ""
-"Huruvida du vill använda ett annat teckensnitt än det som är standard på för "
+"Huruvida du vill använda ett annat teckensnitt än det som är standard i "
 "historiken"
 
-#: ../data/preferences.ui.h:132
+#: ../data/preferences.ui.h:134
 msgid "Fonts & Colors"
 msgstr "Teckensnitt och färger"
 
@@ -3275,51 +3274,43 @@ msgstr "Nytt kortkommando"
 msgid "Add Action"
 msgstr "Lägg till åtgärd"
 
-#: ../data/unitedit.ui.h:1 ../src/uniteditdialog.cc:190
+#: ../data/unitedit.ui.h:1 ../src/uniteditdialog.cc:191
 msgid "Edit Unit"
 msgstr "Redigera enhet"
 
-#: ../data/unitedit.ui.h:4
-msgid "Do not create/modify this unit"
-msgstr "Avbryt skapande/modifiering av enheten"
-
-#: ../data/unitedit.ui.h:6
-msgid "Accept the creation/modification of this unit"
-msgstr "Godta skapande/modifiering av enheten"
-
-#: ../data/unitedit.ui.h:10
+#: ../data/unitedit.ui.h:8
 msgid "System"
 msgstr "System"
 
-#: ../data/unitedit.ui.h:12
+#: ../data/unitedit.ui.h:10
 msgid "Hide unit"
 msgstr "Dölj enheten"
 
-#: ../data/unitedit.ui.h:13
+#: ../data/unitedit.ui.h:11
 msgid "If this unit shall be hidden in menus"
 msgstr "Huruvida enheten skall döljas i menyer"
 
-#: ../data/unitedit.ui.h:14
+#: ../data/unitedit.ui.h:12
 msgid "Imperial"
 msgstr "Imperial"
 
-#: ../data/unitedit.ui.h:15
+#: ../data/unitedit.ui.h:13
 msgid "US Survey"
 msgstr "US Survey"
 
-#: ../data/unitedit.ui.h:16
+#: ../data/unitedit.ui.h:14
 msgid "Title displayed in menus and in unit manager"
 msgstr "Rubrik som skall visas i menyer och enhetshanteraren"
 
-#: ../data/unitedit.ui.h:17
+#: ../data/unitedit.ui.h:15
 msgid "Singular form of this unit's name"
 msgstr "Singularis av enhetens namn"
 
-#: ../data/unitedit.ui.h:19
+#: ../data/unitedit.ui.h:17
 msgid "Class"
 msgstr "Klass"
 
-#: ../data/unitedit.ui.h:20
+#: ../data/unitedit.ui.h:18
 msgid ""
 "The class that this unit belongs to. Named derived units are defined in "
 "relation to a single other unit, with an optional exponent, while (unnamed) "
@@ -3329,47 +3320,47 @@ msgstr ""
 "relation till en annan enhet, med en valfri exponent, medan (icke namngivna) "
 "härledda enheter definieras av ett enhetsuttryck med en eller flera enheter."
 
-#: ../data/unitedit.ui.h:21
+#: ../data/unitedit.ui.h:19
 msgid "Base unit"
 msgstr "Grundenhet"
 
-#: ../data/unitedit.ui.h:22
+#: ../data/unitedit.ui.h:20
 msgid "Named derived unit"
 msgstr "Namngiven härledd enhet"
 
-#: ../data/unitedit.ui.h:23
+#: ../data/unitedit.ui.h:21
 msgid "Derived unit"
 msgstr "Härledd enhet"
 
-#: ../data/unitedit.ui.h:24
+#: ../data/unitedit.ui.h:22
 msgid "Base unit(s)"
 msgstr "Grundenhet(er)"
 
-#: ../data/unitedit.ui.h:25
+#: ../data/unitedit.ui.h:23
 msgid "Exponent"
 msgstr "Exponent"
 
-#: ../data/unitedit.ui.h:26
+#: ../data/unitedit.ui.h:24
 msgid "Relation"
 msgstr "Relation"
 
-#: ../data/unitedit.ui.h:27
+#: ../data/unitedit.ui.h:25
 msgid "Inverse relation"
 msgstr "Omvänd relation"
 
-#: ../data/unitedit.ui.h:28
+#: ../data/unitedit.ui.h:26
 msgid "Mix with base unit"
 msgstr "Blanda med basenhet"
 
-#: ../data/unitedit.ui.h:29
+#: ../data/unitedit.ui.h:27
 msgid "Priority"
 msgstr "Prioritet"
 
-#: ../data/unitedit.ui.h:30
+#: ../data/unitedit.ui.h:28
 msgid "Minimum base unit number"
 msgstr "Minsta antal av basenhet"
 
-#: ../data/unitedit.ui.h:31
+#: ../data/unitedit.ui.h:29
 msgid ""
 "Example: priority of the unit \"hand\" is set to 2, while priority of ft "
 "(foot) and in (inch) is set to 1, which results in \"17 in = 1 ft + 5 in\", "
@@ -3379,7 +3370,7 @@ msgstr ""
 "och in (tum) är 1, vilket resulterar i \"17 in = 1 ft + 5 in\", istället för "
 "\"17 in = 1 ft + 1 hand + 1 in\"."
 
-#: ../data/unitedit.ui.h:32
+#: ../data/unitedit.ui.h:30
 msgid ""
 "Example: minimum base unit number of yd (yard) is set to 12, which results "
 "in \"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
@@ -3387,11 +3378,11 @@ msgstr ""
 "Exempel: minsta antal av basenhet för yd (yard) är 12, vilket resulterar i "
 "\"3 × 3 ft = 9 ft\" (istället for \"3 yd\") och \"4 × 3 ft = 4 yd\"."
 
-#: ../data/unitedit.ui.h:33
+#: ../data/unitedit.ui.h:31
 msgid "Exponent of the base unit"
 msgstr "Exponent för grundenhet"
 
-#: ../data/unitedit.ui.h:34
+#: ../data/unitedit.ui.h:32
 msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit is defined in relation to"
@@ -3399,7 +3390,7 @@ msgstr ""
 "Enhet (för namngivna härledda enheter) eller enheter (för icke namngivna "
 "härledda enheter) som enheten är definierad i förhållande till"
 
-#: ../data/unitedit.ui.h:35
+#: ../data/unitedit.ui.h:33
 msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
@@ -3414,12 +3405,12 @@ msgstr ""
 "exponenten (t.ex. \"\\x + 273,15\" för relationen mellan grader Celsius och "
 "Kelvin)"
 
-#: ../data/unitedit.ui.h:38
+#: ../data/unitedit.ui.h:36
 msgid "Specify for non-linear relation, for conversion back to the base unit."
 msgstr ""
 "Anges för icke-linjära förhållanden, för omvandling tillbaka till basenheten."
 
-#: ../data/unitedit.ui.h:39
+#: ../data/unitedit.ui.h:37
 msgid "Use with prefixes by default"
 msgstr "Använd med prefix som förval"
 
@@ -3503,17 +3494,9 @@ msgstr "Rationellt tal"
 msgid "Name used to reference this unknown variable in expressions"
 msgstr "Namn för att referera till den okända variabeln i uttryck"
 
-#: ../data/variableedit.ui.h:1 ../src/variableeditdialog.cc:170
+#: ../data/variableedit.ui.h:1 ../src/variableeditdialog.cc:171
 msgid "Edit Variable"
 msgstr "Redigera variabel"
-
-#: ../data/variableedit.ui.h:10
-msgid "The category this variable belongs to"
-msgstr "Kategorin som variabeln tillhör"
-
-#: ../data/variableedit.ui.h:16
-msgid "If this variable shall be hidden in menus"
-msgstr "Huruvida variabeln skall döljas i menyer"
 
 #: ../data/variables.ui.h:4
 msgid "_Variable"
@@ -3563,7 +3546,7 @@ msgstr "Variabeln hittades ej."
 msgid "Unit not found."
 msgstr "Enheten hittades ej."
 
-#: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7036
+#: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7057
 #: ../src/shortcutsdialog.cc:255 ../src/shortcutsdialog.cc:503
 msgid "Mode not found."
 msgstr "Läge hittades ej."
@@ -3767,8 +3750,8 @@ msgstr "Alla"
 #: ../src/conversionview.cc:132 ../src/conversionview.cc:179
 #: ../src/conversionview.cc:460 ../src/functionsdialog.cc:144
 #: ../src/functionsdialog.cc:145 ../src/functionsdialog.cc:196
-#: ../src/mainwindow.cc:7344 ../src/mainwindow.cc:7376
-#: ../src/mainwindow.cc:7400 ../src/unitsdialog.cc:166
+#: ../src/mainwindow.cc:7365 ../src/mainwindow.cc:7397
+#: ../src/mainwindow.cc:7421 ../src/unitsdialog.cc:166
 #: ../src/unitsdialog.cc:167 ../src/unitsdialog.cc:233
 #: ../src/variablesdialog.cc:146 ../src/variablesdialog.cc:147
 #: ../src/variablesdialog.cc:199
@@ -3807,10 +3790,10 @@ msgid "key"
 msgstr "nyckel"
 
 #: ../src/dataseteditdialog.cc:306 ../src/dataseteditdialog.cc:442
-#: ../src/functioneditdialog.cc:907 ../src/importcsvdialog.cc:149
-#: ../src/matrixeditdialog.cc:550 ../src/menubar.cc:1224
-#: ../src/uniteditdialog.cc:328 ../src/unknowneditdialog.cc:191
-#: ../src/variableeditdialog.cc:276
+#: ../src/functioneditdialog.cc:910 ../src/importcsvdialog.cc:149
+#: ../src/matrixeditdialog.cc:553 ../src/menubar.cc:1229
+#: ../src/uniteditdialog.cc:331 ../src/unknowneditdialog.cc:191
+#: ../src/variableeditdialog.cc:279
 msgid "Empty name field."
 msgstr "Tomt namnfält"
 
@@ -3822,7 +3805,7 @@ msgstr "Redigera dataset (systemvitt)"
 msgid "New Data Set"
 msgstr "Nytt dataset"
 
-#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:932
+#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:935
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -3847,28 +3830,28 @@ msgstr "parameter"
 msgid "New Data Object"
 msgstr "Nytt dataobjekt"
 
-#: ../src/drawstructure.cc:631 ../src/drawstructure.cc:2755
+#: ../src/drawstructure.cc:644 ../src/drawstructure.cc:2768
 #: ../src/expressionstatus.cc:1140 ../src/expressionstatus.cc:1176
-#: ../src/historyview.cc:702 ../src/historyview.cc:1280
-#: ../src/historyview.cc:1333 ../src/historyview.cc:1586
-#: ../src/historyview.cc:1646 ../src/historyview.cc:2168
-#: ../src/insertfunctiondialog.cc:297 ../src/keypad.cc:3108
-#: ../src/mainwindow.cc:2651 ../src/searchprovider.cc:91
+#: ../src/historyview.cc:704 ../src/historyview.cc:1282
+#: ../src/historyview.cc:1335 ../src/historyview.cc:1588
+#: ../src/historyview.cc:1648 ../src/historyview.cc:2170
+#: ../src/insertfunctiondialog.cc:297 ../src/keypad.cc:3107
+#: ../src/mainwindow.cc:2653 ../src/searchprovider.cc:91
 #: ../src/searchprovider.cc:92 ../src/searchprovider.cc:169
 #: ../src/variablesdialog.cc:289
 msgid "approx."
 msgstr "ca"
 
-#: ../src/drawstructure.cc:1828
+#: ../src/drawstructure.cc:1841
 msgid "and"
 msgstr "och"
 
-#: ../src/drawstructure.cc:1831 ../src/historyview.cc:918
-#: ../src/historyview.cc:953 ../src/historyview.cc:954
+#: ../src/drawstructure.cc:1844 ../src/historyview.cc:920
+#: ../src/historyview.cc:955 ../src/historyview.cc:956
 msgid "or"
 msgstr "eller"
 
-#: ../src/drawstructure.cc:2671
+#: ../src/drawstructure.cc:2684
 msgid "undefined"
 msgstr "odefinierad"
 
@@ -4078,7 +4061,7 @@ msgstr "Optimala enheter"
 msgid "Expanded Partial Fractions"
 msgstr "Expanderade partialbråk"
 
-#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1721
+#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1726
 msgid "Optimal Prefix"
 msgstr "Optimalt prefix"
 
@@ -4098,61 +4081,61 @@ msgstr "UTC-tidszon"
 msgid "Stop process"
 msgstr "Stoppa förloppet"
 
-#: ../src/expressionedit.cc:757 ../src/expressionedit.cc:1787
+#: ../src/expressionedit.cc:757 ../src/expressionedit.cc:1736
 #: ../src/keypad.cc:3529
 msgid "Calculate expression and add to stack"
 msgstr "Beräkna uttrycket och lägg till i stacken"
 
-#: ../src/expressionedit.cc:1321 ../src/historyview.cc:2775
+#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2777
 #: ../src/insertfunctiondialog.cc:65
 msgid "Select date"
 msgstr "Välj datum"
 
-#: ../src/expressionedit.cc:1420
+#: ../src/expressionedit.cc:1369
 msgid "Clear History"
 msgstr "Töm historiken"
 
-#: ../src/expressionedit.cc:1424
+#: ../src/expressionedit.cc:1373
 msgid "Abort"
 msgstr "Avbryt"
 
-#: ../src/expressionedit.cc:1427
+#: ../src/expressionedit.cc:1376
 msgid "Undo"
 msgstr "Ångra"
 
-#: ../src/expressionedit.cc:1430
+#: ../src/expressionedit.cc:1379
 msgid "Redo"
 msgstr "Gör om"
 
-#: ../src/expressionedit.cc:1435
+#: ../src/expressionedit.cc:1384
 msgid "Completion Mode"
 msgstr "Kompletteringsläge"
 
-#: ../src/expressionedit.cc:1448
+#: ../src/expressionedit.cc:1397
 msgid "Limited strict completion"
 msgstr "Begränsad strikt komplettering"
 
-#: ../src/expressionedit.cc:1449
+#: ../src/expressionedit.cc:1398
 msgid "Strict completion"
 msgstr "Strikt komplettering"
 
-#: ../src/expressionedit.cc:1450
+#: ../src/expressionedit.cc:1399
 msgid "Limited full completion"
 msgstr "Begränsad fullständig komplettering"
 
-#: ../src/expressionedit.cc:1451
+#: ../src/expressionedit.cc:1400
 msgid "Full completion"
 msgstr "Fullständig komplettering"
 
-#: ../src/expressionedit.cc:1452
+#: ../src/expressionedit.cc:1401
 msgid "No completion"
 msgstr "Ingen komplettering"
 
-#: ../src/expressionedit.cc:1461
+#: ../src/expressionedit.cc:1410
 msgid "Delayed completion"
 msgstr "Fördröjd komplettering"
 
-#: ../src/expressionedit.cc:1463
+#: ../src/expressionedit.cc:1412
 msgid "Customize completion…"
 msgstr "Anpassa komplettering…"
 
@@ -4219,19 +4202,19 @@ msgid "Too many arguments for %s()."
 msgstr "För många parametrar för %s()."
 
 #: ../src/expressionstatus.cc:691 ../src/expressionstatus.cc:693
-#: ../src/mainwindow.cc:1468 ../src/mainwindow.cc:4943
+#: ../src/mainwindow.cc:1470 ../src/mainwindow.cc:4963
 #: ../src/searchprovider.cc:133
 msgid "factorize"
 msgstr "faktorisera"
 
 #: ../src/expressionstatus.cc:694 ../src/expressionstatus.cc:696
-#: ../src/mainwindow.cc:1471 ../src/mainwindow.cc:4946
+#: ../src/mainwindow.cc:1473 ../src/mainwindow.cc:4966
 #: ../src/searchprovider.cc:133
 msgid "expand"
 msgstr "expandera"
 
-#: ../src/expressionstatus.cc:861 ../src/mainwindow.cc:1254
-#: ../src/mainwindow.cc:4594
+#: ../src/expressionstatus.cc:861 ../src/mainwindow.cc:1256
+#: ../src/mainwindow.cc:4614
 msgid "hexadecimal"
 msgstr "hexadecimal"
 
@@ -4239,8 +4222,8 @@ msgstr "hexadecimal"
 msgid "hexadecimal number"
 msgstr "hexadecimalt tal"
 
-#: ../src/expressionstatus.cc:863 ../src/mainwindow.cc:1257
-#: ../src/mainwindow.cc:4597
+#: ../src/expressionstatus.cc:863 ../src/mainwindow.cc:1259
+#: ../src/mainwindow.cc:4617
 msgid "octal"
 msgstr "oktal"
 
@@ -4248,8 +4231,8 @@ msgstr "oktal"
 msgid "octal number"
 msgstr "oktalt tal"
 
-#: ../src/expressionstatus.cc:865 ../src/mainwindow.cc:1260
-#: ../src/mainwindow.cc:4600
+#: ../src/expressionstatus.cc:865 ../src/mainwindow.cc:1262
+#: ../src/mainwindow.cc:4620
 msgid "decimal"
 msgstr "decimal"
 
@@ -4257,8 +4240,8 @@ msgstr "decimal"
 msgid "decimal number"
 msgstr "decimalt tal"
 
-#: ../src/expressionstatus.cc:867 ../src/mainwindow.cc:1263
-#: ../src/mainwindow.cc:4603
+#: ../src/expressionstatus.cc:867 ../src/mainwindow.cc:1265
+#: ../src/mainwindow.cc:4623
 msgid "duodecimal"
 msgstr "duodecimal"
 
@@ -4266,8 +4249,8 @@ msgstr "duodecimal"
 msgid "duodecimal number"
 msgstr "duodecimalt tal"
 
-#: ../src/expressionstatus.cc:871 ../src/mainwindow.cc:1271
-#: ../src/mainwindow.cc:4611
+#: ../src/expressionstatus.cc:871 ../src/mainwindow.cc:1273
+#: ../src/mainwindow.cc:4631
 msgid "binary"
 msgstr "binär"
 
@@ -4275,8 +4258,8 @@ msgstr "binär"
 msgid "binary number"
 msgstr "binärt tal"
 
-#: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1274
-#: ../src/mainwindow.cc:4614
+#: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1276
+#: ../src/mainwindow.cc:4634
 msgid "roman"
 msgstr "romersk"
 
@@ -4284,8 +4267,8 @@ msgstr "romersk"
 msgid "roman numerals"
 msgstr "romerska siffror"
 
-#: ../src/expressionstatus.cc:875 ../src/mainwindow.cc:1277
-#: ../src/mainwindow.cc:4617
+#: ../src/expressionstatus.cc:875 ../src/mainwindow.cc:1279
+#: ../src/mainwindow.cc:4637
 msgid "bijective"
 msgstr "bijektiv"
 
@@ -4297,10 +4280,10 @@ msgstr "bijektiv talbas 26"
 msgid "binary-coded decimal"
 msgstr "binärkodat decimalt tal"
 
-#: ../src/expressionstatus.cc:879 ../src/mainwindow.cc:1283
-#: ../src/mainwindow.cc:1286 ../src/mainwindow.cc:1289
-#: ../src/mainwindow.cc:4623 ../src/mainwindow.cc:4626
-#: ../src/mainwindow.cc:4629
+#: ../src/expressionstatus.cc:879 ../src/mainwindow.cc:1285
+#: ../src/mainwindow.cc:1288 ../src/mainwindow.cc:1291
+#: ../src/mainwindow.cc:4643 ../src/mainwindow.cc:4646
+#: ../src/mainwindow.cc:4649
 msgid "sexagesimal"
 msgstr "sexagesimal"
 
@@ -4309,14 +4292,14 @@ msgid "sexagesimal number"
 msgstr "sexagesimalt tal"
 
 #: ../src/expressionstatus.cc:881 ../src/expressionstatus.cc:882
-#: ../src/mainwindow.cc:1292 ../src/mainwindow.cc:1295
-#: ../src/mainwindow.cc:4632 ../src/mainwindow.cc:4635
+#: ../src/mainwindow.cc:1294 ../src/mainwindow.cc:1297
+#: ../src/mainwindow.cc:4652 ../src/mainwindow.cc:4655
 msgid "latitude"
 msgstr "latitud"
 
 #: ../src/expressionstatus.cc:883 ../src/expressionstatus.cc:884
-#: ../src/mainwindow.cc:1298 ../src/mainwindow.cc:1301
-#: ../src/mainwindow.cc:4638 ../src/mainwindow.cc:4641
+#: ../src/mainwindow.cc:1300 ../src/mainwindow.cc:1303
+#: ../src/mainwindow.cc:4658 ../src/mainwindow.cc:4661
 msgid "longitude"
 msgstr "longitud"
 
@@ -4340,8 +4323,8 @@ msgstr "80-bit (x86) flyttal"
 msgid "128-bit floating point"
 msgstr "128-bit flyttal"
 
-#: ../src/expressionstatus.cc:895 ../src/mainwindow.cc:1319
-#: ../src/mainwindow.cc:4659
+#: ../src/expressionstatus.cc:895 ../src/mainwindow.cc:1321
+#: ../src/mainwindow.cc:4679
 msgid "time"
 msgstr "tid"
 
@@ -4349,8 +4332,8 @@ msgstr "tid"
 msgid "time format"
 msgstr "tidsformat"
 
-#: ../src/expressionstatus.cc:899 ../src/mainwindow.cc:1370
-#: ../src/mainwindow.cc:4733
+#: ../src/expressionstatus.cc:899 ../src/mainwindow.cc:1372
+#: ../src/mainwindow.cc:4753
 msgid "bases"
 msgstr "baser"
 
@@ -4359,12 +4342,12 @@ msgid "number bases"
 msgstr "talbaser"
 
 #: ../src/expressionstatus.cc:901 ../src/expressionstatus.cc:902
-#: ../src/mainwindow.cc:1372 ../src/mainwindow.cc:4743
+#: ../src/mainwindow.cc:1374 ../src/mainwindow.cc:4763
 msgid "calendars"
 msgstr "kalendrar"
 
-#: ../src/expressionstatus.cc:903 ../src/mainwindow.cc:1394
-#: ../src/mainwindow.cc:4818
+#: ../src/expressionstatus.cc:903 ../src/mainwindow.cc:1396
+#: ../src/mainwindow.cc:4838
 msgid "optimal"
 msgstr "optimal"
 
@@ -4372,8 +4355,8 @@ msgstr "optimal"
 msgid "optimal unit"
 msgstr "optimal enhet"
 
-#: ../src/expressionstatus.cc:905 ../src/mainwindow.cc:1399
-#: ../src/mainwindow.cc:4830
+#: ../src/expressionstatus.cc:905 ../src/mainwindow.cc:1401
+#: ../src/mainwindow.cc:4850
 msgid "prefix"
 msgstr "prefix"
 
@@ -4382,8 +4365,8 @@ msgid "optimal prefix"
 msgstr "optimalt prefix"
 
 #. base units
-#: ../src/expressionstatus.cc:907 ../src/mainwindow.cc:1404
-#: ../src/mainwindow.cc:4834
+#: ../src/expressionstatus.cc:907 ../src/mainwindow.cc:1406
+#: ../src/mainwindow.cc:4854
 msgctxt "Units"
 msgid "base"
 msgstr "bas"
@@ -4392,8 +4375,8 @@ msgstr "bas"
 msgid "base units"
 msgstr "basenheter"
 
-#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1409
-#: ../src/mainwindow.cc:4846
+#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1411
+#: ../src/mainwindow.cc:4866
 msgid "mixed"
 msgstr "blandade"
 
@@ -4402,12 +4385,12 @@ msgid "mixed units"
 msgstr "blandade enheter"
 
 #: ../src/expressionstatus.cc:911 ../src/expressionstatus.cc:912
-#: ../src/mainwindow.cc:1414 ../src/mainwindow.cc:4861
+#: ../src/mainwindow.cc:1416 ../src/mainwindow.cc:4881
 msgid "factors"
 msgstr "faktorer"
 
-#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1417
-#: ../src/mainwindow.cc:4871
+#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1419
+#: ../src/mainwindow.cc:4891
 msgid "partial fraction"
 msgstr "partialbråk"
 
@@ -4415,13 +4398,13 @@ msgstr "partialbråk"
 msgid "expanded partial fractions"
 msgstr "expanderade partialbråk"
 
-#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1374
-#: ../src/mainwindow.cc:4753
+#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1376
+#: ../src/mainwindow.cc:4773
 msgid "rectangular"
 msgstr "rektangulär"
 
-#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1374
-#: ../src/mainwindow.cc:4753
+#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1376
+#: ../src/mainwindow.cc:4773
 msgid "cartesian"
 msgstr "kartesisk"
 
@@ -4429,8 +4412,8 @@ msgstr "kartesisk"
 msgid "complex rectangular form"
 msgstr "komplex rektangulär form"
 
-#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1378
-#: ../src/mainwindow.cc:4766
+#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1380
+#: ../src/mainwindow.cc:4786
 msgid "exponential"
 msgstr "exponentiell"
 
@@ -4438,8 +4421,8 @@ msgstr "exponentiell"
 msgid "complex exponential form"
 msgstr "komplex exponentiell form"
 
-#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1382
-#: ../src/mainwindow.cc:4779
+#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1384
+#: ../src/mainwindow.cc:4799
 msgid "polar"
 msgstr "polär"
 
@@ -4451,8 +4434,8 @@ msgstr "komplex polär form"
 msgid "complex cis form"
 msgstr "komplex cis-form"
 
-#: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1390
-#: ../src/mainwindow.cc:4805
+#: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1392
+#: ../src/mainwindow.cc:4825
 msgid "angle"
 msgstr "vinkel"
 
@@ -4460,8 +4443,8 @@ msgstr "vinkel"
 msgid "complex angle notation"
 msgstr "komplex vinkelnotation"
 
-#: ../src/expressionstatus.cc:925 ../src/mainwindow.cc:1390
-#: ../src/mainwindow.cc:4805
+#: ../src/expressionstatus.cc:925 ../src/mainwindow.cc:1392
+#: ../src/mainwindow.cc:4825
 msgid "phasor"
 msgstr "fasvektor"
 
@@ -4474,8 +4457,8 @@ msgid "UTC time zone"
 msgstr "UTC-tidszon"
 
 #. number base #
-#: ../src/expressionstatus.cc:980 ../src/mainwindow.cc:1421
-#: ../src/mainwindow.cc:4881
+#: ../src/expressionstatus.cc:980 ../src/mainwindow.cc:1423
+#: ../src/mainwindow.cc:4901
 msgctxt "Number base"
 msgid "base"
 msgstr "bas"
@@ -4485,8 +4468,8 @@ msgstr "bas"
 msgid "number base %s"
 msgstr "talbas %s"
 
-#: ../src/expressionstatus.cc:985 ../src/mainwindow.cc:1425
-#: ../src/mainwindow.cc:4885
+#: ../src/expressionstatus.cc:985 ../src/mainwindow.cc:1427
+#: ../src/mainwindow.cc:4905
 msgid "decimals"
 msgstr "decimaler"
 
@@ -4499,31 +4482,31 @@ msgstr "decimalform"
 msgid "fraction"
 msgstr "bråktal"
 
-#: ../src/functioneditdialog.cc:479 ../src/nameseditdialog.cc:174
+#: ../src/functioneditdialog.cc:480 ../src/nameseditdialog.cc:174
 msgid "Reference"
 msgstr "Referens"
 
-#: ../src/functioneditdialog.cc:836
+#: ../src/functioneditdialog.cc:837
 msgid "Edit Function (global)"
 msgstr "Redigera funktion (systemvid)"
 
-#: ../src/functioneditdialog.cc:838
+#: ../src/functioneditdialog.cc:839
 msgid "New Function"
 msgstr "Ny funktion"
 
-#: ../src/functioneditdialog.cc:922
+#: ../src/functioneditdialog.cc:925
 msgid "Empty expression field."
 msgstr "Tom uttrycksfält."
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
-#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7342
-#: ../src/menubar.cc:1580 ../src/util.cc:1268 ../src/util.cc:1269
+#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7363
+#: ../src/menubar.cc:1585 ../src/util.cc:1268 ../src/util.cc:1269
 msgid "User functions"
 msgstr "Användarfunktioner"
 
 #: ../src/functionsdialog.cc:153 ../src/functionsdialog.cc:154
-#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7340
-#: ../src/mainwindow.cc:7372 ../src/mainwindow.cc:7396
+#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7361
+#: ../src/mainwindow.cc:7393 ../src/mainwindow.cc:7417
 #: ../src/unitsdialog.cc:174 ../src/unitsdialog.cc:175
 #: ../src/unitsdialog.cc:235 ../src/util.cc:1270 ../src/util.cc:1271
 #: ../src/variablesdialog.cc:155 ../src/variablesdialog.cc:156
@@ -4570,7 +4553,7 @@ msgstr "Ak_tivera"
 msgid "History Answer Value"
 msgstr "Svarsvärde från historiken"
 
-#: ../src/historyview.cc:112 ../src/mainwindow.cc:8423
+#: ../src/historyview.cc:112 ../src/mainwindow.cc:8444
 msgid "answer"
 msgstr "svar"
 
@@ -4587,12 +4570,12 @@ msgstr "Index %s finns inte i historiken."
 msgid "History Parsed Expression"
 msgstr "Tolkat uttryck från historiken"
 
-#: ../src/historyview.cc:795 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
+#: ../src/historyview.cc:797 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
 #: ../src/plotdialog.cc:486
 msgid "It took too long to generate the plot data."
 msgstr "Det tog för lång tid att generera data till diagrammet."
 
-#: ../src/historyview.cc:795
+#: ../src/historyview.cc:797
 msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
@@ -4600,32 +4583,32 @@ msgstr ""
 "Det tog för lång tid att generera data till diagrammet. Vänligen minska "
 "frekvensen eller höj tidsgränsen i inställningar."
 
-#: ../src/historyview.cc:2137 ../src/mainwindow.cc:2419
+#: ../src/historyview.cc:2139 ../src/mainwindow.cc:2421
 msgid "RPN Register Moved"
 msgstr "RPN-register flyttades"
 
-#: ../src/historyview.cc:2143 ../src/mainwindow.cc:2420
-#: ../src/mainwindow.cc:5176
+#: ../src/historyview.cc:2145 ../src/mainwindow.cc:2422
+#: ../src/mainwindow.cc:5196
 msgid "RPN Operation"
 msgstr "RPN operation"
 
-#: ../src/historyview.cc:2740
+#: ../src/historyview.cc:2742
 msgid "Search"
 msgstr "Sök"
 
-#: ../src/historyview.cc:2740
+#: ../src/historyview.cc:2742
 msgid "_Search"
 msgstr "_Sök"
 
-#: ../src/historyview.cc:2815 ../src/historyview.cc:3072
+#: ../src/historyview.cc:2817 ../src/historyview.cc:3074
 msgid "Remove Bookmark"
 msgstr "Ta bort bokmärkde"
 
-#: ../src/historyview.cc:2870
+#: ../src/historyview.cc:2872
 msgid "Add Bookmark"
 msgstr "Lägg till bokmärke"
 
-#: ../src/historyview.cc:2896
+#: ../src/historyview.cc:2898
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -4633,11 +4616,11 @@ msgstr ""
 "Ett bokmärke med samma namn finns redan.\n"
 "Vill du ersätta den?"
 
-#: ../src/historyview.cc:3110
+#: ../src/historyview.cc:3112
 msgid "No items found"
 msgstr "Inga objekt funna"
 
-#: ../src/historyview.cc:3544 ../src/stackview.cc:784
+#: ../src/historyview.cc:3546 ../src/stackview.cc:784
 msgid "Index"
 msgstr "Index"
 
@@ -4645,9 +4628,9 @@ msgstr "Index"
 msgid "Select file to import"
 msgstr "Välj fil att importera"
 
-#: ../src/importcsvdialog.cc:155 ../src/matrixeditdialog.cc:557
-#: ../src/uniteditdialog.cc:335 ../src/unknowneditdialog.cc:198
-#: ../src/variableeditdialog.cc:289
+#: ../src/importcsvdialog.cc:155 ../src/matrixeditdialog.cc:560
+#: ../src/uniteditdialog.cc:338 ../src/unknowneditdialog.cc:198
+#: ../src/variableeditdialog.cc:292
 msgid ""
 "A unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4722,7 +4705,7 @@ msgstr "Ange okända värden"
 
 #. Show further items in a submenu
 #: ../src/keypad.cc:858 ../src/keypad.cc:946 ../src/keypad.cc:949
-#: ../src/keypad.cc:2467 ../src/menubar.cc:1377 ../src/menubar.cc:1472
+#: ../src/keypad.cc:2467 ../src/menubar.cc:1382 ../src/menubar.cc:1477
 #: ../src/resultview.cc:894
 msgid "more"
 msgstr "fler"
@@ -4760,24 +4743,25 @@ msgstr "Alla funktioner"
 msgid "All variables"
 msgstr "Alla variabler"
 
-#: ../src/keypad.cc:2683 ../src/mainwindow.cc:7420
+#: ../src/keypad.cc:2683 ../src/mainwindow.cc:7441
 #: ../src/variablesdialog.cc:246 ../src/variablesdialog.cc:403
 #: ../src/variablesdialog.cc:418 ../src/variablesdialog.cc:434
 #: ../src/variablesdialog.cc:454
 msgid "Variable does not exist anymore."
 msgstr "Variabel existerar inte längre."
 
+#. RPN Enter (calculate and add to stack)
 #: ../src/keypad.cc:3528
 msgid "ENTER"
 msgstr "ENTER"
 
 #. Fixes missing support for context in ui file translations
-#: ../src/keypad.cc:3766
+#: ../src/keypad.cc:3607
 msgctxt "Manage units button"
 msgid "u"
 msgstr "u"
 
-#: ../src/keypad.cc:3767
+#: ../src/keypad.cc:3608
 msgctxt "Button for convert to operator"
 msgid "to"
 msgstr "till"
@@ -4840,24 +4824,24 @@ msgstr ""
 "Vill du trots det ändra förinställt beteende och tillåta flera samtidiga "
 "instanser?"
 
-#: ../src/mainwindow.cc:244
+#: ../src/mainwindow.cc:246
 msgid "Set Window Title"
 msgstr "Angle fönstertitel"
 
-#: ../src/mainwindow.cc:519
+#: ../src/mainwindow.cc:521
 msgid "Exchange rate source:"
 msgid_plural "Exchange rate sources:"
 msgstr[0] "Växelkurskälla:"
 msgstr[1] "Växelkurskällor:"
 
-#: ../src/mainwindow.cc:521
+#: ../src/mainwindow.cc:523
 #, c-format
 msgid "updated %s"
 msgid_plural "updated %s"
 msgstr[0] "uppdaterad %s"
 msgstr[1] "uppdaterade %s"
 
-#: ../src/mainwindow.cc:541
+#: ../src/mainwindow.cc:543
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -4868,15 +4852,15 @@ msgstr ""
 "ikonen i övre högra hörnet i uttrycksfältet för att reflektera detta. Om du "
 "håller pekaren över eller klickar på ikonen, så kommer meddelandet att visas."
 
-#: ../src/mainwindow.cc:601
+#: ../src/mainwindow.cc:603
 msgid "Path of executable not found."
 msgstr "Sökvägen till programmet hittades ej."
 
-#: ../src/mainwindow.cc:611
+#: ../src/mainwindow.cc:613
 msgid "curl not found."
 msgstr "curl hittades ej."
 
-#: ../src/mainwindow.cc:676
+#: ../src/mainwindow.cc:678
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -4885,19 +4869,19 @@ msgstr ""
 "Misslyckades med att köra sriptet.\n"
 "%s"
 
-#: ../src/mainwindow.cc:700
+#: ../src/mainwindow.cc:702
 msgid "Failed to check for updates."
 msgstr "Misslyckades med att söka efter uppdateringar."
 
-#: ../src/mainwindow.cc:700
+#: ../src/mainwindow.cc:702
 msgid "No updates found."
 msgstr "Inga uppdatering hittades."
 
-#: ../src/mainwindow.cc:714
+#: ../src/mainwindow.cc:716
 msgid "_Download"
 msgstr "_Ladda ner"
 
-#: ../src/mainwindow.cc:726
+#: ../src/mainwindow.cc:728
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
@@ -4908,7 +4892,7 @@ msgstr ""
 "\n"
 "Vill du uppdatera till version %s."
 
-#: ../src/mainwindow.cc:728
+#: ../src/mainwindow.cc:730
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -4919,11 +4903,11 @@ msgstr ""
 "\n"
 "Du kan hämta version %s på %s."
 
-#: ../src/mainwindow.cc:802
+#: ../src/mainwindow.cc:804
 msgid "Temperature Calculation Mode"
 msgstr "Läge för temperaturberäkningar"
 
-#: ../src/mainwindow.cc:812
+#: ../src/mainwindow.cc:814
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
@@ -4933,27 +4917,27 @@ msgstr ""
 "Vänligen välj ett läge för temperaturberäkningar\n"
 "(läget kan senare ändras i inställningarna)."
 
-#: ../src/mainwindow.cc:859
+#: ../src/mainwindow.cc:861
 msgid "Sinc Function"
 msgstr "Sinc-funktion"
 
-#: ../src/mainwindow.cc:869
+#: ../src/mainwindow.cc:871
 msgid "Please select desired variant of the sinc function."
 msgstr "Vänligen ange önskad variant av sinc-funktionen."
 
-#: ../src/mainwindow.cc:872
+#: ../src/mainwindow.cc:874
 msgid "Unnormalized"
 msgstr "Onormaliserad"
 
-#: ../src/mainwindow.cc:879
+#: ../src/mainwindow.cc:881
 msgid "Normalized"
 msgstr "Normaliserad"
 
-#: ../src/mainwindow.cc:912
+#: ../src/mainwindow.cc:914
 msgid "Interpretation of dots"
 msgstr "Tolkning av punkter"
 
-#: ../src/mainwindow.cc:922
+#: ../src/mainwindow.cc:924
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
@@ -4961,19 +4945,19 @@ msgstr ""
 "Vänligen välj hur punkter ska tolkas\n"
 "(detta kan senare ändras i inställningarna)."
 
-#: ../src/mainwindow.cc:925
+#: ../src/mainwindow.cc:927
 msgid "Both dot and comma as decimal separators"
 msgstr "Använd både punkt komma som decimaltecken"
 
-#: ../src/mainwindow.cc:932
+#: ../src/mainwindow.cc:934
 msgid "Dot as thousands separator"
 msgstr "Punkt som tusentalsavgränsare"
 
-#: ../src/mainwindow.cc:939
+#: ../src/mainwindow.cc:941
 msgid "Only dot as decimal separator"
 msgstr "Enbart punkt som decimaltecken"
 
-#: ../src/mainwindow.cc:979
+#: ../src/mainwindow.cc:981
 msgid ""
 "The expression is ambiguous.\n"
 "Please select interpretation of expressions with implicit multiplication\n"
@@ -4983,63 +4967,63 @@ msgstr ""
 "Vänligen välj tolkning av uttryck med implicit multiplikation\n"
 "(detta kan senare ändras i inställningarna)."
 
-#: ../src/mainwindow.cc:982
+#: ../src/mainwindow.cc:984
 msgid "Implicit multiplication first"
 msgstr "Implicit multiplikation först"
 
-#: ../src/mainwindow.cc:990
+#: ../src/mainwindow.cc:992
 msgid "Conventional"
 msgstr "Konventionell"
 
-#: ../src/mainwindow.cc:1025
+#: ../src/mainwindow.cc:1027
 msgid "Percentage Interpretation"
 msgstr "Procenttolkning"
 
-#: ../src/mainwindow.cc:1035
+#: ../src/mainwindow.cc:1037
 msgid "Please select interpretation of percentage addition."
 msgstr "Vänligen välj tolkning av procentaddition."
 
-#: ../src/mainwindow.cc:1038
+#: ../src/mainwindow.cc:1040
 msgid "Add percentage of original value"
 msgstr "Addera procent av ursprungligt värde"
 
-#: ../src/mainwindow.cc:1046
+#: ../src/mainwindow.cc:1048
 msgid "Add percentage multiplied by 1/100"
 msgstr "Addera procentenheter multiplicerade med 1/100"
 
-#: ../src/mainwindow.cc:1961
+#: ../src/mainwindow.cc:1963
 msgid "My Variables"
 msgstr "Mina variabler"
 
-#: ../src/mainwindow.cc:2580
+#: ../src/mainwindow.cc:2582
 msgid "Processing…"
 msgstr "Behandlar…"
 
-#: ../src/mainwindow.cc:2839
+#: ../src/mainwindow.cc:2841
 msgid "Factorizing…"
 msgstr "Faktoriserar…"
 
-#: ../src/mainwindow.cc:2843
+#: ../src/mainwindow.cc:2845
 msgid "Expanding partial fractions…"
 msgstr "Expanderar partialbråk…"
 
-#: ../src/mainwindow.cc:2847
+#: ../src/mainwindow.cc:2849
 msgid "Expanding…"
 msgstr "Expanderar…"
 
-#: ../src/mainwindow.cc:2852 ../src/mainwindow.cc:5116
+#: ../src/mainwindow.cc:2854 ../src/mainwindow.cc:5136
 msgid "Calculating…"
 msgstr "Beräknar…"
 
-#: ../src/mainwindow.cc:2856
+#: ../src/mainwindow.cc:2858
 msgid "Converting…"
 msgstr "Omvandlar…"
 
-#: ../src/mainwindow.cc:4710
+#: ../src/mainwindow.cc:4730
 msgid "Time zone parsing failed."
 msgstr "Läsning av tidszon misslyckades."
 
-#: ../src/mainwindow.cc:5301 ../src/mainwindow.cc:6871 ../src/openhelp.cc:361
+#: ../src/mainwindow.cc:5321 ../src/mainwindow.cc:6892 ../src/openhelp.cc:361
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -5048,28 +5032,28 @@ msgstr ""
 "Misslyckades med att öppna %s.\n"
 "%s"
 
-#: ../src/mainwindow.cc:5453
+#: ../src/mainwindow.cc:5473
 msgid "Couldn't write definitions"
 msgstr "Kunde inte spara definitioner"
 
-#: ../src/mainwindow.cc:5455 ../src/mainwindow.cc:5457
-#: ../src/mainwindow.cc:6209 ../src/mainwindow.cc:6211
-#: ../src/mainwindow.cc:6254 ../src/mainwindow.cc:6256
+#: ../src/mainwindow.cc:5475 ../src/mainwindow.cc:5477
+#: ../src/mainwindow.cc:6230 ../src/mainwindow.cc:6232
+#: ../src/mainwindow.cc:6275 ../src/mainwindow.cc:6277
 msgid "Ignore"
 msgstr "Ignorera"
 
-#: ../src/mainwindow.cc:5455 ../src/mainwindow.cc:6209
-#: ../src/mainwindow.cc:6254
+#: ../src/mainwindow.cc:5475 ../src/mainwindow.cc:6230
+#: ../src/mainwindow.cc:6275
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: ../src/mainwindow.cc:5455 ../src/mainwindow.cc:5457
-#: ../src/mainwindow.cc:6209 ../src/mainwindow.cc:6211
-#: ../src/mainwindow.cc:6254 ../src/mainwindow.cc:6256
+#: ../src/mainwindow.cc:5475 ../src/mainwindow.cc:5477
+#: ../src/mainwindow.cc:6230 ../src/mainwindow.cc:6232
+#: ../src/mainwindow.cc:6275 ../src/mainwindow.cc:6277
 msgid "Retry"
 msgstr "Försök igen"
 
-#: ../src/mainwindow.cc:6207
+#: ../src/mainwindow.cc:6228
 #, c-format
 msgid ""
 "Couldn't write history to\n"
@@ -5078,7 +5062,7 @@ msgstr ""
 "Kunde inte spara historiken till\n"
 "%s"
 
-#: ../src/mainwindow.cc:6252
+#: ../src/mainwindow.cc:6273
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5087,70 +5071,74 @@ msgstr ""
 "Kunde inte spara inställningar till\n"
 "%s"
 
-#: ../src/mainwindow.cc:6550 ../src/mainwindow.cc:6552
+#: ../src/mainwindow.cc:6571 ../src/mainwindow.cc:6573
 msgid "Select definitions file"
 msgstr "Välj definitionsfil"
 
-#: ../src/mainwindow.cc:6550 ../src/mainwindow.cc:6552
+#: ../src/mainwindow.cc:6571 ../src/mainwindow.cc:6573
 msgid "_Import"
 msgstr "_Importera"
 
-#: ../src/mainwindow.cc:6556
+#: ../src/mainwindow.cc:6577
 msgid "XML Files"
 msgstr "XML-filer"
 
-#: ../src/mainwindow.cc:6576
+#: ../src/mainwindow.cc:6597
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "Kunde inte kopiera %s till %s."
 
-#: ../src/mainwindow.cc:6584
+#: ../src/mainwindow.cc:6605
 #, c-format
 msgid "Could not read %s."
 msgstr "Kunde inte läsa %s."
 
-#: ../src/mainwindow.cc:6592
+#: ../src/mainwindow.cc:6613
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "Kunde inte kopiera fil till %s."
 
-#: ../src/mainwindow.cc:6845
+#: ../src/mainwindow.cc:6866
 msgid "translator-credits"
 msgstr "Hanna Knutsson <hanna.knutsson@protonmail.com>"
 
-#: ../src/mainwindow.cc:7374 ../src/menubar.cc:1662 ../src/util.cc:1264
+#: ../src/mainwindow.cc:7395 ../src/menubar.cc:1667 ../src/util.cc:1264
 #: ../src/util.cc:1265 ../src/variablesdialog.cc:137
 #: ../src/variablesdialog.cc:138 ../src/variablesdialog.cc:203
 msgid "User variables"
 msgstr "Användarvariabler"
 
-#: ../src/mainwindow.cc:7398 ../src/menubar.cc:1408 ../src/menubar.cc:1503
+#: ../src/mainwindow.cc:7419 ../src/menubar.cc:1413 ../src/menubar.cc:1508
 #: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
 #: ../src/unitsdialog.cc:237 ../src/util.cc:1266 ../src/util.cc:1267
 msgid "User units"
 msgstr "Användarenheter"
 
-#: ../src/mainwindow.cc:7503
+#: ../src/mainwindow.cc:7524
 msgid "No unknowns in result."
 msgstr "Inga okända värden i resultatet."
 
-#: ../src/mainwindow.cc:7509
+#: ../src/mainwindow.cc:7530
 msgid "Set Unknowns"
 msgstr "Ange okända värden"
 
-#: ../src/mainwindow.cc:8222 ../src/mainwindow.cc:8229
+#: ../src/mainwindow.cc:7530
+msgid "_Apply"
+msgstr "_Applicera"
+
+#: ../src/mainwindow.cc:8243 ../src/mainwindow.cc:8250
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
-#: ../src/mainwindow.cc:8420
+#: ../src/mainwindow.cc:8441
 msgid "ans"
 msgstr "ans"
 
-#: ../src/mainwindow.cc:8421
+#: ../src/mainwindow.cc:8442
 msgid "Last Answer"
 msgstr "Senaste svaret"
 
-#: ../src/mainwindow.cc:8422
+#: ../src/mainwindow.cc:8443
 msgid ""
 "Contains the result of the most recent calculation. Multiple results of an "
 "equation is represented as a vector. Access separate solutions using ans(n) "
@@ -5160,27 +5148,27 @@ msgstr ""
 "representeras av en vektor. För åtkomst till separata lösningar använd "
 "ans(n) (t.ex. ans(1) för den först lösningen)."
 
-#: ../src/mainwindow.cc:8425
+#: ../src/mainwindow.cc:8446
 msgid "Answer 2"
 msgstr "Svar 2"
 
-#: ../src/mainwindow.cc:8426
+#: ../src/mainwindow.cc:8447
 msgid "Answer 3"
 msgstr "Svar 3"
 
-#: ../src/mainwindow.cc:8427
+#: ../src/mainwindow.cc:8448
 msgid "Answer 4"
 msgstr "Svar 4"
 
-#: ../src/mainwindow.cc:8428
+#: ../src/mainwindow.cc:8449
 msgid "Answer 5"
 msgstr "Svar 5"
 
-#: ../src/mainwindow.cc:8438
+#: ../src/mainwindow.cc:8459
 msgid "Memory"
 msgstr "Minne"
 
-#: ../src/matrixdialog.cc:73 ../src/matrixeditdialog.cc:93
+#: ../src/matrixdialog.cc:73 ../src/matrixeditdialog.cc:94
 msgid "none"
 msgstr "ingen"
 
@@ -5196,23 +5184,23 @@ msgstr "Vektorresultat"
 msgid "Matrix Result"
 msgstr "Matrisresultat"
 
-#: ../src/matrixeditdialog.cc:394
+#: ../src/matrixeditdialog.cc:395
 msgid "Edit Vector"
 msgstr "Redigera vektor"
 
-#: ../src/matrixeditdialog.cc:396
+#: ../src/matrixeditdialog.cc:397
 msgid "Edit Vector (global)"
 msgstr "Redigera vektor (systemvid)"
 
-#: ../src/matrixeditdialog.cc:398
+#: ../src/matrixeditdialog.cc:399
 msgid "New Vector"
 msgstr "Ny vektor"
 
-#: ../src/matrixeditdialog.cc:405
+#: ../src/matrixeditdialog.cc:406
 msgid "Edit Matrix (global)"
 msgstr "Redigera matris (systemvid)"
 
-#: ../src/matrixeditdialog.cc:407
+#: ../src/matrixeditdialog.cc:408
 msgid "New Matrix"
 msgstr "Ny matris"
 
@@ -5220,27 +5208,27 @@ msgstr "Ny matris"
 msgid "Unit does not exist"
 msgstr "Enheten finns inte"
 
-#: ../src/menubar.cc:1198
+#: ../src/menubar.cc:1203
 msgid "Save Mode"
 msgstr "Spara läge"
 
-#: ../src/menubar.cc:1228
+#: ../src/menubar.cc:1233
 msgid "Preset mode cannot be overwritten."
 msgstr "Förinställt läge kan inte skrivas över."
 
-#: ../src/menubar.cc:1239
+#: ../src/menubar.cc:1244
 msgid "Delete Mode"
 msgstr "Radera läge"
 
-#: ../src/menubar.cc:1416
+#: ../src/menubar.cc:1421
 msgid "Prefixes"
 msgstr "Prefix"
 
-#: ../src/menubar.cc:1720
+#: ../src/menubar.cc:1725
 msgid "No Prefix"
 msgstr "Inget prefix"
 
-#: ../src/menubar.cc:2677
+#: ../src/menubar.cc:2682
 msgid "Open Settings Folder"
 msgid_plural "Open Settings Folders"
 msgstr[0] "Öppna inställningsmappen"
@@ -5415,7 +5403,7 @@ msgid_plural "%i days"
 msgstr[0] "%i dag"
 msgstr[1] "%i dagar"
 
-#: ../src/preferencesdialog.cc:282
+#: ../src/preferencesdialog.cc:284
 msgid "Please restart the program for the language change to take effect."
 msgstr "Vängligen starta om programmet för att språkändringen skall ha effekt."
 
@@ -5491,15 +5479,15 @@ msgctxt "Keypad"
 msgid "Add the two top values together"
 msgstr "Addera de två översta värdena"
 
-#: ../src/uniteditdialog.cc:192
+#: ../src/uniteditdialog.cc:193
 msgid "Edit Unit (global)"
 msgstr "Redigera enhet (systemvid)"
 
-#: ../src/uniteditdialog.cc:194
+#: ../src/uniteditdialog.cc:195
 msgid "New Unit"
 msgstr "Ny enhet"
 
-#: ../src/uniteditdialog.cc:362 ../src/uniteditdialog.cc:414
+#: ../src/uniteditdialog.cc:365 ../src/uniteditdialog.cc:417
 msgid "Base unit does not exist."
 msgstr "Angiven grundenhet finns inte."
 
@@ -5824,15 +5812,15 @@ msgstr "Formaterat uttryck + resultat"
 msgid "Unformatted ASCII expression + result"
 msgstr "Oformaterat ASCII-uttryck + resultat"
 
-#: ../src/variableeditdialog.cc:172
+#: ../src/variableeditdialog.cc:173
 msgid "Edit Variable (global)"
 msgstr "Redigera variabel (systemvid)"
 
-#: ../src/variableeditdialog.cc:174
+#: ../src/variableeditdialog.cc:175
 msgid "New Variable"
 msgstr "Ny variabel"
 
-#: ../src/variableeditdialog.cc:283
+#: ../src/variableeditdialog.cc:286
 msgid "Empty value field."
 msgstr "Tomt värdefält."
 
@@ -5847,6 +5835,24 @@ msgstr "en vektor"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "inte matris"
+
+#~ msgid "Accept the modification of argument rules"
+#~ msgstr "Godkänn modifiering av parameterregler"
+
+#~ msgid "Do not create/modify this data object"
+#~ msgstr "Avbryt skapande/modifiering av dataobjektet"
+
+#~ msgid "Accept the creation/modification of this data object"
+#~ msgstr "Godkänn skapande/modifiering av dataobjektet"
+
+#~ msgid "Accept the creation/modification of this matrix/vector"
+#~ msgstr "Godkänn skapande/modifiering av matrisen/vektorn"
+
+#~ msgid "Do not create/modify this unit"
+#~ msgstr "Avbryt skapande/modifiering av enheten"
+
+#~ msgid "Accept the creation/modification of this unit"
+#~ msgstr "Godta skapande/modifiering av enheten"
 
 #~ msgid "Imaginary unit i (√-1)"
 #~ msgstr "Imaginär enhet i (√-1)"

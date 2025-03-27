@@ -989,11 +989,11 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Convert To Optimal Unit</para></entry>
-				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Only SI units are used for conversion. If the original units are equally or more optimal, than the automatic alternative, they are kept. Currencies are converted to the local currency, unless deactivated in the preferences dialog.</para></entry>
+				<entry><para>Tries to convert the units in the current result to as few units and exponents as possible. Only SI units are used for the conversion, but if no improvement is achieved, the original units are kept. Currencies are converted to the local currency, unless deactivated in the preferences dialog.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Convert To Optimal SI Unit</para></entry>
-				<entry><para>Tries to convert the units in the current result so that as few units as possible is used. Non-SI units are not kept, even if the number of units used increase, and the automatic alternative is prioritized. Currencies are converted to the local currency, unless deactivated in the preferences dialog.</para></entry>
+				<entry><para>Tries to convert the units in the current result to as few units and exponents as possible. Non-SI units are not kept, even if the number of units increases, and the automatic alternative is prioritized. Currencies are converted to the local currency, unless deactivated in the preferences dialog.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Insert Date</para></entry>

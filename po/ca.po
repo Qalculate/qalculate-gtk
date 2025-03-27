@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-23 07:48+0100\n"
+"POT-Creation-Date: 2025-03-27 07:18+0100\n"
 "PO-Revision-Date: 2021-06-10 22:39-0600\n"
 "Last-Translator: Alex Henrie <alexhenrie24@gmail.com>\n"
 "Language-Team: Catalan <ca@dodds.net>\n"
@@ -23,7 +23,7 @@ msgid "Calculator"
 msgstr "Calculadora"
 
 #: ../data/qalculate-gtk.desktop.in.h:2
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:6846
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:6867
 msgid "Powerful and easy to use calculator"
 msgstr "Calculadora poderosa i fàcil a usar"
 
@@ -70,154 +70,146 @@ msgstr "Regles d'argument"
 #: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
 #: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
-#: ../src/expressionedit.cc:1321 ../src/historyview.cc:2775
-#: ../src/historyview.cc:2870 ../src/importcsvdialog.cc:49
+#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2777
+#: ../src/historyview.cc:2872 ../src/importcsvdialog.cc:49
 #: ../src/importcsvdialog.cc:51 ../src/insertfunctiondialog.cc:65
 #: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
-#: ../src/mainwindow.cc:709 ../src/mainwindow.cc:6550 ../src/mainwindow.cc:6552
-#: ../src/mainwindow.cc:7509 ../src/matrixdialog.cc:389 ../src/menubar.cc:1198
-#: ../src/menubar.cc:1239 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
+#: ../src/mainwindow.cc:711 ../src/mainwindow.cc:6571 ../src/mainwindow.cc:6573
+#: ../src/mainwindow.cc:7530 ../src/matrixdialog.cc:389 ../src/menubar.cc:1203
+#: ../src/menubar.cc:1244 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
 #: ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Cancel"
 msgstr "_Cancel·la"
 
-#: ../data/argumentrules.ui.h:3 ../data/functionedit.ui.h:26
-msgid "Do not save modifications"
-msgstr "No desis modificacions"
-
-#: ../data/argumentrules.ui.h:4 ../data/buttonsedit.ui.h:10
+#: ../data/argumentrules.ui.h:3 ../data/buttonsedit.ui.h:10
 #: ../data/csvexport.ui.h:3 ../data/csvimport.ui.h:4 ../data/datasetedit.ui.h:3
-#: ../data/datasets.ui.h:4 ../data/functionedit.ui.h:4
-#: ../data/matrixedit.ui.h:4 ../data/shortcuts.ui.h:9 ../data/unitedit.ui.h:5
+#: ../data/datasets.ui.h:3 ../data/functionedit.ui.h:4
+#: ../data/matrixedit.ui.h:4 ../data/shortcuts.ui.h:9 ../data/unitedit.ui.h:4
 #: ../data/unknownedit.ui.h:4 ../data/variableedit.ui.h:4
-#: ../src/expressionedit.cc:1321 ../src/historyview.cc:2775
-#: ../src/historyview.cc:2870 ../src/insertfunctiondialog.cc:65
+#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2777
+#: ../src/historyview.cc:2872 ../src/insertfunctiondialog.cc:65
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
-#: ../src/mainwindow.cc:709 ../src/mainwindow.cc:802 ../src/mainwindow.cc:859
-#: ../src/mainwindow.cc:912 ../src/mainwindow.cc:969 ../src/mainwindow.cc:1025
-#: ../src/mainwindow.cc:7509
+#: ../src/mainwindow.cc:711 ../src/mainwindow.cc:804 ../src/mainwindow.cc:861
+#: ../src/mainwindow.cc:914 ../src/mainwindow.cc:971 ../src/mainwindow.cc:1027
+#: ../src/mainwindow.cc:7530
 msgid "_OK"
 msgstr "_D'acord"
 
-#: ../data/argumentrules.ui.h:5
-msgid "Accept the modification of argument rules"
-msgstr "Accepta la modificació de regles d'argument"
-
-#: ../data/argumentrules.ui.h:6 ../data/buttonsedit.ui.h:12
+#: ../data/argumentrules.ui.h:4 ../data/buttonsedit.ui.h:12
 #: ../data/shortcuts.ui.h:11
 msgid "Argument name"
 msgstr "Nom d'argument"
 
-#: ../data/argumentrules.ui.h:7
+#: ../data/argumentrules.ui.h:5
 msgid "Free"
 msgstr "Libre"
 
-#: ../data/argumentrules.ui.h:8 ../data/datasetedit.ui.h:15 ../data/main.ui.h:7
+#: ../data/argumentrules.ui.h:6 ../data/datasetedit.ui.h:15 ../data/main.ui.h:7
 #: ../data/unknownedit.ui.h:9
 msgid "Number"
 msgstr "Nombre"
 
-#: ../data/argumentrules.ui.h:9 ../data/main.ui.h:11
+#: ../data/argumentrules.ui.h:7 ../data/main.ui.h:11
 #: ../data/unknownedit.ui.h:12
 msgid "Integer"
 msgstr "Enter"
 
-#: ../data/argumentrules.ui.h:10
+#: ../data/argumentrules.ui.h:8
 msgid "Symbol"
 msgstr "Símbol"
 
-#: ../data/argumentrules.ui.h:11 ../data/datasetedit.ui.h:14
+#: ../data/argumentrules.ui.h:9 ../data/datasetedit.ui.h:14
 msgid "Text"
 msgstr "Text"
 
-#: ../data/argumentrules.ui.h:12
+#: ../data/argumentrules.ui.h:10
 msgid "Date"
 msgstr "Dada"
 
-#: ../data/argumentrules.ui.h:13 ../data/main.ui.h:22 ../data/matrix.ui.h:10
-#: ../data/matrixedit.ui.h:13 ../src/matrixdialog.cc:392
+#: ../data/argumentrules.ui.h:11 ../data/main.ui.h:22 ../data/matrix.ui.h:10
+#: ../data/matrixedit.ui.h:12 ../src/matrixdialog.cc:392
 msgid "Vector"
 msgstr "Vector"
 
-#: ../data/argumentrules.ui.h:14 ../data/csvimport.ui.h:13 ../data/main.ui.h:21
-#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:11 ../src/matrixdialog.cc:394
+#: ../data/argumentrules.ui.h:12 ../data/csvimport.ui.h:13 ../data/main.ui.h:21
+#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:10 ../src/matrixdialog.cc:394
 msgid "Matrix"
 msgstr "Matriu"
 
-#: ../data/argumentrules.ui.h:15
+#: ../data/argumentrules.ui.h:13
 msgid "Positive number"
 msgstr "Nombre positiu"
 
-#: ../data/argumentrules.ui.h:16
+#: ../data/argumentrules.ui.h:14
 msgid "Non-zero number"
 msgstr "Nombre no zero"
 
-#: ../data/argumentrules.ui.h:17
+#: ../data/argumentrules.ui.h:15
 msgid "Non-negative number"
 msgstr "Nombre no negatiu"
 
-#: ../data/argumentrules.ui.h:18
+#: ../data/argumentrules.ui.h:16
 msgid "Positive integer"
 msgstr "Enter positiu"
 
-#: ../data/argumentrules.ui.h:19
+#: ../data/argumentrules.ui.h:17
 msgid "Non-zero integer"
 msgstr "Enter no zero"
 
-#: ../data/argumentrules.ui.h:20
+#: ../data/argumentrules.ui.h:18
 msgid "Non-negative integer"
 msgstr "Enter no negatiu"
 
-#: ../data/argumentrules.ui.h:21 ../data/main.ui.h:12
+#: ../data/argumentrules.ui.h:19 ../data/main.ui.h:12
 #: ../data/unknownedit.ui.h:13
 msgid "Boolean"
 msgstr "Booleà"
 
-#: ../data/argumentrules.ui.h:22 ../src/dataseteditdialog.cc:478
+#: ../data/argumentrules.ui.h:20 ../src/dataseteditdialog.cc:478
 msgid "Object"
 msgstr "Objecte"
 
-#: ../data/argumentrules.ui.h:23 ../data/datasetedit.ui.h:35
+#: ../data/argumentrules.ui.h:21 ../data/datasetedit.ui.h:35
 #: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/functionsdialog.cc:579
 msgid "Function"
 msgstr "Funció"
 
-#: ../data/argumentrules.ui.h:24 ../data/main.ui.h:26
+#: ../data/argumentrules.ui.h:22 ../data/main.ui.h:26
 msgid "Unit"
 msgstr "Unitat"
 
-#: ../data/argumentrules.ui.h:25 ../data/main.ui.h:20
+#: ../data/argumentrules.ui.h:23 ../data/main.ui.h:20
 #: ../src/variablesdialog.cc:515
 msgid "Variable"
 msgstr "Variable"
 
-#: ../data/argumentrules.ui.h:26 ../data/csvexport.ui.h:12
+#: ../data/argumentrules.ui.h:24 ../data/csvexport.ui.h:12
 #: ../data/csvimport.ui.h:6
 msgid "File"
 msgstr "Fitxer"
 
-#: ../data/argumentrules.ui.h:27
+#: ../data/argumentrules.ui.h:25
 msgid "Angle"
 msgstr "Angle"
 
-#: ../data/argumentrules.ui.h:28 ../src/expressioncompletion.cc:981
+#: ../data/argumentrules.ui.h:26 ../src/expressioncompletion.cc:981
 msgid "Data object"
 msgstr "Objecte de dades"
 
-#: ../data/argumentrules.ui.h:29
+#: ../data/argumentrules.ui.h:27
 msgid "Data property"
 msgstr "Propietat d'objecte"
 
-#: ../data/argumentrules.ui.h:30
+#: ../data/argumentrules.ui.h:28
 msgid "Enable rules and type test"
 msgstr "Habilita regles i verificació de tipus"
 
-#: ../data/argumentrules.ui.h:31
+#: ../data/argumentrules.ui.h:29
 msgid "Custom condition"
 msgstr "Condició personalitzada"
 
-#: ../data/argumentrules.ui.h:32
+#: ../data/argumentrules.ui.h:30
 msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
@@ -225,45 +217,45 @@ msgstr ""
 "Per exemple, si l'argument és una matriu que ha de tenir un nombre igual de "
 "files i columnes: rows(\\x) = columns(\\x)"
 
-#: ../data/argumentrules.ui.h:33
+#: ../data/argumentrules.ui.h:31
 msgid "Allow matrix"
 msgstr "Permet matriu"
 
-#: ../data/argumentrules.ui.h:34
+#: ../data/argumentrules.ui.h:32
 msgid "Forbid zero"
 msgstr "Prohibeix zero"
 
-#: ../data/argumentrules.ui.h:35
+#: ../data/argumentrules.ui.h:33
 msgid "Handle vector"
 msgstr "Tractar amb vectors"
 
-#: ../data/argumentrules.ui.h:36
+#: ../data/argumentrules.ui.h:34
 msgid "Calculate function for each separate element in vector."
 msgstr "Calcula la funció per cada element distint en el vector."
 
-#: ../data/argumentrules.ui.h:37
+#: ../data/argumentrules.ui.h:35
 msgid "Min"
 msgstr "Mín"
 
-#: ../data/argumentrules.ui.h:38
+#: ../data/argumentrules.ui.h:36
 msgid "Include equals"
 msgstr "Inclusiu"
 
-#: ../data/argumentrules.ui.h:39
+#: ../data/argumentrules.ui.h:37
 msgid "Max"
 msgstr "Màx"
 
-#: ../data/argumentrules.ui.h:40 ../data/unknownedit.ui.h:7
-#: ../src/dataseteditdialog.cc:230 ../src/functioneditdialog.cc:449
+#: ../data/argumentrules.ui.h:38 ../data/unknownedit.ui.h:7
+#: ../src/dataseteditdialog.cc:230 ../src/functioneditdialog.cc:450
 msgid "Type"
 msgstr "Tipus"
 
-#: ../data/argumentrules.ui.h:41 ../data/csvimport.ui.h:8
+#: ../data/argumentrules.ui.h:39 ../data/csvimport.ui.h:8
 #: ../data/datasetedit.ui.h:4 ../data/functionedit.ui.h:5
-#: ../data/matrixedit.ui.h:6 ../data/unitedit.ui.h:7 ../data/unknownedit.ui.h:5
+#: ../data/matrixedit.ui.h:5 ../data/unitedit.ui.h:5 ../data/unknownedit.ui.h:5
 #: ../data/variableedit.ui.h:5 ../src/conversionview.cc:508
-#: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:443
-#: ../src/historyview.cc:2877 ../src/menubar.cc:1205
+#: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:444
+#: ../src/historyview.cc:2879 ../src/menubar.cc:1210
 #: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1006
 msgid "Name"
 msgstr "Nom"
@@ -273,13 +265,13 @@ msgid "Customize Keypad Buttons"
 msgstr "Personalitza els botons de teclat numèric"
 
 #: ../data/buttonsedit.ui.h:2 ../data/calendarconversion.ui.h:2
-#: ../data/datasets.ui.h:7 ../data/decimals.ui.h:2 ../data/floatingpoint.ui.h:2
+#: ../data/datasets.ui.h:5 ../data/decimals.ui.h:2 ../data/floatingpoint.ui.h:2
 #: ../data/functions.ui.h:2 ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2
 #: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:2
 #: ../data/preferences.ui.h:2 ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2
-#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2740
-#: ../src/insertfunctiondialog.cc:449 ../src/mainwindow.cc:713
-#: ../src/mainwindow.cc:714 ../src/mainwindow.cc:716 ../src/matrixdialog.cc:381
+#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2742
+#: ../src/insertfunctiondialog.cc:449 ../src/mainwindow.cc:715
+#: ../src/mainwindow.cc:716 ../src/mainwindow.cc:718 ../src/matrixdialog.cc:381
 #: ../src/periodictabledialog.cc:86
 msgid "_Close"
 msgstr "_Tanca"
@@ -372,13 +364,13 @@ msgid "Import as"
 msgstr "Importa com a"
 
 #: ../data/csvimport.ui.h:9 ../data/datasetedit.ui.h:5
-#: ../data/functionedit.ui.h:19 ../data/matrixedit.ui.h:19
-#: ../data/unitedit.ui.h:9 ../data/variableedit.ui.h:13
+#: ../data/functionedit.ui.h:19 ../data/matrixedit.ui.h:20
+#: ../data/unitedit.ui.h:7 ../data/variableedit.ui.h:13
 msgid "Descriptive name"
 msgstr "Nom descriptiu"
 
 #: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:18 ../data/main.ui.h:251
-#: ../data/matrixedit.ui.h:18 ../data/unitedit.ui.h:8
+#: ../data/matrixedit.ui.h:18 ../data/unitedit.ui.h:6
 #: ../data/variableedit.ui.h:11 ../src/conversionview.cc:519
 #: ../src/functionsdialog.cc:593 ../src/unitsdialog.cc:1020
 #: ../src/variablesdialog.cc:529
@@ -412,7 +404,7 @@ msgstr ""
 "Nom (o prefix de nom) usat per a referir a les variables generades en "
 "expressions"
 
-#: ../data/csvimport.ui.h:18 ../data/matrixedit.ui.h:20
+#: ../data/csvimport.ui.h:18 ../data/matrixedit.ui.h:21
 #: ../data/variableedit.ui.h:12
 msgid "Title displayed in menus and in variable manager"
 msgstr "Títol mostrat en els menús i en el gestor de variables"
@@ -442,7 +434,7 @@ msgid "Edit Data Property"
 msgstr "Edició de propietat de dades"
 
 #: ../data/datasetedit.ui.h:6 ../data/functionedit.ui.h:23
-#: ../data/matrixedit.ui.h:21 ../data/unitedit.ui.h:11
+#: ../data/matrixedit.ui.h:22 ../data/unitedit.ui.h:9
 #: ../data/variableedit.ui.h:14
 msgid "Description"
 msgstr "Descripció"
@@ -476,7 +468,7 @@ msgid "Unit expression"
 msgstr "Expressió d'unitat"
 
 #: ../data/datasetedit.ui.h:16 ../data/functionedit.ui.h:8 ../data/plot.ui.h:8
-#: ../src/functioneditdialog.cc:469 ../src/plotdialog.cc:776
+#: ../src/functioneditdialog.cc:470 ../src/plotdialog.cc:776
 msgid "Expression"
 msgstr "Expressió"
 
@@ -508,7 +500,7 @@ msgstr "Dret d'autor"
 msgid "Description of this data set"
 msgstr "Descripció d'aquest conjunt de dades"
 
-#: ../data/datasetedit.ui.h:24 ../data/unitedit.ui.h:18
+#: ../data/datasetedit.ui.h:24 ../data/unitedit.ui.h:16
 msgid "General"
 msgstr "General"
 
@@ -532,7 +524,7 @@ msgid "_Edit"
 msgstr "_Edita"
 
 #: ../data/datasetedit.ui.h:29 ../data/functions.ui.h:10 ../data/units.ui.h:15
-#: ../data/variables.ui.h:10 ../src/menubar.cc:1239
+#: ../data/variables.ui.h:10 ../src/menubar.cc:1244
 msgid "_Delete"
 msgstr "_Suprimeix"
 
@@ -561,55 +553,47 @@ msgstr "Nom usat per a invocar la funció en les expressions"
 msgid "Edit Data Object"
 msgstr "Edició d'objecte de dades"
 
-#: ../data/datasets.ui.h:3
-msgid "Do not create/modify this data object"
-msgstr "No creis o no modifiques aquest objecte de dades"
-
-#: ../data/datasets.ui.h:5
-msgid "Accept the creation/modification of this data object"
-msgstr "Accepta la creació o modificació d'aquest object de dades"
-
-#: ../data/datasets.ui.h:6 ../data/main.ui.h:48 ../src/dataseteditdialog.cc:470
+#: ../data/datasets.ui.h:4 ../data/main.ui.h:48 ../src/dataseteditdialog.cc:470
 msgid "Data Sets"
 msgstr "Conjunts de dades"
 
-#: ../data/datasets.ui.h:8 ../data/main.ui.h:25 ../src/datasetsdialog.cc:432
+#: ../data/datasets.ui.h:6 ../data/main.ui.h:25 ../src/datasetsdialog.cc:432
 msgid "Data Set"
 msgstr "Conjunt de dades"
 
-#: ../data/datasets.ui.h:9
+#: ../data/datasets.ui.h:7
 msgid "Create a new data set"
 msgstr "Crea un conjunt de dades nou"
 
-#: ../data/datasets.ui.h:10
+#: ../data/datasets.ui.h:8
 msgid "Edit the selected data set"
 msgstr "Edita el conjunt de dades seleccionat"
 
-#: ../data/datasets.ui.h:11
+#: ../data/datasets.ui.h:9
 msgid "Delete the selected data set"
 msgstr "Suprimeix el conjunt de dades seleccionat"
 
-#: ../data/datasets.ui.h:12
+#: ../data/datasets.ui.h:10
 msgid "Objects"
 msgstr "Objectes"
 
-#: ../data/datasets.ui.h:13
+#: ../data/datasets.ui.h:11
 msgid "Create a new data object"
 msgstr "Crea un objecte de dades nou"
 
-#: ../data/datasets.ui.h:14
+#: ../data/datasets.ui.h:12
 msgid "Edit the selected data object"
 msgstr "Edita l'objecte de dades seleccionat"
 
-#: ../data/datasets.ui.h:15
+#: ../data/datasets.ui.h:13
 msgid "Remove the selected data object"
 msgstr "Elimina l'object de dades seleccionat"
 
-#: ../data/datasets.ui.h:16
+#: ../data/datasets.ui.h:14
 msgid "Data Set Description"
 msgstr "Descripció de conjunt de dades"
 
-#: ../data/datasets.ui.h:17
+#: ../data/datasets.ui.h:15
 msgid "Object Attributes"
 msgstr "Atributs d'objecte"
 
@@ -701,7 +685,7 @@ msgstr ""
 msgid "Microchip 32-bit"
 msgstr ""
 
-#: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:834
+#: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:835
 msgid "Edit Function"
 msgstr "Edició de funció"
 
@@ -723,7 +707,7 @@ msgstr ""
 "Useu \\x pel primer, \\y pel segon i \\z pel tercer argument. Per més "
 "informació, feu clic en el botó d'ajuda."
 
-#: ../data/functionedit.ui.h:9 ../data/matrixedit.ui.h:16
+#: ../data/functionedit.ui.h:9 ../data/matrixedit.ui.h:15
 #: ../data/variableedit.ui.h:9
 msgid "Required"
 msgstr "Necessari"
@@ -778,7 +762,11 @@ msgstr "Si aquesta funció es deu amagar en els menús"
 msgid "Example"
 msgstr "Exemple"
 
-#: ../data/functionedit.ui.h:27 ../src/functioneditdialog.cc:474
+#: ../data/functionedit.ui.h:26
+msgid "Do not save modifications"
+msgstr "No desis modificacions"
+
+#: ../data/functionedit.ui.h:27 ../src/functioneditdialog.cc:475
 msgid "Precalculate"
 msgstr "Precalcula"
 
@@ -832,7 +820,7 @@ msgstr "_Calcula"
 msgid "Insert (or execute) the selected function into the expression entry"
 msgstr "Insereix (o executa) la funció seleccionada en l'entrada d'expressió"
 
-#: ../data/functions.ui.h:16
+#: ../data/functions.ui.h:16 ../data/plot.ui.h:36
 msgid "A_pply"
 msgstr "_Aplica"
 
@@ -977,13 +965,13 @@ msgstr "Variables"
 msgid "Units"
 msgstr "Unitats"
 
-#: ../data/main.ui.h:49 ../src/keypad.cc:815 ../src/keypad.cc:3297
-#: ../src/keypad.cc:3415
+#: ../data/main.ui.h:49 ../src/keypad.cc:815 ../src/keypad.cc:3296
+#: ../src/keypad.cc:3414
 msgid "Factorize"
 msgstr "Factoritza"
 
-#: ../data/main.ui.h:50 ../src/keypad.cc:813 ../src/keypad.cc:3306
-#: ../src/keypad.cc:3418
+#: ../data/main.ui.h:50 ../src/keypad.cc:813 ../src/keypad.cc:3305
+#: ../src/keypad.cc:3417
 msgid "Expand"
 msgstr "Expandeix"
 
@@ -1019,15 +1007,15 @@ msgstr "Converteix a unitats bases"
 msgid "Convert to Optimal Unit"
 msgstr "Converteix a la unitat òptima"
 
-#: ../data/main.ui.h:59 ../src/expressionedit.cc:1503
+#: ../data/main.ui.h:59 ../src/expressionedit.cc:1452
 msgid "Insert Date…"
 msgstr "Insereix data…"
 
-#: ../data/main.ui.h:60 ../src/expressionedit.cc:1504
+#: ../data/main.ui.h:60 ../src/expressionedit.cc:1453
 msgid "Insert Matrix…"
 msgstr "Insereix matriu…"
 
-#: ../data/main.ui.h:61 ../src/expressionedit.cc:1505
+#: ../data/main.ui.h:61 ../src/expressionedit.cc:1454
 msgid "Insert Vector…"
 msgstr "Insereix vector…"
 
@@ -1052,7 +1040,7 @@ msgid "_Mode"
 msgstr "_Mode"
 
 #: ../data/main.ui.h:68 ../src/expressioncompletion.cc:1871
-#: ../src/expressionedit.cc:1475
+#: ../src/expressionedit.cc:1424
 msgid "Number Base"
 msgstr "Base numèrica"
 
@@ -1061,36 +1049,36 @@ msgid "Select Result and Expression Base…"
 msgstr "Selecciona la base del resultat i de l'expressió…"
 
 #: ../data/main.ui.h:70 ../data/nbases.ui.h:4 ../data/preferences.ui.h:65
-#: ../data/setbase.ui.h:3 ../src/expressionedit.cc:1478 ../src/keypad.cc:1012
+#: ../data/setbase.ui.h:3 ../src/expressionedit.cc:1427 ../src/keypad.cc:1012
 #: ../src/numberbasesdialog.cc:209 ../src/numberbasesdialog.cc:251
 msgid "Binary"
 msgstr "Binària"
 
 #: ../data/main.ui.h:71 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/expressionedit.cc:1479 ../src/keypad.cc:1013
+#: ../src/expressionedit.cc:1428 ../src/keypad.cc:1013
 #: ../src/numberbasesdialog.cc:210 ../src/numberbasesdialog.cc:252
 msgid "Octal"
 msgstr "Octal"
 
 #: ../data/main.ui.h:72 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/expressionedit.cc:1480 ../src/keypad.cc:1014
+#: ../src/expressionedit.cc:1429 ../src/keypad.cc:1014
 #: ../src/numberbasesdialog.cc:211 ../src/numberbasesdialog.cc:253
 msgid "Decimal"
 msgstr "Decimal"
 
 #: ../data/main.ui.h:73 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/expressionedit.cc:1481 ../src/numberbasesdialog.cc:212
+#: ../src/expressionedit.cc:1430 ../src/numberbasesdialog.cc:212
 #: ../src/numberbasesdialog.cc:254
 msgid "Duodecimal"
 msgstr "Duodecimal"
 
 #: ../data/main.ui.h:74 ../data/nbases.ui.h:11 ../data/preferences.ui.h:67
-#: ../data/setbase.ui.h:7 ../src/expressionedit.cc:1482 ../src/keypad.cc:1015
+#: ../data/setbase.ui.h:7 ../src/expressionedit.cc:1431 ../src/keypad.cc:1015
 #: ../src/numberbasesdialog.cc:213 ../src/numberbasesdialog.cc:255
 msgid "Hexadecimal"
 msgstr "Hexadecimal"
 
-#: ../data/main.ui.h:75 ../src/expressionedit.cc:1484
+#: ../data/main.ui.h:75 ../src/expressionedit.cc:1433
 msgid "Other…"
 msgstr "Altra…"
 
@@ -1103,7 +1091,7 @@ msgid "Time Format"
 msgstr "Format de temps"
 
 #: ../data/main.ui.h:78 ../src/expressioncompletion.cc:1926
-#: ../src/expressionedit.cc:1483
+#: ../src/expressionedit.cc:1432
 msgid "Roman Numerals"
 msgstr "Nombres romans"
 
@@ -1278,7 +1266,7 @@ msgstr "Mixta"
 msgid "Interval Display"
 msgstr "Presentació d'intervals"
 
-#: ../data/main.ui.h:121 ../src/mainwindow.cc:998
+#: ../data/main.ui.h:121 ../src/mainwindow.cc:1000
 msgid "Adaptive"
 msgstr "Adaptativa"
 
@@ -1294,7 +1282,7 @@ msgstr "Interval"
 msgid "Plus/Minus"
 msgstr "Més/Menys"
 
-#: ../data/main.ui.h:125 ../data/preferences.ui.h:109 ../src/mainwindow.cc:822
+#: ../data/main.ui.h:125 ../data/preferences.ui.h:111 ../src/mainwindow.cc:824
 msgid "Relative"
 msgstr "Relatiu"
 
@@ -1517,7 +1505,7 @@ msgstr ""
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "Adverteix en quant als denominadors presumiblement no zeros"
 
-#: ../data/main.ui.h:179 ../src/expressionedit.cc:1465 ../src/mainwindow.cc:969
+#: ../data/main.ui.h:179 ../src/expressionedit.cc:1414 ../src/mainwindow.cc:971
 msgid "Parsing Mode"
 msgstr "Mode d'anàlisi"
 
@@ -1568,17 +1556,17 @@ msgstr "Limita la multiplicació implícita"
 
 #: ../data/main.ui.h:192
 msgid ""
-"Parse decimal numbers as approximate with precision equal to the number of "
-"digits.\n"
+"Parse decimal numbers as approximations with precision equal to the number "
+"of digits.\n"
 "\n"
-"Off: 1.10 × 1.10 = 1.21\n"
-"On: 1.10 × 1.10 ≈ 1.2"
+"Off: 1.1 × 3.20 = 3.52\n"
+"On: 1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.16"
 msgstr ""
 "Analitza els nombres decimals com a aproximats amb precisió igual al nombre "
 "de xifres.\n"
 "\n"
-"Desactivat: 1,10 × 1,10 = 1,21\n"
-"Activat: 1,10 × 1,10 ≈ 1,2"
+"Desactivat: 1,1 × 3,20 = 3,52\n"
+"Activat: 1,1 × 3,20 = 1,1±0,05 × 3,20±0,005 ≈ 3,5±0,16"
 
 #: ../data/main.ui.h:196
 msgid "Read Precision"
@@ -1608,11 +1596,11 @@ msgstr "Activa la pila NPI."
 msgid "RPN Mode"
 msgstr "Mode NPI"
 
-#: ../data/main.ui.h:203 ../src/expressionedit.cc:1486
+#: ../data/main.ui.h:203 ../src/expressionedit.cc:1435
 msgid "Meta Modes"
 msgstr "Metamodes"
 
-#: ../data/main.ui.h:204 ../src/expressionedit.cc:1500
+#: ../data/main.ui.h:204 ../src/expressionedit.cc:1449
 msgid "Save Mode…"
 msgstr "Desa el mode…"
 
@@ -1720,7 +1708,7 @@ msgstr "Exponencia al valor seleccionat"
 msgid "Calculate the square root of the selected value"
 msgstr "Calcula l'arrel quadrada del valor seleccionat"
 
-#: ../data/main.ui.h:231 ../src/historyview.cc:3554
+#: ../data/main.ui.h:231 ../src/historyview.cc:3556
 msgid "History"
 msgstr "Historial"
 
@@ -1928,17 +1916,17 @@ msgid "Kilogram"
 msgstr "Quilograma"
 
 #: ../data/main.ui.h:288 ../data/nbases.ui.h:14 ../src/expressionstatus.cc:370
-#: ../src/keypad.cc:2850 ../src/keypad.cc:2851 ../src/keypad.cc:2852
+#: ../src/keypad.cc:2849 ../src/keypad.cc:2850 ../src/keypad.cc:2851
 msgid "BIN"
 msgstr "BIN"
 
 #: ../data/main.ui.h:289 ../data/nbases.ui.h:15 ../src/expressionstatus.cc:375
-#: ../src/keypad.cc:2854 ../src/keypad.cc:2855 ../src/keypad.cc:2856
+#: ../src/keypad.cc:2853 ../src/keypad.cc:2854 ../src/keypad.cc:2855
 msgid "OCT"
 msgstr "OCT"
 
-#: ../data/main.ui.h:290 ../data/nbases.ui.h:16 ../src/keypad.cc:2858
-#: ../src/keypad.cc:2859 ../src/keypad.cc:2860
+#: ../data/main.ui.h:290 ../data/nbases.ui.h:16 ../src/keypad.cc:2857
+#: ../src/keypad.cc:2858 ../src/keypad.cc:2859
 msgid "DEC"
 msgstr "DEC"
 
@@ -2048,11 +2036,11 @@ msgstr "Copia el text complet"
 msgid "Search…"
 msgstr "Cerca…"
 
-#: ../data/main.ui.h:319 ../src/historyview.cc:3076 ../src/historyview.cc:3091
+#: ../data/main.ui.h:319 ../src/historyview.cc:3078 ../src/historyview.cc:3093
 msgid "Search by Date…"
 msgstr "Cerca per data…"
 
-#: ../data/main.ui.h:320 ../src/historyview.cc:3073
+#: ../data/main.ui.h:320 ../src/historyview.cc:3075
 msgid "Add Bookmark…"
 msgstr "Afegeix un marcador…"
 
@@ -2279,48 +2267,53 @@ msgstr "_Insereix"
 msgid "Insert the matrix/vector into the expression"
 msgstr "Insereix la matriu o el vector en l'expressió"
 
-#: ../data/matrix.ui.h:6 ../data/matrixedit.ui.h:7 ../src/matrixdialog.cc:280
+#: ../data/matrix.ui.h:6 ../data/matrixedit.ui.h:6 ../src/matrixdialog.cc:280
 #: ../src/matrixdialog.cc:288
 msgid "Elements"
 msgstr "Elements"
 
-#: ../data/matrix.ui.h:7 ../data/matrixedit.ui.h:9
+#: ../data/matrix.ui.h:7 ../data/matrixedit.ui.h:8
 msgid "Number of rows in this matrix (rows displayed for vectors)"
 msgstr "Nombre de files en aquesta matriu (files mostrades per als vectors)"
 
-#: ../data/matrix.ui.h:8 ../data/matrixedit.ui.h:10
+#: ../data/matrix.ui.h:8 ../data/matrixedit.ui.h:9
 msgid "Number of columns in this matrix (columns displayed for vectors)"
 msgstr ""
 "Nombre de columnes en aquesta matriu (columnes mostrades per als vectors)"
 
-#: ../data/matrix.ui.h:9 ../data/matrixedit.ui.h:12
+#: ../data/matrix.ui.h:9 ../data/matrixedit.ui.h:11
 msgid "If this is a matrix or vector"
 msgstr "Si això és una matriu o un vector"
 
-#: ../data/matrix.ui.h:11 ../data/matrixedit.ui.h:14
+#: ../data/matrix.ui.h:11 ../data/matrixedit.ui.h:13
 msgid "Current element:"
 msgstr "Element actual:"
 
-#: ../data/matrixedit.ui.h:1 ../src/matrixeditdialog.cc:403
+#: ../data/matrixedit.ui.h:1 ../src/matrixeditdialog.cc:404
 msgid "Edit Matrix"
 msgstr "Edició de matriu"
 
-#: ../data/matrixedit.ui.h:5
-msgid "Accept the creation/modification of this matrix/vector"
-msgstr "Accepta la creació/modificació d'aquesta matriu o d'aquest vector"
-
-#: ../data/matrixedit.ui.h:8 ../data/variableedit.ui.h:6
+#: ../data/matrixedit.ui.h:7 ../data/variableedit.ui.h:6
 msgid "Name used to reference this variable in expressions"
 msgstr "Nom usat per a referir a aquesta variable en les expressions"
 
-#: ../data/matrixedit.ui.h:15 ../data/unknownedit.ui.h:21
+#: ../data/matrixedit.ui.h:14 ../data/unknownedit.ui.h:21
 #: ../data/variableedit.ui.h:8
 msgid "Temporary"
 msgstr "Temporal"
 
-#: ../data/matrixedit.ui.h:17 ../data/variableedit.ui.h:15
+#: ../data/matrixedit.ui.h:16 ../data/variableedit.ui.h:15
 msgid "Hide variable"
 msgstr "Amaga la variable"
+
+#: ../data/matrixedit.ui.h:17 ../data/variableedit.ui.h:16
+#, fuzzy
+msgid "If this variable shall be hidden in menus"
+msgstr "Si s'amagarà aquesta unitat en els menús"
+
+#: ../data/matrixedit.ui.h:19 ../data/variableedit.ui.h:10
+msgid "The category this variable belongs to"
+msgstr "La categoria a la qual pertany aquesta variable"
 
 #: ../data/namesedit.ui.h:1
 msgid "Names"
@@ -2360,8 +2353,8 @@ msgstr "Mostra/amaga el teclat numèric"
 msgid "DUO"
 msgstr "DUO"
 
-#: ../data/nbases.ui.h:18 ../src/expressionstatus.cc:385 ../src/keypad.cc:2862
-#: ../src/keypad.cc:2863 ../src/keypad.cc:2864
+#: ../data/nbases.ui.h:18 ../src/expressionstatus.cc:385 ../src/keypad.cc:2861
+#: ../src/keypad.cc:2862 ../src/keypad.cc:2863
 msgid "HEX"
 msgstr "HEX"
 
@@ -2396,7 +2389,7 @@ msgid "Bitwise NOT"
 msgstr "NOT bit a bit"
 
 #: ../data/nbases.ui.h:30 ../data/percentage.ui.h:4
-#: ../src/buttonseditdialog.cc:376 ../src/expressionedit.cc:1417
+#: ../src/buttonseditdialog.cc:376 ../src/expressionedit.cc:1366
 #: ../src/keypad.cc:522
 msgid "Clear"
 msgstr "Neteja"
@@ -2445,7 +2438,7 @@ msgstr "Canvi de 2 a 1"
 msgid "Plot"
 msgstr "Dibuix"
 
-#: ../data/plot.ui.h:3 ../src/menubar.cc:1198 ../src/plotdialog.cc:378
+#: ../data/plot.ui.h:3 ../src/menubar.cc:1203 ../src/plotdialog.cc:378
 #: ../src/plotdialog.cc:380 ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Save"
 msgstr "_Desa"
@@ -2554,10 +2547,6 @@ msgstr "Principal"
 #: ../data/plot.ui.h:34
 msgid "Secondary"
 msgstr "Secondari"
-
-#: ../data/plot.ui.h:36 ../src/mainwindow.cc:7509
-msgid "_Apply"
-msgstr "_Aplica"
 
 #: ../data/plot.ui.h:38
 msgid "Data"
@@ -2874,7 +2863,7 @@ msgstr "Resultat"
 msgid "Application name + result"
 msgstr "Nom d'aplicació + resultat"
 
-#: ../data/preferences.ui.h:44 ../src/menubar.cc:1246
+#: ../data/preferences.ui.h:44 ../src/menubar.cc:1251
 msgid "Mode"
 msgstr "Mode"
 
@@ -3064,22 +3053,10 @@ msgid "Use comma as decimal separator"
 msgstr "Usa la coma com a separador decimal"
 
 #: ../data/preferences.ui.h:87
-msgid "Use 'j' as imaginary unit"
-msgstr "Usa 'j' com a unitat imaginària"
-
-#: ../data/preferences.ui.h:88
-msgid ""
-"Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
-"it in front of the imaginary part."
-msgstr ""
-"Usa 'j' (en lloc de 'i') com al símbol predeterminat pela unitat imaginària, "
-"i col·loca'l davant la part imaginària."
-
-#: ../data/preferences.ui.h:89
 msgid "Ignore comma in numbers"
 msgstr "Ignora comas en els nombres"
 
-#: ../data/preferences.ui.h:90
+#: ../data/preferences.ui.h:88
 msgid ""
 "Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
@@ -3087,15 +3064,11 @@ msgstr ""
 "Permet que les comes, ',', s'usin com a separador de millars en lloc de ser "
 "un separador dels arguments d'una funció"
 
-#: ../data/preferences.ui.h:91
-msgid "Copy result as unformatted ASCII by default"
-msgstr ""
-
-#: ../data/preferences.ui.h:92
+#: ../data/preferences.ui.h:89
 msgid "Ignore dots in numbers"
 msgstr "Ignora els punts en els nombres"
 
-#: ../data/preferences.ui.h:93
+#: ../data/preferences.ui.h:90
 msgid ""
 "Allow dots, '.', to be used as thousands separator instead of as an "
 "alternative decimal sign"
@@ -3103,39 +3076,66 @@ msgstr ""
 "Permet que els punts, '.', s'usin com a separador de millars en lloc d'un "
 "signe decimal alternatiu"
 
+#: ../data/preferences.ui.h:91
+msgid "Use 'j' as imaginary unit"
+msgstr "Usa 'j' com a unitat imaginària"
+
+#: ../data/preferences.ui.h:92
+msgid ""
+"Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
+"it in front of the imaginary part."
+msgstr ""
+"Usa 'j' (en lloc de 'i') com al símbol predeterminat pela unitat imaginària, "
+"i col·loca'l davant la part imaginària."
+
+#: ../data/preferences.ui.h:93
+msgid "Copy result as unformatted ASCII by default"
+msgstr ""
+
 #: ../data/preferences.ui.h:94
+#, fuzzy
+msgid "Use overline for repeating decimals"
+msgstr "Indica els decimals periòdics"
+
+#: ../data/preferences.ui.h:95
+msgid ""
+"Use overline (vinculum), instead of ellipsis, for repeating decimals when "
+"indicate repeating decimals is enabled."
+msgstr ""
+
+#: ../data/preferences.ui.h:96
 msgid "Digit grouping"
 msgstr "Agrupament de xifres"
 
-#: ../data/preferences.ui.h:95
+#: ../data/preferences.ui.h:97
 msgid "off"
 msgstr "desactivat"
 
-#: ../data/preferences.ui.h:96
+#: ../data/preferences.ui.h:98
 msgid "standard"
 msgstr "estàndar"
 
-#: ../data/preferences.ui.h:97
+#: ../data/preferences.ui.h:99
 msgid "local"
 msgstr "local"
 
-#: ../data/preferences.ui.h:98
+#: ../data/preferences.ui.h:100
 msgid "Multiplication sign"
 msgstr "Signe de multiplicació"
 
-#: ../data/preferences.ui.h:99
+#: ../data/preferences.ui.h:101
 msgid "Division sign"
 msgstr "Signe de divisó"
 
-#: ../data/preferences.ui.h:100
+#: ../data/preferences.ui.h:102
 msgid "Numbers & Operators"
 msgstr "Nombres i operadors"
 
-#: ../data/preferences.ui.h:101
+#: ../data/preferences.ui.h:103
 msgid "Use binary prefixes for information units"
 msgstr "Una els prefixes binaris per a les unitats d'informació"
 
-#: ../data/preferences.ui.h:102
+#: ../data/preferences.ui.h:104
 msgid ""
 "Use binary, instead of decimal, prefixes by default for information units "
 "(e.g. bytes)."
@@ -3143,16 +3143,16 @@ msgstr ""
 "Usa els prefixes binaris, en lloc dels decimals, per defecte per a les "
 "unitats d'informació (e.g. bytes)."
 
-#: ../data/preferences.ui.h:103
+#: ../data/preferences.ui.h:105
 #, fuzzy
 msgid "Copy unformatted ASCII without units"
 msgstr "Copiar ASCII sense format"
 
-#: ../data/preferences.ui.h:104
+#: ../data/preferences.ui.h:106
 msgid "Conversion to local currency"
 msgstr "Conversió a la moneda local"
 
-#: ../data/preferences.ui.h:105
+#: ../data/preferences.ui.h:107
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
@@ -3160,51 +3160,51 @@ msgstr ""
 "Converteix a la moneda local automàticament quan la conversió d'unitat "
 "òptima està activada."
 
-#: ../data/preferences.ui.h:106
+#: ../data/preferences.ui.h:108
 msgid "Exchange rates updates"
 msgstr "Actualitzacions de taxes d'intercanvi"
 
-#: ../data/preferences.ui.h:107
+#: ../data/preferences.ui.h:109
 msgid "Temperature calculation mode:"
 msgstr "Mode de càlcul de temperatura:"
 
-#: ../data/preferences.ui.h:108 ../src/mainwindow.cc:815
+#: ../data/preferences.ui.h:110 ../src/mainwindow.cc:817
 msgid "Absolute"
 msgstr "Absolut"
 
-#: ../data/preferences.ui.h:110 ../src/mainwindow.cc:829
+#: ../data/preferences.ui.h:112 ../src/mainwindow.cc:831
 msgid "Hybrid"
 msgstr "Híbrid"
 
-#: ../data/preferences.ui.h:111
+#: ../data/preferences.ui.h:113
 msgid "Units & Currencies"
 msgstr "Unitats i monedes"
 
-#: ../data/preferences.ui.h:112
+#: ../data/preferences.ui.h:114
 msgid "Show expression completion suggestions"
 msgstr "Mostra els suggeriments de compleció d'expressió"
 
-#: ../data/preferences.ui.h:113
+#: ../data/preferences.ui.h:115
 msgid "Search titles and countries"
 msgstr "Cerca en els títols i països"
 
-#: ../data/preferences.ui.h:114
+#: ../data/preferences.ui.h:116
 msgid "Minimum characters"
 msgstr "Caràcters mínims"
 
-#: ../data/preferences.ui.h:115
+#: ../data/preferences.ui.h:117
 msgid "Popup delay (ms)"
 msgstr "Retard de caixa emergent (ms)"
 
-#: ../data/preferences.ui.h:116
+#: ../data/preferences.ui.h:118
 msgid "Completion"
 msgstr "Compleció"
 
-#: ../data/preferences.ui.h:117
+#: ../data/preferences.ui.h:119
 msgid "Custom status font"
 msgstr "Tipus de lletra personalitzat per a l'estat"
 
-#: ../data/preferences.ui.h:118
+#: ../data/preferences.ui.h:120
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
@@ -3212,72 +3212,71 @@ msgstr ""
 "Si voleu usar altre tipus de lletra que el predeterminat en la presentació "
 "de l'estat abaix de l'entrada d'expressió"
 
-#: ../data/preferences.ui.h:119
+#: ../data/preferences.ui.h:121
 msgid "Custom expression font"
 msgstr "Tipus de lletra personalitzat per a l'expressió"
 
-#: ../data/preferences.ui.h:120
+#: ../data/preferences.ui.h:122
 msgid ""
 "If you want to use a font other than the default in the expression entry"
 msgstr ""
 "Si voleu usar altre tipus de lletra que el predeterminat en l'entrada "
 "d'expressió"
 
-#: ../data/preferences.ui.h:121
+#: ../data/preferences.ui.h:123
 msgid "Custom result font"
 msgstr "Tipus de lletra personalitzat per al resultat"
 
-#: ../data/preferences.ui.h:122
+#: ../data/preferences.ui.h:124
 msgid "If you want to use a font other than the default in the result display"
 msgstr ""
 "Si voleu usar altre tipus de lletra que el predeterminat en la presentació "
 "del resultat"
 
-#: ../data/preferences.ui.h:123
+#: ../data/preferences.ui.h:125
 msgid "Custom keypad font"
 msgstr "Tipus de lletra personalitzat per al teclat numèric"
 
-#: ../data/preferences.ui.h:124
+#: ../data/preferences.ui.h:126
 msgid "If you want to use a font other than the default in the keypad"
 msgstr ""
 "Si voleu usar altre tipus de lletra que el predeterminat en el teclat numèric"
 
-#: ../data/preferences.ui.h:125
+#: ../data/preferences.ui.h:127
 msgid "Status warning color"
 msgstr "Color d'estat d'advertència"
 
-#: ../data/preferences.ui.h:126
+#: ../data/preferences.ui.h:128
 msgid "Status error color"
 msgstr "Color d'estat d'error"
 
-#: ../data/preferences.ui.h:127
+#: ../data/preferences.ui.h:129
 msgid "Text color"
 msgstr "Color de text"
 
-#: ../data/preferences.ui.h:128
+#: ../data/preferences.ui.h:130
 msgid "Custom application font"
 msgstr "Tipus de lletra personalitzat per a l'aplicació"
 
-#: ../data/preferences.ui.h:129
+#: ../data/preferences.ui.h:131
 msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr ""
 "Si voleu usar altre tipus de lletra que el predeterminat per a l'aplicació "
 "sencera"
 
-#: ../data/preferences.ui.h:130
+#: ../data/preferences.ui.h:132
 msgid "Custom history font"
 msgstr "Tipus de lletra personalitzat per a la històrial"
 
-#: ../data/preferences.ui.h:131
+#: ../data/preferences.ui.h:133
 #, fuzzy
-msgid ""
-"If you want to use a font other than the default for in the history list"
+msgid "If you want to use a font other than the default in the history list"
 msgstr ""
 "Si voleu usar altre tipus de lletra que el predeterminat per a l'aplicació "
 "sencera"
 
-#: ../data/preferences.ui.h:132
+#: ../data/preferences.ui.h:134
 msgid "Fonts & Colors"
 msgstr "Tipus de lletra i colors"
 
@@ -3312,51 +3311,43 @@ msgstr "Drecera de teclat nova"
 msgid "Add Action"
 msgstr "Afegeix acció"
 
-#: ../data/unitedit.ui.h:1 ../src/uniteditdialog.cc:190
+#: ../data/unitedit.ui.h:1 ../src/uniteditdialog.cc:191
 msgid "Edit Unit"
 msgstr "Edita la unitat"
 
-#: ../data/unitedit.ui.h:4
-msgid "Do not create/modify this unit"
-msgstr "No creis/modifiquis aquesta unitat"
-
-#: ../data/unitedit.ui.h:6
-msgid "Accept the creation/modification of this unit"
-msgstr "Accepta la creació/modificació d'aquesta unitat"
-
-#: ../data/unitedit.ui.h:10
+#: ../data/unitedit.ui.h:8
 msgid "System"
 msgstr "Sistema"
 
-#: ../data/unitedit.ui.h:12
+#: ../data/unitedit.ui.h:10
 msgid "Hide unit"
 msgstr "Amaga la unitat"
 
-#: ../data/unitedit.ui.h:13
+#: ../data/unitedit.ui.h:11
 msgid "If this unit shall be hidden in menus"
 msgstr "Si s'amagarà aquesta unitat en els menús"
 
-#: ../data/unitedit.ui.h:14
+#: ../data/unitedit.ui.h:12
 msgid "Imperial"
 msgstr "Imperial"
 
-#: ../data/unitedit.ui.h:15
+#: ../data/unitedit.ui.h:13
 msgid "US Survey"
 msgstr "Agrimensura estatunidenca"
 
-#: ../data/unitedit.ui.h:16
+#: ../data/unitedit.ui.h:14
 msgid "Title displayed in menus and in unit manager"
 msgstr "Títol mostrat en els menús i en el gestor d'unitats"
 
-#: ../data/unitedit.ui.h:17
+#: ../data/unitedit.ui.h:15
 msgid "Singular form of this unit's name"
 msgstr "Forma singular del nom d'aquesta unitat"
 
-#: ../data/unitedit.ui.h:19
+#: ../data/unitedit.ui.h:17
 msgid "Class"
 msgstr "Classe"
 
-#: ../data/unitedit.ui.h:20
+#: ../data/unitedit.ui.h:18
 msgid ""
 "The class that this unit belongs to. Named derived units are defined in "
 "relation to a single other unit, with an optional exponent, while (unnamed) "
@@ -3367,64 +3358,64 @@ msgstr ""
 "opcional, mentre es defineixen les unitats derivades (sense nom) per una "
 "expressió d'unitat amb una unitat o múltiples unitats."
 
-#: ../data/unitedit.ui.h:21
+#: ../data/unitedit.ui.h:19
 msgid "Base unit"
 msgstr "Unitat base"
 
-#: ../data/unitedit.ui.h:22
+#: ../data/unitedit.ui.h:20
 msgid "Named derived unit"
 msgstr "Unitat derivada anomenada"
 
-#: ../data/unitedit.ui.h:23
+#: ../data/unitedit.ui.h:21
 msgid "Derived unit"
 msgstr "Unitat derivada"
 
-#: ../data/unitedit.ui.h:24
+#: ../data/unitedit.ui.h:22
 msgid "Base unit(s)"
 msgstr "Unitat(s) base(s)"
 
-#: ../data/unitedit.ui.h:25
+#: ../data/unitedit.ui.h:23
 msgid "Exponent"
 msgstr "Exponent"
 
-#: ../data/unitedit.ui.h:26
+#: ../data/unitedit.ui.h:24
 msgid "Relation"
 msgstr "Relació"
 
-#: ../data/unitedit.ui.h:27
+#: ../data/unitedit.ui.h:25
 msgid "Inverse relation"
 msgstr "Relació inversa"
 
-#: ../data/unitedit.ui.h:28
+#: ../data/unitedit.ui.h:26
 msgid "Mix with base unit"
 msgstr "Mescla amb la unitat base"
 
-#: ../data/unitedit.ui.h:29
+#: ../data/unitedit.ui.h:27
 msgid "Priority"
 msgstr "Prioritat"
 
-#: ../data/unitedit.ui.h:30
+#: ../data/unitedit.ui.h:28
 msgid "Minimum base unit number"
 msgstr "Nombre d'unitat base mínim"
 
-#: ../data/unitedit.ui.h:31
+#: ../data/unitedit.ui.h:29
 msgid ""
 "Example: priority of the unit \"hand\" is set to 2, while priority of ft "
 "(foot) and in (inch) is set to 1, which results in \"17 in = 1 ft + 5 in\", "
 "instead of \"17 in = 1 ft + 1 hand + 1 in\"."
 msgstr ""
 
-#: ../data/unitedit.ui.h:32
+#: ../data/unitedit.ui.h:30
 msgid ""
 "Example: minimum base unit number of yd (yard) is set to 12, which results "
 "in \"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
 msgstr ""
 
-#: ../data/unitedit.ui.h:33
+#: ../data/unitedit.ui.h:31
 msgid "Exponent of the base unit"
 msgstr "Exponent de la unitat base"
 
-#: ../data/unitedit.ui.h:34
+#: ../data/unitedit.ui.h:32
 msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit is defined in relation to"
@@ -3432,7 +3423,7 @@ msgstr ""
 "Unitat (per a una unitat derivada amb nom) o expressió d'unitat (per a una "
 "unitat derivada sense nom) a la qual aquesta unitat està definida"
 
-#: ../data/unitedit.ui.h:35
+#: ../data/unitedit.ui.h:33
 msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
@@ -3446,13 +3437,13 @@ msgstr ""
 "Per a les relacions no linears useu \\x pel factor i \\y pel exponent (per "
 "exemple \"\\x + 273,15\" pela relació entre graus Celsius i Kelvin)."
 
-#: ../data/unitedit.ui.h:38
+#: ../data/unitedit.ui.h:36
 msgid "Specify for non-linear relation, for conversion back to the base unit."
 msgstr ""
 "Especifiqueu per a relació no linear, per a conversió de retorn a la unitat "
 "base."
 
-#: ../data/unitedit.ui.h:39
+#: ../data/unitedit.ui.h:37
 msgid "Use with prefixes by default"
 msgstr "Usa amb prefixes per defecte"
 
@@ -3537,18 +3528,9 @@ msgid "Name used to reference this unknown variable in expressions"
 msgstr ""
 "El nom usat per a referir a aquesta variable desconeguda en les expressions"
 
-#: ../data/variableedit.ui.h:1 ../src/variableeditdialog.cc:170
+#: ../data/variableedit.ui.h:1 ../src/variableeditdialog.cc:171
 msgid "Edit Variable"
 msgstr "Edita la variable"
-
-#: ../data/variableedit.ui.h:10
-msgid "The category this variable belongs to"
-msgstr "La categoria a la qual pertany aquesta variable"
-
-#: ../data/variableedit.ui.h:16
-#, fuzzy
-msgid "If this variable shall be hidden in menus"
-msgstr "Si s'amagarà aquesta unitat en els menús"
 
 #: ../data/variables.ui.h:4
 msgid "_Variable"
@@ -3598,7 +3580,7 @@ msgstr "No s'ha trobat la variable."
 msgid "Unit not found."
 msgstr "No s'ha trobat la unitat."
 
-#: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7036
+#: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7057
 #: ../src/shortcutsdialog.cc:255 ../src/shortcutsdialog.cc:503
 msgid "Mode not found."
 msgstr "No s'ha trobat el mode."
@@ -3804,8 +3786,8 @@ msgstr "Tot"
 #: ../src/conversionview.cc:132 ../src/conversionview.cc:179
 #: ../src/conversionview.cc:460 ../src/functionsdialog.cc:144
 #: ../src/functionsdialog.cc:145 ../src/functionsdialog.cc:196
-#: ../src/mainwindow.cc:7344 ../src/mainwindow.cc:7376
-#: ../src/mainwindow.cc:7400 ../src/unitsdialog.cc:166
+#: ../src/mainwindow.cc:7365 ../src/mainwindow.cc:7397
+#: ../src/mainwindow.cc:7421 ../src/unitsdialog.cc:166
 #: ../src/unitsdialog.cc:167 ../src/unitsdialog.cc:233
 #: ../src/variablesdialog.cc:146 ../src/variablesdialog.cc:147
 #: ../src/variablesdialog.cc:199
@@ -3844,10 +3826,10 @@ msgid "key"
 msgstr "clau"
 
 #: ../src/dataseteditdialog.cc:306 ../src/dataseteditdialog.cc:442
-#: ../src/functioneditdialog.cc:907 ../src/importcsvdialog.cc:149
-#: ../src/matrixeditdialog.cc:550 ../src/menubar.cc:1224
-#: ../src/uniteditdialog.cc:328 ../src/unknowneditdialog.cc:191
-#: ../src/variableeditdialog.cc:276
+#: ../src/functioneditdialog.cc:910 ../src/importcsvdialog.cc:149
+#: ../src/matrixeditdialog.cc:553 ../src/menubar.cc:1229
+#: ../src/uniteditdialog.cc:331 ../src/unknowneditdialog.cc:191
+#: ../src/variableeditdialog.cc:279
 msgid "Empty name field."
 msgstr "El camp de nom està buit."
 
@@ -3859,7 +3841,7 @@ msgstr "Edita el conjunt de dades (global)"
 msgid "New Data Set"
 msgstr "Conjunt de dades nou"
 
-#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:932
+#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:935
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -3884,28 +3866,28 @@ msgstr "argument"
 msgid "New Data Object"
 msgstr "Objecte de dades nou"
 
-#: ../src/drawstructure.cc:631 ../src/drawstructure.cc:2755
+#: ../src/drawstructure.cc:644 ../src/drawstructure.cc:2768
 #: ../src/expressionstatus.cc:1140 ../src/expressionstatus.cc:1176
-#: ../src/historyview.cc:702 ../src/historyview.cc:1280
-#: ../src/historyview.cc:1333 ../src/historyview.cc:1586
-#: ../src/historyview.cc:1646 ../src/historyview.cc:2168
-#: ../src/insertfunctiondialog.cc:297 ../src/keypad.cc:3108
-#: ../src/mainwindow.cc:2651 ../src/searchprovider.cc:91
+#: ../src/historyview.cc:704 ../src/historyview.cc:1282
+#: ../src/historyview.cc:1335 ../src/historyview.cc:1588
+#: ../src/historyview.cc:1648 ../src/historyview.cc:2170
+#: ../src/insertfunctiondialog.cc:297 ../src/keypad.cc:3107
+#: ../src/mainwindow.cc:2653 ../src/searchprovider.cc:91
 #: ../src/searchprovider.cc:92 ../src/searchprovider.cc:169
 #: ../src/variablesdialog.cc:289
 msgid "approx."
 msgstr "aprox."
 
-#: ../src/drawstructure.cc:1828
+#: ../src/drawstructure.cc:1841
 msgid "and"
 msgstr "and"
 
-#: ../src/drawstructure.cc:1831 ../src/historyview.cc:918
-#: ../src/historyview.cc:953 ../src/historyview.cc:954
+#: ../src/drawstructure.cc:1844 ../src/historyview.cc:920
+#: ../src/historyview.cc:955 ../src/historyview.cc:956
 msgid "or"
 msgstr "or"
 
-#: ../src/drawstructure.cc:2671
+#: ../src/drawstructure.cc:2684
 msgid "undefined"
 msgstr "sense definir"
 
@@ -4116,7 +4098,7 @@ msgstr "Unitats òptimes"
 msgid "Expanded Partial Fractions"
 msgstr "Fraccions parcials expandides"
 
-#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1721
+#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1726
 msgid "Optimal Prefix"
 msgstr "Prefix òptim"
 
@@ -4136,61 +4118,61 @@ msgstr "Zona horària UTC"
 msgid "Stop process"
 msgstr "Atura el procés"
 
-#: ../src/expressionedit.cc:757 ../src/expressionedit.cc:1787
+#: ../src/expressionedit.cc:757 ../src/expressionedit.cc:1736
 #: ../src/keypad.cc:3529
 msgid "Calculate expression and add to stack"
 msgstr "Calcula l'expressió i afegeix-la a la pila"
 
-#: ../src/expressionedit.cc:1321 ../src/historyview.cc:2775
+#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2777
 #: ../src/insertfunctiondialog.cc:65
 msgid "Select date"
 msgstr "Selecció de data"
 
-#: ../src/expressionedit.cc:1420
+#: ../src/expressionedit.cc:1369
 msgid "Clear History"
 msgstr "Neteja l'historial"
 
-#: ../src/expressionedit.cc:1424
+#: ../src/expressionedit.cc:1373
 msgid "Abort"
 msgstr "Avorta"
 
-#: ../src/expressionedit.cc:1427
+#: ../src/expressionedit.cc:1376
 msgid "Undo"
 msgstr "Desfés"
 
-#: ../src/expressionedit.cc:1430
+#: ../src/expressionedit.cc:1379
 msgid "Redo"
 msgstr "Refés"
 
-#: ../src/expressionedit.cc:1435
+#: ../src/expressionedit.cc:1384
 msgid "Completion Mode"
 msgstr "Mode de compleció"
 
-#: ../src/expressionedit.cc:1448
+#: ../src/expressionedit.cc:1397
 msgid "Limited strict completion"
 msgstr "Compleció estricta limitada"
 
-#: ../src/expressionedit.cc:1449
+#: ../src/expressionedit.cc:1398
 msgid "Strict completion"
 msgstr "Compleció estricta"
 
-#: ../src/expressionedit.cc:1450
+#: ../src/expressionedit.cc:1399
 msgid "Limited full completion"
 msgstr "Compleció plena limitada"
 
-#: ../src/expressionedit.cc:1451
+#: ../src/expressionedit.cc:1400
 msgid "Full completion"
 msgstr "Compleció plena"
 
-#: ../src/expressionedit.cc:1452
+#: ../src/expressionedit.cc:1401
 msgid "No completion"
 msgstr "Cap compleció"
 
-#: ../src/expressionedit.cc:1461
+#: ../src/expressionedit.cc:1410
 msgid "Delayed completion"
 msgstr "Compleció retardada"
 
-#: ../src/expressionedit.cc:1463
+#: ../src/expressionedit.cc:1412
 msgid "Customize completion…"
 msgstr "Personalitza la compleció…"
 
@@ -4257,19 +4239,19 @@ msgid "Too many arguments for %s()."
 msgstr "Hi ha massa arguments per a %s()."
 
 #: ../src/expressionstatus.cc:691 ../src/expressionstatus.cc:693
-#: ../src/mainwindow.cc:1468 ../src/mainwindow.cc:4943
+#: ../src/mainwindow.cc:1470 ../src/mainwindow.cc:4963
 #: ../src/searchprovider.cc:133
 msgid "factorize"
 msgstr "factoritza"
 
 #: ../src/expressionstatus.cc:694 ../src/expressionstatus.cc:696
-#: ../src/mainwindow.cc:1471 ../src/mainwindow.cc:4946
+#: ../src/mainwindow.cc:1473 ../src/mainwindow.cc:4966
 #: ../src/searchprovider.cc:133
 msgid "expand"
 msgstr "expandeix"
 
-#: ../src/expressionstatus.cc:861 ../src/mainwindow.cc:1254
-#: ../src/mainwindow.cc:4594
+#: ../src/expressionstatus.cc:861 ../src/mainwindow.cc:1256
+#: ../src/mainwindow.cc:4614
 msgid "hexadecimal"
 msgstr "hexadecimal"
 
@@ -4277,8 +4259,8 @@ msgstr "hexadecimal"
 msgid "hexadecimal number"
 msgstr "nombre hexadecimal"
 
-#: ../src/expressionstatus.cc:863 ../src/mainwindow.cc:1257
-#: ../src/mainwindow.cc:4597
+#: ../src/expressionstatus.cc:863 ../src/mainwindow.cc:1259
+#: ../src/mainwindow.cc:4617
 msgid "octal"
 msgstr "octal"
 
@@ -4286,8 +4268,8 @@ msgstr "octal"
 msgid "octal number"
 msgstr "nombre octal"
 
-#: ../src/expressionstatus.cc:865 ../src/mainwindow.cc:1260
-#: ../src/mainwindow.cc:4600
+#: ../src/expressionstatus.cc:865 ../src/mainwindow.cc:1262
+#: ../src/mainwindow.cc:4620
 msgid "decimal"
 msgstr "decimal"
 
@@ -4295,8 +4277,8 @@ msgstr "decimal"
 msgid "decimal number"
 msgstr "nombre decimal"
 
-#: ../src/expressionstatus.cc:867 ../src/mainwindow.cc:1263
-#: ../src/mainwindow.cc:4603
+#: ../src/expressionstatus.cc:867 ../src/mainwindow.cc:1265
+#: ../src/mainwindow.cc:4623
 msgid "duodecimal"
 msgstr "duodecimal"
 
@@ -4304,8 +4286,8 @@ msgstr "duodecimal"
 msgid "duodecimal number"
 msgstr "nombre duodecimal"
 
-#: ../src/expressionstatus.cc:871 ../src/mainwindow.cc:1271
-#: ../src/mainwindow.cc:4611
+#: ../src/expressionstatus.cc:871 ../src/mainwindow.cc:1273
+#: ../src/mainwindow.cc:4631
 msgid "binary"
 msgstr "binària"
 
@@ -4313,8 +4295,8 @@ msgstr "binària"
 msgid "binary number"
 msgstr "nombre binari"
 
-#: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1274
-#: ../src/mainwindow.cc:4614
+#: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1276
+#: ../src/mainwindow.cc:4634
 msgid "roman"
 msgstr "romana"
 
@@ -4322,8 +4304,8 @@ msgstr "romana"
 msgid "roman numerals"
 msgstr "numerals romans"
 
-#: ../src/expressionstatus.cc:875 ../src/mainwindow.cc:1277
-#: ../src/mainwindow.cc:4617
+#: ../src/expressionstatus.cc:875 ../src/mainwindow.cc:1279
+#: ../src/mainwindow.cc:4637
 msgid "bijective"
 msgstr "bijectiva"
 
@@ -4336,10 +4318,10 @@ msgstr "base 26 bijectiva"
 msgid "binary-coded decimal"
 msgstr "Mín de decimals"
 
-#: ../src/expressionstatus.cc:879 ../src/mainwindow.cc:1283
-#: ../src/mainwindow.cc:1286 ../src/mainwindow.cc:1289
-#: ../src/mainwindow.cc:4623 ../src/mainwindow.cc:4626
-#: ../src/mainwindow.cc:4629
+#: ../src/expressionstatus.cc:879 ../src/mainwindow.cc:1285
+#: ../src/mainwindow.cc:1288 ../src/mainwindow.cc:1291
+#: ../src/mainwindow.cc:4643 ../src/mainwindow.cc:4646
+#: ../src/mainwindow.cc:4649
 msgid "sexagesimal"
 msgstr "sexagesimal"
 
@@ -4348,14 +4330,14 @@ msgid "sexagesimal number"
 msgstr "nombre sexagesimal"
 
 #: ../src/expressionstatus.cc:881 ../src/expressionstatus.cc:882
-#: ../src/mainwindow.cc:1292 ../src/mainwindow.cc:1295
-#: ../src/mainwindow.cc:4632 ../src/mainwindow.cc:4635
+#: ../src/mainwindow.cc:1294 ../src/mainwindow.cc:1297
+#: ../src/mainwindow.cc:4652 ../src/mainwindow.cc:4655
 msgid "latitude"
 msgstr "latitud"
 
 #: ../src/expressionstatus.cc:883 ../src/expressionstatus.cc:884
-#: ../src/mainwindow.cc:1298 ../src/mainwindow.cc:1301
-#: ../src/mainwindow.cc:4638 ../src/mainwindow.cc:4641
+#: ../src/mainwindow.cc:1300 ../src/mainwindow.cc:1303
+#: ../src/mainwindow.cc:4658 ../src/mainwindow.cc:4661
 msgid "longitude"
 msgstr "longitud"
 
@@ -4379,8 +4361,8 @@ msgstr "punt flotant de 80 bits (x86)"
 msgid "128-bit floating point"
 msgstr "punt flotant de 128 bits"
 
-#: ../src/expressionstatus.cc:895 ../src/mainwindow.cc:1319
-#: ../src/mainwindow.cc:4659
+#: ../src/expressionstatus.cc:895 ../src/mainwindow.cc:1321
+#: ../src/mainwindow.cc:4679
 msgid "time"
 msgstr "temps"
 
@@ -4388,8 +4370,8 @@ msgstr "temps"
 msgid "time format"
 msgstr "format de temps"
 
-#: ../src/expressionstatus.cc:899 ../src/mainwindow.cc:1370
-#: ../src/mainwindow.cc:4733
+#: ../src/expressionstatus.cc:899 ../src/mainwindow.cc:1372
+#: ../src/mainwindow.cc:4753
 msgid "bases"
 msgstr "bases"
 
@@ -4398,12 +4380,12 @@ msgid "number bases"
 msgstr "bases numèriques"
 
 #: ../src/expressionstatus.cc:901 ../src/expressionstatus.cc:902
-#: ../src/mainwindow.cc:1372 ../src/mainwindow.cc:4743
+#: ../src/mainwindow.cc:1374 ../src/mainwindow.cc:4763
 msgid "calendars"
 msgstr "calendaris"
 
-#: ../src/expressionstatus.cc:903 ../src/mainwindow.cc:1394
-#: ../src/mainwindow.cc:4818
+#: ../src/expressionstatus.cc:903 ../src/mainwindow.cc:1396
+#: ../src/mainwindow.cc:4838
 msgid "optimal"
 msgstr "òptima"
 
@@ -4411,8 +4393,8 @@ msgstr "òptima"
 msgid "optimal unit"
 msgstr "unitat òptima"
 
-#: ../src/expressionstatus.cc:905 ../src/mainwindow.cc:1399
-#: ../src/mainwindow.cc:4830
+#: ../src/expressionstatus.cc:905 ../src/mainwindow.cc:1401
+#: ../src/mainwindow.cc:4850
 msgid "prefix"
 msgstr "prefix"
 
@@ -4421,8 +4403,8 @@ msgid "optimal prefix"
 msgstr "prefix òptim"
 
 #. base units
-#: ../src/expressionstatus.cc:907 ../src/mainwindow.cc:1404
-#: ../src/mainwindow.cc:4834
+#: ../src/expressionstatus.cc:907 ../src/mainwindow.cc:1406
+#: ../src/mainwindow.cc:4854
 #, fuzzy
 msgctxt "Units"
 msgid "base"
@@ -4432,8 +4414,8 @@ msgstr "base"
 msgid "base units"
 msgstr "unitats bases"
 
-#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1409
-#: ../src/mainwindow.cc:4846
+#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1411
+#: ../src/mainwindow.cc:4866
 msgid "mixed"
 msgstr "mixta"
 
@@ -4442,12 +4424,12 @@ msgid "mixed units"
 msgstr "unitats mixtes"
 
 #: ../src/expressionstatus.cc:911 ../src/expressionstatus.cc:912
-#: ../src/mainwindow.cc:1414 ../src/mainwindow.cc:4861
+#: ../src/mainwindow.cc:1416 ../src/mainwindow.cc:4881
 msgid "factors"
 msgstr "factors"
 
-#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1417
-#: ../src/mainwindow.cc:4871
+#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1419
+#: ../src/mainwindow.cc:4891
 msgid "partial fraction"
 msgstr "fracció parcial"
 
@@ -4455,13 +4437,13 @@ msgstr "fracció parcial"
 msgid "expanded partial fractions"
 msgstr "fraccions parcials expandides"
 
-#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1374
-#: ../src/mainwindow.cc:4753
+#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1376
+#: ../src/mainwindow.cc:4773
 msgid "rectangular"
 msgstr "rectangular"
 
-#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1374
-#: ../src/mainwindow.cc:4753
+#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1376
+#: ../src/mainwindow.cc:4773
 msgid "cartesian"
 msgstr "cartesià"
 
@@ -4469,8 +4451,8 @@ msgstr "cartesià"
 msgid "complex rectangular form"
 msgstr "forma rectangular complexa"
 
-#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1378
-#: ../src/mainwindow.cc:4766
+#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1380
+#: ../src/mainwindow.cc:4786
 msgid "exponential"
 msgstr "exponencial"
 
@@ -4478,8 +4460,8 @@ msgstr "exponencial"
 msgid "complex exponential form"
 msgstr "forma exponencial complexa"
 
-#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1382
-#: ../src/mainwindow.cc:4779
+#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1384
+#: ../src/mainwindow.cc:4799
 msgid "polar"
 msgstr "polar"
 
@@ -4491,8 +4473,8 @@ msgstr "forma polar complexa"
 msgid "complex cis form"
 msgstr "forma cis complexa"
 
-#: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1390
-#: ../src/mainwindow.cc:4805
+#: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1392
+#: ../src/mainwindow.cc:4825
 msgid "angle"
 msgstr "angle"
 
@@ -4500,8 +4482,8 @@ msgstr "angle"
 msgid "complex angle notation"
 msgstr "notació complexa d'angle"
 
-#: ../src/expressionstatus.cc:925 ../src/mainwindow.cc:1390
-#: ../src/mainwindow.cc:4805
+#: ../src/expressionstatus.cc:925 ../src/mainwindow.cc:1392
+#: ../src/mainwindow.cc:4825
 msgid "phasor"
 msgstr "fasor"
 
@@ -4514,8 +4496,8 @@ msgid "UTC time zone"
 msgstr "zona horària UTC"
 
 #. number base #
-#: ../src/expressionstatus.cc:980 ../src/mainwindow.cc:1421
-#: ../src/mainwindow.cc:4881
+#: ../src/expressionstatus.cc:980 ../src/mainwindow.cc:1423
+#: ../src/mainwindow.cc:4901
 #, fuzzy
 msgctxt "Number base"
 msgid "base"
@@ -4526,8 +4508,8 @@ msgstr "base"
 msgid "number base %s"
 msgstr "base numèrica %s"
 
-#: ../src/expressionstatus.cc:985 ../src/mainwindow.cc:1425
-#: ../src/mainwindow.cc:4885
+#: ../src/expressionstatus.cc:985 ../src/mainwindow.cc:1427
+#: ../src/mainwindow.cc:4905
 #, fuzzy
 msgid "decimals"
 msgstr "decimal"
@@ -4542,31 +4524,31 @@ msgstr "Fracció decimal"
 msgid "fraction"
 msgstr "fracció"
 
-#: ../src/functioneditdialog.cc:479 ../src/nameseditdialog.cc:174
+#: ../src/functioneditdialog.cc:480 ../src/nameseditdialog.cc:174
 msgid "Reference"
 msgstr "Referència"
 
-#: ../src/functioneditdialog.cc:836
+#: ../src/functioneditdialog.cc:837
 msgid "Edit Function (global)"
 msgstr "Edita la funció (global)"
 
-#: ../src/functioneditdialog.cc:838
+#: ../src/functioneditdialog.cc:839
 msgid "New Function"
 msgstr "Funció nova"
 
-#: ../src/functioneditdialog.cc:922
+#: ../src/functioneditdialog.cc:925
 msgid "Empty expression field."
 msgstr "El camp d'expressió està buit."
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
-#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7342
-#: ../src/menubar.cc:1580 ../src/util.cc:1268 ../src/util.cc:1269
+#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7363
+#: ../src/menubar.cc:1585 ../src/util.cc:1268 ../src/util.cc:1269
 msgid "User functions"
 msgstr "Funcions de l'usuari"
 
 #: ../src/functionsdialog.cc:153 ../src/functionsdialog.cc:154
-#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7340
-#: ../src/mainwindow.cc:7372 ../src/mainwindow.cc:7396
+#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7361
+#: ../src/mainwindow.cc:7393 ../src/mainwindow.cc:7417
 #: ../src/unitsdialog.cc:174 ../src/unitsdialog.cc:175
 #: ../src/unitsdialog.cc:235 ../src/util.cc:1270 ../src/util.cc:1271
 #: ../src/variablesdialog.cc:155 ../src/variablesdialog.cc:156
@@ -4613,7 +4595,7 @@ msgstr "Acti_va"
 msgid "History Answer Value"
 msgstr "Valor de resposta de l'historial"
 
-#: ../src/historyview.cc:112 ../src/mainwindow.cc:8423
+#: ../src/historyview.cc:112 ../src/mainwindow.cc:8444
 msgid "answer"
 msgstr "resposta"
 
@@ -4630,12 +4612,12 @@ msgstr "L'índex d'historial %s no existeix."
 msgid "History Parsed Expression"
 msgstr "Expressió analitzada de l'historial"
 
-#: ../src/historyview.cc:795 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
+#: ../src/historyview.cc:797 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
 #: ../src/plotdialog.cc:486
 msgid "It took too long to generate the plot data."
 msgstr "Ha trigat massa temps generar les dades a dibuixar."
 
-#: ../src/historyview.cc:795
+#: ../src/historyview.cc:797
 msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
@@ -4643,32 +4625,32 @@ msgstr ""
 "Ha trigat massa temps generar les dades a dibuixar. Si us plau, disminuïu la "
 "taxa de mostreig o augmenta el límit de temps en les preferències."
 
-#: ../src/historyview.cc:2137 ../src/mainwindow.cc:2419
+#: ../src/historyview.cc:2139 ../src/mainwindow.cc:2421
 msgid "RPN Register Moved"
 msgstr "S'ha mogut el registre NPI"
 
-#: ../src/historyview.cc:2143 ../src/mainwindow.cc:2420
-#: ../src/mainwindow.cc:5176
+#: ../src/historyview.cc:2145 ../src/mainwindow.cc:2422
+#: ../src/mainwindow.cc:5196
 msgid "RPN Operation"
 msgstr "Operació NPI"
 
-#: ../src/historyview.cc:2740
+#: ../src/historyview.cc:2742
 msgid "Search"
 msgstr "Cerca"
 
-#: ../src/historyview.cc:2740
+#: ../src/historyview.cc:2742
 msgid "_Search"
 msgstr "_Cerca"
 
-#: ../src/historyview.cc:2815 ../src/historyview.cc:3072
+#: ../src/historyview.cc:2817 ../src/historyview.cc:3074
 msgid "Remove Bookmark"
 msgstr "Elimina el marcador"
 
-#: ../src/historyview.cc:2870
+#: ../src/historyview.cc:2872
 msgid "Add Bookmark"
 msgstr "Afegeix un marcador"
 
-#: ../src/historyview.cc:2896
+#: ../src/historyview.cc:2898
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -4676,11 +4658,11 @@ msgstr ""
 "Un marcador amb el nom seleccionat ja existeix.\n"
 "Voleu sobreescriure'l?"
 
-#: ../src/historyview.cc:3110
+#: ../src/historyview.cc:3112
 msgid "No items found"
 msgstr "No s'ha trobat cap element"
 
-#: ../src/historyview.cc:3544 ../src/stackview.cc:784
+#: ../src/historyview.cc:3546 ../src/stackview.cc:784
 msgid "Index"
 msgstr "Índex"
 
@@ -4688,9 +4670,9 @@ msgstr "Índex"
 msgid "Select file to import"
 msgstr "Selecció del fitxer a importar"
 
-#: ../src/importcsvdialog.cc:155 ../src/matrixeditdialog.cc:557
-#: ../src/uniteditdialog.cc:335 ../src/unknowneditdialog.cc:198
-#: ../src/variableeditdialog.cc:289
+#: ../src/importcsvdialog.cc:155 ../src/matrixeditdialog.cc:560
+#: ../src/uniteditdialog.cc:338 ../src/unknowneditdialog.cc:198
+#: ../src/variableeditdialog.cc:292
 msgid ""
 "A unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4765,7 +4747,7 @@ msgstr "Estableix les desconegudes"
 
 #. Show further items in a submenu
 #: ../src/keypad.cc:858 ../src/keypad.cc:946 ../src/keypad.cc:949
-#: ../src/keypad.cc:2467 ../src/menubar.cc:1377 ../src/menubar.cc:1472
+#: ../src/keypad.cc:2467 ../src/menubar.cc:1382 ../src/menubar.cc:1477
 #: ../src/resultview.cc:894
 msgid "more"
 msgstr "més"
@@ -4803,24 +4785,25 @@ msgstr "Totes les funcions"
 msgid "All variables"
 msgstr "Totes les variables"
 
-#: ../src/keypad.cc:2683 ../src/mainwindow.cc:7420
+#: ../src/keypad.cc:2683 ../src/mainwindow.cc:7441
 #: ../src/variablesdialog.cc:246 ../src/variablesdialog.cc:403
 #: ../src/variablesdialog.cc:418 ../src/variablesdialog.cc:434
 #: ../src/variablesdialog.cc:454
 msgid "Variable does not exist anymore."
 msgstr "La variable ja no existeix."
 
+#. RPN Enter (calculate and add to stack)
 #: ../src/keypad.cc:3528
 msgid "ENTER"
 msgstr "RETORN"
 
 #. Fixes missing support for context in ui file translations
-#: ../src/keypad.cc:3766
+#: ../src/keypad.cc:3607
 msgctxt "Manage units button"
 msgid "u"
 msgstr ""
 
-#: ../src/keypad.cc:3767
+#: ../src/keypad.cc:3608
 msgctxt "Button for convert to operator"
 msgid "to"
 msgstr ""
@@ -4883,25 +4866,25 @@ msgstr ""
 "Voleu, malgrat això, canviar el comportament predeterminat i permetre "
 "múltiples instàncies simultànies?"
 
-#: ../src/mainwindow.cc:244
+#: ../src/mainwindow.cc:246
 msgid "Set Window Title"
 msgstr "Estableix el títol de la finestra"
 
-#: ../src/mainwindow.cc:519
+#: ../src/mainwindow.cc:521
 #, fuzzy
 msgid "Exchange rate source:"
 msgid_plural "Exchange rate sources:"
 msgstr[0] "Actualitzacions de taxes d'intercanvi"
 msgstr[1] "Actualitzacions de taxes d'intercanvi"
 
-#: ../src/mainwindow.cc:521
+#: ../src/mainwindow.cc:523
 #, fuzzy, c-format
 msgid "updated %s"
 msgid_plural "updated %s"
 msgstr[0] "Actualitza"
 msgstr[1] "Actualitza"
 
-#: ../src/mainwindow.cc:541
+#: ../src/mainwindow.cc:543
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -4913,15 +4896,15 @@ msgstr ""
 "reflectir això. Si mantingueu el punter sobre la icona o feu clic en ella, "
 "el missatge es mostrarà."
 
-#: ../src/mainwindow.cc:601
+#: ../src/mainwindow.cc:603
 msgid "Path of executable not found."
 msgstr "No s'ha trobat el camí de l'executable."
 
-#: ../src/mainwindow.cc:611
+#: ../src/mainwindow.cc:613
 msgid "curl not found."
 msgstr "No s'ha trobat curl."
 
-#: ../src/mainwindow.cc:676
+#: ../src/mainwindow.cc:678
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -4930,20 +4913,20 @@ msgstr ""
 "S'ha fallat en executar l'script d'actualització.\n"
 "%s"
 
-#: ../src/mainwindow.cc:700
+#: ../src/mainwindow.cc:702
 msgid "Failed to check for updates."
 msgstr "S'ha fallat en cercar actualitzacions."
 
-#: ../src/mainwindow.cc:700
+#: ../src/mainwindow.cc:702
 msgid "No updates found."
 msgstr "No s'ha trobat cap actualització."
 
-#: ../src/mainwindow.cc:714
+#: ../src/mainwindow.cc:716
 #, fuzzy
 msgid "_Download"
 msgstr "Avall"
 
-#: ../src/mainwindow.cc:726
+#: ../src/mainwindow.cc:728
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
@@ -4954,7 +4937,7 @@ msgstr ""
 "\n"
 "Voleu actualitzar a la versió %s?"
 
-#: ../src/mainwindow.cc:728
+#: ../src/mainwindow.cc:730
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -4965,11 +4948,11 @@ msgstr ""
 "\n"
 "Podeu aconseguir la versió %s a %s."
 
-#: ../src/mainwindow.cc:802
+#: ../src/mainwindow.cc:804
 msgid "Temperature Calculation Mode"
 msgstr "Mode de càlcul de temperatura"
 
-#: ../src/mainwindow.cc:812
+#: ../src/mainwindow.cc:814
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
@@ -4979,30 +4962,30 @@ msgstr ""
 "Si us plau, seleccioneu el mode de càlcul de temperatura\n"
 "(es pot canviar el mode després en les preferències)."
 
-#: ../src/mainwindow.cc:859
+#: ../src/mainwindow.cc:861
 #, fuzzy
 msgid "Sinc Function"
 msgstr "Edició de funció"
 
-#: ../src/mainwindow.cc:869
+#: ../src/mainwindow.cc:871
 msgid "Please select desired variant of the sinc function."
 msgstr ""
 
-#: ../src/mainwindow.cc:872
+#: ../src/mainwindow.cc:874
 #, fuzzy
 msgid "Unnormalized"
 msgstr "Sense categoria"
 
-#: ../src/mainwindow.cc:879
+#: ../src/mainwindow.cc:881
 #, fuzzy
 msgid "Normalized"
 msgstr "Normal"
 
-#: ../src/mainwindow.cc:912
+#: ../src/mainwindow.cc:914
 msgid "Interpretation of dots"
 msgstr "Interpretació de punts"
 
-#: ../src/mainwindow.cc:922
+#: ../src/mainwindow.cc:924
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
@@ -5010,19 +4993,19 @@ msgstr ""
 "Si us plau, seleccioneu la interpretació de punts (\".\")\n"
 "(es pot canviar això després en les preferències)."
 
-#: ../src/mainwindow.cc:925
+#: ../src/mainwindow.cc:927
 msgid "Both dot and comma as decimal separators"
 msgstr "Ambdós punt i coma com a separadors decimals"
 
-#: ../src/mainwindow.cc:932
+#: ../src/mainwindow.cc:934
 msgid "Dot as thousands separator"
 msgstr "Punt com a separador de millars"
 
-#: ../src/mainwindow.cc:939
+#: ../src/mainwindow.cc:941
 msgid "Only dot as decimal separator"
 msgstr "Només punt com a separador decimal"
 
-#: ../src/mainwindow.cc:979
+#: ../src/mainwindow.cc:981
 msgid ""
 "The expression is ambiguous.\n"
 "Please select interpretation of expressions with implicit multiplication\n"
@@ -5033,67 +5016,67 @@ msgstr ""
 "implícita\n"
 "(es pot canviar aixó després en les preferències)."
 
-#: ../src/mainwindow.cc:982
+#: ../src/mainwindow.cc:984
 msgid "Implicit multiplication first"
 msgstr "Primer la multiplicació implícita"
 
-#: ../src/mainwindow.cc:990
+#: ../src/mainwindow.cc:992
 msgid "Conventional"
 msgstr "Convencional"
 
-#: ../src/mainwindow.cc:1025
+#: ../src/mainwindow.cc:1027
 #, fuzzy
 msgid "Percentage Interpretation"
 msgstr "Eina de càlcul de percentatge"
 
-#: ../src/mainwindow.cc:1035
+#: ../src/mainwindow.cc:1037
 #, fuzzy
 msgid "Please select interpretation of percentage addition."
 msgstr ""
 "Si us plau, seleccioneu la interpretació de punts (\".\")\n"
 "(es pot canviar això després en les preferències)."
 
-#: ../src/mainwindow.cc:1038
+#: ../src/mainwindow.cc:1040
 msgid "Add percentage of original value"
 msgstr ""
 
-#: ../src/mainwindow.cc:1046
+#: ../src/mainwindow.cc:1048
 msgid "Add percentage multiplied by 1/100"
 msgstr ""
 
-#: ../src/mainwindow.cc:1961
+#: ../src/mainwindow.cc:1963
 msgid "My Variables"
 msgstr "Les meves variables"
 
-#: ../src/mainwindow.cc:2580
+#: ../src/mainwindow.cc:2582
 msgid "Processing…"
 msgstr "S'està processant…"
 
-#: ../src/mainwindow.cc:2839
+#: ../src/mainwindow.cc:2841
 msgid "Factorizing…"
 msgstr "S'està factoritzant…"
 
-#: ../src/mainwindow.cc:2843
+#: ../src/mainwindow.cc:2845
 msgid "Expanding partial fractions…"
 msgstr "S'estan expandint les fraccions parcials…"
 
-#: ../src/mainwindow.cc:2847
+#: ../src/mainwindow.cc:2849
 msgid "Expanding…"
 msgstr "S'està expandint…"
 
-#: ../src/mainwindow.cc:2852 ../src/mainwindow.cc:5116
+#: ../src/mainwindow.cc:2854 ../src/mainwindow.cc:5136
 msgid "Calculating…"
 msgstr "S'està calculant…"
 
-#: ../src/mainwindow.cc:2856
+#: ../src/mainwindow.cc:2858
 msgid "Converting…"
 msgstr "S'està convertint…"
 
-#: ../src/mainwindow.cc:4710
+#: ../src/mainwindow.cc:4730
 msgid "Time zone parsing failed."
 msgstr "L'anàlisi de la zona horària ha fallat."
 
-#: ../src/mainwindow.cc:5301 ../src/mainwindow.cc:6871 ../src/openhelp.cc:361
+#: ../src/mainwindow.cc:5321 ../src/mainwindow.cc:6892 ../src/openhelp.cc:361
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -5102,29 +5085,29 @@ msgstr ""
 "S'ha fallat en obrir %s.\n"
 "%s"
 
-#: ../src/mainwindow.cc:5453
+#: ../src/mainwindow.cc:5473
 msgid "Couldn't write definitions"
 msgstr "No s'ha pogut escriure les definicions"
 
-#: ../src/mainwindow.cc:5455 ../src/mainwindow.cc:5457
-#: ../src/mainwindow.cc:6209 ../src/mainwindow.cc:6211
-#: ../src/mainwindow.cc:6254 ../src/mainwindow.cc:6256
+#: ../src/mainwindow.cc:5475 ../src/mainwindow.cc:5477
+#: ../src/mainwindow.cc:6230 ../src/mainwindow.cc:6232
+#: ../src/mainwindow.cc:6275 ../src/mainwindow.cc:6277
 msgid "Ignore"
 msgstr ""
 
-#: ../src/mainwindow.cc:5455 ../src/mainwindow.cc:6209
-#: ../src/mainwindow.cc:6254
+#: ../src/mainwindow.cc:5475 ../src/mainwindow.cc:6230
+#: ../src/mainwindow.cc:6275
 #, fuzzy
 msgid "Cancel"
 msgstr "_Cancel·la"
 
-#: ../src/mainwindow.cc:5455 ../src/mainwindow.cc:5457
-#: ../src/mainwindow.cc:6209 ../src/mainwindow.cc:6211
-#: ../src/mainwindow.cc:6254 ../src/mainwindow.cc:6256
+#: ../src/mainwindow.cc:5475 ../src/mainwindow.cc:5477
+#: ../src/mainwindow.cc:6230 ../src/mainwindow.cc:6232
+#: ../src/mainwindow.cc:6275 ../src/mainwindow.cc:6277
 msgid "Retry"
 msgstr ""
 
-#: ../src/mainwindow.cc:6207
+#: ../src/mainwindow.cc:6228
 #, fuzzy, c-format
 msgid ""
 "Couldn't write history to\n"
@@ -5133,7 +5116,7 @@ msgstr ""
 "No s'ha pogut escriure les preferèncias a\n"
 "%s"
 
-#: ../src/mainwindow.cc:6252
+#: ../src/mainwindow.cc:6273
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5142,98 +5125,102 @@ msgstr ""
 "No s'ha pogut escriure les preferèncias a\n"
 "%s"
 
-#: ../src/mainwindow.cc:6550 ../src/mainwindow.cc:6552
+#: ../src/mainwindow.cc:6571 ../src/mainwindow.cc:6573
 msgid "Select definitions file"
 msgstr "Selecció del fitxer de definicions"
 
-#: ../src/mainwindow.cc:6550 ../src/mainwindow.cc:6552
+#: ../src/mainwindow.cc:6571 ../src/mainwindow.cc:6573
 msgid "_Import"
 msgstr "_Importa"
 
-#: ../src/mainwindow.cc:6556
+#: ../src/mainwindow.cc:6577
 #, fuzzy
 msgid "XML Files"
 msgstr "Tots els fitxers"
 
-#: ../src/mainwindow.cc:6576
+#: ../src/mainwindow.cc:6597
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "No s'ha pogut copiar %s a %s."
 
-#: ../src/mainwindow.cc:6584
+#: ../src/mainwindow.cc:6605
 #, c-format
 msgid "Could not read %s."
 msgstr "No s'ha pogut llegir %s."
 
-#: ../src/mainwindow.cc:6592
+#: ../src/mainwindow.cc:6613
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "No s'ha pogut copiar el fitxer a %s."
 
-#: ../src/mainwindow.cc:6845
+#: ../src/mainwindow.cc:6866
 msgid "translator-credits"
 msgstr "Alex Henrie <alexhenrie24@gmail.com>"
 
-#: ../src/mainwindow.cc:7374 ../src/menubar.cc:1662 ../src/util.cc:1264
+#: ../src/mainwindow.cc:7395 ../src/menubar.cc:1667 ../src/util.cc:1264
 #: ../src/util.cc:1265 ../src/variablesdialog.cc:137
 #: ../src/variablesdialog.cc:138 ../src/variablesdialog.cc:203
 msgid "User variables"
 msgstr "Variables d'usuari"
 
-#: ../src/mainwindow.cc:7398 ../src/menubar.cc:1408 ../src/menubar.cc:1503
+#: ../src/mainwindow.cc:7419 ../src/menubar.cc:1413 ../src/menubar.cc:1508
 #: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
 #: ../src/unitsdialog.cc:237 ../src/util.cc:1266 ../src/util.cc:1267
 msgid "User units"
 msgstr "Unitats d'usuari"
 
-#: ../src/mainwindow.cc:7503
+#: ../src/mainwindow.cc:7524
 msgid "No unknowns in result."
 msgstr "No hi ha cap desconeguda en el resultat."
 
-#: ../src/mainwindow.cc:7509
+#: ../src/mainwindow.cc:7530
 msgid "Set Unknowns"
 msgstr "Estableix les desconegudes"
 
-#: ../src/mainwindow.cc:8222 ../src/mainwindow.cc:8229
+#: ../src/mainwindow.cc:7530
+msgid "_Apply"
+msgstr "_Aplica"
+
+#: ../src/mainwindow.cc:8243 ../src/mainwindow.cc:8250
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
-#: ../src/mainwindow.cc:8420
+#: ../src/mainwindow.cc:8441
 msgid "ans"
 msgstr "res"
 
-#: ../src/mainwindow.cc:8421
+#: ../src/mainwindow.cc:8442
 msgid "Last Answer"
 msgstr "Última resposta"
 
-#: ../src/mainwindow.cc:8422
+#: ../src/mainwindow.cc:8443
 msgid ""
 "Contains the result of the most recent calculation. Multiple results of an "
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
 
-#: ../src/mainwindow.cc:8425
+#: ../src/mainwindow.cc:8446
 msgid "Answer 2"
 msgstr "Resposta 2"
 
-#: ../src/mainwindow.cc:8426
+#: ../src/mainwindow.cc:8447
 msgid "Answer 3"
 msgstr "Resposta 3"
 
-#: ../src/mainwindow.cc:8427
+#: ../src/mainwindow.cc:8448
 msgid "Answer 4"
 msgstr "Resposta 4"
 
-#: ../src/mainwindow.cc:8428
+#: ../src/mainwindow.cc:8449
 msgid "Answer 5"
 msgstr "Resposta 5"
 
-#: ../src/mainwindow.cc:8438
+#: ../src/mainwindow.cc:8459
 msgid "Memory"
 msgstr "Memòria"
 
-#: ../src/matrixdialog.cc:73 ../src/matrixeditdialog.cc:93
+#: ../src/matrixdialog.cc:73 ../src/matrixeditdialog.cc:94
 msgid "none"
 msgstr "cap"
 
@@ -5249,23 +5236,23 @@ msgstr "Resultat vector"
 msgid "Matrix Result"
 msgstr "Resultat de matriu"
 
-#: ../src/matrixeditdialog.cc:394
+#: ../src/matrixeditdialog.cc:395
 msgid "Edit Vector"
 msgstr "Edita el vector"
 
-#: ../src/matrixeditdialog.cc:396
+#: ../src/matrixeditdialog.cc:397
 msgid "Edit Vector (global)"
 msgstr "Edita el vector (global)"
 
-#: ../src/matrixeditdialog.cc:398
+#: ../src/matrixeditdialog.cc:399
 msgid "New Vector"
 msgstr "Vector nou"
 
-#: ../src/matrixeditdialog.cc:405
+#: ../src/matrixeditdialog.cc:406
 msgid "Edit Matrix (global)"
 msgstr "Edita la matriu (global)"
 
-#: ../src/matrixeditdialog.cc:407
+#: ../src/matrixeditdialog.cc:408
 msgid "New Matrix"
 msgstr "Matriu nova"
 
@@ -5273,27 +5260,27 @@ msgstr "Matriu nova"
 msgid "Unit does not exist"
 msgstr "La unitat no existeix"
 
-#: ../src/menubar.cc:1198
+#: ../src/menubar.cc:1203
 msgid "Save Mode"
 msgstr "Desa el mode"
 
-#: ../src/menubar.cc:1228
+#: ../src/menubar.cc:1233
 msgid "Preset mode cannot be overwritten."
 msgstr "No es pot sobreescriure el mode preestablert."
 
-#: ../src/menubar.cc:1239
+#: ../src/menubar.cc:1244
 msgid "Delete Mode"
 msgstr "Suprimeix el mode"
 
-#: ../src/menubar.cc:1416
+#: ../src/menubar.cc:1421
 msgid "Prefixes"
 msgstr "Prefixes"
 
-#: ../src/menubar.cc:1720
+#: ../src/menubar.cc:1725
 msgid "No Prefix"
 msgstr "Cap prefix"
 
-#: ../src/menubar.cc:2677
+#: ../src/menubar.cc:2682
 msgid "Open Settings Folder"
 msgid_plural "Open Settings Folders"
 msgstr[0] ""
@@ -5467,7 +5454,7 @@ msgid_plural "%i days"
 msgstr[0] "%i dia"
 msgstr[1] "%i dies"
 
-#: ../src/preferencesdialog.cc:282
+#: ../src/preferencesdialog.cc:284
 msgid "Please restart the program for the language change to take effect."
 msgstr ""
 
@@ -5543,15 +5530,15 @@ msgctxt "Keypad"
 msgid "Add the two top values together"
 msgstr ""
 
-#: ../src/uniteditdialog.cc:192
+#: ../src/uniteditdialog.cc:193
 msgid "Edit Unit (global)"
 msgstr "Edita la unitat (global)"
 
-#: ../src/uniteditdialog.cc:194
+#: ../src/uniteditdialog.cc:195
 msgid "New Unit"
 msgstr "Unitat nova"
 
-#: ../src/uniteditdialog.cc:362 ../src/uniteditdialog.cc:414
+#: ../src/uniteditdialog.cc:365 ../src/uniteditdialog.cc:417
 msgid "Base unit does not exist."
 msgstr "La unitat base no existeix."
 
@@ -5887,15 +5874,15 @@ msgstr "El camp d'expressió està buit."
 msgid "Unformatted ASCII expression + result"
 msgstr "Copiar ASCII sense format"
 
-#: ../src/variableeditdialog.cc:172
+#: ../src/variableeditdialog.cc:173
 msgid "Edit Variable (global)"
 msgstr "Edita la variable (global)"
 
-#: ../src/variableeditdialog.cc:174
+#: ../src/variableeditdialog.cc:175
 msgid "New Variable"
 msgstr "Variable nova"
 
-#: ../src/variableeditdialog.cc:283
+#: ../src/variableeditdialog.cc:286
 msgid "Empty value field."
 msgstr "El camp de valor està buit."
 
@@ -5910,6 +5897,24 @@ msgstr "un vector"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "no matriu"
+
+#~ msgid "Accept the modification of argument rules"
+#~ msgstr "Accepta la modificació de regles d'argument"
+
+#~ msgid "Do not create/modify this data object"
+#~ msgstr "No creis o no modifiques aquest objecte de dades"
+
+#~ msgid "Accept the creation/modification of this data object"
+#~ msgstr "Accepta la creació o modificació d'aquest object de dades"
+
+#~ msgid "Accept the creation/modification of this matrix/vector"
+#~ msgstr "Accepta la creació/modificació d'aquesta matriu o d'aquest vector"
+
+#~ msgid "Do not create/modify this unit"
+#~ msgstr "No creis/modifiquis aquesta unitat"
+
+#~ msgid "Accept the creation/modification of this unit"
+#~ msgstr "Accepta la creació/modificació d'aquesta unitat"
 
 #~ msgid "Imaginary unit i (√-1)"
 #~ msgstr "Unitat imaginària i (√-1)"

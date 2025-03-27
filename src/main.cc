@@ -372,7 +372,7 @@ int main (int argc, char *argv[]) {
 				remove_blank_ends(lang);
 				if(!lang.empty()) {
 #	ifdef _WIN32
-					_putenv_s("LANG", lang.c_str());
+					_putenv_s("LANGUAGE", lang.c_str());
 #	else
 					setenv("LANGUAGE", lang.c_str(), 1);
 					setenv("LC_MESSAGES", lang.c_str(), 1);
@@ -394,7 +394,7 @@ int main (int argc, char *argv[]) {
 					lang = utf8_encode(wlocale);
 					gsub("-", "_", lang);
 					if(lang.length() > 5) lang = lang.substr(0, 5);
-					if(!lang.empty()) _putenv_s("LANG", lang.c_str());
+					if(!lang.empty()) _putenv_s("LANGUAGE", lang.c_str());
 				}
 				delete[] wlocale;
 			}

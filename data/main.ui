@@ -2689,10 +2689,10 @@ On: xy != x × y</property>
                               <object class="GtkCheckMenuItem" id="menu_item_read_precision">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="tooltip-text" translatable="yes">Parse decimal numbers as approximate with precision equal to the number of digits.
+                                <property name="tooltip-text" translatable="yes">Parse decimal numbers as approximations with precision equal to the number of digits.
 
-Off: 1.10 × 1.10 = 1.21
-On: 1.10 × 1.10 ≈ 1.2</property>
+Off: 1.1 × 3.20 = 3.52
+On: 1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.16</property>
                                 <property name="label" translatable="yes">Read Precision</property>
                                 <signal name="activate" handler="on_menu_item_read_precision_activate" swapped="no"/>
                               </object>
