@@ -1297,8 +1297,8 @@ void reload_history(gint from_index) {
 						history_str.insert(0, "<span font-style=\"italic\">");
 					}
 				}
-				if(pango_version() >= 15000) history_str.insert(0, "<span font_size=\"110%\">");
-				else history_str.insert(0, "<span font_size=\"larger\">");
+				if(pango_version() >= 15000) history_str.insert(0, "<span font_features=\"tnum\" font_size=\"110%\">");
+				else history_str.insert(0, "<span font_features=\"tnum\" font_size=\"larger\">");
 				history_str += "</span>";
 				gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 0, history_str.c_str(), 1, i, 3, inhistory_value[i], 4, 0, 5, history_scroll_width, 6, 1.0, 7, PANGO_ALIGN_RIGHT, -1);
 				pos++;
@@ -1669,8 +1669,8 @@ void add_result_to_history(bool &update_history, bool update_parse, bool registe
 				history_str.insert(0, "<span font-style=\"italic\">");
 			}
 		}
-		if(pango_version() >= 15000) history_str.insert(0, "<span font_size=\"110%\">");
-		else history_str.insert(0, "<span font_size=\"larger\">");
+		if(pango_version() >= 15000) history_str.insert(0, "<span font_features=\"tnum\" font_size=\"110%\">");
+		else history_str.insert(0, "<span font_features=\"tnum\" font_size=\"larger\">");
 		history_str += "</span>";
 		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty() && history_index_bak == history_index) {
 			gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), 1, inhistory_index + 1, -1);
@@ -3524,11 +3524,11 @@ void create_history_view() {
 	}
 #endif
 
-// Fix for breeze-gtk and Ubuntu theme
+	// Fix for breeze-gtk and Ubuntu theme
 	if(RUNTIME_CHECK_GTK_VERSION(3, 20) && themestr.substr(0, 7) != "Adwaita" && themestr.substr(0, 5) != "oomox" && themestr.substr(0, 6) != "themix" && themestr != "Yaru") {
 		GtkCssProvider *historyview_provider = gtk_css_provider_new();
 		gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(history_view_widget()), GTK_TREE_VIEW_GRID_LINES_NONE);
-		gtk_style_context_add_provider(gtk_widget_get_style_context(historyview), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		gtk_style_context_add_provider(gtk_widget_get_style_context(history_view_widget()), GTK_STYLE_PROVIDER(historyview_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		if(themestr == "Breeze") {
 			gtk_css_provider_load_from_data(historyview_provider, "treeview.view {-GtkTreeView-horizontal-separator: 0;}\ntreeview.view.separator {min-height: 2px;}", -1, NULL);
 		} else if(themestr == "Breeze-Dark") {

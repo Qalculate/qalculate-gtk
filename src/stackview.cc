@@ -761,9 +761,16 @@ void create_stack_view() {
 	box_rpnl_provider = gtk_css_provider_new();
 	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_rpnl"))), GTK_STYLE_PROVIDER(box_rpnl_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
+	register_index_renderer = gtk_cell_renderer_text_new();
+	register_renderer = gtk_cell_renderer_text_new();
+
 	if(keypad_font()) update_stack_button_font();
 	if(history_font()) update_stack_font(true);
 	update_stack_button_text();
+
+	PangoAttrList *alist = pango_attr_list_new();
+	pango_attr_list_insert(alist, pango_attr_font_features_new("tnum"));
+	g_object_set(G_OBJECT(register_renderer), "attributes", alist, NULL);
 
 	GList *l;
 	GList *list;
@@ -779,11 +786,9 @@ void create_stack_view() {
 	gtk_tree_view_set_model(GTK_TREE_VIEW(stackview), GTK_TREE_MODEL(stackstore));
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview));
 	gtk_tree_selection_set_mode(selection, GTK_SELECTION_SINGLE);
-	register_index_renderer = gtk_cell_renderer_text_new();
 	g_object_set (G_OBJECT(register_index_renderer), "xalign", 0.5, NULL);
 	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(_("Index"), register_index_renderer, "text", 0, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(stackview), column);
-	register_renderer = gtk_cell_renderer_text_new();
 	g_object_set(G_OBJECT(register_renderer), "editable", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, "xalign", 1.0, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
 	g_signal_connect((gpointer) register_renderer, "edited", G_CALLBACK(on_stackview_item_edited), NULL);
 	g_signal_connect((gpointer) register_renderer, "editing-started", G_CALLBACK(on_stackview_item_editing_started), NULL);
