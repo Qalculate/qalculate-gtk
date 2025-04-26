@@ -29,7 +29,7 @@ msgstr "Мощный и простой в использовании кальк�
 
 #: ../data/qalculate-gtk.desktop.in.h:3
 msgid "calculation;arithmetic;scientific;financial;"
-msgstr "расчёт;расчет;арифметика;научный;финансовый"
+msgstr "расчёт;расчет;арифметика;научный;финансовый;"
 
 #: ../data/qalculate-gtk.appdata.xml.in.h:1
 msgid "Qalculate! (GTK UI)"
@@ -42,7 +42,7 @@ msgid ""
 "complicated math packages, as well as useful tools for everyday needs (such "
 "as currency conversion and percent calculation)."
 msgstr ""
-"Qalculate! - это универсальный кроссплатформенный настольный калькулятор. Он "
+"Qalculate! — это универсальный кроссплатформенный настольный калькулятор. Он "
 "прост в использовании, но обеспечивает мощность и универсальность, обычно "
 "присущие сложным математическим программам, а также полезные инструменты для "
 "повседневных нужд (таких как конвертация валют и расчёт процентов)."
@@ -214,7 +214,7 @@ msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
 msgstr ""
-"Например, если аргумент - это матрица, которая должна иметь равное "
+"Например, если аргумент — это матрица, которая должна иметь равное "
 "количество строк и столбцов: строки(\\x) = столбцы(\\x)"
 
 #: ../data/argumentrules.ui.h:31
@@ -627,11 +627,10 @@ msgid "Maximal number of decimals to display (and round to)"
 msgstr "Максимальное количество отображаемых десятичных знаков"
 
 #: ../data/decimals.ui.h:9
-#, fuzzy
 msgid ""
 "Maximal number of significant digits to display (by default determined by "
 "precision)"
-msgstr "Максимальное количество отображаемых десятичных знаков"
+msgstr "Максимальное число отображаемых значащих цифр (по умолчанию определяется «точностью»)"
 
 #: ../data/floatingpoint.ui.h:1
 msgid "Floating Point Conversion"
@@ -895,11 +894,11 @@ msgstr "Переменная неизвестного"
 
 #: ../data/main.ui.h:27
 msgid "Import CSV File…"
-msgstr "Загрузить CSV файл…"
+msgstr "Загрузить файл CSV…"
 
 #: ../data/main.ui.h:28
 msgid "Export CSV File…"
-msgstr "Экспорт в CSV файл…"
+msgstr "Экспорт в файл CSV…"
 
 #: ../data/main.ui.h:29
 msgid "_Store Result…"
@@ -2032,9 +2031,8 @@ msgid "Search…"
 msgstr "Поиск…"
 
 #: ../data/main.ui.h:319 ../src/historyview.cc:3078 ../src/historyview.cc:3093
-#, fuzzy
 msgid "Search by Date…"
-msgstr "Поиск…"
+msgstr "Поиск по дате…"
 
 #: ../data/main.ui.h:320 ../src/historyview.cc:3075
 msgid "Add Bookmark…"
@@ -2062,7 +2060,7 @@ msgstr "Очистить всё"
 
 #: ../data/main.ui.h:326
 msgid "Show Parsed Expression"
-msgstr "Показать форматированное выражение"
+msgstr "Показать разобранное выражение"
 
 #: ../data/main.ui.h:327
 msgid "Show Result"
@@ -2186,7 +2184,7 @@ msgstr "Просмотр/изменение вектора"
 
 #: ../data/main.ui.h:357
 msgid "Show Parsed Expression in Result Field"
-msgstr "Показать форматированное выражение в поле результатов"
+msgstr "Показать разобранное выражение в поле результатов"
 
 #: ../data/main.ui.h:358
 msgid "Copy Text"
@@ -2674,7 +2672,7 @@ msgid ""
 "If changes to functions, units and variables shall be saved automatically"
 msgstr ""
 "Если изменения в функциях, единицах измерения и переменных должны "
-"сохраняться автоматически."
+"сохраняться автоматически"
 
 #: ../data/preferences.ui.h:5
 msgid "Clear history on exit"
@@ -2682,11 +2680,11 @@ msgstr "Очищать историю при выходе"
 
 #: ../data/preferences.ui.h:6
 msgid "Max history lines saved"
-msgstr ""
+msgstr "Максимальное количество сохранённых строк истории"
 
 #: ../data/preferences.ui.h:7
 msgid "Save history to separate file"
-msgstr ""
+msgstr "Сохранить историю в отдельный файл"
 
 #: ../data/preferences.ui.h:8
 msgid "Allow multiple instances"
@@ -2755,7 +2753,7 @@ msgstr "Выражение в истории"
 
 #: ../data/preferences.ui.h:22
 msgid "Parsed"
-msgstr "Проанализированное"
+msgstr "Разобранное"
 
 #: ../data/preferences.ui.h:23
 msgid "Entered"
@@ -2763,7 +2761,7 @@ msgstr "Введённое"
 
 #: ../data/preferences.ui.h:24
 msgid "Entered + parsed"
-msgstr "Введённое + Проанализированное"
+msgstr "Введённое + Разобранное"
 
 #: ../data/preferences.ui.h:25
 msgid "Add calculate-as-you-type result to history"
@@ -2917,13 +2915,13 @@ msgstr ""
 
 #: ../data/preferences.ui.h:60
 msgid "Show parsed expression in result field"
-msgstr "Показать форматированное выражение в поле результатов"
+msgstr "Показать разобранное выражение в поле результатов"
 
 #: ../data/preferences.ui.h:61
 msgid ""
 "If as-you-type expression interpretation shall be displayed in the result "
 "field"
-msgstr "Если форматированное выражение должно отображаться по мере набора"
+msgstr "Если разобранное выражение должно отображаться по мере набора"
 
 #: ../data/preferences.ui.h:62
 msgid "Persistent keypad"
@@ -2931,7 +2929,7 @@ msgstr "Постоянная клавиатура"
 
 #: ../data/preferences.ui.h:63
 msgid "Disable cursor blinking"
-msgstr ""
+msgstr "Отключить мигание курсора"
 
 #: ../data/preferences.ui.h:64
 msgid "Look & Feel"
@@ -2978,7 +2976,7 @@ msgstr "Двоичные биты"
 
 #: ../data/preferences.ui.h:74
 msgid "Automatic"
-msgstr ""
+msgstr "Автоматически"
 
 #: ../data/preferences.ui.h:75
 msgid "Use lower case letters in non-decimal numbers"
@@ -3078,15 +3076,17 @@ msgid "Copy result as unformatted ASCII by default"
 msgstr "По умолчанию копировать результат как неформатированный ASCII"
 
 #: ../data/preferences.ui.h:94
-#, fuzzy
 msgid "Use overline for repeating decimals"
-msgstr "Указывать повторяющиеся десятичные дроби"
+msgstr "Использовать надстрочные знаки для повторяющихся десятичных дробей"
 
 #: ../data/preferences.ui.h:95
 msgid ""
 "Use overline (vinculum), instead of ellipsis, for repeating decimals when "
 "indicate repeating decimals is enabled."
 msgstr ""
+"Использовать надчёркивание (vinculum) вместо эллипсиса для повторяющихся "
+"десятичных дробей, если включено функция указания повторяющихся десятичных "
+"дробей."
 
 #: ../data/preferences.ui.h:96
 msgid "Digit grouping"
@@ -3094,7 +3094,7 @@ msgstr "Группировка цифр"
 
 #: ../data/preferences.ui.h:97
 msgid "off"
-msgstr "выкл."
+msgstr "откл."
 
 #: ../data/preferences.ui.h:98
 msgid "standard"
@@ -3255,11 +3255,10 @@ msgid "Custom history font"
 msgstr "Шрифт история"
 
 #: ../data/preferences.ui.h:133
-#, fuzzy
 msgid "If you want to use a font other than the default in the history list"
 msgstr ""
-"Если вы хотите использовать шрифт, отличный от шрифта по умолчанию для всего "
-"приложения"
+"Если вы хотите использовать шрифт, отличный от шрифта по умолчанию для списка "
+"истории"
 
 #: ../data/preferences.ui.h:134
 msgid "Fonts & Colors"
@@ -3389,12 +3388,18 @@ msgid ""
 "(foot) and in (inch) is set to 1, which results in \"17 in = 1 ft + 5 in\", "
 "instead of \"17 in = 1 ft + 1 hand + 1 in\"."
 msgstr ""
+"Пример: приоритет единицы измерения «хэнд» установлен на 2, а приоритет "
+"единиц измерения ft (фут) и in (дюйм) на 1, в результате чего вместо "
+"«17 in = 1 ft + 5 in» получается «17 in = 1 ft + 1 hand + 1 in»."
 
 #: ../data/unitedit.ui.h:30
 msgid ""
 "Example: minimum base unit number of yd (yard) is set to 12, which results "
 "in \"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
 msgstr ""
+"Пример: минимальное число базовых единиц измерения yd (ярд) установлено на "
+"12, в результате чего получается «3 × 3 ft = 9 ft» (вместо Э3 yd») и "
+"«4 × 3 ft = 4 yd»."
 
 #: ../data/unitedit.ui.h:31
 msgid "Exponent of the base unit"
@@ -3655,10 +3660,9 @@ msgstr "Возведение в степень"
 #. Mathematical operation
 #: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
 #: ../src/numberbasesdialog.cc:866
-#, fuzzy
 msgctxt "Keypad"
 msgid "Add"
-msgstr "Сложение"
+msgstr "Добавить"
 
 #: ../src/buttonseditdialog.cc:372 ../src/expressionstatus.cc:675
 #: ../src/keypad.cc:517 ../src/keypad.cc:2755 ../src/util.cc:927
@@ -4023,7 +4027,7 @@ msgstr "Календари"
 
 #: ../src/expressioncompletion.cc:1880
 msgid "Complex cis Form"
-msgstr "Сисоидная форма комплексных чисел"
+msgstr "Цисоидальная форма комплексных чисел"
 
 #: ../src/expressioncompletion.cc:1882
 msgid "Decimal Number"
@@ -4425,7 +4429,7 @@ msgstr "расширенные дробные числа"
 #: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1376
 #: ../src/mainwindow.cc:4773
 msgid "rectangular"
-msgstr "прямоугоная"
+msgstr "прямоугольная"
 
 #: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1376
 #: ../src/mainwindow.cc:4773
@@ -4456,7 +4460,7 @@ msgstr "полярная форма комплексных чисел"
 
 #: ../src/expressionstatus.cc:922
 msgid "complex cis form"
-msgstr "сисоидная форма комплексных чисел"
+msgstr "цисоидальная форма комплексных чисел"
 
 #: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1392
 #: ../src/mainwindow.cc:4825
@@ -5083,12 +5087,11 @@ msgid "Retry"
 msgstr "Повторить попытку"
 
 #: ../src/mainwindow.cc:6228
-#, fuzzy, c-format
 msgid ""
 "Couldn't write history to\n"
 "%s"
 msgstr ""
-"Не удалось записать настройки в\n"
+"Не удалось записать историю в\n"
 "%s"
 
 #: ../src/mainwindow.cc:6273
@@ -5110,7 +5113,7 @@ msgstr "_Импорт"
 
 #: ../src/mainwindow.cc:6577
 msgid "XML Files"
-msgstr "XML файлы"
+msgstr "Файлы XML"
 
 #: ../src/mainwindow.cc:6597
 #, c-format
@@ -5173,6 +5176,9 @@ msgid ""
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
+"Содержит результат последнего вычисления. Несколько результатов уравнения "
+"представляются в виде вектора. Доступ к отдельным решениям осуществляется "
+"с помощью ans(n) (напр., ans(1) для первого решения)."
 
 #: ../src/mainwindow.cc:8446
 msgid "Answer 2"
@@ -5257,10 +5263,10 @@ msgstr "Без префикса"
 #: ../src/menubar.cc:2682
 msgid "Open Settings Folder"
 msgid_plural "Open Settings Folders"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Открыть папку настроек"
+msgstr[1] "Открыть папки настроек"
+msgstr[2] "Открыть папки настроек"
+msgstr[3] "Открыть папки настроек"
 
 #: ../src/modes.cc:46 ../src/modes.cc:56
 msgid "Preset"
@@ -5269,10 +5275,12 @@ msgstr "Предустановка"
 #: ../src/modes.cc:132
 msgid "Default mode loaded at first startup for new users"
 msgstr ""
+"Режим по умолчанию загружается при первом запуске для новых пользователей"
 
 #: ../src/modes.cc:133
 msgid "Mode loaded at each startup and, by default, saved at exit"
 msgstr ""
+"Режим загружается при каждом запуске и по умолчанию сохраняется при выходе"
 
 #: ../src/nameseditdialog.cc:101
 msgid "Illegal name"
@@ -5508,7 +5516,7 @@ msgstr "Комбинация клавиш"
 #: ../src/stackview.cc:836
 msgctxt "Keypad"
 msgid "Add the two top values together"
-msgstr ""
+msgstr "Сложить два верхних значения"
 
 #: ../src/uniteditdialog.cc:193
 msgid "Edit Unit (global)"
