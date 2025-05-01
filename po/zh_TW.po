@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-27 07:18+0100\n"
-"PO-Revision-Date: 2025-03-06 21:58+0800\n"
+"PO-Revision-Date: 2025-04-30 22:02+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_TW\n"
@@ -53,7 +53,7 @@ msgid ""
 "(including integrals and equations), arbitrary precision, uncertainty "
 "propagation, interval arithmetic, plotting, and a user-friendly interface."
 msgstr ""
-"功能包括龐大的可自訂函式庫、單位計算和轉換、物理常數、符號計算(包括積分和方程"
+"功能包含龐大的可自訂函式庫、單位計算和轉換、物理常數、符號計算(包含積分和方程"
 "式)、任意精確度、誤差傳播、區間算術、繪圖和用戶友好的介面。"
 
 #: ../data/argumentrules.ui.h:1 ../data/functionedit.ui.h:25
@@ -209,7 +209,7 @@ msgstr "自訂條件"
 msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
-msgstr "例如，如果參數是必須具有相同列數和行數的矩陣: rows(\\x) = columns(\\x)"
+msgstr "例如，如果參數是必須具有相等列數和行數的矩陣: rows(\\x) = columns(\\x)"
 
 #: ../data/argumentrules.ui.h:31
 msgid "Allow matrix"
@@ -233,7 +233,7 @@ msgstr "最小值"
 
 #: ../data/argumentrules.ui.h:36
 msgid "Include equals"
-msgstr "包括等於"
+msgstr "包含等於"
 
 #: ../data/argumentrules.ui.h:37
 msgid "Max"
@@ -319,7 +319,7 @@ msgstr "矩陣/向量變數"
 
 #: ../data/csvexport.ui.h:6 ../data/csvimport.ui.h:20
 msgid "Delimiter"
-msgstr "分隔符"
+msgstr "定界符"
 
 #: ../data/csvexport.ui.h:7 ../data/csvimport.ui.h:24
 msgid "Comma"
@@ -407,7 +407,7 @@ msgstr "檔案中要匯入資料的第一列"
 
 #: ../data/csvimport.ui.h:21
 msgid "Includes headings"
-msgstr "包括標題"
+msgstr "包含標題"
 
 #: ../data/csvimport.ui.h:22
 msgid "If the first row contains column headings"
@@ -415,11 +415,11 @@ msgstr "如果第一列包含欄標題"
 
 #: ../data/csvimport.ui.h:23
 msgid "Delimiter used to separate columns in the file"
-msgstr "檔案中用來分隔欄的分隔符"
+msgstr "檔案中用來分隔欄的定界符"
 
 #: ../data/csvimport.ui.h:29
 msgid "Custom delimiter"
-msgstr "自訂分隔符"
+msgstr "自訂定界符"
 
 #: ../data/datasetedit.ui.h:1
 msgid "Edit Data Property"
@@ -796,13 +796,13 @@ msgstr "刪除選擇的函數"
 
 #: ../data/functions.ui.h:12
 msgid "(De)activate the selected function"
-msgstr "(不)啟用選擇的函數"
+msgstr "(停)啟用選擇的函數"
 
 #: ../data/functions.ui.h:13 ../data/units.ui.h:18 ../data/variables.ui.h:13
 #: ../src/functionsdialog.cc:431 ../src/unitsdialog.cc:386 ../src/util.cc:1318
 #: ../src/variablesdialog.cc:337
 msgid "Deac_tivate"
-msgstr "不啟用(_t)"
+msgstr "停用(_t)"
 
 #: ../data/functions.ui.h:14 ../src/insertfunctiondialog.cc:453
 msgid "C_alculate"
@@ -915,7 +915,7 @@ msgstr "匯入定義檔…"
 
 #: ../data/main.ui.h:34
 msgid "Fetch current exchange rates from the Internet"
-msgstr "從網路提取目前匯率"
+msgstr "從網際網路提取目前匯率"
 
 #: ../data/main.ui.h:35
 msgid "Update Exchange Rates"
@@ -1241,12 +1241,12 @@ msgstr "6/4 = 1+1/2"
 
 #: ../data/main.ui.h:117
 msgid "Mixed Fractions"
-msgstr "混合分數"
+msgstr "帶分數"
 
 #. Mixed fraction
 #: ../data/main.ui.h:119
 msgid "Mixed"
-msgstr "混合"
+msgstr "帶分數"
 
 #: ../data/main.ui.h:120
 msgid "Interval Display"
@@ -1282,7 +1282,7 @@ msgstr "中點"
 
 #: ../data/main.ui.h:128
 msgid "Allow concise uncertainty input"
-msgstr "允許簡潔不確定性輸入"
+msgstr "允許簡潔誤差輸入"
 
 #: ../data/main.ui.h:129
 msgid "Unit Display"
@@ -1293,6 +1293,7 @@ msgid "Do not use any prefixes in result"
 msgstr "不要在結果中使用任何前綴"
 
 #: ../data/main.ui.h:131
+#, fuzzy
 msgid "Show prefixes for primarily SI and CGS units."
 msgstr "為主要的SI和CGS單位顯示前綴。"
 
@@ -1312,7 +1313,7 @@ msgstr "對所有單位使用前綴"
 msgid ""
 "Enables automatic use of hekto, deka, deci and centi when prefixes are "
 "enabled"
-msgstr "啟用前綴時，可以自動使用百、十、分和厘"
+msgstr "啟用前綴時，能夠自動使用百、十、分和厘"
 
 #: ../data/main.ui.h:136
 msgid "Enable All SI Prefixes"
@@ -1322,7 +1323,7 @@ msgstr "啟用所有SI前綴"
 msgid ""
 "Enables automatic setting of prefix for denominator in addition to the "
 "numerator"
-msgstr "除分子外，還可以自動為分母設定前綴"
+msgstr "除分子外，還使分母能夠自動設定前綴"
 
 #: ../data/main.ui.h:138
 msgid "Enable Denominator Prefixes"
@@ -1400,7 +1401,7 @@ msgstr "計算變數"
 
 #: ../data/main.ui.h:157
 msgid "Disables/enables complex numbers in result"
-msgstr "禁用/啟用結果中的複數"
+msgstr "停用/啟用結果中的複數"
 
 #: ../data/main.ui.h:158
 msgid "Allow Complex Result"
@@ -1408,7 +1409,7 @@ msgstr "允許複數結果"
 
 #: ../data/main.ui.h:159
 msgid "Disables/enables infinite numbers in result"
-msgstr "禁用/啟用結果中的無窮數字"
+msgstr "停用/啟用結果中的無窮數字"
 
 #: ../data/main.ui.h:160
 msgid "Allow Infinite Result"
@@ -1543,7 +1544,7 @@ msgid ""
 "Off: 1.1 × 3.20 = 3.52\n"
 "On: 1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.16"
 msgstr ""
-"剖析十進制數字為精確度等於位數的近似值。\n"
+"將十進制數字剖析為精確度等於位數的近似值。\n"
 "\n"
 "Off: 1.1 × 3.20 = 3.52\n"
 "On: 1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.16"
@@ -2114,7 +2115,7 @@ msgstr "簡單分數"
 
 #: ../data/main.ui.h:344
 msgid "Mixed Fraction"
-msgstr "混合分數"
+msgstr "帶分數"
 
 #: ../data/main.ui.h:345
 msgid "_Abbreviate Names"
@@ -2246,11 +2247,11 @@ msgstr "元素"
 
 #: ../data/matrix.ui.h:7 ../data/matrixedit.ui.h:8
 msgid "Number of rows in this matrix (rows displayed for vectors)"
-msgstr "此矩陣的列數(向量顯示的列)"
+msgstr "此矩陣的列數(顯示向量的列數)"
 
 #: ../data/matrix.ui.h:8 ../data/matrixedit.ui.h:9
 msgid "Number of columns in this matrix (columns displayed for vectors)"
-msgstr "此矩陣的行數(向量顯示的行)"
+msgstr "此矩陣的行數(顯示向量的行數)"
 
 #: ../data/matrix.ui.h:9 ../data/matrixedit.ui.h:11
 msgid "If this is a matrix or vector"
@@ -2413,7 +2414,7 @@ msgstr "儲存(_S)"
 
 #: ../data/plot.ui.h:4
 msgid "Save as png, svg, postscript, eps, latex or fig"
-msgstr "儲存為png, svg, postscript, eps, latex或fig"
+msgstr "儲存為png、svg、postscript、eps、latex或fig"
 
 #: ../data/plot.ui.h:7 ../src/dataseteditdialog.cc:224 ../src/plotdialog.cc:773
 msgid "Title"
@@ -2457,7 +2458,7 @@ msgstr "點"
 
 #: ../data/plot.ui.h:19
 msgid "Line with points"
-msgstr "線與點"
+msgstr "具有點的線"
 
 #: ../data/plot.ui.h:20
 msgid "Boxes/bars"
@@ -2643,7 +2644,7 @@ msgstr "偏好設定"
 
 #: ../data/preferences.ui.h:3
 msgid "Save definitions on exit"
-msgstr "離開時儲存定義"
+msgstr "退出時儲存定義"
 
 #: ../data/preferences.ui.h:4
 msgid ""
@@ -2652,11 +2653,11 @@ msgstr "如果函數、單位和變數的變更要自動儲存"
 
 #: ../data/preferences.ui.h:5
 msgid "Clear history on exit"
-msgstr "離開時清除歷史記錄"
+msgstr "退出時清除歷史記錄"
 
 #: ../data/preferences.ui.h:6
 msgid "Max history lines saved"
-msgstr "最大歷史記錄儲存"
+msgstr "最大已儲存歷史記錄"
 
 #: ../data/preferences.ui.h:7
 msgid "Save history to separate file"
@@ -2684,7 +2685,7 @@ msgstr "有新版本可用時通知"
 
 #: ../data/preferences.ui.h:13
 msgid "Save mode on exit"
-msgstr "離開時儲存模式"
+msgstr "退出時儲存模式"
 
 #: ../data/preferences.ui.h:14
 msgid "If the mode of the calculator shall be restored"
@@ -2705,7 +2706,7 @@ msgstr "鍵盤按鍵用於RPN"
 
 #: ../data/preferences.ui.h:18
 msgid "Use keyboard operator keys for RPN operations (+-*/^)."
-msgstr "鍵盤運算子鍵用於RPN操作(+-*/^)。"
+msgstr "將鍵盤運算子鍵用於RPN運算(+-*/^)。"
 
 #: ../data/preferences.ui.h:19
 msgid "Use caret for bitwise XOR"
@@ -2783,7 +2784,7 @@ msgstr "啟用Unicode符號"
 
 #: ../data/preferences.ui.h:36
 msgid "Disable this if you have problems with some fancy characters"
-msgstr "如果你有一些花俏字符的問題，請禁用此功能"
+msgstr "如果你有一些花俏字符的問題，請停用此功能"
 
 #: ../data/preferences.ui.h:37
 msgid "Ignore system language (requires restart)"
@@ -2897,7 +2898,7 @@ msgstr "常駐鍵盤"
 
 #: ../data/preferences.ui.h:63
 msgid "Disable cursor blinking"
-msgstr "禁用游標閃爍"
+msgstr "停用游標閃爍"
 
 #: ../data/preferences.ui.h:64
 msgid "Look & Feel"
@@ -3027,15 +3028,14 @@ msgid "Copy result as unformatted ASCII by default"
 msgstr "預設將結果複製為未格式化的ASCII"
 
 #: ../data/preferences.ui.h:94
-#, fuzzy
 msgid "Use overline for repeating decimals"
-msgstr "指示循環小數"
+msgstr "循環小數使用頂線"
 
 #: ../data/preferences.ui.h:95
 msgid ""
 "Use overline (vinculum), instead of ellipsis, for repeating decimals when "
 "indicate repeating decimals is enabled."
-msgstr ""
+msgstr "指示循環小數啟用時，循環小數使用頂線(括線)而不是省略號。"
 
 #: ../data/preferences.ui.h:96
 msgid "Digit grouping"
@@ -3071,8 +3071,8 @@ msgstr "對資訊單位使用二進制前綴"
 
 #: ../data/preferences.ui.h:104
 msgid ""
-"Use binary, instead of decimal, prefixes by default for information units "
-"(e.g. bytes)."
+"Use binary, instead of decimal, prefixes by default for information units (e."
+"g. bytes)."
 msgstr "對資訊單位(例如位元組)預設使用二進制而不是十進制前綴。"
 
 #: ../data/preferences.ui.h:105
@@ -3190,7 +3190,6 @@ msgid "Custom history font"
 msgstr "自訂歷史記錄字型"
 
 #: ../data/preferences.ui.h:133
-#, fuzzy
 msgid "If you want to use a font other than the default in the history list"
 msgstr "如果你想在歷史記錄列表中使用預設以外的其他字型"
 
@@ -3348,8 +3347,8 @@ msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
 "\n"
-"For non-linear relations use \\x for the factor and \\y for the exponent "
-"(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
+"For non-linear relations use \\x for the factor and \\y for the exponent (e."
+"g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
 "與基本單位的關係。對於線性關係，這應該只是一個數字。\n"
 "\n"
@@ -3402,7 +3401,7 @@ msgstr "刪除選擇的單位"
 
 #: ../data/units.ui.h:17
 msgid "(De)activate the selected unit"
-msgstr "(不)啟用選擇的單位"
+msgstr "(停)啟用選擇的單位"
 
 #: ../data/units.ui.h:20
 msgid "Insert the selected unit into the expression entry"
@@ -3466,7 +3465,7 @@ msgstr "刪除選擇的變數"
 
 #: ../data/variables.ui.h:12
 msgid "(De)activate the selected variable"
-msgstr "(不)啟用選擇的變數"
+msgstr "(停)啟用選擇的變數"
 
 #: ../data/variables.ui.h:15
 msgid "Insert the selected variable into the expression entry"
@@ -3527,7 +3526,7 @@ msgstr "將游標移動到開頭或結尾"
 
 #: ../src/buttonseditdialog.cc:350 ../src/keypad.cc:458
 msgid "Uncertainty/interval"
-msgstr "不確定性/區間"
+msgstr "誤差/區間"
 
 #: ../src/buttonseditdialog.cc:350 ../src/keypad.cc:458
 msgid "Relative error"
@@ -3840,7 +3839,7 @@ msgstr "未輸入檔名。"
 
 #: ../src/exportcsvdialog.cc:162 ../src/importcsvdialog.cc:186
 msgid "No delimiter selected."
-msgstr "未選擇分隔符。"
+msgstr "未選擇定界符。"
 
 #: ../src/exportcsvdialog.cc:175
 msgid "No variable name entered."
@@ -3861,7 +3860,7 @@ msgstr ""
 
 #: ../src/expressioncompletion.cc:1642
 msgid "a previous result"
-msgstr "先前結果"
+msgstr "一個先前結果"
 
 #: ../src/expressioncompletion.cc:1655
 msgid "matrix"
@@ -4047,7 +4046,7 @@ msgstr "清除歷史記錄"
 
 #: ../src/expressionedit.cc:1373
 msgid "Abort"
-msgstr "中止"
+msgstr "終止"
 
 #: ../src/expressionedit.cc:1376
 msgid "Undo"
@@ -4471,7 +4470,7 @@ msgid ""
 "\"info\" is typed as property, a dialog window will pop up with all "
 "properties of the object."
 msgstr ""
-"為給定的物件和屬性從%s資料集中檢索數據。如果將“info”鍵入為屬性，則將彈出一個"
+"為給定的物件和屬性從%s資料集中檢索資料。如果將“info”鍵入為屬性，則將彈出一個"
 "具有物件所有屬性的對話框。"
 
 #: ../src/functionsdialog.cc:312 ../src/insertfunctiondialog.cc:795
@@ -4522,22 +4521,22 @@ msgstr "歷史記錄剖析表達式"
 #: ../src/historyview.cc:797 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
 #: ../src/plotdialog.cc:486
 msgid "It took too long to generate the plot data."
-msgstr "產生繪圖數據過久。"
+msgstr "產生繪圖資料太久。"
 
 #: ../src/historyview.cc:797
 msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
-msgstr "產生繪圖數據過久。請降低採樣率或在偏好設定中增加時間限制。"
+msgstr "產生繪圖資料太久。請降低採樣率或在偏好設定中增加時間限制。"
 
 #: ../src/historyview.cc:2139 ../src/mainwindow.cc:2421
 msgid "RPN Register Moved"
-msgstr "RPN暫存器移動"
+msgstr "RPN暫存器已移動"
 
 #: ../src/historyview.cc:2145 ../src/mainwindow.cc:2422
 #: ../src/mainwindow.cc:5196
 msgid "RPN Operation"
-msgstr "RPN操作"
+msgstr "RPN運算"
 
 #: ../src/historyview.cc:2742
 msgid "Search"
@@ -4782,7 +4781,7 @@ msgstr[0] "匯率來源:"
 #, c-format
 msgid "updated %s"
 msgid_plural "updated %s"
-msgstr[0] "更新%s"
+msgstr[0] "已更新%s"
 
 #: ../src/mainwindow.cc:543
 msgid ""
@@ -4858,7 +4857,7 @@ msgid ""
 msgstr ""
 "表達式有歧義。\n"
 "請選擇溫度計算模式\n"
-"(模式可以稍後在偏好設定中變更)。"
+"(可以稍後在偏好設定中變更模式)。"
 
 #: ../src/mainwindow.cc:861
 msgid "Sinc Function"
@@ -4890,7 +4889,7 @@ msgstr ""
 
 #: ../src/mainwindow.cc:927
 msgid "Both dot and comma as decimal separators"
-msgstr "點和逗號作為小數分隔符"
+msgstr "點和逗號都作為小數分隔符"
 
 #: ../src/mainwindow.cc:934
 msgid "Dot as thousands separator"
@@ -5185,7 +5184,7 @@ msgstr "為新使用者在第一次啟動時載入的預設模式"
 
 #: ../src/modes.cc:133
 msgid "Mode loaded at each startup and, by default, saved at exit"
-msgstr "在每次啟動時載入的模式，預設情況下離開時儲存"
+msgstr "在每次啟動時載入的模式，預設情況下退出時儲存"
 
 #: ../src/nameseditdialog.cc:101
 msgid "Illegal name"
@@ -5197,8 +5196,8 @@ msgid ""
 "A conflicting object with the same name exists. If you proceed and save "
 "changes, the conflicting object will be overwritten or deactivated."
 msgstr ""
-"存在一個具有相同名稱的衝突對象。如果你繼續進行並儲存變更，則衝突對象將被覆寫"
-"或不啟用。"
+"存在一個具有相同名稱的衝突物件。如果你繼續進行並儲存變更，則衝突物件將被覆寫"
+"或停用。"
 
 #: ../src/nameseditdialog.cc:164
 msgid "Abbreviation"
@@ -5346,7 +5345,7 @@ msgstr "請重新啟動程式使語言變更生效。"
 
 #: ../src/resultview.cc:221 ../src/resultview.cc:458
 msgid "result processing was aborted"
-msgstr "結果處理被中斷"
+msgstr "結果處理被終止"
 
 #: ../src/resultview.cc:221 ../src/resultview.cc:520
 msgid ""
@@ -5358,7 +5357,7 @@ msgstr ""
 
 #: ../src/resultview.cc:242 ../src/resultview.cc:522
 msgid "calculation was aborted"
-msgstr "計算被中斷"
+msgstr "計算被終止"
 
 #: ../src/resultview.cc:342
 msgid ""
@@ -5577,7 +5576,7 @@ msgstr "切換簡單分數"
 
 #: ../src/util.cc:902
 msgid "Toggle mixed fractions"
-msgstr "切換混合分數"
+msgstr "切換帶分數"
 
 #: ../src/util.cc:903
 msgid "Toggle scientific notation"
