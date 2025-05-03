@@ -2812,6 +2812,9 @@ void on_popup_menu_item_history_search_date_activate(GtkMenuItem*, gpointer) {
 	}
 	gtk_widget_destroy(d);
 }
+void on_bookmark_entry_activated(GtkWidget*, gpointer p) {
+	gtk_dialog_response(GTK_DIALOG(p), GTK_RESPONSE_ACCEPT);
+}
 void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 	if(calculator_busy()) return;
 	if(strcmp(gtk_menu_item_get_label(w), _("Remove Bookmark")) == 0) {
@@ -2883,6 +2886,8 @@ void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 		GtkWidget *entry = gtk_entry_new();
 		gtk_entry_set_width_chars(GTK_ENTRY(entry), 35);
 		gtk_box_pack_end(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
+		gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+		g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(on_bookmark_entry_activated), (gpointer) dialog);
 		gtk_widget_show(entry);
 		if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 			string history_message = gtk_entry_get_text(GTK_ENTRY(entry));
