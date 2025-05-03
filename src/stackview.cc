@@ -771,6 +771,7 @@ void create_stack_view() {
 	PangoAttrList *alist = pango_attr_list_new();
 	pango_attr_list_insert(alist, pango_attr_font_features_new("tnum"));
 	g_object_set(G_OBJECT(register_renderer), "attributes", alist, NULL);
+	pango_attr_list_unref(alist);
 
 	GList *l;
 	GList *list;

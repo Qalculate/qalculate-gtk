@@ -925,6 +925,12 @@ run_function_edit_dialog:
 			show_message(_("Empty expression field."), GTK_WINDOW(dialog));
 			goto run_function_edit_dialog;
 		}
+		if(CALCULATOR->hasToExpression(str2)) {
+			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
+			gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression")));
+			show_message(_("Conversion (using \"to\") is not supported in functions."), GTK_WINDOW(dialog));
+			goto run_function_edit_dialog;
+		}
 		GtkTextIter d_iter_s, d_iter_e;
 		gtk_text_buffer_get_start_iter(description_buffer, &d_iter_s);
 		gtk_text_buffer_get_end_iter(description_buffer, &d_iter_e);

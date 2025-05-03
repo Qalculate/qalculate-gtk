@@ -7516,6 +7516,10 @@ void new_vector(GtkMenuItem*, gpointer) {
 	edit_matrix(NULL, NULL, NULL, main_window(), TRUE);
 }
 
+void on_unknown_entry_activated(GtkWidget*, gpointer p) {
+	gtk_dialog_response(GTK_DIALOG(p), GTK_RESPONSE_ACCEPT);
+}
+
 void set_unknowns() {
 	if(expression_modified() && !expression_is_empty() && !rpn_mode) execute_expression(true);
 	MathStructure unknowns;
@@ -7552,6 +7556,7 @@ void set_unknowns() {
 		gtk_widget_set_hexpand(entry[i], TRUE);
 		gtk_grid_attach(GTK_GRID(ptable), entry[i], 1, rows - 1, 1, 1);
 	}
+	g_signal_connect(G_OBJECT(entry[entry.size() - 1]), "activate", G_CALLBACK(on_unknown_entry_activated), (gpointer) dialog);
 	MathStructure msave(*mstruct);
 	string result_save = get_result_text();
 	gtk_widget_show_all(dialog);

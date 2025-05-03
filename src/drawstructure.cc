@@ -702,7 +702,9 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 						}
 					}
 					TTBP(str)
+					if(base == BASE_BINARY) str += "<span font_features=\"tnum\">";
 					str += value_str;
+					if(base == BASE_BINARY) str += "</span>";
 					if(!number_base_map[(void*) &m.number()].empty()) {
 						if(!multiline) {
 							string str2 = str;

@@ -1832,6 +1832,7 @@ void update_completion() {
 			if(ename && ename != ename_r && !ename->completion_only && !ename->plural && (!ename->unicode || can_display_unicode_string_function(ename->name.c_str(), (void*) expression_edit_widget()))) {
 				str += " <i>";
 				str += ename->formattedName(-1, false, true);
+				if(ename->name != "k" && ename->name != "M") str += "-";
 				str += "</i>";
 			}
 		}
