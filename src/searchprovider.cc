@@ -75,36 +75,17 @@ bool has_error() {
 	return false;
 }
 
-static void qalculate_search_provider_activate_result(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar *result, gchar **terms, guint, gpointer) {
-	gchar *joined_terms = g_strjoinv(" ", terms);
-	if(strcmp(result, "copy-to-clipboard") == 0) {
-		unordered_map<string, string>::const_iterator it = expressions.find(joined_terms);
-		if(it != expressions.end()) {
-			it = results.find(it->second);
-			if(it != expressions.end()) {
-				size_t i = string::npos;
-				if(search_po.use_unicode_signs) {
-					i = it->second.find(SIGN_ALMOST_EQUAL " ");
-					if(i == 0) i = strlen(SIGN_ALMOST_EQUAL) - 1;
-					else i = string::npos;
-				} else {
-					i = it->second.find(_("approx."));
-					if(i == 0) i = strlen(_("approx.")) - 1;
-					else i = string::npos;
-				}
-				if(i == string::npos) i = it->second.find("= ");
-				if(i != string::npos) i += 2;
-				gtk_clipboard_set_text(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), i == string::npos ? it->second.c_str() : it->second.substr(i).c_str(), -1);
-			}
-		}
-	} else {
+static gboolean qalculate_search_provider_activate_result(ShellSearchProvider2*, GDBusMethodInvocation *invocation, gchar *result, gchar **terms, guint, gpointer) {
+	if(strcmp(result, "copy-to-clipboard") != 0) {
+		gchar *joined_terms = g_strjoinv(" ", terms);
 		string str = "qalculate-gtk \"";
 		str += joined_terms;
 		str += "\"";
 		g_spawn_command_line_async(str.c_str(), NULL);
+		g_free(joined_terms);
 	}
-	g_free(joined_terms);
 	g_dbus_method_invocation_return_value(invocation, NULL);
+	return TRUE;
 }
 void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 	string expression = joined_terms;
@@ -115,7 +96,8 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 	if(it != expressions.end()) {
 		if(it->second.empty()) return;
 		g_variant_builder_add(&builder, "s", expression.c_str());
-		if(results.find(it->second) != results.end() && !it->second.empty()) g_variant_builder_add(&builder, "s", "copy-to-clipboard");
+		it = results.find(it->second);
+		if(it != results.end() && !it->second.empty()) g_variant_builder_add(&builder, "s", (string("copy-to-clipboard") + it->second).c_str());
 	} else {
 		bool b_valid = false;
 		expressions[expression] = "";
@@ -171,7 +153,9 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 				} else if(!result_is_comparison) {
 					result.insert(0, "= ");
 				}
-				g_variant_builder_add(&builder, "s", "copy-to-clipboard");
+				string s = "copy-to-clipboard";
+				s += result;
+				g_variant_builder_add(&builder, "s", s.c_str());
 			}
 			results[parsed] = result;
 		}
@@ -190,7 +174,8 @@ static gboolean qalculate_search_provider_get_result_metas(ShellSearchProvider2*
 	GVariantBuilder metas;
 	g_variant_builder_init(&metas, G_VARIANT_TYPE ("aa{sv}"));
 	for(idx = 0; eqs[idx] != NULL; idx++) {
-		if(strcmp(eqs[idx], "copy-to-clipboard") != 0) {
+		string seqs = eqs[idx];
+		if(seqs.find("copy-to-clipboard") != 0) {
 			unordered_map<string, string>::const_iterator it = expressions.find(eqs[idx]);
 			if(it != expressions.end()) {
 				GVariantBuilder meta;
@@ -203,12 +188,26 @@ static gboolean qalculate_search_provider_get_result_metas(ShellSearchProvider2*
 				}
 				g_variant_builder_add_value(&metas, g_variant_builder_end(&meta));
 			}
-		} else {
+		} else if(seqs.length() > 17) {
+			seqs = seqs.substr(17);
+			size_t i = string::npos;
+			if(search_po.use_unicode_signs) {
+				i = seqs.find(SIGN_ALMOST_EQUAL " ");
+				if(i == 0) i = strlen(SIGN_ALMOST_EQUAL) - 1;
+				else i = string::npos;
+			} else {
+				i = seqs.find(_("approx."));
+				if(i == 0) i = strlen(_("approx.")) - 1;
+				else i = string::npos;
+			}
+			if(i == string::npos) i = seqs.find("= ");
+			if(i != string::npos) i += 2;
 			GVariantBuilder meta;
 			g_variant_builder_init(&meta, G_VARIANT_TYPE("a{sv}"));
 			g_variant_builder_add(&meta, "{sv}", "id", g_variant_new_string("copy-to-clipboard"));
 			g_variant_builder_add(&meta, "{sv}", "name", g_variant_new_string(_("Copy")));
 			g_variant_builder_add(&meta, "{sv}", "description", g_variant_new_string(_("Copy result to clipboard")));
+			g_variant_builder_add(&meta, "{sv}", "clipboardText", g_variant_new_string(i == string::npos ? seqs.c_str() : seqs.substr(i).c_str()));
 			g_variant_builder_add_value(&metas, g_variant_builder_end(&meta));
 		}
 	}
