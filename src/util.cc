@@ -629,10 +629,23 @@ bool string_is_less(string str1, string str2) {
 }
 
 bool contains_plot_or_save(const string &str) {
-	if(expression_contains_save_function(CALCULATOR->unlocalizeExpression(str, evalops.parse_options), evalops.parse_options, false)) return true;
-	if(CALCULATOR->f_plot) {
-		for(size_t i = 1; i <= CALCULATOR->f_plot->countNames(); i++) {
-			if(str.find(CALCULATOR->f_plot->getName(i).name) != string::npos) return true;
+	if(expression_contains_save_function(str, evalops.parse_options, false)) return true;
+	for(size_t f_i = 0; f_i < 4; f_i++) {
+		int id = 0;
+		if(f_i == 0) id = FUNCTION_ID_PLOT;
+		else if(f_i == 1) id = FUNCTION_ID_EXPORT;
+		else if(f_i == 2) id = FUNCTION_ID_LOAD;
+		else if(f_i == 3) id = FUNCTION_ID_COMMAND;
+		MathFunction *f = CALCULATOR->getFunctionById(id);
+		for(size_t i = 1; f && i <= f->countNames(); i++) {
+			if(str.find(f->getName(i).name) != string::npos) {
+				MathStructure mtest;
+				CALCULATOR->beginTemporaryStopMessages();
+				CALCULATOR->parse(&mtest, str, evalops.parse_options);
+				CALCULATOR->endTemporaryStopMessages();
+				if(mtest.containsFunctionId(FUNCTION_ID_PLOT) || mtest.containsFunctionId(FUNCTION_ID_EXPORT) || mtest.containsFunctionId(FUNCTION_ID_LOAD) || mtest.containsFunctionId(FUNCTION_ID_COMMAND)) return true;
+				return false;
+			}
 		}
 	}
 	return false;

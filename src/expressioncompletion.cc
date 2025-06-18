@@ -866,7 +866,7 @@ void do_completion(bool to_menu) {
 	int to_type = 0;
 	if(editing_to_expression && current_from_struct && current_from_struct->isDateTime()) to_type = 3;
 	if(current_object_start < 0) {
-		if(editing_to_expression && current_from_struct && !current_from_units.empty()) {
+		if(editing_to_expression && editing_to_expression1 && current_from_struct && !current_from_units.empty()) {
 			to_type = 4;
 		} else if(editing_to_expression && editing_to_expression1 && current_from_struct) {
 			to_type = 2;

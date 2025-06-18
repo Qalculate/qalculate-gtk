@@ -1298,7 +1298,8 @@ void reload_history(gint from_index) {
 					}
 				}
 				if(pango_version() >= 15000) history_str.insert(0, "<span font_features=\"tnum\" font_size=\"110%\">");
-				else history_str.insert(0, "<span font_features=\"tnum\" font_size=\"larger\">");
+				else if(pango_version() >= 13800) history_str.insert(0, "<span font_features=\"tnum\" font_size=\"larger\">");
+				else history_str.insert(0, "<span font_size=\"larger\">");
 				history_str += "</span>";
 				gtk_list_store_insert_with_values(historystore, &history_iter, from_index < 0 ? -1 : pos, 0, history_str.c_str(), 1, i, 3, inhistory_value[i], 4, 0, 5, history_scroll_width, 6, 1.0, 7, PANGO_ALIGN_RIGHT, -1);
 				pos++;
@@ -1670,7 +1671,8 @@ void add_result_to_history(bool &update_history, bool update_parse, bool registe
 			}
 		}
 		if(pango_version() >= 15000) history_str.insert(0, "<span font_features=\"tnum\" font_size=\"110%\">");
-		else history_str.insert(0, "<span font_features=\"tnum\" font_size=\"larger\">");
+		else if(pango_version() >= 13800) history_str.insert(0, "<span font_features=\"tnum\" font_size=\"larger\">");
+		else history_str.insert(0, "<span font_size=\"larger\">");
 		history_str += "</span>";
 		if(!update_parse && current_inhistory_index >= 0 && !transformation.empty() && history_index_bak == history_index) {
 			gtk_list_store_set(historystore, &history_iter, 0, history_str.c_str(), 1, inhistory_index + 1, -1);

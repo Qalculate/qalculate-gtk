@@ -769,7 +769,9 @@ void create_stack_view() {
 	update_stack_button_text();
 
 	PangoAttrList *alist = pango_attr_list_new();
+#if PANGO_VERSION >= 13800
 	pango_attr_list_insert(alist, pango_attr_font_features_new("tnum"));
+#endif
 	g_object_set(G_OBJECT(register_renderer), "attributes", alist, NULL);
 	pango_attr_list_unref(alist);
 

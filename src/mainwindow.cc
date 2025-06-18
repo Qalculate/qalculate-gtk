@@ -1154,7 +1154,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		bool origstr = str.empty();
 		if(origstr) str = get_expression_text();
 		if(origstr) CALCULATOR->parseComments(str, evalops.parse_options);
-		if(str.empty() || (origstr && (str == "MC" || str == "MS" || str == "M+" || str == "M-" || str == "M−" || contains_plot_or_save(str)))) {
+		if(str.empty() || (origstr && (str == "MC" || str == "MS" || str == "M+" || str == "M-" || str == "M−" || contains_plot_or_save(CALCULATOR->unlocalizeExpression(str, evalops.parse_options))))) {
 			result_autocalculated = false;
 			result_text = "";
 			if(parsed_in_result) display_parse_status();

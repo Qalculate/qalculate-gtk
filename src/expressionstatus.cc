@@ -840,7 +840,7 @@ void display_parse_status() {
 			while(true) {
 				bool unit_struct = false;
 				if(last_is_space) str_u += " ";
-				CALCULATOR->separateToExpression(str_u, str_u2, evalops, true, false);
+				if(!str_e.empty()) CALCULATOR->separateToExpression(str_u, str_u2, evalops, true, false);
 				remove_blank_ends(str_u);
 				if(parsed_expression.empty()) {
 					parsed_expression += CALCULATOR->localToString(false);
