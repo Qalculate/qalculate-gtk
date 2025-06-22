@@ -715,6 +715,9 @@ gboolean on_completionwindow_button_press_event(GtkWidget*, GdkEventButton*, gpo
 	return TRUE;
 }
 
+gboolean is_wayland(GdkDisplay* display) {
+	return strncmp(gdk_display_get_name(display), "wayland", strlen("wayland")) == 0;
+}
 void completion_resize_popup(int matches) {
 
 	gint x, y;
@@ -730,6 +733,7 @@ void completion_resize_popup(int matches) {
 	GtkRequisition tree_req;
 	GtkTreePath *path;
 	GtkTreeViewColumn *column;
+	gboolean are_coords_global;
 
 	GtkTextIter iter;
 	if(current_object_start < 0) {
@@ -769,6 +773,7 @@ void completion_resize_popup(int matches) {
 	GdkScreen *screen = gdk_display_get_default_screen(display);
 	gdk_screen_get_monitor_workarea(screen, gdk_screen_get_monitor_at_window(screen, window), &area);
 #endif
+	are_coords_global = !is_wayland(display);
 
 	items = matches;
 	if(items > 20) items = 20;
@@ -778,12 +783,14 @@ void completion_resize_popup(int matches) {
 		gtk_tree_path_free(path);
 		height = rect.y + rect.height - items_y + height_diff;
 	}
-	while(items > 0 && ((y > area.height / 2 && area.y + y < height) || (y <= area.height / 2 && area.height - y < height))) {
-		items--;
-		path = gtk_tree_path_new_from_indices(items - 1, -1);
-		gtk_tree_view_get_cell_area(GTK_TREE_VIEW(completion_view), path, column, &rect);
-		gtk_tree_path_free(path);
-		height = rect.y + rect.height - items_y + height_diff;
+	if(are_coords_global) {
+		while(items > 0 && (y > area.height / 2 && area.y + y < height) || (y <= area.height / 2 && area.height - y < height)) {
+			items--;
+			path = gtk_tree_path_new_from_indices(items - 1, -1);
+			gtk_tree_view_get_cell_area(GTK_TREE_VIEW(completion_view), path, column, &rect);
+			gtk_tree_path_free(path);
+			height = rect.y + rect.height - items_y + height_diff;
+		}
 	}
 
 	gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(completion_scrolled), height);
@@ -795,25 +802,28 @@ void completion_resize_popup(int matches) {
 
 	if(popup_req.width < rect.width + 2) popup_req.width = rect.width + 2;
 
-	if(x < area.x) x = area.x;
-	else if(x + popup_req.width > area.x + area.width) x = area.x + area.width - popup_req.width;
-
-	if(y + bufloc.height + popup_req.height <= area.y + area.height || y - area.y < (area.y + area.height) - (y + bufloc.height)) {
+	if(are_coords_global) {
+		if(x < area.x) x = area.x;
+		else if(x + popup_req.width > area.x + area.width) x = area.x + area.width - popup_req.width;
+		
+		if(y + bufloc.height + popup_req.height <= area.y + area.height || y - area.y < (area.y + area.height) - (y + bufloc.height)) {
+			y += bufloc.height;
+		} else {
+			path = gtk_tree_path_new_from_indices(matches - 1, -1);
+			gtk_tree_view_get_cell_area(GTK_TREE_VIEW(completion_view), path, column, &rect);
+			gtk_tree_path_free(path);
+			height = rect.y + rect.height + height_diff;
+			path = gtk_tree_path_new_from_indices(matches - items, -1);
+			gtk_tree_view_get_cell_area(GTK_TREE_VIEW(completion_view), path, column, &rect);
+			gtk_tree_path_free(path);
+			height -= rect.y;
+			gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(completion_scrolled), height);
+			gtk_widget_get_preferred_size(completion_window, &popup_req, NULL);
+			y -= popup_req.height;
+		}
+	} else { 
 		y += bufloc.height;
-	} else {
-		path = gtk_tree_path_new_from_indices(matches - 1, -1);
-		gtk_tree_view_get_cell_area(GTK_TREE_VIEW(completion_view), path, column, &rect);
-		gtk_tree_path_free(path);
-		height = rect.y + rect.height + height_diff;
-		path = gtk_tree_path_new_from_indices(matches - items, -1);
-		gtk_tree_view_get_cell_area(GTK_TREE_VIEW(completion_view), path, column, &rect);
-		gtk_tree_path_free(path);
-		height -= rect.y;
-		gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(completion_scrolled), height);
-		gtk_widget_get_preferred_size(completion_window, &popup_req, NULL);
-		y -= popup_req.height;
 	}
-
 	if(matches > 0) {
 		path = gtk_tree_path_new_from_indices(0, -1);
 		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(completion_view), path, NULL, FALSE, 0.0, 0.0);
