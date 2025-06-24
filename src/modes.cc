@@ -598,7 +598,7 @@ void write_mode(FILE *file, size_t i) {
 	fprintf(file, "units_enabled=%i\n", modes[i].eo.parse_options.units_enabled);
 	fprintf(file, "allow_complex=%i\n", modes[i].eo.allow_complex);
 	fprintf(file, "allow_infinite=%i\n", modes[i].eo.allow_infinite);
-	fprintf(file, "indicate_infinite_series=%i\n", modes[i].po.indicate_infinite_series == REPEATING_DECIMALS_OFF && repdeci_overline ? -1 : modes[i].po.indicate_infinite_series);
+	fprintf(file, "indicate_infinite_series=%i\n", i == 1 && modes[i].po.indicate_infinite_series == REPEATING_DECIMALS_OFF && repdeci_overline ? -1 : modes[i].po.indicate_infinite_series);
 	fprintf(file, "show_ending_zeroes=%i\n", modes[i].po.show_ending_zeroes);
 	fprintf(file, "rounding_mode=%i\n", modes[i].po.rounding);
 	fprintf(file, "approximation=%i\n", modes[i].eo.approximation);

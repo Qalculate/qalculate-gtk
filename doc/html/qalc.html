@@ -115,12 +115,11 @@ p.roffit {
 <div class="level0"><span Class="bold">rotate [direction]</span> Rotates the RPN stack up (default) or down. <p/></div>
 <div class="level0"><span Class="bold">swap [index 1] [index 2]</span> Swaps position of values on the RPN stack. If no index is specified, the values on the top of the stack (index 1 and index 2) will be swapped and if only one index is specified, the value at this index will be swapped with the top value. Index 1 is the top of stack and negative index values count from the bottom of the stack. <br>Example: swap 2 4 <p/>When a line begins with '/', the text that follows is always interpreted as a command. </div><h2 class="nroffsh" id="KEYBINDINGS">KEYBINDINGS</h2>
 <div class="level0"><p/></div>
-<div class="level0"><span Class="bold">Tab</span> shows a list of functions, variables, and units that matches the last object in the current expression <p/></div>
+<div class="level0"><span Class="bold">Tab (Ctrl+I)</span> shows a list of functions, variables, and units that matches the last object in the current expression, or, if cursor is at beginning of line or after operator, inserts the previous result (either with text of value, or as a temporary variable for approximate or long values) <p/></div>
 <div class="level0"><span Class="bold">Ctrl+A</span> saves the current result in a temporary variable <p/></div>
 <div class="level0"><span Class="bold">Ctrl+D</span> terminates the program <p/></div>
 <div class="level0"><span Class="bold">Ctrl+E</span> switches between approximation modes (exact, try exact, auto) <p/></div>
 <div class="level0"><span Class="bold">Ctrl+F</span> switches between fraction modes (simple, decimal, auto) <p/></div>
-<div class="level0"><span Class="bold">Ctrl+I</span> inserts the previous result (either with text of value, or as a temporary variable for approximate or long values) <p/></div>
 <div class="level0"><span Class="bold">Ctrl+L</span> clears the screen </div><h2 class="nroffsh" id="SETTINGS">SETTINGS</h2>
 <div class="level0">These settings are changed using the set command (e.g. set base 16) or the -s, --set command line option (e.g. qalc -s "base 16"). Possible values are shown in parenthesis. 1 and 0 can be used instead of on and off, yes and no. If the value is left out, a value of 1 is generally assumed. The default value is marked with '*'. <p/>Algebraic mode: <p/></div>
 <div class="level0"><span Class="bold">algebra mode, alg (1* = expand, 2 = factorize)</span> Determines if the expression is factorized or not after calculation. <p/></div>
@@ -168,7 +167,7 @@ p.roffit {
 <div class="level0"><span Class="bold">lowercase numbers, lownum (on, off*)</span> Use lowercase letters for number bases &gt; 10. <p/></div>
 <div class="level0"><span Class="bold">max decimals, maxdeci (-1* = off, &gt;= 0)</span> <p/></div>
 <div class="level0"><span Class="bold">min decimals, mindeci (-1* = off, &gt;= 0)</span> <p/></div>
-<div class="level0"><span Class="bold">repeating decimals, repdeci (on, off*)</span> If activated, 1/6 is displayed as '0.1 666...', otherwise as '0.166667'. <p/></div>
+<div class="level0"><span Class="bold">repeating decimals, repdeci (0 = off*, 1 = ellipsis, 2 = overline)</span> If activated, 1/6 is displayed as '0.1 666...', otherwise as '0.166667'. <p/></div>
 <div class="level0"><span Class="bold">rounding (0* = half away from zero, 1 = half to even, 2 = toward zero, 3 = half to odd, 4 = half toward zero, 5 = half up, 6 = half down, 7 = half random, 8 = away from zero, 9 = up, 10 = down)</span> Determines how approximate numbers are rounded. <p/></div>
 <div class="level0"><span Class="bold">scientific notation, exp (0 = off, -1* = auto, -3 = engineering, 1 = pure, 3 = scientific, &gt;= 0, &lt;= -2)</span> Determines how scientific notation is used (e.g. 5 543 000 = 5.543E6). A value &gt;= 0 specifies the minimum exponent used. A value &lt;= -2 specifies the multiplier used for the exponent. <p/></div>
 <div class="level0"><span Class="bold">show ending zeroes, zeroes (on*, off)</span> If actived, zeroes are kept at the end of approximate numbers. <p/></div>
@@ -184,11 +183,11 @@ p.roffit {
 <div class="level0"><span Class="bold">input base, inbase (-1114112 - 1114112, bin, oct, dec*, hex, roman)</span> <p/></div>
 <div class="level0"><span Class="bold">limit implicit multiplication, limimpl (on, off*)</span> <p/></div>
 <div class="level0"><span Class="bold">parsing mode, syntax (0* = adaptive, 1 = implicit first, 2 = conventional, 3 = chain, 4 = rpn)</span> See syntax section. <p/></div>
-<div class="level0"><span Class="bold">read precision, readprec (0* = off, 1 = always, 2 = when decimals)</span> If activated, numbers are interpreted as approximate with precision equal to the number of significant digits (3.20 = 3.20+/-0.005). <p/></div>
+<div class="level0"><span Class="bold">read precision, readprec (0* = off, 1 = always, 2 = when decimals)</span> If activated, numbers are interpreted as approximations with precision equal to the number of significant digits (3.20 = 3.20+/-0.005). <p/></div>
 <div class="level0"><span Class="bold">simplified percentage, percent (on*, off)</span> Interpret addition/subtraction of percentage as percentage increase/decrease of the first term (100 + 10% = 110). <p/></div>
 <div class="level0"><span Class="bold">two's input, twosin (on, off*)</span> Enables two's complement representation for input of negative binary numbers. All binary numbers starting with 1 are negative, unless binary bits is set. <p/>Units: <p/></div>
 <div class="level0"><span Class="bold">all prefixes, allpref (on, off*)</span> Enables automatic use of hecto, deca, deci, and centi. <p/></div>
-<div class="level0"><span Class="bold">autoconversion, conv (0 = none, 1* = optimal, 2 = base, 3 = optimalsi, 4 = mixed)</span> Controls automatic unit conversion of the result. 'optimalsi' always converts non-SI units, while 'optimal' only converts to more optimal unit expressions, with less units and exponents. <p/></div>
+<div class="level0"><span Class="bold">autoconversion, conv (0 = none, 1* = optimal, 2 = base, 3 = optimalsi, 4 = mixed)</span> Controls automatic unit conversion of the result. 'optimalsi' always converts non-SI units, while 'optimal' only converts to unit expressions with less units and exponents. <p/></div>
 <div class="level0"><span Class="bold">binary prefixes, binpref (on, off*)</span> If activated, binary prefixes are used by default for information units. <p/></div>
 <div class="level0"><span Class="bold">currency conversion, curconv (on*, off)</span> Enables automatic conversion to the local currency when optimal unit conversion is enabled. <p/></div>
 <div class="level0"><span Class="bold">denominator prefixes, denpref (on*, off)</span> Enables automatic use of prefixes in the denominator of unit expressions. <p/></div>
@@ -201,6 +200,7 @@ p.roffit {
 <div class="level0"><span Class="bold">calculate as you type, autocalc (on, off*)</span> Activates continuous calculation of the currently edited expression. <p/></div>
 <div class="level0"><span Class="bold">clear history (yes, no*)</span> Do not save expression history on exit. <p/></div>
 <div class="level0"><span Class="bold">ignore locale (yes, no*)</span> Ignore system language and use English (requires restart). <p/></div>
+<div class="level0"><span Class="bold">language</span> <p/></div>
 <div class="level0"><span Class="bold">rpn (on, off*)</span> Activates the Reverse Polish Notation stack. <p/></div>
 <div class="level0"><span Class="bold">save definitions (yes*, no)</span> Save functions, units, and variables on exit. <p/></div>
 <div class="level0"><span Class="bold">save mode (yes*, no)</span> Save settings on exit. <p/></div>

@@ -1,3 +1,77 @@
+2025-06-09 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix copy result to clipboard (and inconsequential crash after any action) in Gnome shell search provider
+
+2025-06-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Only display completion for empty string when "to" expression is empty
+
+2025-05-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Disable calculate as you type for expression containing export, load, or command function (in addition to save and plot)
+
+2025-05-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix expression status for multiple "to" expression without preceding expression (not supported)
+
+2025-05-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Accept dialog input (as OK pressed) when creating history bookmark, and when pressing enter in last entry in set unknowns dialog
+	* Use tabular numbers (tnum) font feature for binary number in result view
+	* Add "-" after unit prefix symbol (k and M excluded), in completion list, to indicate that it must be followed by a unit
+	* Do not allow conversion using "to" in function expression (in edit function dialog)
+
+
+2025-06-18 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Only display completion for empty string when "to" expression is empty
+	* Disable calculate as you type for expression containing export, load, or command function (in addition to save and plot)
+	* Fix expression status for multiple "to" expressions without preceding expression (not supported)
+
+2025-06-09 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix copy result to clipboard (and crash after any action) in Gnome shell search provider
+
+2025-05-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Allow enter to accept input when creating history bookmark, and in last entry in set unknowns dialog
+	* Use tabular numbers (tnum) font feature for binary number in result view
+	* Add "-" after unit prefix symbol (k and M excluded) to indicate that it must be followed by a unit
+	* Do not allow conversion using "to" in function expression (in edit function dialog)
+
+2025-04-18 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use tabular numbers (tnum) font feature in results in history and RPN stack
+	* Fix use of custom history font in RPN stack
+
+2025-03-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use LANGUAGE instead of LANG environment variable on Windows in order to avoid changing regional format settings
+
+2025-03-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use selection (as if button was clicked) if RPN stack is visible when using keyboard shortcut for RPN operation
+
+2025-03-06 howaboutuser <120489523+howaboutuser@users.noreply.github.com>
+
+	* Add traditional Chinese translation
+
+2025-03-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add support for display of repeating decimals using overline (vinculum)
+	* Fix ""x ➞" ("to") button label
+
+2025-03-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix empty category field in matrix/vector edit dialog
+	* Remove inactive or hidden objects from recent items in menus
+
+2025-02-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix state of "Keep above other windows" in preferences, when setting has been changed using keyboard shortcut, after the preferences window has been opened
+	* Use step size 2 for plot sampling rate (since the actual number of samples is the same as one below for even values)
+	* Remove confusing MRC name/symbol from MR (memory recall) variable
+
 2025-02-22 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Indicate input and output base using overline and underline in programming keypad when input and output base differs

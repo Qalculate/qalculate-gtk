@@ -784,7 +784,7 @@ void completion_resize_popup(int matches) {
 		height = rect.y + rect.height - items_y + height_diff;
 	}
 	if(are_coords_global) {
-		while(items > 0 && (y > area.height / 2 && area.y + y < height) || (y <= area.height / 2 && area.height - y < height)) {
+		while(items > 0 && ((y > area.height / 2 && area.y + y < height) || (y <= area.height / 2 && area.height - y < height))) {
 			items--;
 			path = gtk_tree_path_new_from_indices(items - 1, -1);
 			gtk_tree_view_get_cell_area(GTK_TREE_VIEW(completion_view), path, column, &rect);
@@ -805,7 +805,7 @@ void completion_resize_popup(int matches) {
 	if(are_coords_global) {
 		if(x < area.x) x = area.x;
 		else if(x + popup_req.width > area.x + area.width) x = area.x + area.width - popup_req.width;
-		
+
 		if(y + bufloc.height + popup_req.height <= area.y + area.height || y - area.y < (area.y + area.height) - (y + bufloc.height)) {
 			y += bufloc.height;
 		} else {
@@ -821,7 +821,7 @@ void completion_resize_popup(int matches) {
 			gtk_widget_get_preferred_size(completion_window, &popup_req, NULL);
 			y -= popup_req.height;
 		}
-	} else { 
+	} else {
 		y += bufloc.height;
 	}
 	if(matches > 0) {

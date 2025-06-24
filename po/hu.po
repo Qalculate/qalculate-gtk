@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-27 07:18+0100\n"
+"POT-Creation-Date: 2025-06-24 08:18+0200\n"
 "PO-Revision-Date: 2024-10-19 20:30+1100\n"
 "Last-Translator: Ad majórem Dei glóriam\n"
 "Language-Team: Hungarian\n"
@@ -70,13 +70,13 @@ msgstr "Érvelési szabályok"
 #: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
 #: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
-#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2777
-#: ../src/historyview.cc:2872 ../src/importcsvdialog.cc:49
+#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2779
+#: ../src/historyview.cc:2877 ../src/importcsvdialog.cc:49
 #: ../src/importcsvdialog.cc:51 ../src/insertfunctiondialog.cc:65
 #: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
 #: ../src/mainwindow.cc:711 ../src/mainwindow.cc:6571 ../src/mainwindow.cc:6573
-#: ../src/mainwindow.cc:7530 ../src/matrixdialog.cc:389 ../src/menubar.cc:1203
+#: ../src/mainwindow.cc:7534 ../src/matrixdialog.cc:389 ../src/menubar.cc:1203
 #: ../src/menubar.cc:1244 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
 #: ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Cancel"
@@ -87,12 +87,12 @@ msgstr "_Mégse"
 #: ../data/datasets.ui.h:3 ../data/functionedit.ui.h:4
 #: ../data/matrixedit.ui.h:4 ../data/shortcuts.ui.h:9 ../data/unitedit.ui.h:4
 #: ../data/unknownedit.ui.h:4 ../data/variableedit.ui.h:4
-#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2777
-#: ../src/historyview.cc:2872 ../src/insertfunctiondialog.cc:65
+#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2779
+#: ../src/historyview.cc:2877 ../src/insertfunctiondialog.cc:65
 #: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
 #: ../src/mainwindow.cc:711 ../src/mainwindow.cc:804 ../src/mainwindow.cc:861
 #: ../src/mainwindow.cc:914 ../src/mainwindow.cc:971 ../src/mainwindow.cc:1027
-#: ../src/mainwindow.cc:7530
+#: ../src/mainwindow.cc:7534
 msgid "_OK"
 msgstr "_Rendben"
 
@@ -193,7 +193,7 @@ msgstr "Fájl"
 msgid "Angle"
 msgstr "Szög"
 
-#: ../data/argumentrules.ui.h:26 ../src/expressioncompletion.cc:981
+#: ../data/argumentrules.ui.h:26 ../src/expressioncompletion.cc:991
 msgid "Data object"
 msgstr "Adatobjektum"
 
@@ -255,7 +255,7 @@ msgstr "Típus"
 #: ../data/matrixedit.ui.h:5 ../data/unitedit.ui.h:5 ../data/unknownedit.ui.h:5
 #: ../data/variableedit.ui.h:5 ../src/conversionview.cc:508
 #: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:444
-#: ../src/historyview.cc:2879 ../src/menubar.cc:1210
+#: ../src/historyview.cc:2884 ../src/menubar.cc:1210
 #: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1006
 msgid "Name"
 msgstr "Név"
@@ -269,7 +269,7 @@ msgstr "Billentyűzet gombjainak testreszabása"
 #: ../data/functions.ui.h:2 ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2
 #: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:2
 #: ../data/preferences.ui.h:2 ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2
-#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2742
+#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2744
 #: ../src/insertfunctiondialog.cc:449 ../src/mainwindow.cc:715
 #: ../src/mainwindow.cc:716 ../src/mainwindow.cc:718 ../src/matrixdialog.cc:381
 #: ../src/periodictabledialog.cc:86
@@ -303,7 +303,7 @@ msgstr "Gombművelet"
 #: ../data/buttonsedit.ui.h:11 ../data/floatingpoint.ui.h:3
 #: ../data/shortcuts.ui.h:10 ../data/variableedit.ui.h:7
 #: ../src/insertfunctiondialog.cc:513 ../src/shortcutsdialog.cc:579
-#: ../src/stackview.cc:791
+#: ../src/stackview.cc:799
 msgid "Value"
 msgstr "Érték"
 
@@ -808,7 +808,7 @@ msgid "(De)activate the selected function"
 msgstr "Kijelölt függvény be-/kikapcsolása"
 
 #: ../data/functions.ui.h:13 ../data/units.ui.h:18 ../data/variables.ui.h:13
-#: ../src/functionsdialog.cc:431 ../src/unitsdialog.cc:386 ../src/util.cc:1318
+#: ../src/functionsdialog.cc:431 ../src/unitsdialog.cc:386 ../src/util.cc:1331
 #: ../src/variablesdialog.cc:337
 msgid "Deac_tivate"
 msgstr "_Kikapcsolás"
@@ -1040,7 +1040,7 @@ msgstr "_Beállítások"
 msgid "_Mode"
 msgstr "Üzem_mód"
 
-#: ../data/main.ui.h:68 ../src/expressioncompletion.cc:1871
+#: ../data/main.ui.h:68 ../src/expressioncompletion.cc:1882
 #: ../src/expressionedit.cc:1424
 msgid "Number Base"
 msgstr "Számbázis"
@@ -1087,11 +1087,11 @@ msgstr "Egyéb…"
 msgid "Sexagesimal"
 msgstr "Hatvanas"
 
-#: ../data/main.ui.h:77 ../src/expressioncompletion.cc:1930
+#: ../data/main.ui.h:77 ../src/expressioncompletion.cc:1941
 msgid "Time Format"
 msgstr "Időformátum"
 
-#: ../data/main.ui.h:78 ../src/expressioncompletion.cc:1926
+#: ../data/main.ui.h:78 ../src/expressioncompletion.cc:1937
 #: ../src/expressionedit.cc:1432
 msgid "Roman Numerals"
 msgstr "Római számírás"
@@ -1196,19 +1196,19 @@ msgstr "Kerek felfelé"
 msgid "Round Down"
 msgstr "Kerek lefelé"
 
-#: ../data/main.ui.h:104 ../src/expressioncompletion.cc:1924
+#: ../data/main.ui.h:104 ../src/expressioncompletion.cc:1935
 msgid "Complex Rectangular Form"
 msgstr "Komplex négyszögletes forma"
 
-#: ../data/main.ui.h:105 ../src/expressioncompletion.cc:1886
+#: ../data/main.ui.h:105 ../src/expressioncompletion.cc:1897
 msgid "Complex Exponential Form"
 msgstr "Komplex exponenciális forma"
 
-#: ../data/main.ui.h:106 ../src/expressioncompletion.cc:1920
+#: ../data/main.ui.h:106 ../src/expressioncompletion.cc:1931
 msgid "Complex Polar Form"
 msgstr "Komplex poláris forma"
 
-#: ../data/main.ui.h:107 ../src/expressioncompletion.cc:1865
+#: ../data/main.ui.h:107 ../src/expressioncompletion.cc:1876
 msgid "Complex Angle/Phasor Notation"
 msgstr "Komplex szög/fázor jelölés"
 
@@ -1635,7 +1635,7 @@ msgstr "Frissítések keresése"
 msgid "_About"
 msgstr "_Névjegy"
 
-#: ../data/main.ui.h:215 ../src/util.cc:918
+#: ../data/main.ui.h:215 ../src/util.cc:931
 msgid "Toggle minimal window"
 msgstr "Minimális ablak be-/kikapcsolása"
 
@@ -1703,7 +1703,7 @@ msgstr "Kijelölt hatványozás értéke"
 msgid "Calculate the square root of the selected value"
 msgstr "Kijelölt érték négyzetgyökének kiszámítása"
 
-#: ../data/main.ui.h:231 ../src/historyview.cc:3556
+#: ../data/main.ui.h:231 ../src/historyview.cc:3563
 msgid "History"
 msgstr "Előzmények"
 
@@ -1820,8 +1820,8 @@ msgstr "Programozási billentyűzet megjelenítése/elrejtése"
 msgid "Exact"
 msgstr "Pontos"
 
-#: ../data/main.ui.h:262 ../src/expressioncompletion.cc:1900
-#: ../src/expressioncompletion.cc:1902
+#: ../data/main.ui.h:262 ../src/expressioncompletion.cc:1911
+#: ../src/expressioncompletion.cc:1913
 msgid "Fraction"
 msgstr "Töredék"
 
@@ -1898,7 +1898,7 @@ msgstr "TÁR"
 msgid "Convert number bases"
 msgstr "Számbázis átalakítása"
 
-#: ../data/main.ui.h:283 ../src/util.cc:921
+#: ../data/main.ui.h:283 ../src/util.cc:934
 msgid "Manage units"
 msgstr "Egységek kezelése"
 
@@ -2015,7 +2015,7 @@ msgstr "Szöveg beszúrása"
 msgid "Insert Parsed Text"
 msgstr "Elemzett szöveg beszúrása"
 
-#: ../data/main.ui.h:315 ../src/searchprovider.cc:210
+#: ../data/main.ui.h:315 ../src/searchprovider.cc:208
 msgid "Copy"
 msgstr "Másolás"
 
@@ -2031,11 +2031,11 @@ msgstr "Teljes szöveg másolása"
 msgid "Search…"
 msgstr "Keresés…"
 
-#: ../data/main.ui.h:319 ../src/historyview.cc:3078 ../src/historyview.cc:3093
+#: ../data/main.ui.h:319 ../src/historyview.cc:3085 ../src/historyview.cc:3100
 msgid "Search by Date…"
 msgstr "Keresés dátum szerint…"
 
-#: ../data/main.ui.h:320 ../src/historyview.cc:3075
+#: ../data/main.ui.h:320 ../src/historyview.cc:3082
 msgid "Add Bookmark…"
 msgstr "Könyvjelző hozzáadása…"
 
@@ -2119,7 +2119,7 @@ msgstr "_Tizedes"
 msgid "_Hexadecimal"
 msgstr "Tizen_hatos"
 
-#: ../data/main.ui.h:341 ../src/expressioncompletion.cc:1904
+#: ../data/main.ui.h:341 ../src/expressioncompletion.cc:1915
 msgid "Decimal Fraction"
 msgstr "Tizedes tört"
 
@@ -2235,7 +2235,7 @@ msgstr "Számbázis kijelölése…"
 msgid "Display Expression Status"
 msgstr "Kifejezési állapot megjelenítése"
 
-#: ../data/main.ui.h:370 ../src/util.cc:923
+#: ../data/main.ui.h:370 ../src/util.cc:936
 msgid "Store result"
 msgstr "Eredmények tárolása"
 
@@ -2309,7 +2309,7 @@ msgid "Names"
 msgstr "Nevek"
 
 #: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1
-#: ../src/expressioncompletion.cc:1867
+#: ../src/expressioncompletion.cc:1878
 msgid "Number Bases"
 msgstr "Számbázisok"
 
@@ -2826,7 +2826,7 @@ msgstr "Gombpárnázás"
 
 #: ../data/preferences.ui.h:39 ../src/buttonseditdialog.cc:183
 #: ../src/datasetsdialog.cc:524 ../src/modes.cc:46 ../src/modes.cc:57
-#: ../src/util.cc:1022
+#: ../src/util.cc:1035
 msgid "Default"
 msgstr "Alapértelmezett"
 
@@ -3660,12 +3660,12 @@ msgid "Add"
 msgstr "Hozzáadás"
 
 #: ../src/buttonseditdialog.cc:372 ../src/expressionstatus.cc:675
-#: ../src/keypad.cc:517 ../src/keypad.cc:2755 ../src/util.cc:927
+#: ../src/keypad.cc:517 ../src/keypad.cc:2755 ../src/util.cc:940
 msgid "M+ (memory plus)"
 msgstr "M+ (memória plusz)"
 
 #: ../src/buttonseditdialog.cc:376 ../src/expressionstatus.cc:665
-#: ../src/keypad.cc:522 ../src/keypad.cc:2752 ../src/util.cc:924
+#: ../src/keypad.cc:522 ../src/keypad.cc:2752 ../src/util.cc:937
 msgid "MC (memory clear)"
 msgstr "MC (memória törlése)"
 
@@ -3674,7 +3674,7 @@ msgid "Backspace"
 msgstr "Backspace"
 
 #: ../src/buttonseditdialog.cc:377 ../src/expressionstatus.cc:680
-#: ../src/keypad.cc:523 ../src/keypad.cc:2756 ../src/util.cc:928
+#: ../src/keypad.cc:523 ../src/keypad.cc:2756 ../src/util.cc:941
 msgid "M− (memory minus)"
 msgstr "M− (memória mínusz)"
 
@@ -3688,12 +3688,12 @@ msgid "Calculate expression"
 msgstr "Kifejezés kiszámítása"
 
 #: ../src/buttonseditdialog.cc:379 ../src/keypad.cc:532 ../src/keypad.cc:2753
-#: ../src/util.cc:925
+#: ../src/util.cc:938
 msgid "MR (memory recall)"
 msgstr "MR (memória felidézés)"
 
 #: ../src/buttonseditdialog.cc:379 ../src/expressionstatus.cc:670
-#: ../src/keypad.cc:532 ../src/keypad.cc:2754 ../src/util.cc:926
+#: ../src/keypad.cc:532 ../src/keypad.cc:2754 ../src/util.cc:939
 msgid "MS (memory store)"
 msgstr "MS (memóriatároló)"
 
@@ -3795,7 +3795,7 @@ msgstr "szöveg"
 msgid "approximate"
 msgstr "megközelítő"
 
-#: ../src/dataseteditdialog.cc:97 ../src/expressioncompletion.cc:1692
+#: ../src/dataseteditdialog.cc:97 ../src/expressioncompletion.cc:1702
 #: ../src/variablesdialog.cc:316
 msgid "number"
 msgstr "szám"
@@ -3826,7 +3826,7 @@ msgstr "Adatkészlet szerkesztése (globális)"
 msgid "New Data Set"
 msgstr "Új adatkészlet"
 
-#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:935
+#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:941
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -3851,28 +3851,28 @@ msgstr "érvelés"
 msgid "New Data Object"
 msgstr "Új adatobjektum"
 
-#: ../src/drawstructure.cc:644 ../src/drawstructure.cc:2768
+#: ../src/drawstructure.cc:644 ../src/drawstructure.cc:2770
 #: ../src/expressionstatus.cc:1140 ../src/expressionstatus.cc:1176
 #: ../src/historyview.cc:704 ../src/historyview.cc:1282
-#: ../src/historyview.cc:1335 ../src/historyview.cc:1588
-#: ../src/historyview.cc:1648 ../src/historyview.cc:2170
+#: ../src/historyview.cc:1336 ../src/historyview.cc:1589
+#: ../src/historyview.cc:1649 ../src/historyview.cc:2172
 #: ../src/insertfunctiondialog.cc:297 ../src/keypad.cc:3107
-#: ../src/mainwindow.cc:2653 ../src/searchprovider.cc:91
-#: ../src/searchprovider.cc:92 ../src/searchprovider.cc:169
+#: ../src/mainwindow.cc:2653 ../src/searchprovider.cc:151
+#: ../src/searchprovider.cc:199 ../src/searchprovider.cc:200
 #: ../src/variablesdialog.cc:289
 msgid "approx."
 msgstr "kb."
 
-#: ../src/drawstructure.cc:1841
+#: ../src/drawstructure.cc:1843
 msgid "and"
 msgstr "és"
 
-#: ../src/drawstructure.cc:1844 ../src/historyview.cc:920
+#: ../src/drawstructure.cc:1846 ../src/historyview.cc:920
 #: ../src/historyview.cc:955 ../src/historyview.cc:956
 msgid "or"
 msgstr "vagy"
 
-#: ../src/drawstructure.cc:2684
+#: ../src/drawstructure.cc:2686
 msgid "undefined"
 msgstr "nincs meghatározva"
 
@@ -3930,171 +3930,171 @@ msgstr ""
 "Nem sikerült fájlba exportálni \n"
 "%s"
 
-#: ../src/expressioncompletion.cc:1642
+#: ../src/expressioncompletion.cc:1652
 msgid "a previous result"
 msgstr "egy korábbi eredmény"
 
-#: ../src/expressioncompletion.cc:1655
+#: ../src/expressioncompletion.cc:1665
 msgid "matrix"
 msgstr "mátrix"
 
-#: ../src/expressioncompletion.cc:1657
+#: ../src/expressioncompletion.cc:1667
 msgid "vector"
 msgstr "vektor"
 
-#: ../src/expressioncompletion.cc:1678 ../src/variablesdialog.cc:301
+#: ../src/expressioncompletion.cc:1688 ../src/variablesdialog.cc:301
 msgid "positive"
 msgstr "pozitív"
 
-#: ../src/expressioncompletion.cc:1679 ../src/variablesdialog.cc:302
+#: ../src/expressioncompletion.cc:1689 ../src/variablesdialog.cc:302
 msgid "non-positive"
 msgstr "nem pozitív"
 
-#: ../src/expressioncompletion.cc:1680 ../src/variablesdialog.cc:303
+#: ../src/expressioncompletion.cc:1690 ../src/variablesdialog.cc:303
 msgid "negative"
 msgstr "negatív"
 
-#: ../src/expressioncompletion.cc:1681 ../src/variablesdialog.cc:304
+#: ../src/expressioncompletion.cc:1691 ../src/variablesdialog.cc:304
 msgid "non-negative"
 msgstr "nem negatív"
 
-#: ../src/expressioncompletion.cc:1682 ../src/variablesdialog.cc:305
+#: ../src/expressioncompletion.cc:1692 ../src/variablesdialog.cc:305
 msgid "non-zero"
 msgstr "nem nulla"
 
-#: ../src/expressioncompletion.cc:1687 ../src/variablesdialog.cc:312
+#: ../src/expressioncompletion.cc:1697 ../src/variablesdialog.cc:312
 msgid "boolean"
 msgstr "logikai"
 
-#: ../src/expressioncompletion.cc:1688 ../src/variablesdialog.cc:311
+#: ../src/expressioncompletion.cc:1698 ../src/variablesdialog.cc:311
 msgid "integer"
 msgstr "egész szám"
 
-#: ../src/expressioncompletion.cc:1689 ../src/variablesdialog.cc:313
+#: ../src/expressioncompletion.cc:1699 ../src/variablesdialog.cc:313
 msgid "rational"
 msgstr "racionális"
 
-#: ../src/expressioncompletion.cc:1690 ../src/variablesdialog.cc:314
+#: ../src/expressioncompletion.cc:1700 ../src/variablesdialog.cc:314
 msgid "real"
 msgstr "valós"
 
-#: ../src/expressioncompletion.cc:1691 ../src/variablesdialog.cc:315
+#: ../src/expressioncompletion.cc:1701 ../src/variablesdialog.cc:315
 msgid "complex"
 msgstr "komplex"
 
-#: ../src/expressioncompletion.cc:1693
+#: ../src/expressioncompletion.cc:1703
 msgid "(not matrix)"
 msgstr "(nem mátrix)"
 
-#: ../src/expressioncompletion.cc:1696 ../src/variablesdialog.cc:320
+#: ../src/expressioncompletion.cc:1706 ../src/variablesdialog.cc:320
 msgid "unknown"
 msgstr "ismeretlen"
 
-#: ../src/expressioncompletion.cc:1698
+#: ../src/expressioncompletion.cc:1708
 msgid "default assumptions"
 msgstr "alapértelmezett feltételezések"
 
-#: ../src/expressioncompletion.cc:1839
+#: ../src/expressioncompletion.cc:1850
 msgid "Prefix"
 msgstr "Előtag"
 
-#: ../src/expressioncompletion.cc:1869
+#: ../src/expressioncompletion.cc:1880
 msgid "Base Units"
 msgstr "Alapegységek"
 
-#: ../src/expressioncompletion.cc:1872
+#: ../src/expressioncompletion.cc:1883
 msgid "Binary-Coded Decimal"
 msgstr "Kettős-kódolású tizedes"
 
-#: ../src/expressioncompletion.cc:1874
+#: ../src/expressioncompletion.cc:1885
 msgid "Bijective Base-26"
 msgstr "Bijektív alap-26"
 
-#: ../src/expressioncompletion.cc:1876
+#: ../src/expressioncompletion.cc:1887
 msgid "Binary Number"
 msgstr "Kettes szám"
 
-#: ../src/expressioncompletion.cc:1878
+#: ../src/expressioncompletion.cc:1889
 msgid "Calendars"
 msgstr "Naptárak"
 
-#: ../src/expressioncompletion.cc:1880
+#: ../src/expressioncompletion.cc:1891
 msgid "Complex cis Form"
 msgstr "Komplex cisz-forma"
 
-#: ../src/expressioncompletion.cc:1882
+#: ../src/expressioncompletion.cc:1893
 msgid "Decimal Number"
 msgstr "Tizedes szám"
 
-#: ../src/expressioncompletion.cc:1884
+#: ../src/expressioncompletion.cc:1895
 msgid "Duodecimal Number"
 msgstr "Tizenkettes szám"
 
-#: ../src/expressioncompletion.cc:1888
+#: ../src/expressioncompletion.cc:1899
 msgid "Factors"
 msgstr "Tényezők"
 
-#: ../src/expressioncompletion.cc:1890
+#: ../src/expressioncompletion.cc:1901
 msgid "16-bit Floating Point Binary Format"
 msgstr "16 bites lebegőpontos kettes formátum"
 
-#: ../src/expressioncompletion.cc:1892
+#: ../src/expressioncompletion.cc:1903
 msgid "32-bit Floating Point Binary Format"
 msgstr "32 bites lebegőpontos kettes formátum"
 
-#: ../src/expressioncompletion.cc:1894
+#: ../src/expressioncompletion.cc:1905
 msgid "64-bit Floating Point Binary Format"
 msgstr "64 bites lebegőpontos kettes formátum"
 
-#: ../src/expressioncompletion.cc:1896
+#: ../src/expressioncompletion.cc:1907
 msgid "80-bit (x86) Floating Point Binary Format"
 msgstr "80 bites (x86) lebegőpontos kettes formátum"
 
-#: ../src/expressioncompletion.cc:1898
+#: ../src/expressioncompletion.cc:1909
 msgid "128-bit Floating Point Binary Format"
 msgstr "128 bites lebegőpontos kettes formátum"
 
-#: ../src/expressioncompletion.cc:1906
+#: ../src/expressioncompletion.cc:1917
 msgid "Hexadecimal Number"
 msgstr "Tizenhatos szám"
 
-#: ../src/expressioncompletion.cc:1908
+#: ../src/expressioncompletion.cc:1919
 msgid "Latitude"
 msgstr "Szélesség"
 
-#: ../src/expressioncompletion.cc:1910
+#: ../src/expressioncompletion.cc:1921
 msgid "Longitude"
 msgstr "Hosszúság"
 
-#: ../src/expressioncompletion.cc:1912
+#: ../src/expressioncompletion.cc:1923
 msgid "Mixed Units"
 msgstr "Vegyes egységek"
 
-#: ../src/expressioncompletion.cc:1914
+#: ../src/expressioncompletion.cc:1925
 msgid "Octal Number"
 msgstr "Nyolcas szám"
 
-#: ../src/expressioncompletion.cc:1916
+#: ../src/expressioncompletion.cc:1927
 msgid "Optimal Units"
 msgstr "Optimális egységek"
 
-#: ../src/expressioncompletion.cc:1918
+#: ../src/expressioncompletion.cc:1929
 msgid "Expanded Partial Fractions"
 msgstr "Kibontott részleges törtek"
 
-#: ../src/expressioncompletion.cc:1922 ../src/menubar.cc:1726
+#: ../src/expressioncompletion.cc:1933 ../src/menubar.cc:1726
 msgid "Optimal Prefix"
 msgstr "Optimális előtag"
 
-#: ../src/expressioncompletion.cc:1928
+#: ../src/expressioncompletion.cc:1939
 msgid "Sexagesimal Number"
 msgstr "Hatvanas szám"
 
-#: ../src/expressioncompletion.cc:1932 ../src/expressionstatus.cc:898
+#: ../src/expressioncompletion.cc:1943 ../src/expressionstatus.cc:898
 msgid "Unicode"
 msgstr "Unikód"
 
-#: ../src/expressioncompletion.cc:1934
+#: ../src/expressioncompletion.cc:1945
 msgid "UTC Time Zone"
 msgstr "UTC időzóna"
 
@@ -4107,7 +4107,7 @@ msgstr "Folyamat leállítása"
 msgid "Calculate expression and add to stack"
 msgstr "Kifejezés kiszámítása és hozzáadása a veremhez"
 
-#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2777
+#: ../src/expressionedit.cc:1270 ../src/historyview.cc:2779
 #: ../src/insertfunctiondialog.cc:65
 msgid "Select date"
 msgstr "Dátum kijelölése"
@@ -4224,13 +4224,13 @@ msgstr "Túl sok argumentum ehhez: %s()."
 
 #: ../src/expressionstatus.cc:691 ../src/expressionstatus.cc:693
 #: ../src/mainwindow.cc:1470 ../src/mainwindow.cc:4963
-#: ../src/searchprovider.cc:133
+#: ../src/searchprovider.cc:115
 msgid "factorize"
 msgstr "faktorizálás"
 
 #: ../src/expressionstatus.cc:694 ../src/expressionstatus.cc:696
 #: ../src/mainwindow.cc:1473 ../src/mainwindow.cc:4966
-#: ../src/searchprovider.cc:133
+#: ../src/searchprovider.cc:115
 msgid "expand"
 msgstr "kibontás"
 
@@ -4499,7 +4499,7 @@ msgid "decimal fraction"
 msgstr "tizedes tört"
 
 #: ../src/expressionstatus.cc:991 ../src/expressionstatus.cc:997
-#: ../src/util.cc:643
+#: ../src/util.cc:656
 msgid "fraction"
 msgstr "töredéke"
 
@@ -4519,9 +4519,13 @@ msgstr "Új függvény"
 msgid "Empty expression field."
 msgstr "Üres kifejezésmező."
 
+#: ../src/functioneditdialog.cc:931
+msgid "Conversion (using \"to\") is not supported in functions."
+msgstr ""
+
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
 #: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7363
-#: ../src/menubar.cc:1585 ../src/util.cc:1268 ../src/util.cc:1269
+#: ../src/menubar.cc:1585 ../src/util.cc:1281 ../src/util.cc:1282
 msgid "User functions"
 msgstr "Felhasználói függvények"
 
@@ -4529,7 +4533,7 @@ msgstr "Felhasználói függvények"
 #: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7361
 #: ../src/mainwindow.cc:7393 ../src/mainwindow.cc:7417
 #: ../src/unitsdialog.cc:174 ../src/unitsdialog.cc:175
-#: ../src/unitsdialog.cc:235 ../src/util.cc:1270 ../src/util.cc:1271
+#: ../src/unitsdialog.cc:235 ../src/util.cc:1283 ../src/util.cc:1284
 #: ../src/variablesdialog.cc:155 ../src/variablesdialog.cc:156
 #: ../src/variablesdialog.cc:201
 msgid "Inactive"
@@ -4565,7 +4569,7 @@ msgstr "alapértelmezett: "
 msgid "Requirement"
 msgstr "Követelmény"
 
-#: ../src/functionsdialog.cc:433 ../src/unitsdialog.cc:388 ../src/util.cc:1322
+#: ../src/functionsdialog.cc:433 ../src/unitsdialog.cc:388 ../src/util.cc:1335
 #: ../src/variablesdialog.cc:339
 msgid "Ac_tivate"
 msgstr "A_ktiválás"
@@ -4574,7 +4578,7 @@ msgstr "A_ktiválás"
 msgid "History Answer Value"
 msgstr "Előzmények válaszérték"
 
-#: ../src/historyview.cc:112 ../src/mainwindow.cc:8444
+#: ../src/historyview.cc:112 ../src/mainwindow.cc:8449
 msgid "answer"
 msgstr "válasz"
 
@@ -4604,32 +4608,32 @@ msgstr ""
 "Túl sokáig tartott a diagramadatok létrehozása. Kérjük, csökkentse a "
 "mintavételi gyakoriságot, vagy növelje az időkorlátot a beállításoknál."
 
-#: ../src/historyview.cc:2139 ../src/mainwindow.cc:2421
+#: ../src/historyview.cc:2141 ../src/mainwindow.cc:2421
 msgid "RPN Register Moved"
 msgstr "Fordított lengyel jelölési regiszter áthelyezve"
 
-#: ../src/historyview.cc:2145 ../src/mainwindow.cc:2422
+#: ../src/historyview.cc:2147 ../src/mainwindow.cc:2422
 #: ../src/mainwindow.cc:5196
 msgid "RPN Operation"
 msgstr "Fordított lengyel jelölési művelet"
 
-#: ../src/historyview.cc:2742
+#: ../src/historyview.cc:2744
 msgid "Search"
 msgstr "Keresés"
 
-#: ../src/historyview.cc:2742
+#: ../src/historyview.cc:2744
 msgid "_Search"
 msgstr "_Keresés"
 
-#: ../src/historyview.cc:2817 ../src/historyview.cc:3074
+#: ../src/historyview.cc:2822 ../src/historyview.cc:3081
 msgid "Remove Bookmark"
 msgstr "Könyvjelző eltávolítása"
 
-#: ../src/historyview.cc:2872
+#: ../src/historyview.cc:2877
 msgid "Add Bookmark"
 msgstr "Könyvjelző hozzáadása"
 
-#: ../src/historyview.cc:2898
+#: ../src/historyview.cc:2905
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -4637,11 +4641,11 @@ msgstr ""
 "A kijelölt névvel már létezik könyvjelző.\n"
 "Felül akarja írni?"
 
-#: ../src/historyview.cc:3112
+#: ../src/historyview.cc:3119
 msgid "No items found"
 msgstr "Nem található elemek"
 
-#: ../src/historyview.cc:3546 ../src/stackview.cc:784
+#: ../src/historyview.cc:3553 ../src/stackview.cc:793
 msgid "Index"
 msgstr "Tárgymutató"
 
@@ -4720,7 +4724,7 @@ msgstr "Középső kattintás: %s"
 msgid "Raise (Ctrl+*)"
 msgstr "Emelés (Ctrl+*)"
 
-#: ../src/keypad.cc:810 ../src/util.cc:886
+#: ../src/keypad.cc:810 ../src/util.cc:899
 msgid "Set unknowns"
 msgstr "Ismeretlenek beállítása"
 
@@ -4819,7 +4823,7 @@ msgstr "Kiszámítandó kifejezés"
 msgid "[EXPRESSION]"
 msgstr "[KIFEJEZÉS]"
 
-#: ../src/main.cc:151 ../src/searchprovider.cc:641
+#: ../src/main.cc:151 ../src/searchprovider.cc:640
 #, c-format
 msgid "Failed to load global definitions!\n"
 msgstr "Nem sikerült betölteni a globális meghatározásokat!\n"
@@ -5125,66 +5129,66 @@ msgstr "Nem sikerült átmásolni a fájlt ide: %s."
 msgid "translator-credits"
 msgstr "Ad majórem Dei glóriam"
 
-#: ../src/mainwindow.cc:7395 ../src/menubar.cc:1667 ../src/util.cc:1264
-#: ../src/util.cc:1265 ../src/variablesdialog.cc:137
+#: ../src/mainwindow.cc:7395 ../src/menubar.cc:1667 ../src/util.cc:1277
+#: ../src/util.cc:1278 ../src/variablesdialog.cc:137
 #: ../src/variablesdialog.cc:138 ../src/variablesdialog.cc:203
 msgid "User variables"
 msgstr "Felhasználói változók"
 
 #: ../src/mainwindow.cc:7419 ../src/menubar.cc:1413 ../src/menubar.cc:1508
 #: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
-#: ../src/unitsdialog.cc:237 ../src/util.cc:1266 ../src/util.cc:1267
+#: ../src/unitsdialog.cc:237 ../src/util.cc:1279 ../src/util.cc:1280
 msgid "User units"
 msgstr "Felhasználói egységek"
 
-#: ../src/mainwindow.cc:7524
+#: ../src/mainwindow.cc:7528
 msgid "No unknowns in result."
 msgstr "Az eredményben nincs ismeretlen."
 
-#: ../src/mainwindow.cc:7530
+#: ../src/mainwindow.cc:7534
 msgid "Set Unknowns"
 msgstr "Ismeretlenek beállítása"
 
-#: ../src/mainwindow.cc:7530
+#: ../src/mainwindow.cc:7534
 msgid "_Apply"
 msgstr "_Alkalmazás"
 
-#: ../src/mainwindow.cc:8243 ../src/mainwindow.cc:8250
+#: ../src/mainwindow.cc:8248 ../src/mainwindow.cc:8255
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
-#: ../src/mainwindow.cc:8441
+#: ../src/mainwindow.cc:8446
 msgid "ans"
 msgstr "vál"
 
-#: ../src/mainwindow.cc:8442
+#: ../src/mainwindow.cc:8447
 msgid "Last Answer"
 msgstr "Utolsó válasz"
 
-#: ../src/mainwindow.cc:8443
+#: ../src/mainwindow.cc:8448
 msgid ""
 "Contains the result of the most recent calculation. Multiple results of an "
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
 
-#: ../src/mainwindow.cc:8446
+#: ../src/mainwindow.cc:8451
 msgid "Answer 2"
 msgstr "2. válasz"
 
-#: ../src/mainwindow.cc:8447
+#: ../src/mainwindow.cc:8452
 msgid "Answer 3"
 msgstr "3. válasz"
 
-#: ../src/mainwindow.cc:8448
+#: ../src/mainwindow.cc:8453
 msgid "Answer 4"
 msgstr "4. válasz"
 
-#: ../src/mainwindow.cc:8449
+#: ../src/mainwindow.cc:8454
 msgid "Answer 5"
 msgstr "5. válasz"
 
-#: ../src/mainwindow.cc:8459
+#: ../src/mainwindow.cc:8464
 msgid "Memory"
 msgstr "Memória"
 
@@ -5460,7 +5464,7 @@ msgstr "Jelölje ki a fájlt a PNG-kép mentéséhez"
 msgid "Copied"
 msgstr "Másolva"
 
-#: ../src/searchprovider.cc:211
+#: ../src/searchprovider.cc:209
 msgid "Copy result to clipboard"
 msgstr "Eredmény másolása a vágólapra"
 
@@ -5494,7 +5498,7 @@ msgid "Key combination"
 msgstr "Kulcskombináció"
 
 #. Fixes missing support for context in ui file translations
-#: ../src/stackview.cc:836
+#: ../src/stackview.cc:844
 msgctxt "Keypad"
 msgid "Add the two top values together"
 msgstr ""
@@ -5524,311 +5528,311 @@ msgstr "Ismeretlen változó szerkesztése (globális)"
 msgid "New Unknown Variable"
 msgstr "Új ismeretlen változó"
 
-#: ../src/util.cc:868
+#: ../src/util.cc:881
 msgid "Insert function"
 msgstr "Függvény beszúrása"
 
-#: ../src/util.cc:869
+#: ../src/util.cc:882
 msgid "Insert function (dialog)"
 msgstr "Függvény beszúrása (párbeszéd)"
 
-#: ../src/util.cc:870
+#: ../src/util.cc:883
 msgid "Insert variable"
 msgstr "Változó beszúrása"
 
-#: ../src/util.cc:871
+#: ../src/util.cc:884
 msgid "Insert unit"
 msgstr "Egység beszúrása"
 
-#: ../src/util.cc:872
+#: ../src/util.cc:885
 msgid "Insert text"
 msgstr "Szöveg beszúrása"
 
-#: ../src/util.cc:873
+#: ../src/util.cc:886
 msgid "Insert date"
 msgstr "Dátum beszúrása"
 
-#: ../src/util.cc:874
+#: ../src/util.cc:887
 msgid "Insert vector"
 msgstr "Vektor beszúrása"
 
-#: ../src/util.cc:875
+#: ../src/util.cc:888
 msgid "Insert matrix"
 msgstr "Mátrix beszúrása"
 
-#: ../src/util.cc:876
+#: ../src/util.cc:889
 msgid "Insert smart parentheses"
 msgstr "Intelligens zárójelek beszúrása"
 
-#: ../src/util.cc:877
+#: ../src/util.cc:890
 msgid "Convert to unit"
 msgstr "Átalakítás egységre"
 
-#: ../src/util.cc:878
+#: ../src/util.cc:891
 msgid "Convert to unit (entry)"
 msgstr "Átalakítás egységre (bejegyzés)"
 
-#: ../src/util.cc:879
+#: ../src/util.cc:892
 msgid "Convert to optimal unit"
 msgstr "Átalakítás optimális egységre"
 
-#: ../src/util.cc:880
+#: ../src/util.cc:893
 msgid "Convert to base units"
 msgstr "Átalakítás egységekre"
 
-#: ../src/util.cc:881
+#: ../src/util.cc:894
 msgid "Convert to optimal prefix"
 msgstr "Átalakítás optimális előtagra"
 
-#: ../src/util.cc:882
+#: ../src/util.cc:895
 msgid "Convert to number base"
 msgstr "Átalakítás számbázisra"
 
-#: ../src/util.cc:883
+#: ../src/util.cc:896
 msgid "Factorize result"
 msgstr "Eredmény faktorizálása"
 
-#: ../src/util.cc:884
+#: ../src/util.cc:897
 msgid "Expand result"
 msgstr "Eredmény kibontása"
 
-#: ../src/util.cc:885
+#: ../src/util.cc:898
 msgid "Expand partial fractions"
 msgstr "Részleges törtekre bontás"
 
-#: ../src/util.cc:887
+#: ../src/util.cc:900
 msgid "RPN: down"
 msgstr "Fordított lengyel jelölés: lefelé"
 
-#: ../src/util.cc:888
+#: ../src/util.cc:901
 msgid "RPN: up"
 msgstr "Fordított lengyel jelölés: felfelé"
 
-#: ../src/util.cc:889
+#: ../src/util.cc:902
 msgid "RPN: swap"
 msgstr "Fordított lengyel jelölés: csere"
 
-#: ../src/util.cc:890
+#: ../src/util.cc:903
 msgid "RPN: copy"
 msgstr "Fordított lengyel jelölés: másolás"
 
-#: ../src/util.cc:891
+#: ../src/util.cc:904
 msgid "RPN: lastx"
 msgstr "Fordított lengyel jelölés: LASTx"
 
-#: ../src/util.cc:892
+#: ../src/util.cc:905
 msgid "RPN: delete register"
 msgstr "Fordított lengyel jelölés: regiszter törlése"
 
-#: ../src/util.cc:893
+#: ../src/util.cc:906
 msgid "RPN: clear stack"
 msgstr "Fordított lengyel jelölés: verem törlése"
 
-#: ../src/util.cc:894
+#: ../src/util.cc:907
 msgid "Load meta mode"
 msgstr "Meta üzemmód betöltése"
 
-#: ../src/util.cc:895
+#: ../src/util.cc:908
 msgid "Set expression base"
 msgstr "Kifejezési bázis beállítása"
 
-#: ../src/util.cc:896
+#: ../src/util.cc:909
 msgid "Set result base"
 msgstr "Eredményalap beállítása"
 
-#: ../src/util.cc:897
+#: ../src/util.cc:910
 msgid "Toggle exact mode"
 msgstr "Pontos üzemmód be-/kikapcsolása"
 
-#: ../src/util.cc:898
+#: ../src/util.cc:911
 msgid "Set angle unit to degrees"
 msgstr "Szög egységének beállítása fokban"
 
-#: ../src/util.cc:899
+#: ../src/util.cc:912
 msgid "Set angle unit to radians"
 msgstr "Szög egységének beállítása radiánra"
 
-#: ../src/util.cc:900
+#: ../src/util.cc:913
 msgid "Set angle unit to gradians"
 msgstr "Szög egységének beállítása grádánra"
 
-#: ../src/util.cc:901
+#: ../src/util.cc:914
 msgid "Toggle simple fractions"
 msgstr "Egyszerű törtek be-/kikapcsolása"
 
-#: ../src/util.cc:902
+#: ../src/util.cc:915
 msgid "Toggle mixed fractions"
 msgstr "Vegyes törtek be-/kikapcsolása"
 
-#: ../src/util.cc:903
+#: ../src/util.cc:916
 msgid "Toggle scientific notation"
 msgstr "Tudományos jelölések be-/kikapcsolása"
 
-#: ../src/util.cc:904
+#: ../src/util.cc:917
 msgid "Toggle simple notation"
 msgstr "Egyszerű jelölés be-/kikapcsolása"
 
-#: ../src/util.cc:905
+#: ../src/util.cc:918
 msgid "Toggle precision"
 msgstr "Pontosság be-/kikapcsolása"
 
-#: ../src/util.cc:906
+#: ../src/util.cc:919
 msgid "Toggle max decimals"
 msgstr "Legfeljebb tizedesjegyek be-/kikapcsolása"
 
-#: ../src/util.cc:907
+#: ../src/util.cc:920
 msgid "Toggle min decimals"
 msgstr "Legalacsony tizedesjegyek be-/kikapcsolása"
 
-#: ../src/util.cc:908
+#: ../src/util.cc:921
 msgid "Toggle max/min decimals"
 msgstr "Legalacsony/legfeljebb tizedesjegyek be-/kikapcsolása"
 
-#: ../src/util.cc:909
+#: ../src/util.cc:922
 msgid "Toggle RPN mode"
 msgstr "Fordított polírozási jelölésmód be-/kikapcsolása"
 
-#: ../src/util.cc:910
+#: ../src/util.cc:923
 msgid "Toggle calculate as you type"
 msgstr "Számítás gépelés közben be-/kikapcsolása"
 
-#: ../src/util.cc:911
+#: ../src/util.cc:924
 msgid "Toggle programming keypad"
 msgstr "Programozó billentyűzet be-/kikapcsolása"
 
-#: ../src/util.cc:912
+#: ../src/util.cc:925
 msgid "Show keypad"
 msgstr "Billentyűzet megjelenítése"
 
-#: ../src/util.cc:913
+#: ../src/util.cc:926
 msgid "Show history"
 msgstr "Előzmények megjelenítése"
 
-#: ../src/util.cc:914
+#: ../src/util.cc:927
 msgid "Search history"
 msgstr "Keresési előzmények"
 
-#: ../src/util.cc:915
+#: ../src/util.cc:928
 msgid "Clear history"
 msgstr "Előzmények törlése"
 
-#: ../src/util.cc:916
+#: ../src/util.cc:929
 msgid "Show conversion"
 msgstr "Átalakítás megjelenítése"
 
-#: ../src/util.cc:917
+#: ../src/util.cc:930
 msgid "Show RPN stack"
 msgstr "Fordított lengyel jelölési verem megjelenítése"
 
-#: ../src/util.cc:919
+#: ../src/util.cc:932
 msgid "Manage variables"
 msgstr "Változók kezelése"
 
-#: ../src/util.cc:920
+#: ../src/util.cc:933
 msgid "Manage functions"
 msgstr "Függvények kezelése"
 
-#: ../src/util.cc:922
+#: ../src/util.cc:935
 msgid "Manage data sets"
 msgstr "Adatkészletek kezelése"
 
-#: ../src/util.cc:929
+#: ../src/util.cc:942
 msgid "New variable"
 msgstr "Új változó"
 
-#: ../src/util.cc:930
+#: ../src/util.cc:943
 msgid "New function"
 msgstr "Új függvény"
 
-#: ../src/util.cc:931
+#: ../src/util.cc:944
 msgid "Open plot functions/data"
 msgstr "Plot függvények/adat megnyitás"
 
-#: ../src/util.cc:932
+#: ../src/util.cc:945
 msgid "Open convert number bases"
 msgstr "Számbázis átalakításának megnyitása"
 
-#: ../src/util.cc:933
+#: ../src/util.cc:946
 msgid "Open floating point conversion"
 msgstr "Lebegőpontos átalakításának megnyitása"
 
-#: ../src/util.cc:934
+#: ../src/util.cc:947
 msgid "Open calendar conversion"
 msgstr "Naptár átalakításának megnyitása"
 
-#: ../src/util.cc:935
+#: ../src/util.cc:948
 msgid "Open percentage calculation tool"
 msgstr "Százalékszámítási eszközének megnyitása"
 
-#: ../src/util.cc:936
+#: ../src/util.cc:949
 msgid "Open periodic table"
 msgstr "Periódusos rendszer megnyitása"
 
-#: ../src/util.cc:937
+#: ../src/util.cc:950
 msgid "Update exchange rates"
 msgstr "Árfolyamok frissítése"
 
-#: ../src/util.cc:938
+#: ../src/util.cc:951
 msgid "Copy result"
 msgstr "Eredmény másolása"
 
-#: ../src/util.cc:939
+#: ../src/util.cc:952
 msgid "Insert result"
 msgstr "Eredmény beszúrása"
 
-#: ../src/util.cc:940
+#: ../src/util.cc:953
 msgid "Save result image"
 msgstr "Eredménykép mentése"
 
-#: ../src/util.cc:941
+#: ../src/util.cc:954
 msgid "Help"
 msgstr "Súgó"
 
-#: ../src/util.cc:942
+#: ../src/util.cc:955
 msgid "Quit"
 msgstr "Kilépés"
 
-#: ../src/util.cc:943
+#: ../src/util.cc:956
 msgid "Toggle chain mode"
 msgstr "Lánc üzemmód be-/kikapcsolása"
 
-#: ../src/util.cc:944
+#: ../src/util.cc:957
 msgid "Toggle keep above"
 msgstr "Fent tartása be-/kikapcsolása"
 
-#: ../src/util.cc:945
+#: ../src/util.cc:958
 msgid "Show/hide completion"
 msgstr "Befejezés megjelenítése/elrejtése"
 
-#: ../src/util.cc:946
+#: ../src/util.cc:959
 msgid "Perform completion (activate first item)"
 msgstr "Befejezés végrehajtása (első elem aktiválása)"
 
-#: ../src/util.cc:1014
+#: ../src/util.cc:1027
 msgid "Formatted result"
 msgstr "Formázott eredmény"
 
-#: ../src/util.cc:1015
+#: ../src/util.cc:1028
 msgid "Unformatted ASCII result"
 msgstr "Formázatlan ASCII-kód eredmény"
 
-#: ../src/util.cc:1016
+#: ../src/util.cc:1029
 msgid "Unformatted ASCII result without units"
 msgstr "Formázatlan ASCII-kód eredmény mértékegységek nélkül"
 
-#: ../src/util.cc:1017
+#: ../src/util.cc:1030
 msgid "Formatted expression"
 msgstr "Formázott kifejezés"
 
-#: ../src/util.cc:1018
+#: ../src/util.cc:1031
 msgid "Unformatted ASCII expression"
 msgstr "Formázatlan ASCII-kód kifejezés"
 
-#: ../src/util.cc:1019
+#: ../src/util.cc:1032
 msgid "Formatted expression + result"
 msgstr "Formázott kifejezés + eredmény"
 
-#: ../src/util.cc:1020
+#: ../src/util.cc:1033
 msgid "Unformatted ASCII expression + result"
 msgstr "Formázatlan ASCII-kód kifejezés + eredmény"
 

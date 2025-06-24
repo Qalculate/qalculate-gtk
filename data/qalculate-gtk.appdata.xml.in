@@ -50,6 +50,40 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.6.0" date="2025-06-30">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Add support for display of repeating decimals using overline (vinculum) instead of ellipsis</li>
+      <li>Use selection (as if button was clicked) if RPN stack is visible when using keyboard shortcut for RPN operation</li>
+      <li>Allow enter to accept input when creating history bookmark, and in last entry in set unknowns dialog</li>
+      <li>Support all real numbers in binomial(), comb(), and perm() functions</li>
+      <li>Add boolean argument for reversed conversion (to text string) in bin(), oct(), dec(), hex(), and base()</li>
+      <li>Add support for units in limit()</li>
+      <li>Improve simplification and speed in diff() function for high orders</li>
+      <li>Do not allow conversion using "to" in function expression (in edit function dialog)</li>
+      <li>Show a warning when it appears as if the user tries to convert part of an expression</li>
+      <li>Add "-" after unit prefix symbol (k and M excluded), in completion list, to indicate that it must be followed by a unit</li>
+      <li>Improve handling of functions returning text string or value with angle unit, in angle and text arguments</li>
+      <li>Improve handling of random numbers in iterative functions and in function arguments of custom functions</li>
+      <li>Disable calculate as you type for expression containing export, load, or command function</li>
+      <li>Use LANGUAGE environment variable, instead of LANG, on Windows in order to avoid changing regional format settings</li>
+      <li>Improvements/fixes for currencies and exchange rates</li>
+      <li>Fix empty category field in matrix/vector edit dialog</li>
+      <li>Use tabular numbers (tnum) font feature (fixes alignment with Adwaita font) in history, RPN stack, and for binary numbers in result</li>
+      <li>Fix copy result to clipboard (and inconsequential crash after any action) in Gnome shell search provider</li>
+      <li>Fix expression status for multiple "to" expressions without preceding expression (not supported)</li>
+      <li>Fix integral with infinite limit with unit</li>
+      <li>Fix non-localized data set key properties (when translated version is available)</li>
+      <li>Fix angle conversion for (in)equalities (both sides where converted)</li>
+      <li>Fix default separator in load() and export() functions</li>
+      <li>Fix µ_B name/symbol for Bohr magneton</li>
+      <li>Fix incorrect limit for expression containing tan(x) when value to approach is pi/2 without direction</li>
+      <li>Traditional Chinese translation</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.5.1" date="2025-02-24">
    <description>
     <p>Changes:</p>
