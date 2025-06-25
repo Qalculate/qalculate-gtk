@@ -1655,7 +1655,7 @@ void update_completion() {
 						title = localize_expression(((KnownVariable*) v)->expression());
 						if(unicode_length(title) > 30) {
 							size_t n = 30;
-							while(n > 0 && (signed char) title[n + 1] < 0 && (unsigned char) title[n + 1] < 0xC0) n--;
+							while(n > 0 && (signed char) title[n] < 0 && (unsigned char) title[n] < 0xC0) n--;
 							title = title.substr(0, n); title += "…";
 						} else if(!((KnownVariable*) v)->unit().empty() && ((KnownVariable*) v)->unit() != "auto") {
 							title += " "; title += ((KnownVariable*) v)->unit();
@@ -1676,7 +1676,7 @@ void update_completion() {
 							title = CALCULATOR->print(((KnownVariable*) v)->get(), 30, po);
 							if(unicode_length(title) > 30) {
 								size_t n = 30;
-								while(n > 0 && (signed char) title[n + 1] < 0 && (unsigned char) title[n + 1] < 0xC0) n--;
+								while(n > 0 && (signed char) title[n] < 0 && (unsigned char) title[n] < 0xC0) n--;
 								title = title.substr(0, n);
 								title += "…";
 							}
