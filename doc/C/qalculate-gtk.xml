@@ -1096,7 +1096,7 @@ The menus in the menu bar provides access to most of the functionality of &app;.
 			</row>
 			<row valign="top">
 				<entry><para>Parsing Mode</para></entry>
-				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three main modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximate with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication for parsing and display of expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>. Additionally RPN and chain syntax modes can be selected.</para></entry>
+				<entry><para>Submenu with options to control how expressions are parsed (read/interpreted). There are three main modes to choose from. In addition the <quote>read precision</quote> option enables/disables interpretation of input numbers with decimals as approximations with a precision equal to the number of digits (after preceding zeroes), and <quote>limit implicit multiplication</quote> limits the use of implicit multiplication for parsing and display of expressions. For more information see <xref linkend="qalculate-implicit-multiplication"/>. Additionally RPN and chain syntax modes can be selected.</para></entry>
 			</row>
 			<row valign="top">
 				<entry><para>Precision</para></entry>
@@ -2018,7 +2018,7 @@ Note that <quote>to</quote> and <quote>where</quote> can only be applied to the 
 		<term>Parsing Mode</term>
 		<listitem><para>
 			These options control how expressions are interpreted. There are three main modes, which mainly controls if implicit multiplication is handled differently from explicit multiplication and if spaces are taken into account or not.  See <xref linkend="qalculate-implicit-multiplication"/>.
-			If the read precision option is activated, decimal numbers are interpreted as approximate with precision equal to the number of digits (e.g. <quote>1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.2</quote>).
+			If the read precision option is activated, decimal numbers are interpreted as approximations with precision equal to the number of digits (e.g. <quote>1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.2</quote>).
 		</para></listitem>
 	</varlistentry>
 	<varlistentry>

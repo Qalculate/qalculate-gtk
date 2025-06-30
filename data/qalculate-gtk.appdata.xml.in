@@ -69,8 +69,9 @@
       <li>Disable calculate as you type for expression containing export, load, or command function</li>
       <li>Use LANGUAGE environment variable, instead of LANG, on Windows in order to avoid changing regional format settings</li>
       <li>Improvements/fixes for currencies and exchange rates</li>
-      <li>Fix empty category field in matrix/vector edit dialog</li>
       <li>Use tabular numbers (tnum) font feature (fixes alignment with Adwaita font) in history, RPN stack, and for binary numbers in result</li>
+      <li>Fix empty category field in matrix/vector edit dialog</li>
+      <li>Fix segfault in some cases when creating variable with long title/value</li>
       <li>Fix copy result to clipboard (and inconsequential crash after any action) in Gnome shell search provider</li>
       <li>Fix expression status for multiple "to" expressions without preceding expression (not supported)</li>
       <li>Fix integral with infinite limit with unit</li>
