@@ -714,7 +714,16 @@ void on_preferences_radiobutton_digit_grouping_standard_toggled(GtkToggleButton 
 void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
 		printops.digit_grouping = DIGIT_GROUPING_LOCALE;
-		result_format_updated();
+		if((!evalops.parse_options.comma_as_separator || CALCULATOR->getDecimalPoint() == COMMA) && CALCULATOR->local_digit_group_separator == COMMA) {
+			evalops.parse_options.comma_as_separator = true;
+			CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
+			update_keypad_button_text();
+			dot_question_asked = true;
+			expression_format_updated(false);
+			preferences_update_dot();
+		} else {
+			result_format_updated();
+		}
 	}
 }
 
