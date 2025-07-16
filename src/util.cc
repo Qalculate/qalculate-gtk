@@ -653,7 +653,7 @@ bool contains_plot_or_save(const string &str) {
 
 long int get_fixed_denominator_gtk2(const string &str, int &to_fraction, char sgn, bool qalc_command) {
 	long int fden = 0;
-	if(!qalc_command && (equalsIgnoreCase(str, "fraction") || equalsIgnoreCase(str, _("fraction")))) {
+	if(!qalc_command && (equalsIgnoreCase(str, "fraction") || equalsIgnoreCase(str, _("fraction")) || str == "1/n" || str == "/n")) {
 		fden = -1;
 	} else {
 		if(str.length() > 2 && str[0] == '1' && str[1] == '/' && str.find_first_not_of(NUMBERS SPACES, 2) == string::npos) {

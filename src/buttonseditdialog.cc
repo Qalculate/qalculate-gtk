@@ -373,7 +373,7 @@ void update_custom_buttons_edit(int index, bool update_label_entry) {
 		else if(i == 24 && (index == i || index < 0)) {
 			MathFunction *f = CALCULATOR->getActiveFunction("neg");
 			SET_BUTTONS_EDIT_ITEM_3B("label_sub", _("Subtract"), f ? f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tButtonsEdit).c_str() : "-", _("Bitwise OR"));
-		} else if(i == 25 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_ac", _("Clear"), _("MC (memory clear)"))
+		} else if(i == 25 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2("AC", _("Clear"), _("MC (memory clear)"))
 		else if(i == 26 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3B("label_del", _("Delete"), _("Backspace"), _("M− (memory minus)"))
 		else if(i == 27 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_2B("label_ans", _("Previous result"), _("Previous result (static)"))
 		else if(i == 28 && (index == i || index < 0)) SET_BUTTONS_EDIT_ITEM_3("=", _("Calculate expression"), _("MR (memory recall)"), _("MS (memory store)"))
@@ -433,7 +433,7 @@ GtkWidget* get_buttons_edit_dialog(void) {
 			gtk_list_store_append(tButtonsEdit_store, &iter);
 			gtk_list_store_set(tButtonsEdit_store, &iter, 0, i, -1);
 		}
-		for(int i = 0; i < 20; i++) {
+		for(int i = 0; i < 29; i++) {
 			gtk_list_store_append(tButtonsEdit_store, &iter);
 			gtk_list_store_set(tButtonsEdit_store, &iter, 0, i, -1);
 		}
