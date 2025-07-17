@@ -898,10 +898,11 @@ bool ask_sinc() {
 	return false;
 }
 bool test_ask_dot(const string &str) {
-	if(dot_question_asked || CALCULATOR->getDecimalPoint() == DOT) return false;
+	if(dot_question_asked) return false;
+	bool test_comma = (CALCULATOR->getDecimalPoint() == DOT);
 	size_t i = 0;
 	while(true) {
-		i = str.find(DOT, i);
+		i = str.find(test_comma ? COMMA : DOT, i);
 		if(i == string::npos) return false;
 		i = str.find_first_not_of(SPACES, i + 1);
 		if(i == string::npos) return false;
@@ -911,7 +912,8 @@ bool test_ask_dot(const string &str) {
 }
 
 bool ask_dot() {
-	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Interpretation of dots"), main_window(), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
+	bool ask_comma = (CALCULATOR->getDecimalPoint() == DOT);
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(ask_comma ? _("Interpretation of comma") : _("Interpretation of dots"), main_window(), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
@@ -921,50 +923,70 @@ bool ask_dot() {
 	gtk_container_set_border_width(GTK_CONTAINER(grid), 6);
 	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), grid);
 	gtk_widget_show(grid);
-	GtkWidget *label = gtk_label_new(_("Please select interpretation of dots (\".\")\n(this can later be changed in preferences)."));
+	GtkWidget *label = gtk_label_new(ask_comma ? _("Please select interpretation of comma (\",\")\n(this can later be changed in preferences).") : _("Please select interpretation of dots (\".\")\n(this can later be changed in preferences)."));
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
 	GtkWidget *w_bothdeci = gtk_radio_button_new_with_label(NULL, _("Both dot and comma as decimal separators"));
 	gtk_widget_set_valign(w_bothdeci, GTK_ALIGN_START);
-	gtk_grid_attach(GTK_GRID(grid), w_bothdeci, 0, 1, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), w_bothdeci, 0, ask_comma ? 3 : 1, 1, 1);
 	label = gtk_label_new("<i>(1.2 = 1,2)</i>");
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
-	gtk_grid_attach(GTK_GRID(grid), label, 1, 1, 1, 1);
-	GtkWidget *w_ignoredot = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_bothdeci), _("Dot as thousands separator"));
+	gtk_grid_attach(GTK_GRID(grid), label, 1, ask_comma ? 3 : 1, 1, 1);
+	GtkWidget *w_ignoredot = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_bothdeci), ask_comma ? _("Comma as thousands separator") : _("Dot as thousands separator"));
 	gtk_widget_set_valign(w_ignoredot, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), w_ignoredot, 0, 2, 1, 1);
 	label = gtk_label_new("<i>(1.000.000 = 1000000)</i>");
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), label, 1, 2, 1, 1);
-	GtkWidget *w_dotdeci = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_bothdeci), _("Only dot as decimal separator"));
+	GtkWidget *w_dotdeci = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_bothdeci), ask_comma ? _("Comma as separator for function arguments\nand matrix/vector elements") : _("Only dot as decimal separator"));
 	gtk_widget_set_valign(w_dotdeci, GTK_ALIGN_START);
-	gtk_grid_attach(GTK_GRID(grid), w_dotdeci, 0, 3, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), w_dotdeci, 0, ask_comma ? 1 : 3, 1, 1);
 	label = gtk_label_new("<i>(1.2 + root(16, 4) = 3.2)</i>");
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
-	gtk_grid_attach(GTK_GRID(grid), label, 1, 3, 1, 1);
-	if(evalops.parse_options.dot_as_separator) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_ignoredot), TRUE);
+	gtk_grid_attach(GTK_GRID(grid), label, 1, ask_comma ? 1 : 3, 1, 1);
+	if((!ask_comma && evalops.parse_options.dot_as_separator) || (ask_comma && evalops.parse_options.comma_as_separator)) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_ignoredot), TRUE);
+	else if(ask_comma) gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_dotdeci), TRUE);
 	else gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w_bothdeci), TRUE);
 	gtk_widget_show_all(grid);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	dot_question_asked = true;
-	bool das = evalops.parse_options.dot_as_separator;
+	bool b_ret = false;
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_dotdeci))) {
+		b_ret = !ask_comma || evalops.parse_options.comma_as_separator;
 		evalops.parse_options.dot_as_separator = false;
 		evalops.parse_options.comma_as_separator = false;
 		b_decimal_comma = false;
 		CALCULATOR->useDecimalPoint(false);
-		das = !evalops.parse_options.dot_as_separator;
 	} else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_ignoredot))) {
-		evalops.parse_options.dot_as_separator = true;
+		if(ask_comma) {
+			b_ret = !evalops.parse_options.comma_as_separator;
+			evalops.parse_options.comma_as_separator = true;
+			CALCULATOR->useDecimalPoint(true);
+		} else {
+			b_ret = !evalops.parse_options.dot_as_separator;
+			evalops.parse_options.dot_as_separator = true;
+		}
 	} else {
-		evalops.parse_options.dot_as_separator = false;
+		if(ask_comma) {
+			evalops.parse_options.comma_as_separator = false;
+			CALCULATOR->useDecimalComma();
+			b_decimal_comma = true;
+			b_ret = true;
+		} else {
+			b_ret = evalops.parse_options.dot_as_separator;
+			evalops.parse_options.dot_as_separator = false;
+		}
 	}
-	preferences_update_dot();
+	if(b_ret) {
+		preferences_update_dot();
+		set_expression_output_updated(true);
+		display_parse_status();
+	}
 	gtk_widget_destroy(dialog);
-	return das != evalops.parse_options.dot_as_separator;
+	return b_ret;
 }
 
 bool ask_implicit() {
