@@ -28,4 +28,6 @@ void write_insert_function_dialog_settings(FILE *file);
 void insert_function_binary_bits_changed();
 void insert_function_twos_complement_changed(bool bo, bool ho, bool bi, bool hi);
 
+void update_insert_function_dialogs();
+
 #endif /* INSERT_FUNCTION_DIALOG_H */

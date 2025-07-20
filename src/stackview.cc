@@ -239,9 +239,7 @@ void on_button_deleteregister_clicked(GtkButton*, gpointer) {
 }
 void on_button_clearstack_clicked(GtkButton*, gpointer) {
 	CALCULATOR->clearRPNStack();
-	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
-	gtk_list_store_clear(stackstore);
-	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
+	RPNStackCleared();
 	clearresult();
 	current_result()->clear();
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_clearstack")), FALSE);
@@ -502,6 +500,7 @@ void RPNStackCleared() {
 	g_signal_handlers_block_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
 	gtk_list_store_clear(stackstore);
 	g_signal_handlers_unblock_matched((gpointer) stackstore, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_stackstore_row_deleted, NULL);
+	update_insert_function_dialogs();
 }
 void updateRPNIndexes() {
 	GtkTreeIter iter;
@@ -536,6 +535,7 @@ void RPNRegisterAdded(string text, gint index) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), TRUE);
 	}
 	on_stackview_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), NULL);
+	update_insert_function_dialogs();
 }
 void RPNRegisterRemoved(gint index) {
 	GtkTreeIter iter;
@@ -564,6 +564,7 @@ void RPNRegisterRemoved(gint index) {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_rpn_sum")), FALSE);
 	}
 	on_stackview_selection_changed(gtk_tree_view_get_selection(GTK_TREE_VIEW(stackview)), NULL);
+	update_insert_function_dialogs();
 }
 void RPNRegisterChanged(string text, gint index) {
 	GtkTreeIter iter;

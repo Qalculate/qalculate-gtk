@@ -156,6 +156,7 @@ struct FunctionDialog {
 	GtkListStore *properties_store;
 	bool add_to_menu, keep_open, rpn;
 	int args;
+	MathFunction *f;
 };
 
 unordered_map<MathFunction*, FunctionDialog*> function_dialogs;
@@ -335,6 +336,14 @@ void on_insert_function_rpn(GtkWidget*, gpointer p) {
 		function_dialogs.erase(f);
 	}
 }
+void update_insert_function_dialogs() {
+	if(rpn_mode) {
+		for(unordered_map<MathFunction*, FunctionDialog*>::iterator it = function_dialogs.begin(); it != function_dialogs.end(); ++it) {
+			FunctionDialog *fd = it->second;
+			gtk_widget_set_sensitive(fd->b_insert, CALCULATOR->RPNStackSize() >= (fd->f->minargs() <= 0 ? 1 : (size_t) fd->f->minargs()));
+		}
+	}
+}
 void on_insert_function_keepopen(GtkToggleButton *w, gpointer p) {
 	MathFunction *f = (MathFunction*) p;
 	FunctionDialog *fd = function_dialogs[f];
@@ -352,8 +361,7 @@ void on_insert_function_entry_activated(GtkWidget *w, gpointer p) {
 	for(int i = 0; i < fd->args; i++) {
 		if(fd->entry[i] == w) {
 			if(i == fd->args - 1) {
-				if(fd->rpn) on_insert_function_rpn(w, p);
-				else if(fd->keep_open || rpn_mode) on_insert_function_exec(w, p);
+				if(fd->keep_open || rpn_mode) on_insert_function_exec(w, p);
 				else on_insert_function_insert(w, p);
 			} else {
 				if(f->getArgumentDefinition(i + 2) && f->getArgumentDefinition(i + 2)->type() == ARGUMENT_TYPE_BOOLEAN) {
@@ -416,6 +424,7 @@ void insert_function(MathFunction *f, GtkWindow *parent, bool add_to_menu) {
 	FunctionDialog *fd = new FunctionDialog;
 
 	function_dialogs[f] = fd;
+	fd->f = f;
 
 	int args = 0;
 	bool has_vector = false;
@@ -834,7 +843,7 @@ void insert_function(MathFunction *f, GtkWindow *parent, bool add_to_menu) {
 	}
 
 	g_signal_connect(G_OBJECT(fd->b_exec), "clicked", G_CALLBACK(on_insert_function_exec), (gpointer) f);
-	if(fd->rpn) g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_rpn), (gpointer) f);
+	if(rpn_mode) g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_rpn), (gpointer) f);
 	else g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_insert), (gpointer) f);
 	g_signal_connect(G_OBJECT(fd->b_cancel), "clicked", G_CALLBACK(on_insert_function_close), (gpointer) f);
 	g_signal_connect(G_OBJECT(fd->b_keepopen), "toggled", G_CALLBACK(on_insert_function_keepopen), (gpointer) f);
