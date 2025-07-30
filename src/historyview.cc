@@ -916,8 +916,8 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 	size_t lb_point = string::npos;
 	size_t c = 0;
 	int b_or = 0;
-	if(expr > 1 && str.find("||") != string::npos) b_or = 2;
-	else if(expr > 1 && str.find(_("or")) != string::npos) b_or = 1;
+	if(expr > 1 && expr != 4 && str.find("||") != string::npos && (str.find("=", first_i) != string::npos || str.find("≈", first_i) != string::npos)) b_or = 2;
+	else if(expr > 1 && expr != 4 && str.find(_("or")) != string::npos && (str.find("=", first_i) != string::npos || str.find("≈", first_i) != string::npos)) b_or = 1;
 	for(size_t i = first_i; i < str.length(); i++) {
 		if(r != 1 && i - i_row <= indent) {
 			if(str[i] == ' ') {

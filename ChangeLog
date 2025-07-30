@@ -1,3 +1,28 @@
+2025-07-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not add linebreak in history after OR if result does not contain (in)equality
+
+2025-07-20 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Always set "Enter" as default action in insert function dialog in RPN mode
+	* Update state of "Apply to Stack" button, in insert function dialog, when RPN stack size changes
+	* Update insert function dialogs when RPN mode is (de)activated
+
+2025-07-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Ask for interpretation of comma (when comma is not default decimal separator)
+	* Automatically enable "Use comma as decimal separator" and "Ignore dots in numbers" when local digit grouping, with dot as thousands separator, is selected
+
+2025-07-16 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Use icon (edit-clear) for "AC" button
+	* Restore editing of all right-hand side buttons
+	* Add support for "to 1/n" as alternative to "to fraction"
+
+2025-07-11 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Automatically disable "Use comma as decimal separator" and enable "Ignore comma in numbers" when local digit grouping, with comma as thousands separator, is selected
+
 2025-06-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix segfault caused by title (e.g. generated from value of variable created by user) cut of in the middle of a Unicode character

@@ -50,6 +50,30 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.7.0" date="2025-08-04">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Ask for interpretation of comma (when comma is not the default decimal separator)</li>
+      <li>Restore editing of all right-hand side buttons</li>
+      <li>Use icon for "AC" button, and no icon for "DEL" button</li>
+      <li>Automatically set "Use comma as decimal separator" and "Ignore comma/dots in numbers" when local digit grouping is selected</li>
+      <li>Improvements for insert function dialog in RPN mode</li>
+      <li>Support input of base in log() function before parenthesis, e.g. "log20(400)" (equivalent to "log(400, 20)")</li>
+      <li>support input of exponent before argument of trigonometric function (e.g. "sin²(x)")</li>
+      <li>Add new binary prefixes (robi, quebi), and enable use of recently added SI prefixes in output by default</li>
+      <li>Micron unit</li>
+      <li>Support "to 1/n" as alternative to "to fraction"</li>
+      <li>Data set translation fixes</li>
+      <li>Return exact integers in more case in log() function</li>
+      <li>Fix segfault with text argument containing potential text returning function, or variable containing text value</li>
+      <li>Fix segfault during calculation of (in)equality with root() function with insufficient number of arguments</li>
+      <li>Fix segfault during output of both approximate and exact logical OR value without (in)equality</li>
+      <li>Fix qError() function</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.6.0" date="2025-06-30">
    <description>
     <p>Changes:</p>

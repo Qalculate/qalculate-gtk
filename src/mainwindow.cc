@@ -936,7 +936,7 @@ bool ask_dot() {
 	GtkWidget *w_ignoredot = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(w_bothdeci), ask_comma ? _("Comma as thousands separator") : _("Dot as thousands separator"));
 	gtk_widget_set_valign(w_ignoredot, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), w_ignoredot, 0, 2, 1, 1);
-	label = gtk_label_new("<i>(1.000.000 = 1000000)</i>");
+	label = gtk_label_new(ask_comma ? "<i>(1,000,000 = 1000000)</i>" : "<i>(1.000.000 = 1000000)</i>");
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 	gtk_widget_set_halign(label, GTK_ALIGN_START);
 	gtk_grid_attach(GTK_GRID(grid), label, 1, 2, 1, 1);
@@ -955,10 +955,14 @@ bool ask_dot() {
 	dot_question_asked = true;
 	bool b_ret = false;
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_dotdeci))) {
-		b_ret = !ask_comma || evalops.parse_options.comma_as_separator;
-		evalops.parse_options.dot_as_separator = false;
+		if(ask_comma) {
+			b_ret = evalops.parse_options.comma_as_separator;
+		} else {
+			b_ret = true;
+			b_decimal_comma = false;
+			evalops.parse_options.dot_as_separator = false;
+		}
 		evalops.parse_options.comma_as_separator = false;
-		b_decimal_comma = false;
 		CALCULATOR->useDecimalPoint(false);
 	} else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w_ignoredot))) {
 		if(ask_comma) {
@@ -977,8 +981,8 @@ bool ask_dot() {
 			b_ret = true;
 		} else {
 			b_ret = evalops.parse_options.dot_as_separator;
-			evalops.parse_options.dot_as_separator = false;
 		}
+		evalops.parse_options.dot_as_separator = false;
 	}
 	if(b_ret) {
 		preferences_update_dot();
@@ -1521,7 +1525,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		CALCULATOR->beginTemporaryStopMessages();
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 		CALCULATOR->setSimplifiedPercentageUsed(false);
-		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops, parsed_mstruct, parsed_tostruct)) {
+		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops, parsed_mstruct, parsed_tostruct) || parsed_mstruct->contains(m_undefined)) {
 			mauto.setAborted();
 		} else if(do_factors || do_pfe || do_expand) {
 			CALCULATOR->startControl(100);
@@ -5388,6 +5392,7 @@ void execute_from_file(string command_file) {
 			mstruct->clear();
 		}
 	}
+	update_insert_function_dialogs();
 	fclose(cfile);
 }
 
@@ -5445,6 +5450,7 @@ void set_rpn_mode(bool b) {
 		set_expression_output_updated(true);
 		if(auto_calculate && result_autocalculated) result_text = "";
 		clearresult();
+		update_insert_function_dialogs();
 	} else {
 		gtk_widget_hide(expander_stack);
 		show_stack = gtk_expander_get_expanded(GTK_EXPANDER(expander_stack));
@@ -5821,7 +5827,7 @@ void load_preferences() {
 	}
 
 	version_numbers[0] = 5;
-	version_numbers[1] = 6;
+	version_numbers[1] = 7;
 	version_numbers[2] = 0;
 
 	if(file) {
@@ -6888,7 +6894,7 @@ void show_about() {
 	gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(dialog), _("translator-credits"));
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2024 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2025 Hanna Knutsson");
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), "qalculate");
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);

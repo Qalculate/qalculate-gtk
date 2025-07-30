@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate!\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-17 09:33+0200\n"
+"POT-Creation-Date: 2025-07-30 11:05+0200\n"
 "PO-Revision-Date: 2024-11-25 09:09+0100\n"
 "Last-Translator: Polakrity\n"
 "Language-Team: none\n"
@@ -22,7 +22,7 @@ msgid "Calculator"
 msgstr "Calculatrice"
 
 #: ../data/qalculate-gtk.desktop.in.h:2
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:6889
+#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:6895
 msgid "Powerful and easy to use calculator"
 msgstr "Une calculatrice puissante et facile d'utilisation"
 
@@ -74,9 +74,9 @@ msgstr "Règles d'argument"
 #: ../src/historyview.cc:2877 ../src/importcsvdialog.cc:49
 #: ../src/importcsvdialog.cc:51 ../src/insertfunctiondialog.cc:65
 #: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
-#: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
-#: ../src/mainwindow.cc:711 ../src/mainwindow.cc:6593 ../src/mainwindow.cc:6595
-#: ../src/mainwindow.cc:7556 ../src/matrixdialog.cc:389 ../src/menubar.cc:1203
+#: ../src/insertfunctiondialog.cc:973 ../src/insertfunctiondialog.cc:1081
+#: ../src/mainwindow.cc:711 ../src/mainwindow.cc:6599 ../src/mainwindow.cc:6601
+#: ../src/mainwindow.cc:7562 ../src/matrixdialog.cc:389 ../src/menubar.cc:1203
 #: ../src/menubar.cc:1244 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
 #: ../src/resultview.cc:548 ../src/resultview.cc:550
 msgid "_Cancel"
@@ -89,10 +89,10 @@ msgstr "_Fermer"
 #: ../data/unknownedit.ui.h:4 ../data/variableedit.ui.h:4
 #: ../src/expressionedit.cc:1270 ../src/historyview.cc:2779
 #: ../src/historyview.cc:2877 ../src/insertfunctiondialog.cc:65
-#: ../src/insertfunctiondialog.cc:975 ../src/insertfunctiondialog.cc:1083
+#: ../src/insertfunctiondialog.cc:973 ../src/insertfunctiondialog.cc:1081
 #: ../src/mainwindow.cc:711 ../src/mainwindow.cc:804 ../src/mainwindow.cc:861
-#: ../src/mainwindow.cc:916 ../src/mainwindow.cc:993 ../src/mainwindow.cc:1049
-#: ../src/mainwindow.cc:7556
+#: ../src/mainwindow.cc:916 ../src/mainwindow.cc:997 ../src/mainwindow.cc:1053
+#: ../src/mainwindow.cc:7562
 msgid "_OK"
 msgstr "_OK"
 
@@ -270,7 +270,7 @@ msgstr "Personnaliser les boutons du clavier"
 #: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:2
 #: ../data/preferences.ui.h:2 ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2
 #: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2744
-#: ../src/insertfunctiondialog.cc:449 ../src/mainwindow.cc:715
+#: ../src/insertfunctiondialog.cc:448 ../src/mainwindow.cc:715
 #: ../src/mainwindow.cc:716 ../src/mainwindow.cc:718 ../src/matrixdialog.cc:381
 #: ../src/periodictabledialog.cc:86
 msgid "_Close"
@@ -302,8 +302,8 @@ msgstr "Bouton d'action"
 
 #: ../data/buttonsedit.ui.h:11 ../data/floatingpoint.ui.h:3
 #: ../data/shortcuts.ui.h:10 ../data/variableedit.ui.h:7
-#: ../src/insertfunctiondialog.cc:513 ../src/shortcutsdialog.cc:579
-#: ../src/stackview.cc:799
+#: ../src/insertfunctiondialog.cc:512 ../src/shortcutsdialog.cc:579
+#: ../src/stackview.cc:800
 msgid "Value"
 msgstr "Valeur"
 
@@ -818,7 +818,7 @@ msgstr "(Dés)activer la fonction sélectionnée"
 msgid "Deac_tivate"
 msgstr "Désac_tiver"
 
-#: ../data/functions.ui.h:14 ../src/insertfunctiondialog.cc:453
+#: ../data/functions.ui.h:14 ../src/insertfunctiondialog.cc:452
 msgid "C_alculate"
 msgstr "C_alculer"
 
@@ -1267,7 +1267,7 @@ msgstr "Mixte"
 msgid "Interval Display"
 msgstr "Affichage d'intervalle"
 
-#: ../data/main.ui.h:121 ../src/mainwindow.cc:1022
+#: ../data/main.ui.h:121 ../src/mainwindow.cc:1026
 msgid "Adaptive"
 msgstr "Adaptif"
 
@@ -1506,7 +1506,7 @@ msgstr ""
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "Avertir des dénominateurs supposés non nuls"
 
-#: ../data/main.ui.h:179 ../src/expressionedit.cc:1414 ../src/mainwindow.cc:993
+#: ../data/main.ui.h:179 ../src/expressionedit.cc:1414 ../src/mainwindow.cc:997
 msgid "Parsing Mode"
 msgstr "Mode d'analyse"
 
@@ -1745,30 +1745,30 @@ msgstr "Calculer la racine carrée de la valeur supérieure"
 msgid "Calculate the sum of all values"
 msgstr "Calcule la somme de toutes les valeurs"
 
-#: ../data/main.ui.h:241 ../src/stackview.cc:686 ../src/stackview.cc:746
+#: ../data/main.ui.h:241 ../src/stackview.cc:687 ../src/stackview.cc:747
 msgid "Rotate the stack or move selected register up"
 msgstr "Faire pivoter la pile ou déplacer le registre sélectionné vers le haut"
 
-#: ../data/main.ui.h:242 ../src/stackview.cc:694 ../src/stackview.cc:747
+#: ../data/main.ui.h:242 ../src/stackview.cc:695 ../src/stackview.cc:748
 msgid "Rotate the stack or move selected register down"
 msgstr "Faire pivoter la pile ou déplacer le registre sélectionné vers le bas"
 
-#: ../data/main.ui.h:243 ../src/stackview.cc:702 ../src/stackview.cc:748
+#: ../data/main.ui.h:243 ../src/stackview.cc:703 ../src/stackview.cc:749
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr ""
 "Échangez les deux valeurs supérieures ou déplacez la valeur sélectionnée "
 "vers le haut de la pile"
 
-#: ../data/main.ui.h:244 ../src/stackview.cc:710 ../src/stackview.cc:749
+#: ../data/main.ui.h:244 ../src/stackview.cc:711 ../src/stackview.cc:750
 msgid "Copy the selected or top value to the top of the stack"
 msgstr "Copiez la valeur sélectionnée ou supérieure en haut de la pile"
 
-#: ../data/main.ui.h:245 ../src/stackview.cc:718 ../src/stackview.cc:750
+#: ../data/main.ui.h:245 ../src/stackview.cc:719 ../src/stackview.cc:751
 msgid "Enter the top value from before the last numeric operation"
 msgstr "Entrez la valeur supérieure avant la dernière opération numérique"
 
-#: ../data/main.ui.h:246 ../src/stackview.cc:726 ../src/stackview.cc:751
+#: ../data/main.ui.h:246 ../src/stackview.cc:727 ../src/stackview.cc:752
 msgid "Delete the top or selected value"
 msgstr "Supprimer la valeur supérieure ou sélectionnée"
 
@@ -1776,7 +1776,7 @@ msgstr "Supprimer la valeur supérieure ou sélectionnée"
 msgid "Edit the selected value"
 msgstr "Éditer la valeur sélectionnée"
 
-#: ../data/main.ui.h:248 ../src/stackview.cc:734 ../src/stackview.cc:752
+#: ../data/main.ui.h:248 ../src/stackview.cc:735 ../src/stackview.cc:753
 msgid "Clear the RPN stack"
 msgstr "Vider la pile NPI"
 
@@ -2252,7 +2252,7 @@ msgid "Subtract result"
 msgstr "Soustraire résultat"
 
 #: ../data/matrix.ui.h:4 ../data/units.ui.h:19 ../data/variables.ui.h:14
-#: ../src/insertfunctiondialog.cc:456
+#: ../src/insertfunctiondialog.cc:334 ../src/insertfunctiondialog.cc:455
 msgid "_Insert"
 msgstr "_Insérer"
 
@@ -3580,7 +3580,7 @@ msgstr "La variable n'a pas été trouvée."
 msgid "Unit not found."
 msgstr "L'unité n'a pas été trouvée."
 
-#: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7079
+#: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7085
 #: ../src/shortcutsdialog.cc:255 ../src/shortcutsdialog.cc:503
 msgid "Mode not found."
 msgstr "Le mode n'a pas été trouvé."
@@ -3784,8 +3784,8 @@ msgstr "Tout"
 #: ../src/conversionview.cc:132 ../src/conversionview.cc:179
 #: ../src/conversionview.cc:460 ../src/functionsdialog.cc:144
 #: ../src/functionsdialog.cc:145 ../src/functionsdialog.cc:196
-#: ../src/mainwindow.cc:7387 ../src/mainwindow.cc:7419
-#: ../src/mainwindow.cc:7443 ../src/unitsdialog.cc:166
+#: ../src/mainwindow.cc:7393 ../src/mainwindow.cc:7425
+#: ../src/mainwindow.cc:7449 ../src/unitsdialog.cc:166
 #: ../src/unitsdialog.cc:167 ../src/unitsdialog.cc:233
 #: ../src/variablesdialog.cc:146 ../src/variablesdialog.cc:147
 #: ../src/variablesdialog.cc:199
@@ -3869,8 +3869,8 @@ msgstr "Nouveau objet de données"
 #: ../src/historyview.cc:704 ../src/historyview.cc:1282
 #: ../src/historyview.cc:1336 ../src/historyview.cc:1589
 #: ../src/historyview.cc:1649 ../src/historyview.cc:2172
-#: ../src/insertfunctiondialog.cc:297 ../src/keypad.cc:3113
-#: ../src/mainwindow.cc:2675 ../src/searchprovider.cc:151
+#: ../src/insertfunctiondialog.cc:298 ../src/keypad.cc:3113
+#: ../src/mainwindow.cc:2679 ../src/searchprovider.cc:151
 #: ../src/searchprovider.cc:199 ../src/searchprovider.cc:200
 #: ../src/variablesdialog.cc:289
 msgid "approx."
@@ -4240,19 +4240,19 @@ msgid "Too many arguments for %s()."
 msgstr "Trop d'arguments pour %s()."
 
 #: ../src/expressionstatus.cc:691 ../src/expressionstatus.cc:693
-#: ../src/mainwindow.cc:1492 ../src/mainwindow.cc:4985
+#: ../src/mainwindow.cc:1496 ../src/mainwindow.cc:4989
 #: ../src/searchprovider.cc:115
 msgid "factorize"
 msgstr "factoriser"
 
 #: ../src/expressionstatus.cc:694 ../src/expressionstatus.cc:696
-#: ../src/mainwindow.cc:1495 ../src/mainwindow.cc:4988
+#: ../src/mainwindow.cc:1499 ../src/mainwindow.cc:4992
 #: ../src/searchprovider.cc:115
 msgid "expand"
 msgstr "développer"
 
-#: ../src/expressionstatus.cc:861 ../src/mainwindow.cc:1278
-#: ../src/mainwindow.cc:4636
+#: ../src/expressionstatus.cc:861 ../src/mainwindow.cc:1282
+#: ../src/mainwindow.cc:4640
 msgid "hexadecimal"
 msgstr "hexadécimal"
 
@@ -4260,8 +4260,8 @@ msgstr "hexadécimal"
 msgid "hexadecimal number"
 msgstr "nombre hexadécimal"
 
-#: ../src/expressionstatus.cc:863 ../src/mainwindow.cc:1281
-#: ../src/mainwindow.cc:4639
+#: ../src/expressionstatus.cc:863 ../src/mainwindow.cc:1285
+#: ../src/mainwindow.cc:4643
 msgid "octal"
 msgstr "octal"
 
@@ -4269,8 +4269,8 @@ msgstr "octal"
 msgid "octal number"
 msgstr "nombre octal"
 
-#: ../src/expressionstatus.cc:865 ../src/mainwindow.cc:1284
-#: ../src/mainwindow.cc:4642
+#: ../src/expressionstatus.cc:865 ../src/mainwindow.cc:1288
+#: ../src/mainwindow.cc:4646
 msgid "decimal"
 msgstr "décimal"
 
@@ -4278,8 +4278,8 @@ msgstr "décimal"
 msgid "decimal number"
 msgstr "nombre décimal"
 
-#: ../src/expressionstatus.cc:867 ../src/mainwindow.cc:1287
-#: ../src/mainwindow.cc:4645
+#: ../src/expressionstatus.cc:867 ../src/mainwindow.cc:1291
+#: ../src/mainwindow.cc:4649
 msgid "duodecimal"
 msgstr "duodécimal"
 
@@ -4287,8 +4287,8 @@ msgstr "duodécimal"
 msgid "duodecimal number"
 msgstr "nombre duodécimal"
 
-#: ../src/expressionstatus.cc:871 ../src/mainwindow.cc:1295
-#: ../src/mainwindow.cc:4653
+#: ../src/expressionstatus.cc:871 ../src/mainwindow.cc:1299
+#: ../src/mainwindow.cc:4657
 msgid "binary"
 msgstr "binaire"
 
@@ -4296,8 +4296,8 @@ msgstr "binaire"
 msgid "binary number"
 msgstr "nombre binaire"
 
-#: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1298
-#: ../src/mainwindow.cc:4656
+#: ../src/expressionstatus.cc:873 ../src/mainwindow.cc:1302
+#: ../src/mainwindow.cc:4660
 msgid "roman"
 msgstr "romain"
 
@@ -4305,8 +4305,8 @@ msgstr "romain"
 msgid "roman numerals"
 msgstr "chiffres romains"
 
-#: ../src/expressionstatus.cc:875 ../src/mainwindow.cc:1301
-#: ../src/mainwindow.cc:4659
+#: ../src/expressionstatus.cc:875 ../src/mainwindow.cc:1305
+#: ../src/mainwindow.cc:4663
 msgid "bijective"
 msgstr "bijectif"
 
@@ -4318,10 +4318,10 @@ msgstr "bijectif base-26"
 msgid "binary-coded decimal"
 msgstr "décimal codé en binaire"
 
-#: ../src/expressionstatus.cc:879 ../src/mainwindow.cc:1307
-#: ../src/mainwindow.cc:1310 ../src/mainwindow.cc:1313
-#: ../src/mainwindow.cc:4665 ../src/mainwindow.cc:4668
-#: ../src/mainwindow.cc:4671
+#: ../src/expressionstatus.cc:879 ../src/mainwindow.cc:1311
+#: ../src/mainwindow.cc:1314 ../src/mainwindow.cc:1317
+#: ../src/mainwindow.cc:4669 ../src/mainwindow.cc:4672
+#: ../src/mainwindow.cc:4675
 msgid "sexagesimal"
 msgstr "sexagésimal"
 
@@ -4330,14 +4330,14 @@ msgid "sexagesimal number"
 msgstr "nombre sexagésimal"
 
 #: ../src/expressionstatus.cc:881 ../src/expressionstatus.cc:882
-#: ../src/mainwindow.cc:1316 ../src/mainwindow.cc:1319
-#: ../src/mainwindow.cc:4674 ../src/mainwindow.cc:4677
+#: ../src/mainwindow.cc:1320 ../src/mainwindow.cc:1323
+#: ../src/mainwindow.cc:4678 ../src/mainwindow.cc:4681
 msgid "latitude"
 msgstr "latitude"
 
 #: ../src/expressionstatus.cc:883 ../src/expressionstatus.cc:884
-#: ../src/mainwindow.cc:1322 ../src/mainwindow.cc:1325
-#: ../src/mainwindow.cc:4680 ../src/mainwindow.cc:4683
+#: ../src/mainwindow.cc:1326 ../src/mainwindow.cc:1329
+#: ../src/mainwindow.cc:4684 ../src/mainwindow.cc:4687
 msgid "longitude"
 msgstr "longitude"
 
@@ -4361,8 +4361,8 @@ msgstr "Virgule flottante 80-bits (x86)"
 msgid "128-bit floating point"
 msgstr "Virgule flottante 128-bits"
 
-#: ../src/expressionstatus.cc:895 ../src/mainwindow.cc:1343
-#: ../src/mainwindow.cc:4701
+#: ../src/expressionstatus.cc:895 ../src/mainwindow.cc:1347
+#: ../src/mainwindow.cc:4705
 msgid "time"
 msgstr "temps"
 
@@ -4370,8 +4370,8 @@ msgstr "temps"
 msgid "time format"
 msgstr "fuseau horaire"
 
-#: ../src/expressionstatus.cc:899 ../src/mainwindow.cc:1394
-#: ../src/mainwindow.cc:4775
+#: ../src/expressionstatus.cc:899 ../src/mainwindow.cc:1398
+#: ../src/mainwindow.cc:4779
 msgid "bases"
 msgstr "bases"
 
@@ -4380,12 +4380,12 @@ msgid "number bases"
 msgstr "bases numériques"
 
 #: ../src/expressionstatus.cc:901 ../src/expressionstatus.cc:902
-#: ../src/mainwindow.cc:1396 ../src/mainwindow.cc:4785
+#: ../src/mainwindow.cc:1400 ../src/mainwindow.cc:4789
 msgid "calendars"
 msgstr "calendriers"
 
-#: ../src/expressionstatus.cc:903 ../src/mainwindow.cc:1418
-#: ../src/mainwindow.cc:4860
+#: ../src/expressionstatus.cc:903 ../src/mainwindow.cc:1422
+#: ../src/mainwindow.cc:4864
 msgid "optimal"
 msgstr "optimal"
 
@@ -4393,8 +4393,8 @@ msgstr "optimal"
 msgid "optimal unit"
 msgstr "unité optimale"
 
-#: ../src/expressionstatus.cc:905 ../src/mainwindow.cc:1423
-#: ../src/mainwindow.cc:4872
+#: ../src/expressionstatus.cc:905 ../src/mainwindow.cc:1427
+#: ../src/mainwindow.cc:4876
 msgid "prefix"
 msgstr "préfixe"
 
@@ -4403,8 +4403,8 @@ msgid "optimal prefix"
 msgstr "préfixe optimal"
 
 #. base units
-#: ../src/expressionstatus.cc:907 ../src/mainwindow.cc:1428
-#: ../src/mainwindow.cc:4876
+#: ../src/expressionstatus.cc:907 ../src/mainwindow.cc:1432
+#: ../src/mainwindow.cc:4880
 #, fuzzy
 msgctxt "Units"
 msgid "base"
@@ -4414,8 +4414,8 @@ msgstr "base"
 msgid "base units"
 msgstr "unités de base"
 
-#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1433
-#: ../src/mainwindow.cc:4888
+#: ../src/expressionstatus.cc:909 ../src/mainwindow.cc:1437
+#: ../src/mainwindow.cc:4892
 msgid "mixed"
 msgstr "mixte"
 
@@ -4424,12 +4424,12 @@ msgid "mixed units"
 msgstr "unités mixtes"
 
 #: ../src/expressionstatus.cc:911 ../src/expressionstatus.cc:912
-#: ../src/mainwindow.cc:1438 ../src/mainwindow.cc:4903
+#: ../src/mainwindow.cc:1442 ../src/mainwindow.cc:4907
 msgid "factors"
 msgstr "facteurs"
 
-#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1441
-#: ../src/mainwindow.cc:4913
+#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1445
+#: ../src/mainwindow.cc:4917
 msgid "partial fraction"
 msgstr "fraction partielle"
 
@@ -4437,13 +4437,13 @@ msgstr "fraction partielle"
 msgid "expanded partial fractions"
 msgstr "fractions partielles développées"
 
-#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1398
-#: ../src/mainwindow.cc:4795
+#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1402
+#: ../src/mainwindow.cc:4799
 msgid "rectangular"
 msgstr "algébrique"
 
-#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1398
-#: ../src/mainwindow.cc:4795
+#: ../src/expressionstatus.cc:915 ../src/mainwindow.cc:1402
+#: ../src/mainwindow.cc:4799
 msgid "cartesian"
 msgstr "cartésien"
 
@@ -4451,8 +4451,8 @@ msgstr "cartésien"
 msgid "complex rectangular form"
 msgstr "form algébrique complexe"
 
-#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1402
-#: ../src/mainwindow.cc:4808
+#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1406
+#: ../src/mainwindow.cc:4812
 msgid "exponential"
 msgstr "exponentielle"
 
@@ -4460,8 +4460,8 @@ msgstr "exponentielle"
 msgid "complex exponential form"
 msgstr "forme exponentielle complexe"
 
-#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1406
-#: ../src/mainwindow.cc:4821
+#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1410
+#: ../src/mainwindow.cc:4825
 msgid "polar"
 msgstr "polaire"
 
@@ -4473,8 +4473,8 @@ msgstr "forme polaire complexe"
 msgid "complex cis form"
 msgstr "forme cis complexe"
 
-#: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1414
-#: ../src/mainwindow.cc:4847
+#: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1418
+#: ../src/mainwindow.cc:4851
 msgid "angle"
 msgstr "angle"
 
@@ -4482,8 +4482,8 @@ msgstr "angle"
 msgid "complex angle notation"
 msgstr "notation complexe angle"
 
-#: ../src/expressionstatus.cc:925 ../src/mainwindow.cc:1414
-#: ../src/mainwindow.cc:4847
+#: ../src/expressionstatus.cc:925 ../src/mainwindow.cc:1418
+#: ../src/mainwindow.cc:4851
 msgid "phasor"
 msgstr "phaseur"
 
@@ -4496,8 +4496,8 @@ msgid "UTC time zone"
 msgstr "fuseau horaire UTC"
 
 #. number base #
-#: ../src/expressionstatus.cc:980 ../src/mainwindow.cc:1445
-#: ../src/mainwindow.cc:4923
+#: ../src/expressionstatus.cc:980 ../src/mainwindow.cc:1449
+#: ../src/mainwindow.cc:4927
 #, fuzzy
 msgctxt "Number base"
 msgid "base"
@@ -4508,8 +4508,8 @@ msgstr "base"
 msgid "number base %s"
 msgstr "base numérique %s"
 
-#: ../src/expressionstatus.cc:985 ../src/mainwindow.cc:1449
-#: ../src/mainwindow.cc:4927
+#: ../src/expressionstatus.cc:985 ../src/mainwindow.cc:1453
+#: ../src/mainwindow.cc:4931
 msgid "decimals"
 msgstr "décimales"
 
@@ -4543,14 +4543,14 @@ msgid "Conversion (using \"to\") is not supported in functions."
 msgstr ""
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
-#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7385
+#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7391
 #: ../src/menubar.cc:1585 ../src/util.cc:1281 ../src/util.cc:1282
 msgid "User functions"
 msgstr "Fonctions utilisateur"
 
 #: ../src/functionsdialog.cc:153 ../src/functionsdialog.cc:154
-#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7383
-#: ../src/mainwindow.cc:7415 ../src/mainwindow.cc:7439
+#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7389
+#: ../src/mainwindow.cc:7421 ../src/mainwindow.cc:7445
 #: ../src/unitsdialog.cc:174 ../src/unitsdialog.cc:175
 #: ../src/unitsdialog.cc:235 ../src/util.cc:1283 ../src/util.cc:1284
 #: ../src/variablesdialog.cc:155 ../src/variablesdialog.cc:156
@@ -4569,13 +4569,13 @@ msgstr ""
 "propriété donnés. Si \"info\" est inscrit comme propriété, une fenêtre de "
 "dialogue apparaîtra avec toutes les propriétés de l'objet."
 
-#: ../src/functionsdialog.cc:312 ../src/insertfunctiondialog.cc:795
+#: ../src/functionsdialog.cc:312 ../src/insertfunctiondialog.cc:794
 msgid "Example:"
 msgstr "Exemple :"
 
 #. optional argument
-#: ../src/functionsdialog.cc:358 ../src/insertfunctiondialog.cc:656
-#: ../src/insertfunctiondialog.cc:667
+#: ../src/functionsdialog.cc:358 ../src/insertfunctiondialog.cc:655
+#: ../src/insertfunctiondialog.cc:666
 msgid "optional"
 msgstr "optionnel"
 
@@ -4597,7 +4597,7 @@ msgstr "Ac_tiver"
 msgid "History Answer Value"
 msgstr "Valeur de réponse de l'historique"
 
-#: ../src/historyview.cc:112 ../src/mainwindow.cc:8471
+#: ../src/historyview.cc:112 ../src/mainwindow.cc:8477
 msgid "answer"
 msgstr "résultat"
 
@@ -4628,12 +4628,12 @@ msgstr ""
 "le taux d'échantillonnage ou augmenter la limite de temps dans les "
 "préférences."
 
-#: ../src/historyview.cc:2141 ../src/mainwindow.cc:2443
+#: ../src/historyview.cc:2141 ../src/mainwindow.cc:2447
 msgid "RPN Register Moved"
 msgstr "Registre NPI déplacé"
 
-#: ../src/historyview.cc:2147 ../src/mainwindow.cc:2444
-#: ../src/mainwindow.cc:5218
+#: ../src/historyview.cc:2147 ../src/mainwindow.cc:2448
+#: ../src/mainwindow.cc:5222
 msgid "RPN Operation"
 msgstr "Opération NPI"
 
@@ -4665,7 +4665,7 @@ msgstr ""
 msgid "No items found"
 msgstr "Aucun élément trouvé"
 
-#: ../src/historyview.cc:3553 ../src/stackview.cc:793
+#: ../src/historyview.cc:3553 ../src/stackview.cc:794
 msgid "Index"
 msgstr "Index"
 
@@ -4696,32 +4696,32 @@ msgstr ""
 msgid "Select file"
 msgstr "Sélectionner un fichier"
 
-#: ../src/insertfunctiondialog.cc:444
+#: ../src/insertfunctiondialog.cc:334 ../src/insertfunctiondialog.cc:455
+msgid "Apply to Stack"
+msgstr "Appliquer à la pile"
+
+#: ../src/insertfunctiondialog.cc:443
 msgid "Keep open"
 msgstr "Garder ouvert"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/insertfunctiondialog.cc:453
+#: ../src/insertfunctiondialog.cc:452
 msgid "Enter"
 msgstr "Entrer"
 
-#: ../src/insertfunctiondialog.cc:456
-msgid "Apply to Stack"
-msgstr "Appliquer à la pile"
-
-#: ../src/insertfunctiondialog.cc:515
+#: ../src/insertfunctiondialog.cc:514
 msgid "Argument"
 msgstr "Argument"
 
-#: ../src/insertfunctiondialog.cc:570
+#: ../src/insertfunctiondialog.cc:569
 msgid "True"
 msgstr "Vrai"
 
-#: ../src/insertfunctiondialog.cc:572
+#: ../src/insertfunctiondialog.cc:571
 msgid "False"
 msgstr "Faux"
 
-#: ../src/insertfunctiondialog.cc:611
+#: ../src/insertfunctiondialog.cc:610
 msgid "Info"
 msgstr "Info"
 
@@ -4788,7 +4788,7 @@ msgstr "Toutes les fonctions"
 msgid "All variables"
 msgstr "Toutes les variables"
 
-#: ../src/keypad.cc:2689 ../src/mainwindow.cc:7463
+#: ../src/keypad.cc:2689 ../src/mainwindow.cc:7469
 #: ../src/variablesdialog.cc:246 ../src/variablesdialog.cc:403
 #: ../src/variablesdialog.cc:418 ../src/variablesdialog.cc:434
 #: ../src/variablesdialog.cc:454
@@ -5029,7 +5029,7 @@ msgstr ""
 msgid "Only dot as decimal separator"
 msgstr "Seul un point comme séparateur décimal"
 
-#: ../src/mainwindow.cc:1003
+#: ../src/mainwindow.cc:1007
 msgid ""
 "The expression is ambiguous.\n"
 "Please select interpretation of expressions with implicit multiplication\n"
@@ -5040,63 +5040,63 @@ msgstr ""
 "implicite\n"
 "(cela peut être modifié ultérieurement dans les préférences)."
 
-#: ../src/mainwindow.cc:1006
+#: ../src/mainwindow.cc:1010
 msgid "Implicit multiplication first"
 msgstr "Multiplication implicite en premier"
 
-#: ../src/mainwindow.cc:1014
+#: ../src/mainwindow.cc:1018
 msgid "Conventional"
 msgstr "Conventionnelle"
 
-#: ../src/mainwindow.cc:1049
+#: ../src/mainwindow.cc:1053
 msgid "Percentage Interpretation"
 msgstr "Interprétation du pourcentage"
 
-#: ../src/mainwindow.cc:1059
+#: ../src/mainwindow.cc:1063
 msgid "Please select interpretation of percentage addition."
 msgstr "Veuillez sélectionner l'interprétation de l'addition en pourcentage."
 
-#: ../src/mainwindow.cc:1062
+#: ../src/mainwindow.cc:1066
 msgid "Add percentage of original value"
 msgstr "Ajouter un pourcentage de la valeur d'origine"
 
-#: ../src/mainwindow.cc:1070
+#: ../src/mainwindow.cc:1074
 msgid "Add percentage multiplied by 1/100"
 msgstr "Ajouter un pourcentage multiplié par 1/100"
 
-#: ../src/mainwindow.cc:1985
+#: ../src/mainwindow.cc:1989
 msgid "My Variables"
 msgstr "Mes variables"
 
-#: ../src/mainwindow.cc:2604
+#: ../src/mainwindow.cc:2608
 msgid "Processing…"
 msgstr "Traitement en cours…"
 
-#: ../src/mainwindow.cc:2863
+#: ../src/mainwindow.cc:2867
 msgid "Factorizing…"
 msgstr "Factorisation en cours…"
 
-#: ../src/mainwindow.cc:2867
+#: ../src/mainwindow.cc:2871
 msgid "Expanding partial fractions…"
 msgstr "Développement des fractions partielles…"
 
-#: ../src/mainwindow.cc:2871
+#: ../src/mainwindow.cc:2875
 msgid "Expanding…"
 msgstr "Développement en cours…"
 
-#: ../src/mainwindow.cc:2876 ../src/mainwindow.cc:5158
+#: ../src/mainwindow.cc:2880 ../src/mainwindow.cc:5162
 msgid "Calculating…"
 msgstr "Calcul en cours…"
 
-#: ../src/mainwindow.cc:2880
+#: ../src/mainwindow.cc:2884
 msgid "Converting…"
 msgstr "Conversion en cours…"
 
-#: ../src/mainwindow.cc:4752
+#: ../src/mainwindow.cc:4756
 msgid "Time zone parsing failed."
 msgstr "L'analyse du fuseau horaire a échoué."
 
-#: ../src/mainwindow.cc:5343 ../src/mainwindow.cc:6914 ../src/openhelp.cc:361
+#: ../src/mainwindow.cc:5347 ../src/mainwindow.cc:6920 ../src/openhelp.cc:361
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -5105,28 +5105,28 @@ msgstr ""
 "Impossible d'ouvrir %s.\n"
 "%s"
 
-#: ../src/mainwindow.cc:5495
+#: ../src/mainwindow.cc:5501
 msgid "Couldn't write definitions"
 msgstr "Ne peut pas écrire de définitions"
 
-#: ../src/mainwindow.cc:5497 ../src/mainwindow.cc:5499
-#: ../src/mainwindow.cc:6252 ../src/mainwindow.cc:6254
-#: ../src/mainwindow.cc:6297 ../src/mainwindow.cc:6299
+#: ../src/mainwindow.cc:5503 ../src/mainwindow.cc:5505
+#: ../src/mainwindow.cc:6258 ../src/mainwindow.cc:6260
+#: ../src/mainwindow.cc:6303 ../src/mainwindow.cc:6305
 msgid "Ignore"
 msgstr "Ignorer"
 
-#: ../src/mainwindow.cc:5497 ../src/mainwindow.cc:6252
-#: ../src/mainwindow.cc:6297
+#: ../src/mainwindow.cc:5503 ../src/mainwindow.cc:6258
+#: ../src/mainwindow.cc:6303
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../src/mainwindow.cc:5497 ../src/mainwindow.cc:5499
-#: ../src/mainwindow.cc:6252 ../src/mainwindow.cc:6254
-#: ../src/mainwindow.cc:6297 ../src/mainwindow.cc:6299
+#: ../src/mainwindow.cc:5503 ../src/mainwindow.cc:5505
+#: ../src/mainwindow.cc:6258 ../src/mainwindow.cc:6260
+#: ../src/mainwindow.cc:6303 ../src/mainwindow.cc:6305
 msgid "Retry"
 msgstr "Réessayer"
 
-#: ../src/mainwindow.cc:6250
+#: ../src/mainwindow.cc:6256
 #, c-format
 msgid ""
 "Couldn't write history to\n"
@@ -5135,7 +5135,7 @@ msgstr ""
 "L'historique n'a pas pu être écrite pour\n"
 "%s"
 
-#: ../src/mainwindow.cc:6295
+#: ../src/mainwindow.cc:6301
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5144,97 +5144,97 @@ msgstr ""
 "Impossible d'écrire les préférences dans\n"
 "%s"
 
-#: ../src/mainwindow.cc:6593 ../src/mainwindow.cc:6595
+#: ../src/mainwindow.cc:6599 ../src/mainwindow.cc:6601
 msgid "Select definitions file"
 msgstr "Sélectionner le fichier de définitions"
 
-#: ../src/mainwindow.cc:6593 ../src/mainwindow.cc:6595
+#: ../src/mainwindow.cc:6599 ../src/mainwindow.cc:6601
 msgid "_Import"
 msgstr "_Importer"
 
-#: ../src/mainwindow.cc:6599
+#: ../src/mainwindow.cc:6605
 msgid "XML Files"
 msgstr "Fichiers XML"
 
-#: ../src/mainwindow.cc:6619
+#: ../src/mainwindow.cc:6625
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "Ne peut pas copier %s vers %s."
 
-#: ../src/mainwindow.cc:6627
+#: ../src/mainwindow.cc:6633
 #, c-format
 msgid "Could not read %s."
 msgstr "Ne peut pas lire %s."
 
-#: ../src/mainwindow.cc:6635
+#: ../src/mainwindow.cc:6641
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "Ne peut pas copier le fichier vers %s."
 
-#: ../src/mainwindow.cc:6888
+#: ../src/mainwindow.cc:6894
 msgid "translator-credits"
 msgstr "crédits-traducteur"
 
-#: ../src/mainwindow.cc:7417 ../src/menubar.cc:1667 ../src/util.cc:1277
+#: ../src/mainwindow.cc:7423 ../src/menubar.cc:1667 ../src/util.cc:1277
 #: ../src/util.cc:1278 ../src/variablesdialog.cc:137
 #: ../src/variablesdialog.cc:138 ../src/variablesdialog.cc:203
 msgid "User variables"
 msgstr "Variables utilisateur"
 
-#: ../src/mainwindow.cc:7441 ../src/menubar.cc:1413 ../src/menubar.cc:1508
+#: ../src/mainwindow.cc:7447 ../src/menubar.cc:1413 ../src/menubar.cc:1508
 #: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
 #: ../src/unitsdialog.cc:237 ../src/util.cc:1279 ../src/util.cc:1280
 msgid "User units"
 msgstr "Unités utilisateur"
 
-#: ../src/mainwindow.cc:7550
+#: ../src/mainwindow.cc:7556
 msgid "No unknowns in result."
 msgstr "Aucune inconnue dans le résultat."
 
-#: ../src/mainwindow.cc:7556
+#: ../src/mainwindow.cc:7562
 msgid "Set Unknowns"
 msgstr "Définir les inconnues"
 
-#: ../src/mainwindow.cc:7556
+#: ../src/mainwindow.cc:7562
 msgid "_Apply"
 msgstr "_Appliquer"
 
-#: ../src/mainwindow.cc:8270 ../src/mainwindow.cc:8277
+#: ../src/mainwindow.cc:8276 ../src/mainwindow.cc:8283
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
-#: ../src/mainwindow.cc:8468
+#: ../src/mainwindow.cc:8474
 msgid "ans"
 msgstr "résultat"
 
-#: ../src/mainwindow.cc:8469
+#: ../src/mainwindow.cc:8475
 msgid "Last Answer"
 msgstr "Dernier résultat"
 
-#: ../src/mainwindow.cc:8470
+#: ../src/mainwindow.cc:8476
 msgid ""
 "Contains the result of the most recent calculation. Multiple results of an "
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
 
-#: ../src/mainwindow.cc:8473
+#: ../src/mainwindow.cc:8479
 msgid "Answer 2"
 msgstr "Résultat 2"
 
-#: ../src/mainwindow.cc:8474
+#: ../src/mainwindow.cc:8480
 msgid "Answer 3"
 msgstr "Résultat 3"
 
-#: ../src/mainwindow.cc:8475
+#: ../src/mainwindow.cc:8481
 msgid "Answer 4"
 msgstr "Résultat 4"
 
-#: ../src/mainwindow.cc:8476
+#: ../src/mainwindow.cc:8482
 msgid "Answer 5"
 msgstr "Résultat 5"
 
-#: ../src/mainwindow.cc:8486
+#: ../src/mainwindow.cc:8492
 msgid "Memory"
 msgstr "Mémoire"
 
@@ -5547,7 +5547,7 @@ msgid "Key combination"
 msgstr "Combinaison de touches"
 
 #. Fixes missing support for context in ui file translations
-#: ../src/stackview.cc:844
+#: ../src/stackview.cc:845
 msgctxt "Keypad"
 msgid "Add the two top values together"
 msgstr ""

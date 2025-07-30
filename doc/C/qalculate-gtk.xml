@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "5.6.0">
-  <!ENTITY manrevision "5.6.0">
-  <!ENTITY date "June 2025">
+  <!ENTITY appversion "5.7.0">
+  <!ENTITY manrevision "5.7.0">
+  <!ENTITY date "August 2025">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -1757,27 +1757,27 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 <listitem><para>Convert to mixed units (e.g. <quote>90 s to mixed = 1 min + 30 s</quote>.</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>bin / binary</term>
+<term>bin, binary</term>
 <listitem><para>Show as binary number (e.g. <quote>sqrt(900) to bin = 0001 1110</quote>). Append an integer to specify the number of bits (e.g. <quote>4 to bin16 = 0000 0000 0000 0100</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>oct / octal</term>
+<term>oct, octal</term>
 <listitem><para>Show as octal number (e.g. <quote>52 to octal = 64</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>duo / duodecimal</term>
+<term>duo, duodecimal</term>
 <listitem><para>Show as duodecimal number (e.g. <quote>152 to duo = 108</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>hex / hexadecimal</term>
+<term>hex, hexadecimal</term>
 <listitem><para>Show as hexadecimal number (e.g. <quote>623 to hex = 026F</quote>). Append an integer to specify the number of bits (e.g. <quote>4 to hex16 = 0004</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>sexa / sexa2 / sexa3 / sexagesimal</term>
+<term>sexa, sexa2, sexa3, sexagesimal</term>
 <listitem><para>Show as sexagesimal number (e.g. <quote>7.33 to sexagesimal = 7°19′48″</quote>). For sexa2, arcseconds are hidden, and for sexa3 arcseconds are rounded.</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>longitude / longitude2 / latitude / latitude2</term>
+<term>longitude, longitude2, latitude, latitude2</term>
 <listitem><para>Show as sexagesimal latitude/longitude (e.g. <quote>-7.33 to latitude = 7°19′48″S</quote>). longitude2/latitude2 only shows degrees and arcminutes (e.g. <quote>-7.33 to latitude2 = 7°19.8′S</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
@@ -1809,7 +1809,7 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 <listitem><para>Show as binary, octal, decimal, duodecimal, hexadecimal and Roman number (opens convert bases dialog with the mathematical expression).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>rectangular / cartesian</term>
+<term>rectangular, cartesian</term>
 <listitem><para>Show complex number in rectangular form (e.g. <quote>0.28i − 2 to complex = 0.28i − 2</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
@@ -1821,7 +1821,7 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 <listitem><para>Show complex number in polar form (e.g. <quote>0.28i − 2 to polar ≈ 2(cos(3) + i × sin(3))</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>angle / phasor</term>
+<term>angle, phasor</term>
 <listitem><para>Show complex number in angle/phasor notation (e.g. <quote>0.28i − 2 to angle ≈ 2∠3</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
@@ -1829,7 +1829,7 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 <listitem><para>Show complex number in cis form (e.g. <quote>0.28i − 2 to angle ≈ 2 cis 3</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>fraction</term>
+<term>fraction, 1/n</term>
 <listitem><para>Show as mixed or simple (prepend with <quote>-</quote>) fraction (<quote>1.25 to fraction = 1 + 1/4</quote>).</para></listitem>
 </varlistentry>
 <varlistentry>

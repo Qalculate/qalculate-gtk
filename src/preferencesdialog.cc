@@ -716,7 +716,16 @@ void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w
 		printops.digit_grouping = DIGIT_GROUPING_LOCALE;
 		if((!evalops.parse_options.comma_as_separator || CALCULATOR->getDecimalPoint() == COMMA) && CALCULATOR->local_digit_group_separator == COMMA) {
 			evalops.parse_options.comma_as_separator = true;
+			evalops.parse_options.dot_as_separator = false;
 			CALCULATOR->useDecimalPoint(evalops.parse_options.comma_as_separator);
+			update_keypad_button_text();
+			dot_question_asked = true;
+			expression_format_updated(false);
+			preferences_update_dot();
+		} else if((!evalops.parse_options.dot_as_separator || CALCULATOR->getDecimalPoint() == DOT) && CALCULATOR->local_digit_group_separator == DOT) {
+			evalops.parse_options.dot_as_separator = true;
+			evalops.parse_options.comma_as_separator = false;
+			CALCULATOR->useDecimalComma();
 			update_keypad_button_text();
 			dot_question_asked = true;
 			expression_format_updated(false);

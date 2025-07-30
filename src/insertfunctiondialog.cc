@@ -309,25 +309,16 @@ void on_insert_function_exec(GtkWidget*, gpointer p) {
 		function_dialogs.erase(f);
 	}
 }
-void on_insert_function_insert(GtkWidget*, gpointer p) {
+void on_insert_function_insert_rpn(GtkWidget*, gpointer p) {
 	MathFunction *f = (MathFunction*) p;
 	FunctionDialog *fd = function_dialogs[f];
 	if(!fd->keep_open) gtk_widget_hide(fd->dialog);
-	insert_function_do(f, fd);
-	if(fd->keep_open) {
-		gtk_widget_grab_focus(fd->entry[0]);
+	if(rpn_mode) {
+		calculateRPN(f);
+		if(fd->add_to_menu) function_inserted(f);
 	} else {
-		gtk_widget_destroy(fd->dialog);
-		delete fd;
-		function_dialogs.erase(f);
+		insert_function_do(f, fd);
 	}
-}
-void on_insert_function_rpn(GtkWidget*, gpointer p) {
-	MathFunction *f = (MathFunction*) p;
-	FunctionDialog *fd = function_dialogs[f];
-	if(!fd->keep_open) gtk_widget_hide(fd->dialog);
-	calculateRPN(f);
-	if(fd->add_to_menu) function_inserted(f);
 	if(fd->keep_open) {
 		gtk_widget_grab_focus(fd->entry[0]);
 	} else {
@@ -337,11 +328,10 @@ void on_insert_function_rpn(GtkWidget*, gpointer p) {
 	}
 }
 void update_insert_function_dialogs() {
-	if(rpn_mode) {
-		for(unordered_map<MathFunction*, FunctionDialog*>::iterator it = function_dialogs.begin(); it != function_dialogs.end(); ++it) {
-			FunctionDialog *fd = it->second;
-			gtk_widget_set_sensitive(fd->b_insert, CALCULATOR->RPNStackSize() >= (fd->f->minargs() <= 0 ? 1 : (size_t) fd->f->minargs()));
-		}
+	for(unordered_map<MathFunction*, FunctionDialog*>::iterator it = function_dialogs.begin(); it != function_dialogs.end(); ++it) {
+		FunctionDialog *fd = it->second;
+		gtk_widget_set_sensitive(fd->b_insert, !rpn_mode || CALCULATOR->RPNStackSize() >= (fd->f->minargs() <= 0 ? 1 : (size_t) fd->f->minargs()));
+		gtk_button_set_label(GTK_BUTTON(fd->b_insert), rpn_mode ? _("Apply to Stack") : _("_Insert"));
 	}
 }
 void on_insert_function_keepopen(GtkToggleButton *w, gpointer p) {
@@ -362,7 +352,7 @@ void on_insert_function_entry_activated(GtkWidget *w, gpointer p) {
 		if(fd->entry[i] == w) {
 			if(i == fd->args - 1) {
 				if(fd->keep_open || rpn_mode) on_insert_function_exec(w, p);
-				else on_insert_function_insert(w, p);
+				else on_insert_function_insert_rpn(w, p);
 			} else {
 				if(f->getArgumentDefinition(i + 2) && f->getArgumentDefinition(i + 2)->type() == ARGUMENT_TYPE_BOOLEAN) {
 					gtk_widget_grab_focus(fd->boolean_buttons[fd->boolean_index[i + 1]]);
@@ -463,7 +453,7 @@ void insert_function(MathFunction *f, GtkWindow *parent, bool add_to_menu) {
 	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_exec, GTK_RESPONSE_APPLY);
 
 	fd->b_insert = gtk_button_new_with_mnemonic(rpn_mode ? _("Apply to Stack") : _("_Insert"));
-	if(rpn_mode && CALCULATOR->RPNStackSize() < (f->minargs() <= 0 ? 1 : (size_t) f->minargs())) gtk_widget_set_sensitive(fd->b_insert, FALSE);
+	gtk_widget_set_sensitive(fd->b_insert, !rpn_mode || CALCULATOR->RPNStackSize() >= (f->minargs() <= 0 ? 1 : (size_t) f->minargs()));
 	gtk_dialog_add_action_widget(GTK_DIALOG(fd->dialog), fd->b_insert, GTK_RESPONSE_ACCEPT);
 
 	gtk_container_set_border_width(GTK_CONTAINER(fd->dialog), 6);
@@ -843,8 +833,7 @@ void insert_function(MathFunction *f, GtkWindow *parent, bool add_to_menu) {
 	}
 
 	g_signal_connect(G_OBJECT(fd->b_exec), "clicked", G_CALLBACK(on_insert_function_exec), (gpointer) f);
-	if(rpn_mode) g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_rpn), (gpointer) f);
-	else g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_insert), (gpointer) f);
+	g_signal_connect(G_OBJECT(fd->b_insert), "clicked", G_CALLBACK(on_insert_function_insert_rpn), (gpointer) f);
 	g_signal_connect(G_OBJECT(fd->b_cancel), "clicked", G_CALLBACK(on_insert_function_close), (gpointer) f);
 	g_signal_connect(G_OBJECT(fd->b_keepopen), "toggled", G_CALLBACK(on_insert_function_keepopen), (gpointer) f);
 	g_signal_connect(G_OBJECT(fd->dialog), "delete-event", G_CALLBACK(on_insert_function_delete), (gpointer) f);
