@@ -97,6 +97,7 @@ void FetchExchangeRatesThread::run() {
 }
 
 bool check_exchange_rates(GtkWindow *win, bool set_result) {
+	if(!CALCULATOR->canFetch()) return false;
 	int i = CALCULATOR->exchangeRatesUsed();
 	if(i == 0) return false;
 	if(auto_update_exchange_rates == 0 && win != NULL) return false;

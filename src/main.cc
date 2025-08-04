@@ -122,7 +122,7 @@ void create_application(GtkApplication *app) {
 	//create the almighty Calculator object
 	new Calculator(ignore_locale);
 
-	CALCULATOR->setExchangeRatesWarningEnabled(false);
+	CALCULATOR->setExchangeRatesWarningEnabled(!CALCULATOR->canFetch());
 
 	//load application specific preferences
 	load_preferences();
