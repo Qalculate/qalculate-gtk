@@ -519,13 +519,7 @@ void update_custom_buttons(int index) {
 		MathFunction *f = CALCULATOR->getActiveFunction("neg");
 		SET_LABEL_AND_TOOLTIP_3NL(24, "button_sub", _("Subtract"), f ? f->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) main_window()).c_str() : NULL, _("Bitwise OR"));
 	}
-	if(index == 25 || index < 0) {
-		if(custom_buttons[25].text.empty()) gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_ac")), GTK_WIDGET(gtk_builder_get_object(main_builder, "image_ac")));
-		else gtk_stack_set_visible_child(GTK_STACK(gtk_builder_get_object(main_builder, "stack_ac")), GTK_WIDGET(gtk_builder_get_object(main_builder, "label_ac")));
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_ac")), custom_buttons[25].text.c_str());
-		set_keypad_tooltip("button_ac", custom_buttons[25].type[0] == -1 ? _("Clear") : button_valuetype_text(custom_buttons[25].type[0], custom_buttons[25].value[0]).c_str(), custom_buttons[25].type[1] == -1 ? _("MC (memory clear)") : button_valuetype_text(custom_buttons[25].type[1], custom_buttons[25].value[1]).c_str(), custom_buttons[25].type[2] == -1 ? (custom_buttons[25].type[1] == -1 ? NULL : _("MC (memory clear)")) : button_valuetype_text(custom_buttons[25].type[2], custom_buttons[25].value[2]).c_str(), false, custom_buttons[25].type[0] != -1);
-		if(index >= 0 && enable_tooltips != 1) gtk_widget_set_has_tooltip(GTK_WIDGET(gtk_builder_get_object(main_builder, "button_ac")), FALSE);
-	}
+	SET_LABEL_AND_TOOLTIP_2(25, "label_ac", "button_ac", _("C"), _("Clear"), _("MC (memory clear)"))
 	SET_LABEL_AND_TOOLTIP_3NP(26, "label_del", "button_del", _("DEL"), _("Delete"), _("Backspace"), _("M− (memory minus)"))
 	SET_LABEL_AND_TOOLTIP_2(27, "label_ans", "button_ans", _("ANS"), _("Previous result"), _("Previous result (static)"))
 	if(index == 28 || (index < 0 && !custom_buttons[28].text.empty())) {

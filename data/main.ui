@@ -7600,25 +7600,10 @@ This can be overridden by prepending the unit expression with "?" or "0".</prope
                                     <signal name="button-release-event" handler="on_keypad_button_button_event" swapped="no"/>
                                     <signal name="clicked" handler="on_button_ac_clicked" swapped="no"/>
                                     <child>
-                                      <object class="GtkStack" id="stack_ac">
+                                      <object class="GtkLabel" id="label_ac">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <child>
-                                          <object class="GtkImage" id="image_ac">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="icon-name">edit-clear-symbolic</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel" id="label_ac">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                          </object>
-                                          <packing>
-                                            <property name="position">1</property>
-                                          </packing>
-                                        </child>
+                                        <property name="label" translatable="yes" comments="Standard calculator button. Do not use more than three characters.">C</property>
                                       </object>
                                     </child>
                                   </object>
