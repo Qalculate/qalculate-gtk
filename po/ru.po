@@ -2,13 +2,14 @@
 # This file is distributed under the same license as the qalculate-gtk package.
 #
 # Damir Islamov <damir@secretlaboratory.ru>, 2021-2023, 2024.
+# Andrei Stepanov <adem4ik@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-07-30 11:05+0200\n"
 "PO-Revision-Date: 2024-05-04 12:28+0700\n"
-"Last-Translator: Damir Islamov <damir@secretlaboratory.ru>\n"
+"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -94,7 +95,7 @@ msgstr "О_тмена"
 #: ../src/mainwindow.cc:916 ../src/mainwindow.cc:997 ../src/mainwindow.cc:1053
 #: ../src/mainwindow.cc:7562
 msgid "_OK"
-msgstr "_OK"
+msgstr "_ОК"
 
 #: ../data/argumentrules.ui.h:4 ../data/buttonsedit.ui.h:12
 #: ../data/shortcuts.ui.h:11
@@ -349,7 +350,7 @@ msgstr "Другой"
 
 #: ../data/csvimport.ui.h:1
 msgid "Import CSV File"
-msgstr "Загрузить файл формата CSV"
+msgstr "Загрузить файл типа CSV"
 
 #: ../data/csvimport.ui.h:3
 msgid "Do not import the file"
@@ -1125,7 +1126,7 @@ msgid ""
 "Off: 1/7 ≈ 0.14285714\n"
 "On: 1/7 = 0.142857 142857..."
 msgstr ""
-"Выкл.: 1/7 ≈ 0,14285714\n"
+"Откл.: 1/7 ≈ 0,14285714\n"
 "Вкл.: 1/7 = 0.142857 142857..."
 
 #: ../data/main.ui.h:87
@@ -1141,7 +1142,7 @@ msgid ""
 "Off: -x + y\n"
 "On: y - x"
 msgstr ""
-"Выкл.: -x + y\n"
+"Откл.: -x + y\n"
 "Вкл.: y - x"
 
 #: ../data/main.ui.h:91
@@ -1358,7 +1359,7 @@ msgid ""
 "Off: (2 m)/s\n"
 "On: 2 (m/s)"
 msgstr ""
-"Выкл.: (2 м)/с\n"
+"Откл.: (2 м)/с\n"
 "Вкл.: 2 (м/с)"
 
 #: ../data/main.ui.h:144
@@ -1436,7 +1437,7 @@ msgid ""
 "Off: 1/2 × pi ≈ 1.5707963\n"
 "On: 1/2 × pi = 0.5 pi"
 msgstr ""
-"Выкл.: 1/2 × pi ≈ 1,5707963\n"
+"Откл.: 1/2 × pi ≈ 1,5707963\n"
 "Вкл.: 1/2 × pi = 0,5 pi"
 
 #: ../data/main.ui.h:164
@@ -1535,14 +1536,14 @@ msgstr ""
 
 #: ../data/main.ui.h:188
 msgid "Simplified Percentage Calculation"
-msgstr "Упрощенный процентный расчет"
+msgstr "Упрощенный процентный расчёт"
 
 #: ../data/main.ui.h:189
 msgid ""
 "Off: xy = x × y\n"
 "On: xy != x × y"
 msgstr ""
-"Выкл.: xy = x × y\n"
+"Откл.: xy = x × y\n"
 "Вкл.: xy != x × y"
 
 #: ../data/main.ui.h:191
@@ -1560,7 +1561,7 @@ msgstr ""
 "Анализировать десятичные числа как приблизительные с точностью, равной "
 "количеству цифр.\n"
 "\n"
-"Выкл.: 1,1 × 3,20 = 3,52\n"
+"Откл.: 1,1 × 3,20 = 3,52\n"
 "Вкл.: 1,1 × 3,20 = 1,1±0,05 × 3,20±0,005 ≈ 3,5±0,16"
 
 #: ../data/main.ui.h:196
@@ -2681,7 +2682,7 @@ msgstr "Очищать историю при выходе"
 
 #: ../data/preferences.ui.h:6
 msgid "Max history lines saved"
-msgstr "Максимальное количество сохранённых строк истории"
+msgstr "Максимальное число сохранённых строк истории"
 
 #: ../data/preferences.ui.h:7
 msgid "Save history to separate file"
@@ -2719,7 +2720,7 @@ msgstr "Если нужно восстанавливать режим кальк
 
 #: ../data/preferences.ui.h:15
 msgid "Close application with Escape key"
-msgstr "Закрыть приложение клавишей Esc."
+msgstr "Закрывать приложение клавишей Esc."
 
 #: ../data/preferences.ui.h:16
 msgid ""
@@ -3085,7 +3086,7 @@ msgid ""
 "Use overline (vinculum), instead of ellipsis, for repeating decimals when "
 "indicate repeating decimals is enabled."
 msgstr ""
-"Использовать надчёркивание (vinculum) вместо эллипсиса для повторяющихся "
+"Использовать черту сверху вместо многоточия для повторяющихся "
 "десятичных дробей, если включено функция указания повторяющихся десятичных "
 "дробей."
 
@@ -3199,7 +3200,7 @@ msgstr ""
 
 #: ../data/preferences.ui.h:121
 msgid "Custom expression font"
-msgstr "Шрифт выражения"
+msgstr "Свой шрифт выражения"
 
 #: ../data/preferences.ui.h:122
 msgid ""
@@ -3210,7 +3211,7 @@ msgstr ""
 
 #: ../data/preferences.ui.h:123
 msgid "Custom result font"
-msgstr "Шрифт результатов"
+msgstr "Свой шрифт результатов"
 
 #: ../data/preferences.ui.h:124
 msgid "If you want to use a font other than the default in the result display"
@@ -3727,7 +3728,7 @@ msgstr "Григорианский"
 
 #: ../src/calendarconversiondialog.cc:106
 msgid "Revised Julian (Milanković)"
-msgstr "Пересмотренный юлианский (Миланковича)"
+msgstr "Новоюлианский (Миланкович)"
 
 #: ../src/calendarconversiondialog.cc:107
 msgid "Julian"
@@ -3735,7 +3736,7 @@ msgstr "Юлианский"
 
 #: ../src/calendarconversiondialog.cc:108
 msgid "Islamic (Hijri)"
-msgstr "Исламский (от Хиджры)"
+msgstr "Исламский (Хиджра)"
 
 #: ../src/calendarconversiondialog.cc:109
 msgid "Hebrew"
@@ -3747,7 +3748,7 @@ msgstr "Китайский"
 
 #: ../src/calendarconversiondialog.cc:111
 msgid "Persian (Solar Hijri)"
-msgstr "Иранский (Солнечная хиджра)"
+msgstr "Иранский (солнечная Хиджра)"
 
 #: ../src/calendarconversiondialog.cc:112
 msgid "Coptic"
@@ -3888,7 +3889,7 @@ msgstr "Получение курсов валют."
 
 #: ../src/exchangerates.cc:108
 msgid "Do you wish to update the exchange rates now?"
-msgstr "Вы хотите обновить курсы обмена сейчас?"
+msgstr "Хотите обновить курсы обмена сейчас?"
 
 #: ../src/exchangerates.cc:110
 #, c-format
@@ -4529,7 +4530,7 @@ msgstr "Пустое поле выражения."
 
 #: ../src/functioneditdialog.cc:931
 msgid "Conversion (using \"to\") is not supported in functions."
-msgstr ""
+msgstr "Преобразование (с использованием «к») не поддерживается в функциях."
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
 #: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7391
@@ -4647,7 +4648,7 @@ msgid ""
 "Do you want to overwrite it?"
 msgstr ""
 "Закладка с таким именем уже существует.\n"
-"Вы хотите её перезаписать?"
+"Хотите её перезаписать?"
 
 #: ../src/historyview.cc:3119
 msgid "No items found"
@@ -4668,8 +4669,8 @@ msgid ""
 "A unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
 msgstr ""
-"Единица измерения или переменная или  с таким именем уже существует.\n"
-"Вы хотите её перезаписать?"
+"Единица измерения или переменная или с таким именем уже существует.\n"
+"Хотите её перезаписать?"
 
 #: ../src/importcsvdialog.cc:191
 #, c-format
@@ -4792,12 +4793,12 @@ msgstr "ВВОД"
 #: ../src/keypad.cc:3613
 msgctxt "Manage units button"
 msgid "u"
-msgstr ""
+msgstr "ед"
 
 #: ../src/keypad.cc:3614
 msgctxt "Button for convert to operator"
 msgid "to"
-msgstr ""
+msgstr "к"
 
 #: ../src/main.cc:59
 msgid "Execute expressions and commands from a file"
@@ -4928,7 +4929,7 @@ msgid ""
 msgstr ""
 "Новая версия %s доступна на %s.\n"
 "\n"
-"Вы хотите обновиться до версии %s?"
+"Хотите обновиться до версии %s?"
 
 #: ../src/mainwindow.cc:730
 #, c-format
@@ -4961,7 +4962,7 @@ msgstr "Функция sinc"
 
 #: ../src/mainwindow.cc:871
 msgid "Please select desired variant of the sinc function."
-msgstr "Выберите нужный вариант функции sinc."
+msgstr "Пожалуйста, выберите нужный вариант функции sinc."
 
 #: ../src/mainwindow.cc:874
 msgid "Unnormalized"
@@ -4972,39 +4973,36 @@ msgid "Normalized"
 msgstr "Нормированная"
 
 #: ../src/mainwindow.cc:916
-#, fuzzy
 msgid "Interpretation of comma"
-msgstr "Использование точки"
+msgstr "Интерпретация запятой"
 
 #: ../src/mainwindow.cc:916
 msgid "Interpretation of dots"
-msgstr "Использование точки"
+msgstr "Интерпретация точки"
 
 #: ../src/mainwindow.cc:926
-#, fuzzy
 msgid ""
 "Please select interpretation of comma (\",\")\n"
 "(this can later be changed in preferences)."
 msgstr ""
-"Выберите использование точки («.»)\n"
-"(позже это можно изменить в настройках)."
+"Пожалуйста, выберите интерпретацию запятой («,»)\n"
+"(можно позже изменить в настройках)."
 
 #: ../src/mainwindow.cc:926
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
 msgstr ""
-"Выберите использование точки («.»)\n"
-"(позже это можно изменить в настройках)."
+"Пожалуйста, выберите интерпретацию («.»)\n"
+"(можно позже изменить в настройках)."
 
 #: ../src/mainwindow.cc:929
 msgid "Both dot and comma as decimal separators"
 msgstr "Точка и запятая в качестве десятичных разделителей"
 
 #: ../src/mainwindow.cc:936
-#, fuzzy
 msgid "Comma as thousands separator"
-msgstr "Точка как разделитель тысяч"
+msgstr "Запятая как разделитель тысяч"
 
 #: ../src/mainwindow.cc:936
 msgid "Dot as thousands separator"
@@ -5163,7 +5161,7 @@ msgstr "С удалось скопировать файл в %s."
 
 #: ../src/mainwindow.cc:6894
 msgid "translator-credits"
-msgstr "Damir Islamov <damir@secretlaboratory.ru>"
+msgstr "Damir Islamov <damir@secretlaboratory.ru>, Андрей Степанов <adem4ik@gmail.com>"
 
 #: ../src/mainwindow.cc:7423 ../src/menubar.cc:1667 ../src/util.cc:1277
 #: ../src/util.cc:1278 ../src/variablesdialog.cc:137
@@ -5537,7 +5535,7 @@ msgid ""
 "Do you wish to replace the current action?"
 msgstr ""
 "Комбинация клавиш уже используется.\n"
-"Вы хотите заменить текущее действие?"
+"Хотите заменить текущее действие?"
 
 #: ../src/shortcutsdialog.cc:583
 msgid "Key combination"
