@@ -510,6 +510,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 								break;
 							}
 						}
+						if(b && i_match > 0 && i_type != 1 && equalsIgnoreCase(cap_it->second, gstr2)) b = false;
 					}
 					if(b) cap_str = cap_it->second;
 					if(!b) {
@@ -524,6 +525,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 								}
 							}
 						}
+						if(b && i_match > 0 && i_type != 1 && equalsIgnoreCase(ename->name, gstr2)) b = false;
 					}
 					if(!b) ename = NULL;
 				}
@@ -543,6 +545,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 								break;
 							}
 						}
+						if(ename && i_match > 0 && i_type != 1 && equalsIgnoreCase(ename->name, gstr2)) ename = NULL;
 					} else {
 						ename = NULL;
 					}
@@ -857,8 +860,13 @@ void do_completion(bool to_menu) {
 		if(current_displayed_result()) u = find_exact_matching_unit(*current_displayed_result());
 		if(u) {
 			current_from_units.push_back(u);
-			if(u->subtype() == SUBTYPE_COMPOSITE_UNIT || !contains_prefix(current_displayed_result() ? *current_displayed_result() : *current_result())) {
+			if(u->subtype() == SUBTYPE_COMPOSITE_UNIT || !contains_prefix(*current_displayed_result())) {
 				exact_unit = u;
+			}
+			Unit *u2 = CALCULATOR->findMatchingUnit(*current_parsed_result());
+			int exp = 1;
+			if(u2 && u2 != u && u2->category() != u->category() && ((u2->baseUnit() == u->baseUnit() && u2->baseExponent() == u->baseExponent()) || (u->subtype() == SUBTYPE_COMPOSITE_UNIT && ((CompositeUnit*) u)->countUnits() == 1 && u2->baseUnit() == ((CompositeUnit*) u)->get(1, &exp)->baseUnit() && u2->baseExponent() == ((CompositeUnit*) u)->get(1)->baseExponent(exp)))) {
+				current_from_units.push_back(u2);
 			}
 		} else {
 			find_matching_units(*current_result(), current_parsed_result(), current_from_units);
@@ -1058,8 +1066,6 @@ void do_completion(bool to_menu) {
 					}
 				}
 			}
-			GtkTreeIter exact_prefix_match;
-			bool exact_match_found = false, exact_prefix_match_found = false;
 			do {
 				ExpressionItem *item = NULL;
 				Prefix *prefix = NULL;
@@ -1141,11 +1147,17 @@ void do_completion(bool to_menu) {
 												if(b_match && (!cu || (exp == 1 && cu->countUnits() == 1)) && ((!ename->case_sensitive && equalsIgnoreCase(*namestr, *cmpstr)) || (ename->case_sensitive && *namestr == *cmpstr))) b_match = 1;
 												if(b_match) {
 													if(icmp > 0 && !cu) {
-														if(CALCULATOR->getActiveVariable(str.substr(0, namestr->length() + (str.length() - cmpstr->length()))) || CALCULATOR->getActiveFunction(str.substr(0, namestr->length() + (str.length() - cmpstr->length())))) {
+														prefix = prefixes[icmp - 1];
+														if((prefix->type() != PREFIX_DECIMAL || ((Unit*) item)->minPreferredPrefix() > ((DecimalPrefix*) prefix)->exponent() || ((Unit*) item)->maxPreferredPrefix() < ((DecimalPrefix*) prefix)->exponent()) && (prefix->type() != PREFIX_BINARY || ((Unit*) item)->baseUnit()->referenceName() != "bit" || ((Unit*) item)->minPreferredPrefix() > ((BinaryPrefix*) prefix)->exponent() || ((Unit*) item)->maxPreferredPrefix() < ((BinaryPrefix*) prefix)->exponent())) {
 															b_match = false;
+															prefix = NULL;
 															continue;
 														}
-														prefix = prefixes[icmp - 1];
+														if(CALCULATOR->getActiveExpressionItem(str.substr(0, str.length() - cmpstr->length()) + *namestr)) {
+															b_match = false;
+															prefix = NULL;
+															continue;
+														}
 														i_match = str.length() - cmpstr->length();
 													} else if(b_match > 1 && !editing_to_expression && item->isHidden() && str.length() == 1) {
 														b_match = 4;
@@ -1174,8 +1186,12 @@ void do_completion(bool to_menu) {
 									cap_it = capitalized_names.find(&item->getName(name_i));
 									if(item->getName(name_i).name == *cmpstr || (cap_it != capitalized_names.end() && cap_it->second == *cmpstr)) {
 										if(!cu) {
-											if(icmp > 0) prefix = prefixes[icmp - 1];
-											else prefix = NULL;
+											if(icmp > 0) {
+												if(CALCULATOR->getActiveExpressionItem(str.substr(0, str.length() - cmpstr->length()) + *cmpstr)) break;
+												prefix = prefixes[icmp - 1];
+											} else {
+												prefix = NULL;
+											}
 										}
 										b_match = 1; break;
 									}
@@ -1224,14 +1240,6 @@ void do_completion(bool to_menu) {
 							}
 						}
 						if(gstr) g_free(gstr);
-						if(b_match == 1 && item->type() != TYPE_FUNCTION) {
-							if(prefix) {
-								exact_prefix_match = iter;
-								exact_prefix_match_found = true;
-							} else {
-								exact_match_found = true;
-							}
-						}
 						if(b_match > highest_match) highest_match = b_match;
 					}
 				} else if(item && to_type == 4) {
@@ -1346,10 +1354,6 @@ void do_completion(bool to_menu) {
 					else if(b_match < 3) show_separator1 = true;
 				}
 			} while(gtk_tree_model_iter_next(GTK_TREE_MODEL(completion_store), &iter));
-			if(exact_match_found && exact_prefix_match_found) {
-				gtk_list_store_set(completion_store, &exact_prefix_match, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, -1);
-				matches--;
-			}
 		}
 	}
 	if(to_menu) current_from_struct = NULL;

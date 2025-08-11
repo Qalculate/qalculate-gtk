@@ -1215,6 +1215,10 @@ void find_matching_units(const MathStructure &m, const MathStructure *mparse, ve
 			if(v[i] == u) return;
 		}
 		v.push_back(u);
+		if(top && mparse) {
+			Unit *u2 = CALCULATOR->findMatchingUnit(*mparse);
+			if(u2 && u2 != u && u2->baseUnit() == u->baseUnit() && u2->baseExponent() == u->baseExponent() && u2->category() != u->category()) v.push_back(u2);
+		}
 		return;
 	}
 	if(top) {
