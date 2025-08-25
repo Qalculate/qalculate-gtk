@@ -151,7 +151,10 @@ char to_prefix = 0;
 int to_base = 0;
 bool to_duo_syms = false;
 int to_caf = -1;
+TimeZone to_tz = TIME_ZONE_LOCAL;
+int to_ctz = 0;
 unsigned int to_bits = 0;
+
 Number to_nbase;
 
 bool do_imaginary_j = false;
@@ -1243,7 +1246,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		}
 		prev_autocalc_str = str;
 		if(origstr) {
-			to_caf = -1; to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_duo_syms = false; to_bits = 0; to_nbase.clear();
+			to_caf = -1; to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_duo_syms = false; to_bits = 0; to_nbase.clear(); to_tz = TIME_ZONE_LOCAL; to_ctz = 0;
 		}
 		string from_str = str, to_str, str_conv;
 		bool had_to_expression = false;
@@ -1351,7 +1354,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					to_base = BASE_UNICODE;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "utc") || equalsIgnoreCase(to_str, "gmt")) {
-					printops.time_zone = TIME_ZONE_UTC;
+					to_tz = TIME_ZONE_UTC;
 					do_to = true;
 				} else if(to_str.length() > 3 && equalsIgnoreCase(to_str.substr(0, 3), "bin") && is_in(NUMBERS, to_str[3])) {
 					to_base = BASE_BINARY;
@@ -1388,12 +1391,12 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 						itz = tzh * 60 + tzm;
 						if(b_minus) itz = -itz;
 					}
-					printops.time_zone = TIME_ZONE_CUSTOM;
-					printops.custom_time_zone = itz;
+					to_tz = TIME_ZONE_CUSTOM;
+					to_ctz = itz;
 					do_to = true;
 				} else if(to_str == "CET") {
-					printops.time_zone = TIME_ZONE_CUSTOM;
-					printops.custom_time_zone = 60;
+					to_tz = TIME_ZONE_CUSTOM;
+					to_ctz = 60;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "bases") || equalsIgnoreCase(to_str, _("bases"))) {
 					str = from_str;
@@ -1573,7 +1576,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 
 		CALCULATOR->startControl(100);
 
-		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
+		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form) || to_tz != TIME_ZONE_LOCAL) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms && !printops.duodecimal_symbols))) {
 				printops.base = to_base;
 				if(to_duo_syms) printops.duodecimal_symbols = true;
@@ -1635,6 +1638,11 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					CALCULATOR->useBinaryPrefixes(new_bin);
 					do_to = true;
 				}
+			}
+			if(to_tz != TIME_ZONE_LOCAL) {
+				printops.time_zone = to_tz;
+				printops.custom_time_zone = to_ctz;
+				do_to = true;
 			}
 		}
 
@@ -1765,6 +1773,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		evalops.parse_options.units_enabled = b_units_saved;
 		evalops.mixed_units_conversion = save_mixed_units_conversion;
 		printops.time_zone = TIME_ZONE_LOCAL;
+		printops.custom_time_zone = 0;
 	}
 
 	unblock_error();
@@ -2498,7 +2507,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	bool do_to = false;
 
 	if(stack_index == 0) {
-		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form)) {
+		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form) || to_tz != TIME_ZONE_LOCAL) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms && !printops.duodecimal_symbols))) {
 				printops.base = to_base;
 				if(to_duo_syms) printops.duodecimal_symbols = true;
@@ -2560,6 +2569,11 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 					CALCULATOR->useBinaryPrefixes(new_bin);
 					do_to = true;
 				}
+			}
+			if(to_tz != TIME_ZONE_LOCAL) {
+				printops.time_zone = to_tz;
+				printops.custom_time_zone = to_ctz;
+				do_to = true;
 			}
 		}
 		draw_result_pre();
@@ -2706,6 +2720,8 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		CALCULATOR->setFixedDenominator(save_fden);
 		printops.number_fraction_format = save_format;
 		printops.restrict_fraction_length = save_restrict_fraction_length;
+		printops.time_zone = TIME_ZONE_LOCAL;
+		printops.custom_time_zone = 0;
 	}
 	printops.prefix = NULL;
 	b_busy = false;
@@ -4036,7 +4052,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	if(!mbak_convert.isUndefined() && stack_index == 0) mbak_convert.setUndefined();
 
 	if(execute_str.empty()) {
-		to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_duo_syms = false; to_bits = 0; to_nbase.clear(); to_caf = -1;
+		to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_duo_syms = false; to_bits = 0; to_nbase.clear(); to_caf = -1; to_tz = TIME_ZONE_LOCAL; to_ctz = 0;
 	}
 
 	if(str.empty() && !do_mathoperation) {
@@ -4709,14 +4725,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				to_base = BASE_UNICODE;
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "utc") || equalsIgnoreCase(to_str, "gmt")) {
-				printops.time_zone = TIME_ZONE_UTC;
-				if(from_str.empty()) {
-					b_busy = false;
-					b_busy_expression = false;
-					setResult(NULL, true, false, false); restore_previous_expression();
-					printops.time_zone = TIME_ZONE_LOCAL;
-					return;
-				}
+				to_tz = TIME_ZONE_UTC;
 				do_to = true;
 			} else if(to_str.length() > 3 && equalsIgnoreCase(to_str.substr(0, 3), "bin") && is_in(NUMBERS, to_str[3])) {
 				to_base = BASE_BINARY;
@@ -4755,26 +4764,12 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				} else {
 					CALCULATOR->error(true, _("Time zone parsing failed."), NULL);
 				}
-				printops.time_zone = TIME_ZONE_CUSTOM;
-				printops.custom_time_zone = itz;
-				if(from_str.empty()) {
-					b_busy = false;
-					b_busy_expression = false;
-					setResult(NULL, true, false, false); restore_previous_expression();
-					printops.time_zone = TIME_ZONE_LOCAL;
-					return;
-				}
+				to_tz = TIME_ZONE_CUSTOM;
+				to_ctz = itz;
 				do_to = true;
 			} else if(to_str == "CET") {
-				printops.time_zone = TIME_ZONE_CUSTOM;
-				printops.custom_time_zone = 60;
-				if(from_str.empty()) {
-					b_busy = false;
-					b_busy_expression = false;
-					setResult(NULL, true, false, false); restore_previous_expression();
-					printops.time_zone = TIME_ZONE_LOCAL;
-					return;
-				}
+				to_tz = TIME_ZONE_CUSTOM;
+				to_ctz = 60;
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "bases") || equalsIgnoreCase(to_str, _("bases"))) {
 				if(from_str.empty()) {

@@ -604,10 +604,12 @@ void result_display_updated() {
 void on_popup_menu_item_calendarconversion_activate(GtkMenuItem*, gpointer) {
 	open_calendarconversion();
 }
+extern TimeZone to_tz;
+extern int to_ctz;
 void on_popup_menu_item_to_utc_activate(GtkMenuItem*, gpointer) {
-	printops.time_zone = TIME_ZONE_UTC;
+	to_tz = TIME_ZONE_UTC;
+	to_ctz = 0;
 	result_format_updated();
-	printops.time_zone = TIME_ZONE_LOCAL;
 }
 void on_popup_menu_item_display_normal_activate(GtkMenuItem *w, gpointer) {
 	if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) return;
