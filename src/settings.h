@@ -53,6 +53,13 @@ extern unordered_map<std::string, cairo_surface_t*> flag_surfaces;
 extern int flagheight;
 
 enum {
+	KEEP_EXPRESSION,
+	REPLACE_EXPRESSION_WITH_RESULT,
+	REPLACE_EXPRESSION_WITH_RESULT_IF_SHORTER,
+	CLEAR_EXPRESSION
+};
+
+enum {
 	SHORTCUT_TYPE_FUNCTION,
 	SHORTCUT_TYPE_FUNCTION_WITH_DIALOG,
 	SHORTCUT_TYPE_VARIABLE,

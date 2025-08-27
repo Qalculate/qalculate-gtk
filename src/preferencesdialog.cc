@@ -305,6 +305,14 @@ void on_preferences_combo_history_expression_changed(GtkComboBox *w, gpointer) {
 	history_expression_type = gtk_combo_box_get_active(w);
 	reload_history();
 }
+extern int replace_expression;
+void on_preferences_combo_replace_expression_changed(GtkComboBox *w, gpointer) {
+	int index = gtk_combo_box_get_active(w);
+	if(index == 0) replace_expression = KEEP_EXPRESSION;
+	else if(index == 1) replace_expression = CLEAR_EXPRESSION;
+	else if(index == 2) replace_expression = REPLACE_EXPRESSION_WITH_RESULT;
+	else if(index == 3) replace_expression = REPLACE_EXPRESSION_WITH_RESULT_IF_SHORTER;
+}
 void on_preferences_checkbutton_copy_ascii_toggled(GtkToggleButton *w, gpointer) {
 	copy_ascii = gtk_toggle_button_get_active(w);
 	update_accels(SHORTCUT_TYPE_COPY_RESULT);
@@ -867,6 +875,11 @@ GtkWidget* get_preferences_dialog() {
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_tooltips")), enable_tooltips == 0 ? 2 : (enable_tooltips == 1 ? 0 : 1));
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_title")), title_type);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_history_expression")), history_expression_type);
+		int index = 0;
+		if(replace_expression == CLEAR_EXPRESSION) index = 1;
+		else if(replace_expression == REPLACE_EXPRESSION_WITH_RESULT) index = 2;
+		else if(replace_expression == REPLACE_EXPRESSION_WITH_RESULT_IF_SHORTER) index = 3;
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_replace_expression")), index);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_unicode_signs")), printops.use_unicode_signs);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_copy_ascii")), copy_ascii);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_copy_ascii_without_units")), copy_ascii_without_units);
@@ -1036,7 +1049,8 @@ GtkWidget* get_preferences_dialog() {
 		G_CALLBACK(on_preferences_checkbutton_save_history_separately_toggled), "on_preferences_checkbutton_allow_multiple_instances_toggled",
 		G_CALLBACK(on_preferences_checkbutton_allow_multiple_instances_toggled), "on_preferences_checkbutton_check_version_toggled", G_CALLBACK(on_preferences_checkbutton_check_version_toggled), "on_preferences_checkbutton_save_mode_toggled", G_CALLBACK(on_preferences_checkbutton_save_mode_toggled), "on_preferences_checkbutton_close_with_esc_toggled",
 		G_CALLBACK(on_preferences_checkbutton_close_with_esc_toggled), "on_preferences_checkbutton_rpn_keys_toggled", G_CALLBACK(on_preferences_checkbutton_rpn_keys_toggled), "on_preferences_checkbutton_caret_as_xor_toggled", G_CALLBACK(on_preferences_checkbutton_caret_as_xor_toggled), "on_preferences_combo_history_expression_changed",
-		G_CALLBACK(on_preferences_combo_history_expression_changed), "on_preferences_checkbutton_autocalc_history_toggled", G_CALLBACK(on_preferences_checkbutton_autocalc_history_toggled), "on_preferences_scale_autocalc_history_value_changed", G_CALLBACK(on_preferences_scale_autocalc_history_value_changed), "on_preferences_scale_plot_time_value_changed",
+		G_CALLBACK(on_preferences_combo_history_expression_changed), "on_preferences_combo_replace_expression_changed",
+		G_CALLBACK(on_preferences_combo_replace_expression_changed), "on_preferences_checkbutton_autocalc_history_toggled", G_CALLBACK(on_preferences_checkbutton_autocalc_history_toggled), "on_preferences_scale_autocalc_history_value_changed", G_CALLBACK(on_preferences_scale_autocalc_history_value_changed), "on_preferences_scale_plot_time_value_changed",
 		G_CALLBACK(on_preferences_scale_plot_time_value_changed), "on_preferences_checkbutton_unicode_signs_toggled", G_CALLBACK(on_preferences_checkbutton_unicode_signs_toggled), "on_preferences_checkbutton_ignore_locale_toggled", G_CALLBACK(on_preferences_checkbutton_ignore_locale_toggled), "on_preferences_checkbutton_use_systray_icon_toggled",
 		G_CALLBACK(on_preferences_checkbutton_use_systray_icon_toggled), "on_preferences_checkbutton_hide_on_startup_toggled", G_CALLBACK(on_preferences_checkbutton_hide_on_startup_toggled), "on_preferences_checkbutton_remember_position_toggled", G_CALLBACK(on_preferences_checkbutton_remember_position_toggled), "on_preferences_checkbutton_keep_above_toggled",
 		G_CALLBACK(on_preferences_checkbutton_keep_above_toggled), "on_preferences_horizontal_padding_combo_changed", G_CALLBACK(on_preferences_horizontal_padding_combo_changed), "on_preferences_vertical_padding_combo_changed", G_CALLBACK(on_preferences_vertical_padding_combo_changed), "on_preferences_combo_title_changed", G_CALLBACK(on_preferences_combo_title_changed),

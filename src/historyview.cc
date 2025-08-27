@@ -771,6 +771,23 @@ gboolean history_row_separator_func(GtkTreeModel *model, GtkTreeIter *iter, gpoi
 	gtk_tree_model_get(model, iter, 1, &hindex, -1);
 	return hindex < 0;
 }
+string create_history_message(string message) {
+	string history_message = "- ";
+	history_message += message;
+	fix_history_string2(history_message);
+	add_line_breaks(history_message, false, 4);
+	string history_str;
+	if(pango_version() >= 15000) {
+		history_str = "<span font_size=\"90%\"><i>";
+		history_str += history_message;
+		history_str += "</i></span>";
+	} else {
+		history_str = "<i>";
+		history_str += history_message;
+		history_str += "</i>";
+	}
+	return history_str;
+}
 string history_display_errors(bool add_to_history, GtkWindow *win, int type, bool *implicit_warning, time_t history_time, int *mtype_highest_p) {
 	if(!CALCULATOR->message() && (type != 1 || !inhistory_index || !CALCULATOR->exchangeRatesUsed())) return "";
 	string str = "";
@@ -785,7 +802,7 @@ string history_display_errors(bool add_to_history, GtkWindow *win, int type, boo
 		} else {
 			mtype = CALCULATOR->message()->type();
 			if(mtype == MESSAGE_INFORMATION && (type == 1 || type == 2) && win && CALCULATOR->message()->message().find("-------------------------------------\n") == 0) {
-				GtkWidget *edialog = gtk_message_dialog_new(win,GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", CALCULATOR->message()->message().c_str());
+				GtkWidget *edialog = gtk_message_dialog_new(win, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", CALCULATOR->message()->message().c_str());
 				if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 				gtk_dialog_run(GTK_DIALOG(edialog));
 				gtk_widget_destroy(edialog);
@@ -845,22 +862,8 @@ string history_display_errors(bool add_to_history, GtkWindow *win, int type, boo
 						inhistory_time.insert(inhistory_time.begin() + inhistory_index, history_time);
 						inhistory_protected.insert(inhistory_protected.begin() + inhistory_index, false);
 						inhistory_value.insert(inhistory_value.begin() + inhistory_index, nr_of_new_expressions);
-						string history_message = "- ";
-						history_message += CALCULATOR->message()->message();
-						fix_history_string2(history_message);
-						add_line_breaks(history_message, false, 4);
-						string history_str;
-						if(pango_version() >= 15000) {
-							history_str = "<span font_size=\"90%\"><i>";
-							history_str += history_message;
-							history_str += "</i></span>";
-						} else {
-							history_str = "<i>";
-							history_str += history_message;
-							history_str += "</i>";
-						}
 						history_index++;
-						gtk_list_store_insert_with_values(historystore, &history_iter, history_index, 0, history_str.c_str(), 1, inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+						gtk_list_store_insert_with_values(historystore, &history_iter, history_index, 0, create_history_message(CALCULATOR->message()->message()).c_str(), 1, inhistory_index, 3, nr_of_new_expressions, 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
 					}
 					inhistory_added++;
 				}
@@ -2645,6 +2648,40 @@ void add_history_bookmark(string history_message) {
 	set_expression_modified(true, true, true);
 	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
 }
+void add_history_comment(string comment) {
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	GList *selected_list;
+	gint hindex = -1;
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(history_view_widget()));
+	selected_list = gtk_tree_selection_get_selected_rows(select, &model);
+	if(!selected_list) return;
+	gtk_tree_model_get_iter(model, &iter, (GtkTreePath*) selected_list->data);
+	while(true) {
+		gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+		if(hindex >= 0 && ITEM_NOT_EXPRESSION(hindex)) break;
+		if(!gtk_tree_model_iter_next(model, &iter)) {
+			hindex = -1;
+			break;
+		}
+	}
+	if(hindex >= 0) {
+		hindex++;
+		inhistory.insert(inhistory.begin() + hindex, comment);
+		inhistory_type.insert(inhistory_type.begin() + hindex, QALCULATE_HISTORY_MESSAGE);
+		inhistory_time.insert(inhistory_time.begin() + hindex, inhistory_time[hindex]);
+		inhistory_protected.insert(inhistory_protected.begin() + hindex, inhistory_protected[hindex]);
+		inhistory_value.insert(inhistory_value.begin() + hindex, inhistory_value[hindex]);
+		gtk_list_store_insert_before(historystore, &iter, &iter);
+		gtk_list_store_set(historystore, &iter, 0, create_history_message(comment).c_str(), 1, hindex, 3, inhistory_value[hindex], 4, 0, 5, 6, 6, 0.0, 7, PANGO_ALIGN_LEFT, -1);
+		while(gtk_tree_model_iter_previous(GTK_TREE_MODEL(historystore), &iter)) {
+			gtk_tree_model_get(GTK_TREE_MODEL(historystore), &iter, 1, &hindex, -1);
+			if(hindex >= 0) gtk_list_store_set(historystore, &iter, 1, hindex + 1, -1);
+		}
+	}
+	set_expression_modified(true, true, true);
+	g_list_free_full(selected_list, (GDestroyNotify) gtk_tree_path_free);
+}
 GtkWidget *history_search_dialog = NULL;
 GtkWidget *history_search_entry = NULL;
 void on_history_search_response(GtkDialog *w, gint reponse_id, gpointer) {
@@ -2916,6 +2953,76 @@ void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 		gtk_widget_destroy(dialog);
 	}
 }
+void on_popup_menu_item_history_comment_activate(GtkMenuItem *w, gpointer) {
+	bool b_edit = (strcmp(gtk_menu_item_get_label(w), _("Edit Comment…")) == 0);
+	string history_message;
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(b_edit ? _("Edit Comment") : _("Add Comment"), main_window(), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
+	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
+	gtk_widget_show(hbox);
+	GtkWidget *label = gtk_label_new(_("Comment"));
+	gtk_widget_set_halign(label, GTK_ALIGN_START);
+	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 0);
+	gtk_widget_show(label);
+	GtkWidget *entry = gtk_entry_new();
+	gtk_entry_set_width_chars(GTK_ENTRY(entry), 35);
+	gtk_box_pack_end(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
+	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+	g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(on_bookmark_entry_activated), (gpointer) dialog);
+	gtk_widget_show(entry);
+	GtkTreeIter iter;
+	gint hindex = -1;
+	if(b_edit) {
+		GtkTreeModel *model;
+		GList *selected_list;
+		GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(history_view_widget()));
+		selected_list = gtk_tree_selection_get_selected_rows(select, &model);
+		if(!selected_list) return;
+		gtk_tree_model_get_iter(model, &iter, (GtkTreePath*) selected_list->data);
+		while(true) {
+			gtk_tree_model_get(model, &iter, 1, &hindex, -1);
+			if(hindex >= 0 && inhistory_type[hindex] == QALCULATE_HISTORY_MESSAGE) break;
+			if(!gtk_tree_model_iter_next(model, &iter)) {
+				hindex = -1;
+				break;
+			}
+		}
+		if(hindex >= 0) {
+			gtk_entry_set_text(GTK_ENTRY(entry), inhistory[hindex].c_str());
+		}
+	}
+	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+		string history_message = gtk_entry_get_text(GTK_ENTRY(entry));
+		remove_blank_ends(history_message);
+		if(hindex >= 0) {
+			if(history_message.empty()) {
+				inhistory.erase(inhistory.begin() + hindex);
+				inhistory_protected.erase(inhistory_protected.begin() + hindex);
+				inhistory_type.erase(inhistory_type.begin() + hindex);
+				inhistory_time.erase(inhistory_time.begin() + hindex);
+				inhistory_value.erase(inhistory_value.begin() + hindex);
+				GtkTreeIter history_iter = iter;
+				while(gtk_tree_model_iter_previous(GTK_TREE_MODEL(historystore), &history_iter)) {
+					gtk_tree_model_get(GTK_TREE_MODEL(historystore), &history_iter, 1, &hindex, -1);
+					if(hindex >= 0) gtk_list_store_set(historystore, &history_iter, 1, hindex - 1, -1);
+				}
+				gtk_list_store_remove(historystore, &iter);
+			} else {
+				inhistory[hindex] = history_message;
+				gtk_list_store_set(historystore, &iter, 0, create_history_message(history_message).c_str(), -1);
+			}
+			set_expression_modified(true, true, true);
+			if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(history_view_widget())));
+		} else if(!history_message.empty()) {
+			add_history_comment(history_message);
+			if(persistent_keypad) gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(GTK_TREE_VIEW(history_view_widget())));
+		}
+	}
+	gtk_widget_destroy(dialog);
+}
 bool history_protected_by_bookmark(size_t hi) {
 	if(inhistory_type[hi] == QALCULATE_HISTORY_BOOKMARK) return true;
 	while(hi + 1 < inhistory_type.size() && HISTORY_NOT_EXPRESSION(hi)) {
@@ -3073,6 +3180,9 @@ void update_historyview_popup() {
 			}
 		}
 	}
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_comment")), selected_rows.size() > 0);
+	if(selected_rows.size() > 0 && inhistory_type[selected_rows[0]] == QALCULATE_HISTORY_MESSAGE) gtk_menu_item_set_label(GTK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_history_comment")), _("Edit Comment…"));
+	else gtk_menu_item_set_label(GTK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_history_comment")), _("Add Comment…"));
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_protect")), selected_rows.size() > 0 && !b_old && !protected_by_bookmark);
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_history_protect"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_history_protect_toggled, NULL);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_history_protect")), selected_rows.size() > 0 && b_protected);
@@ -3575,6 +3685,6 @@ void create_history_view() {
 	else gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_copy_ascii")))), GDK_KEY_c, GDK_CONTROL_MASK);
 	gtk_accel_label_set_accel(GTK_ACCEL_LABEL(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(main_builder, "popup_menu_item_history_delete")))), GDK_KEY_Delete, GDK_SHIFT_MASK);
 
-	gtk_builder_add_callback_symbols(main_builder, "on_historyview_button_press_event", G_CALLBACK(on_historyview_button_press_event), "on_historyview_button_release_event", G_CALLBACK(on_historyview_button_release_event), "on_historyview_key_press_event", G_CALLBACK(on_historyview_key_press_event), "on_historyview_popup_menu", G_CALLBACK(on_historyview_popup_menu), "on_historyview_row_activated", G_CALLBACK(on_historyview_row_activated), "on_button_history_insert_value_clicked", G_CALLBACK(on_button_history_insert_value_clicked), "on_button_history_insert_text_clicked", G_CALLBACK(on_button_history_insert_text_clicked), "on_button_history_copy_clicked", G_CALLBACK(on_button_history_copy_clicked), "on_button_history_add_clicked", G_CALLBACK(on_button_history_add_clicked), "on_button_history_sub_clicked", G_CALLBACK(on_button_history_sub_clicked), "on_button_history_times_clicked", G_CALLBACK(on_button_history_times_clicked), "on_button_history_divide_clicked", G_CALLBACK(on_button_history_divide_clicked), "on_button_history_xy_clicked", G_CALLBACK(on_button_history_xy_clicked), "on_button_history_sqrt_clicked", G_CALLBACK(on_button_history_sqrt_clicked), "on_popup_menu_item_history_insert_value_activate", G_CALLBACK(on_popup_menu_item_history_insert_value_activate), "on_popup_menu_item_history_insert_text_activate", G_CALLBACK(on_popup_menu_item_history_insert_text_activate), "on_popup_menu_item_history_insert_parsed_text_activate", G_CALLBACK(on_popup_menu_item_history_insert_parsed_text_activate), "on_popup_menu_item_history_copy_text_activate", G_CALLBACK(on_popup_menu_item_history_copy_text_activate), "on_popup_menu_item_history_copy_ascii_activate", G_CALLBACK(on_popup_menu_item_history_copy_ascii_activate), "on_popup_menu_item_history_copy_full_text_activate", G_CALLBACK(on_popup_menu_item_history_copy_full_text_activate), "on_popup_menu_item_history_search_activate", G_CALLBACK(on_popup_menu_item_history_search_activate), "on_popup_menu_item_history_search_date_activate", G_CALLBACK(on_popup_menu_item_history_search_date_activate), "on_popup_menu_item_history_bookmark_activate", G_CALLBACK(on_popup_menu_item_history_bookmark_activate), "on_popup_menu_item_history_protect_toggled", G_CALLBACK(on_popup_menu_item_history_protect_toggled), "on_popup_menu_item_history_movetotop_activate", G_CALLBACK(on_popup_menu_item_history_movetotop_activate), "on_popup_menu_item_history_delete_activate", G_CALLBACK(on_popup_menu_item_history_delete_activate), "on_popup_menu_item_history_clear_activate", G_CALLBACK(on_popup_menu_item_history_clear_activate), NULL);
+	gtk_builder_add_callback_symbols(main_builder, "on_historyview_button_press_event", G_CALLBACK(on_historyview_button_press_event), "on_historyview_button_release_event", G_CALLBACK(on_historyview_button_release_event), "on_historyview_key_press_event", G_CALLBACK(on_historyview_key_press_event), "on_historyview_popup_menu", G_CALLBACK(on_historyview_popup_menu), "on_historyview_row_activated", G_CALLBACK(on_historyview_row_activated), "on_button_history_insert_value_clicked", G_CALLBACK(on_button_history_insert_value_clicked), "on_button_history_insert_text_clicked", G_CALLBACK(on_button_history_insert_text_clicked), "on_button_history_copy_clicked", G_CALLBACK(on_button_history_copy_clicked), "on_button_history_add_clicked", G_CALLBACK(on_button_history_add_clicked), "on_button_history_sub_clicked", G_CALLBACK(on_button_history_sub_clicked), "on_button_history_times_clicked", G_CALLBACK(on_button_history_times_clicked), "on_button_history_divide_clicked", G_CALLBACK(on_button_history_divide_clicked), "on_button_history_xy_clicked", G_CALLBACK(on_button_history_xy_clicked), "on_button_history_sqrt_clicked", G_CALLBACK(on_button_history_sqrt_clicked), "on_popup_menu_item_history_insert_value_activate", G_CALLBACK(on_popup_menu_item_history_insert_value_activate), "on_popup_menu_item_history_insert_text_activate", G_CALLBACK(on_popup_menu_item_history_insert_text_activate), "on_popup_menu_item_history_insert_parsed_text_activate", G_CALLBACK(on_popup_menu_item_history_insert_parsed_text_activate), "on_popup_menu_item_history_comment_activate", G_CALLBACK(on_popup_menu_item_history_comment_activate), "on_popup_menu_item_history_copy_text_activate", G_CALLBACK(on_popup_menu_item_history_copy_text_activate), "on_popup_menu_item_history_copy_ascii_activate", G_CALLBACK(on_popup_menu_item_history_copy_ascii_activate), "on_popup_menu_item_history_copy_full_text_activate", G_CALLBACK(on_popup_menu_item_history_copy_full_text_activate), "on_popup_menu_item_history_search_activate", G_CALLBACK(on_popup_menu_item_history_search_activate), "on_popup_menu_item_history_search_date_activate", G_CALLBACK(on_popup_menu_item_history_search_date_activate), "on_popup_menu_item_history_bookmark_activate", G_CALLBACK(on_popup_menu_item_history_bookmark_activate), "on_popup_menu_item_history_protect_toggled", G_CALLBACK(on_popup_menu_item_history_protect_toggled), "on_popup_menu_item_history_movetotop_activate", G_CALLBACK(on_popup_menu_item_history_movetotop_activate), "on_popup_menu_item_history_delete_activate", G_CALLBACK(on_popup_menu_item_history_delete_activate), "on_popup_menu_item_history_clear_activate", G_CALLBACK(on_popup_menu_item_history_clear_activate), NULL);
 
 }

@@ -52,6 +52,7 @@ GtkTextTag *expression_par_tag;
 int expression_lines = -1;
 size_t undo_index = 0;
 int block_add_to_undo = 0;
+int block_emodified = 0;
 vector<string> expression_history;
 string current_history_expression;
 int expression_history_index = -1;
@@ -64,6 +65,7 @@ bool cursor_has_moved = false;
 extern bool minimal_mode;
 bool use_custom_expression_font = false, save_custom_expression_font = false;
 string custom_expression_font;
+int replace_expression = KEEP_EXPRESSION;
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 
@@ -92,6 +94,8 @@ bool read_expression_edit_settings_line(string &svar, string &svalue, int &v) {
 	} else if(svar == "custom_expression_font") {
 		custom_expression_font = svalue;
 		save_custom_expression_font = true;
+	} else if(svar == "replace_expression") {
+		replace_expression = v;
 	} else if(!read_expression_completion_settings_line(svar, svalue, v)) {
 		return false;
 	}
@@ -101,6 +105,7 @@ void write_expression_edit_settings(FILE *file) {
 	if(expression_lines > 0) fprintf(file, "expression_lines=%i\n", expression_lines);
 	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);
 	if(use_custom_expression_font || save_custom_expression_font) fprintf(file, "custom_expression_font=%s\n", custom_expression_font.c_str());
+	fprintf(file, "replace_expression=%i\n", replace_expression);
 	write_expression_completion_settings(file);
 }
 bool read_expression_history_line(string &svar, string &svalue) {
@@ -576,6 +581,12 @@ void on_expressionbuffer_cursor_position_notify() {
 }
 
 extern bool tabbed_completion;
+void block_expression_modified() {
+	block_emodified++;
+}
+void unblock_expression_modified() {
+	block_emodified--;
+}
 void set_expression_modified(bool b, bool handle, bool autocalc) {
 	if(!b || !handle) {
 		expression_has_changed = b;
@@ -599,6 +610,7 @@ void set_expression_modified(bool b, bool handle, bool autocalc) {
 }
 
 void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {
+	if(block_emodified) return;
 	selstore_end = selstore_start;
 	set_expression_modified(true, true, o != NULL);
 }

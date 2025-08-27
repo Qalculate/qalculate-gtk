@@ -32,6 +32,8 @@ void unblock_undo();
 bool undo_blocked();
 void block_expression_history();
 void unblock_expression_history();
+void block_expression_modified();
+void unblock_expression_modified();
 bool expression_history_blocked();
 
 #ifdef EVENT_CONTROLLER_TEST
@@ -62,7 +64,7 @@ int wrap_expression_selection(const char *insert_before = NULL, bool return_true
 void focus_keeping_selection();
 void focus_expression();
 bool expression_modified();
-void set_expression_modified(bool b, bool handle, bool autocalc);
+void set_expression_modified(bool b, bool handle = true, bool autocalc = true);
 void brace_wrap();
 void insert_angle_symbol();
 void insert_text(const gchar *text);

@@ -320,10 +320,12 @@ Note that only the mode, history and definitions of the last closed instance wil
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="box_history_expression">
+                  <!-- n-columns=2 n-rows=2 -->
+                  <object class="GtkGrid" id="grid_expression">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="spacing">12</property>
+                    <property name="row-spacing">12</property>
+                    <property name="column-spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="label_history_expression">
                         <property name="visible">True</property>
@@ -332,9 +334,8 @@ Note that only the mode, history and definitions of the last closed instance wil
                         <property name="label" translatable="yes">Expression in history</property>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
                       </packing>
                     </child>
                     <child>
@@ -350,9 +351,38 @@ Note that only the mode, history and definitions of the last closed instance wil
                         <signal name="changed" handler="on_preferences_combo_history_expression_changed" swapped="no"/>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_replace_expression">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Expression after calculation</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="preferences_combo_replace_expression">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="hexpand">True</property>
+                        <items>
+                          <item translatable="yes">Keep expression</item>
+                          <item translatable="yes">Clear expression</item>
+                          <item translatable="yes">Replace with result</item>
+                          <item translatable="yes">Replace with result if shorter</item>
+                        </items>
+                        <signal name="changed" handler="on_preferences_combo_replace_expression_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                   </object>

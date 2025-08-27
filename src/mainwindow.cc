@@ -4027,6 +4027,8 @@ bool is_equation_solutions(const MathStructure &m) {
 	return false;
 }
 
+extern int replace_expression;
+
 /*
 	calculate entered expression and display result
 */
@@ -5326,7 +5328,41 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	if(stack_index == 0) {
 		update_conversion_view_selection(mstruct);
 		focus_expression();
+		block_status();
+		block_completion();
+		block_expression_modified();
+		if(replace_expression == CLEAR_EXPRESSION) {
+			clear_expression_text();
+		} else if(replace_expression == REPLACE_EXPRESSION_WITH_RESULT || replace_expression == REPLACE_EXPRESSION_WITH_RESULT_IF_SHORTER) {
+			if(!result_text_long.empty() && ((!mstruct->isApproximate() && result_text_approximate && printops.number_fraction_format == FRACTION_DECIMAL) || (printops.indicate_infinite_series && (result_text.find("¯") != string::npos || result_text.find("…") != string::npos || result_text.find("...") != string::npos)))) {
+				PrintOptions po = printops;
+				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
+				po.indicate_infinite_series = REPEATING_DECIMALS_OFF;
+				po.is_approximate = NULL;
+				str = CALCULATOR->print(*mstruct, 100, po);
+				if(str == CALCULATOR->abortedMessage()) str = result_text;
+			} else {
+				str = result_text;
+			}
+			gsub(" " SIGN_DIVISION_SLASH " ", DIVISION, str);
+			if(replace_expression == REPLACE_EXPRESSION_WITH_RESULT || unicode_length(str) < unicode_length(execute_str)) {
+				if(str == "0") {
+					clear_expression_text();
+				} else if(replace_expression != REPLACE_EXPRESSION_WITH_RESULT || unicode_length(str) < 10000) {
+					set_expression_text(str.c_str());
+				}
+			} else {
+				if(!execute_str.empty()) {
+					from_str = execute_str;
+					CALCULATOR->separateToExpression(from_str, str, evalops, true, true);
+				}
+				set_expression_text(from_str.c_str());
+			}
+		}
 		expression_select_all();
+		unblock_status();
+		unblock_completion();
+		unblock_expression_modified();
 		cursor_has_moved = false;
 		if(!do_calendars) calendarconversion_dialog_result_has_changed(mstruct);
 		if(!do_bases) numberbases_dialog_result_has_changed(mstruct);
