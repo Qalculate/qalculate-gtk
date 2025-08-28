@@ -54,8 +54,6 @@ bool expression_is_empty();
 void clear_expression_text();
 void set_expression_text(const gchar *text);
 void expression_select_all();
-void expression_save_selection();
-void expression_restore_selection();
 bool expression_history_up();
 bool expression_history_down();
 void add_to_expression_history(std::string str);

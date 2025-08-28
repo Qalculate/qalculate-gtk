@@ -5758,7 +5758,7 @@ void load_preferences() {
 
 	title_type = TITLE_APP;
 
-	auto_calculate = false;
+	auto_calculate = true;
 	chain_mode = false;
 	autocalc_history_delay = 2000;
 
@@ -7549,13 +7549,13 @@ void new_unit(GtkMenuItem*, gpointer) {
 	edit_unit("", NULL, main_window());
 }
 void insert_matrix(const MathStructure *initial_value, GtkWindow *win, gboolean create_vector, bool is_text_struct, bool is_result, GtkEntry *entry) {
-	if(!entry) expression_save_selection();
+	if(!entry) store_expression_selection();
 	string matrixstr = get_matrix(initial_value, win, create_vector, is_text_struct, is_result);
 	if(matrixstr.empty()) return;
 	if(entry) {
 		gtk_entry_set_text(entry, matrixstr.c_str());
 	} else {
-		expression_restore_selection();
+		restore_expression_selection();
 		insert_text(matrixstr.c_str());
 	}
 }

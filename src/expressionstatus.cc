@@ -128,6 +128,9 @@ void block_status() {
 void unblock_status() {
 	block_display_parse--;
 }
+bool status_blocked() {
+	return block_display_parse;
+}
 
 void on_menu_item_expression_status_activate(GtkMenuItem *w, gpointer) {
 	if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)) == display_expression_status) return;
@@ -305,6 +308,7 @@ void update_status_syntax() {
 
 #define STATUS_SPACE	if(b) str += "  "; else b = true;
 
+bool status_selection_set = false;
 void set_status_text(string text, bool break_begin = false, bool had_errors = false, bool had_warnings = false, string tooltip_text = "") {
 
 	string str;
@@ -336,9 +340,19 @@ void set_status_text(string text, bool break_begin = false, bool had_errors = fa
 	}
 	if(((auto_calculate && !rpn_mode) || !had_errors || tooltip_text.empty()) && (w < 0 || w > gtk_widget_get_allocated_width(parse_status_widget())) && unformatted_length(text) < 5000) gtk_widget_set_tooltip_markup(parse_status_widget(), text.c_str());
 	else gtk_widget_set_tooltip_text(parse_status_widget(), tooltip_text.c_str());
+	status_selection_set = false;
 }
 void clear_status_text() {
-	set_status_text("");
+	if(status_selection_set) {
+		display_parse_status();
+		status_selection_set = false;
+	}
+}
+void set_status_selection_text(const std::string &str, bool had_errors, bool had_warnings) {
+	set_status_text(str, false, had_errors, had_warnings);
+	status_selection_set = true;
+}
+void clear_status_selection_text() {
 }
 void update_status_text() {
 

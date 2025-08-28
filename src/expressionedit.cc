@@ -405,13 +405,6 @@ void focus_keeping_selection() {
 void focus_expression() {
 	if(expression_edit_widget() && !gtk_widget_is_focus(expression_edit_widget())) gtk_widget_grab_focus(expression_edit_widget());
 }
-GtkTextIter istart_save, iend_save;
-void expression_save_selection() {
-	gtk_text_buffer_get_selection_bounds(expression_edit_buffer(), &istart_save, &iend_save);
-}
-void expression_restore_selection() {
-	gtk_text_buffer_select_range(expression_edit_buffer(), &istart_save, &iend_save);
-}
 void expression_select_all() {
 	GtkTextIter istart, iend;
 	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
@@ -565,8 +558,46 @@ void highlight_parentheses() {
 	}
 }
 
+guint autocalc_selection_timeout_id = 0;
+gboolean do_autocalc_selection_timeout(gpointer) {
+	autocalc_selection_timeout_id = 0;
+	string expression = get_selected_expression_text();
+	if(expression.find_first_not_of(NUMBER_ELEMENTS COMMA SPACES) == string::npos || CALCULATOR->hasToExpression(expression, false, evalops)) return FALSE;
+	string str;
+	int had_errors = false, had_warnings = false;
+	CALCULATOR->beginTemporaryStopMessages();
+	string result = CALCULATOR->calculateAndPrint(CALCULATOR->unlocalizeExpression(expression, evalops.parse_options), 100, evalops, printops, AUTOMATIC_FRACTION_OFF, AUTOMATIC_APPROXIMATION_OFF, &str, -1, NULL, true);
+	had_errors = CALCULATOR->endTemporaryStopMessages(NULL, &had_warnings);
+	if(had_errors || result.empty() || result == str || result.find(CALCULATOR->abortedMessage()) != string::npos || result.find(CALCULATOR->timedOutString()) != string::npos) {
+		if(str.empty()) {
+			CALCULATOR->endTemporaryStopMessages();
+			return FALSE;
+		}
+	} else {
+		if(*printops.is_approximate) {
+			if(printops.use_unicode_signs && can_display_unicode_string_function(SIGN_ALMOST_EQUAL, (void*) parse_status_widget())) {
+				str += " " SIGN_ALMOST_EQUAL " ";
+			} else {
+				str += "= ";
+				str += _("approx.");
+				str += " ";
+			}
+		} else {
+			str += " = ";
+		}
+		str += result;
+	}
+	set_status_selection_text(str, had_errors, had_warnings);
+	return FALSE;
+}
+
 extern bool tabbed_completion;
 void on_expressionbuffer_cursor_position_notify() {
+	if(autocalc_selection_timeout_id != 0) {
+		g_source_remove(autocalc_selection_timeout_id);
+		autocalc_selection_timeout_id = 0;
+		clear_status_selection_text();
+	}
 	selstore_end = selstore_start;
 	tabbed_completion = false;
 	cursor_has_moved = true;
@@ -578,6 +609,10 @@ void on_expressionbuffer_cursor_position_notify() {
 	highlight_parentheses();
 	display_parse_status();
 	mainwindow_cursor_moved();
+	GtkTextIter istart, iend;
+	if(auto_calculate && !rpn_mode && !status_blocked() && display_expression_status && gtk_text_buffer_get_selection_bounds(expression_edit_buffer(), &istart, &iend) && (!gtk_text_iter_is_start(&istart) || !gtk_text_iter_is_end(&iend))) {
+		autocalc_selection_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 700, do_autocalc_selection_timeout, NULL, NULL);
+	}
 }
 
 extern bool tabbed_completion;
