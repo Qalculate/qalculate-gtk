@@ -562,7 +562,7 @@ guint autocalc_selection_timeout_id = 0;
 gboolean do_autocalc_selection_timeout(gpointer) {
 	autocalc_selection_timeout_id = 0;
 	string expression = get_selected_expression_text();
-	if(expression.find_first_not_of(NUMBER_ELEMENTS COMMA SPACES) == string::npos || CALCULATOR->hasToExpression(expression, false, evalops)) return FALSE;
+	if(expression.length() > 2000 || expression.find_first_not_of(NUMBER_ELEMENTS COMMA SPACES) == string::npos || CALCULATOR->hasToExpression(expression, false, evalops) || contains_plot_or_save(CALCULATOR->unlocalizeExpression(expression, evalops.parse_options))) return FALSE;
 	string str;
 	int had_errors = false, had_warnings = false;
 	CALCULATOR->beginTemporaryStopMessages();
@@ -596,8 +596,8 @@ void on_expressionbuffer_cursor_position_notify() {
 	if(autocalc_selection_timeout_id != 0) {
 		g_source_remove(autocalc_selection_timeout_id);
 		autocalc_selection_timeout_id = 0;
-		clear_status_selection_text();
 	}
+	clear_status_selection_text();
 	selstore_end = selstore_start;
 	tabbed_completion = false;
 	cursor_has_moved = true;

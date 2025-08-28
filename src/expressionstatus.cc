@@ -343,16 +343,20 @@ void set_status_text(string text, bool break_begin = false, bool had_errors = fa
 	status_selection_set = false;
 }
 void clear_status_text() {
-	if(status_selection_set) {
-		display_parse_status();
-		status_selection_set = false;
-	}
+	set_status_text("");
 }
 void set_status_selection_text(const std::string &str, bool had_errors, bool had_warnings) {
 	set_status_text(str, false, had_errors, had_warnings);
 	status_selection_set = true;
 }
 void clear_status_selection_text() {
+	if(status_selection_set) {
+		int bdp_bak = block_display_parse;
+		block_display_parse = 0;
+		display_parse_status();
+		block_display_parse = bdp_bak;
+		status_selection_set = false;
+	}
 }
 void update_status_text() {
 
