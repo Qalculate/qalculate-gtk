@@ -108,7 +108,7 @@ bool stop_timeouts = false;
 
 PrintOptions printops;
 EvaluationOptions evalops;
-bool dot_question_asked = false, implicit_question_asked = false;
+bool dot_question_asked = false, implicit_question_asked = false, assumptions_warning_shown = false;
 
 bool repdeci_overline = false;
 
@@ -149,6 +149,7 @@ int to_fraction = 0;
 long int to_fixed_fraction = 0;
 char to_prefix = 0;
 int to_base = 0;
+int to_form = TO_FORM_OFF;
 bool to_duo_syms = false;
 int to_caf = -1;
 TimeZone to_tz = TIME_ZONE_LOCAL;
@@ -530,7 +531,7 @@ bool expression_display_errors(GtkWindow *win, int type, bool do_exrate_sources,
 			}
 		}
 	}
-	if(!str.empty()) {
+	if(!str.empty() || mtype_highest != MESSAGE_INFORMATION) {
 		if(type == 1 || type == 3) {
 			gtk_widget_set_tooltip_text(GTK_WIDGET(gtk_builder_get_object(main_builder, "message_tooltip_icon")), str.c_str());
 			if(mtype_highest == MESSAGE_ERROR) {
@@ -857,6 +858,20 @@ bool ask_tc() {
 	}
 	return false;
 }
+bool warn_assumptions(MathStructure &m, bool dry_run = false) {
+	if(assumptions_warning_shown) return false;
+	if(CALCULATOR->defaultAssumptions()->type() != ASSUMPTION_TYPE_REAL || CALCULATOR->defaultAssumptions()->sign() != ASSUMPTION_SIGN_UNKNOWN) {
+		assumptions_warning_shown = true;
+		return false;
+	}
+	if(m.containsType(STRUCT_COMPARISON, false) <= 0 && !m.containsFunctionId(FUNCTION_ID_SOLVE)) return false;
+	MathStructure mvar = m.find_x_var();
+	if(!mvar.isSymbolic() && !mvar.isVariable()) return false;
+	if(mvar.isVariable() && (mvar.variable()->isKnown() || ((UnknownVariable*) mvar.variable())->assumptions())) return false;
+	CALCULATOR->error(false, _("Unknown variables (e.g. x, y, z) are by default assumed real."), NULL);
+	if(!dry_run) assumptions_warning_shown = true;
+	return true;
+}
 bool test_ask_sinc(MathStructure &m) {
 	return !sinc_set && m.containsFunctionId(FUNCTION_ID_SINC);
 }
@@ -1092,11 +1107,14 @@ bool ask_percent() {
 	return simplified_percentage == 0;
 }
 
+string prev_autocalc_str;
+MathStructure mauto;
+
 vector<CalculatorMessage> autocalc_messages;
 gboolean do_autocalc_history_timeout(gpointer) {
 	autocalc_history_timeout_id = 0;
 	if(stop_timeouts || !result_autocalculated || rpn_mode) return FALSE;
-	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || (test_ask_dot(result_text) && ask_dot()) || ((test_ask_sinc(*parsed_mstruct) || test_ask_sinc(*mstruct)) && ask_sinc()) || (test_ask_percent() && ask_percent()) || check_exchange_rates(NULL, true)) {
+	if((test_ask_tc(*parsed_mstruct) && ask_tc()) || (test_ask_dot(prev_autocalc_str) && ask_dot()) || ((test_ask_sinc(*parsed_mstruct) || test_ask_sinc(mauto)) && ask_sinc()) || (test_ask_percent() && ask_percent()) || check_exchange_rates(NULL, true)) {
 		execute_expression(true, false, OPERATION_ADD, NULL, false, 0, "", "", false);
 		return FALSE;
 	}
@@ -1145,9 +1163,6 @@ bool contains_fraction_gtk(const MathStructure &m) {
 	return false;
 }
 
-string prev_autocalc_str;
-MathStructure mauto;
-
 void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	if(result_blocked() || calculation_blocked()) return;
 
@@ -1174,6 +1189,10 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	long int save_fden = CALCULATOR->fixedDenominator();
 	NumberFractionFormat save_format = printops.number_fraction_format;
 	bool save_restrict_fraction_length = printops.restrict_fraction_length;
+	bool save_minus = printops.sort_options.minus_last;
+	int save_exp = printops.min_exp;
+	bool save_zeroes = printops.show_ending_zeroes;
+	bool save_neg = printops.negative_exponents;
 	bool do_to = false;
 
 	if(recalculate) {
@@ -1246,7 +1265,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		}
 		prev_autocalc_str = str;
 		if(origstr) {
-			to_caf = -1; to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_duo_syms = false; to_bits = 0; to_nbase.clear(); to_tz = TIME_ZONE_LOCAL; to_ctz = 0;
+			to_caf = -1; to_fraction = 0; to_fixed_fraction = 0; to_prefix = 0; to_base = 0; to_duo_syms = false; to_bits = 0; to_nbase.clear(); to_tz = TIME_ZONE_LOCAL; to_ctz = 0; to_form = TO_FORM_OFF;
 		}
 		string from_str = str, to_str, str_conv;
 		bool had_to_expression = false;
@@ -1290,6 +1309,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "dec") || equalsIgnoreCase(to_str, "decimal") || equalsIgnoreCase(to_str, _("decimal"))) {
 					to_base = BASE_DECIMAL;
+					to_form = EXP_NONE;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "duo") || equalsIgnoreCase(to_str, "duodecimal") || equalsIgnoreCase(to_str, _("duodecimal"))) {
 					to_base = BASE_DUODECIMAL;
@@ -1352,6 +1372,15 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "Unicode")) {
 					to_base = BASE_UNICODE;
+					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "sci") || EQUALS_IGNORECASE_AND_LOCAL(to_str, "scientific", _("scientific"))) {
+					to_form = EXP_PURE;
+					do_to = true;
+				} else if(equalsIgnoreCase(to_str, "eng") || EQUALS_IGNORECASE_AND_LOCAL(to_str, "engineering", _("engineering"))) {
+					to_form = EXP_BASE_3;
+					do_to = true;
+				} else if(EQUALS_IGNORECASE_AND_LOCAL(to_str, "simple", _("simple"))) {
+					to_form = EXP_NONE;
 					do_to = true;
 				} else if(equalsIgnoreCase(to_str, "utc") || equalsIgnoreCase(to_str, "gmt")) {
 					to_tz = TIME_ZONE_UTC;
@@ -1544,6 +1573,8 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			}
 			if(CALCULATOR->aborted()) mauto.setAborted();
 			CALCULATOR->stopControl();
+		} else if(mauto.isZero() && parsed_mstruct && parsed_mstruct->isFunction() && parsed_mstruct->function()->subtype() == SUBTYPE_DATA_SET && parsed_mstruct->size() >= 2 && parsed_mstruct->getChild(2)->isSymbolic() && equalsIgnoreCase(parsed_mstruct->getChild(2)->symbol(), "info")) {
+			mauto.setAborted();
 		// Always perform conversion to optimal (SI) unit when the expression is a number multiplied by a unit and input equals output
 		} else if((!parsed_tostruct || parsed_tostruct->isUndefined()) && origstr && !had_to_expression && (evalops.approximation == APPROXIMATION_EXACT || evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) && parsed_mstruct) {
 			convert_unchanged_quantity_with_unit(*parsed_mstruct, mauto, evalops);
@@ -1576,7 +1607,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 
 		CALCULATOR->startControl(100);
 
-		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form) || to_tz != TIME_ZONE_LOCAL) {
+		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form) || to_tz != TIME_ZONE_LOCAL || to_form != TO_FORM_OFF) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms && !printops.duodecimal_symbols))) {
 				printops.base = to_base;
 				if(to_duo_syms) printops.duodecimal_symbols = true;
@@ -1602,6 +1633,16 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			}
 			if(to_caf >= 0 && to_caf != complex_angle_form) {
 				complex_angle_form = to_caf;
+				do_to = true;
+			}
+			if(to_form != TO_FORM_OFF) {
+				printops.min_exp = to_form;
+				if(to_base != BASE_DECIMAL) {
+					printops.sort_options.minus_last = (to_form == EXP_NONE);
+					printops.show_ending_zeroes = (to_form != EXP_NONE);
+					printops.use_unit_prefixes = (to_form == EXP_NONE);
+					printops.negative_exponents = (to_form > 0);
+				}
 				do_to = true;
 			}
 			if(to_prefix != 0) {
@@ -1666,6 +1707,11 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 				Variable *v = CALCULATOR->getActiveVariable("true");
 				if(v) displayed_mstruct_pre->set(v);
 			}
+		}
+
+		if(recalculate && parsed_mstruct) {
+			if(test_ask_tc(*parsed_mstruct) || test_ask_dot(str) || test_ask_sinc(*parsed_mstruct) || test_ask_sinc(mauto) || test_ask_percent()) CALCULATOR->error(false, "", NULL);
+			warn_assumptions(*parsed_mstruct, true);
 		}
 
 		displayed_mstruct_pre->removeDefaultAngleUnit(evalops);
@@ -1774,6 +1820,10 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		evalops.mixed_units_conversion = save_mixed_units_conversion;
 		printops.time_zone = TIME_ZONE_LOCAL;
 		printops.custom_time_zone = 0;
+		printops.sort_options.minus_last = save_minus;
+		printops.min_exp = save_exp;
+		printops.show_ending_zeroes = save_zeroes;
+		printops.negative_exponents = save_neg;
 	}
 
 	unblock_error();
@@ -2504,10 +2554,14 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	long int save_fden = CALCULATOR->fixedDenominator();
 	NumberFractionFormat save_format = printops.number_fraction_format;
 	bool save_restrict_fraction_length = printops.restrict_fraction_length;
+	bool save_minus = printops.sort_options.minus_last;
+	int save_exp = printops.min_exp;
+	bool save_zeroes = printops.show_ending_zeroes;
+	bool save_neg = printops.negative_exponents;
 	bool do_to = false;
 
 	if(stack_index == 0) {
-		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form) || to_tz != TIME_ZONE_LOCAL) {
+		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form) || to_tz != TIME_ZONE_LOCAL || to_form != TO_FORM_OFF) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms && !printops.duodecimal_symbols))) {
 				printops.base = to_base;
 				if(to_duo_syms) printops.duodecimal_symbols = true;
@@ -2533,6 +2587,16 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 			}
 			if(to_caf >= 0 && to_caf != complex_angle_form) {
 				complex_angle_form = to_caf;
+				do_to = true;
+			}
+			if(to_form != TO_FORM_OFF) {
+				printops.min_exp = to_form;
+				if(to_base != BASE_DECIMAL) {
+					printops.sort_options.minus_last = (to_form == EXP_NONE);
+					printops.show_ending_zeroes = (to_form != EXP_NONE);
+					printops.use_unit_prefixes = (to_form == EXP_NONE);
+					printops.negative_exponents = (to_form > 0);
+				}
 				do_to = true;
 			}
 			if(to_prefix != 0 && !prefix) {
@@ -2679,7 +2743,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		bool b_approx = result_text_approximate || mstruct->isApproximate();
 		string error_str;
 		int mtype_highest = MESSAGE_INFORMATION;
-		add_result_to_history(update_history, update_parse, register_moved, b_rpn_operation, result_text, b_approx, parsed_text, parsed_approx, transformation, supress_dialog ? NULL : main_window(), &error_str, &mtype_highest, &implicit_warning);
+		add_result_to_history(update_history, update_parse, register_moved, b_rpn_operation, result_text, b_approx, parsed_text, parsed_approx, transformation, main_window(), &error_str, &mtype_highest, &implicit_warning);
 		error_icon = expression_display_errors(supress_dialog ? NULL : main_window(), 1, true, error_str, mtype_highest);
 		if(update_history && unformatted_length(result_text) < 1000) {
 			string str;
@@ -2722,6 +2786,10 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		printops.restrict_fraction_length = save_restrict_fraction_length;
 		printops.time_zone = TIME_ZONE_LOCAL;
 		printops.custom_time_zone = 0;
+		printops.sort_options.minus_last = save_minus;
+		printops.min_exp = save_exp;
+		printops.show_ending_zeroes = save_zeroes;
+		printops.negative_exponents = save_neg;
 	}
 	printops.prefix = NULL;
 	b_busy = false;
@@ -3264,6 +3332,7 @@ void set_option(string str) {
 		} else {
 			set_assumption(svalue, at, as, false);
 		}
+		assumptions_warning_shown = true;
 		set_assumptions_items(at, as);
 	} else if(equalsIgnoreCase(svar, "all prefixes") || svar == "allpref") SET_BOOL_MENU("menu_item_all_prefixes")
 	else if(equalsIgnoreCase(svar, "complex numbers") || svar == "cplx") SET_BOOL_MENU("menu_item_allow_complex")
@@ -4663,6 +4732,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "dec") || equalsIgnoreCase(to_str, "decimal") || equalsIgnoreCase(to_str, _("decimal"))) {
 				to_base = BASE_DECIMAL;
+				to_form = EXP_NONE;
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "duo") || equalsIgnoreCase(to_str, "duodecimal") || equalsIgnoreCase(to_str, _("duodecimal"))) {
 				to_base = BASE_DUODECIMAL;
@@ -4725,6 +4795,15 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "Unicode")) {
 				to_base = BASE_UNICODE;
+				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "sci") || EQUALS_IGNORECASE_AND_LOCAL(to_str, "scientific", _("scientific"))) {
+				to_form = EXP_PURE;
+				do_to = true;
+			} else if(equalsIgnoreCase(to_str, "eng") || EQUALS_IGNORECASE_AND_LOCAL(to_str, "engineering", _("engineering"))) {
+				to_form = EXP_BASE_3;
+				do_to = true;
+			} else if(EQUALS_IGNORECASE_AND_LOCAL(to_str, "simple", _("simple"))) {
+				to_form = EXP_NONE;
 				do_to = true;
 			} else if(equalsIgnoreCase(to_str, "utc") || equalsIgnoreCase(to_str, "gmt")) {
 				to_tz = TIME_ZONE_UTC;
@@ -5250,6 +5329,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode & ~PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 		return;
 	}
+	warn_assumptions(*parsed_mstruct);
 
 	//update "ans" variables
 	if(stack_index == 0) {
@@ -5734,6 +5814,7 @@ void load_preferences() {
 	evalops.parse_options.limit_implicit_multiplication = false;
 	evalops.parse_options.parsing_mode = PARSING_MODE_ADAPTIVE;
 	implicit_question_asked = false;
+	assumptions_warning_shown = false;
 	evalops.parse_options.angle_unit = ANGLE_UNIT_RADIANS;
 	custom_angle_unit = "";
 	evalops.parse_options.dot_as_separator = CALCULATOR->default_dot_as_separator;
@@ -5978,6 +6059,8 @@ void load_preferences() {
 						} else if(v == 0) {
 							sinc_set = true;
 						}
+					} else if(svar == "assumptions_warning_shown") {
+						assumptions_warning_shown = v;
 					} else if(svar == "local_currency_conversion") {
 						evalops.local_currency_conversion = v;
 					} else if(svar == "use_binary_prefixes") {
@@ -6502,6 +6585,7 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	if(!scientific_negexp) fprintf(file, "scientific_mode_negative_exponents=%i\n", false);
 	if(tc_set) fprintf(file, "temperature_calculation=%i\n", CALCULATOR->getTemperatureCalculationMode());
 	if(sinc_set) fprintf(file, "sinc_function=%i\n", CALCULATOR->getFunctionById(FUNCTION_ID_SINC)->getDefaultValue(2) == "pi" ? 1 : 0);
+	if(assumptions_warning_shown) fprintf(file, "assumptions_warning_shown=%i\n", assumptions_warning_shown);
 	if(!default_shortcuts) {
 		std::vector<guint64> ksv;
 		ksv.reserve(keyboard_shortcuts.size());
@@ -6803,6 +6887,7 @@ void set_min_exp(int min_exp, bool extended) {
 		scientific_negexp = sne_bak; scientific_notminuslast = snml_bak; scientific_noprefix = snp_bak;
 		unblock_result();
 	}
+	to_form = TO_FORM_OFF;
 	printops.min_exp = min_exp;
 	update_keypad_numerical_display();
 	update_menu_numerical_display();
@@ -6810,6 +6895,7 @@ void set_min_exp(int min_exp, bool extended) {
 }
 void set_prefix_mode(int i) {
 	to_prefix = 0;
+	to_form = TO_FORM_OFF;
 	printops.use_unit_prefixes = (i != PREFIX_MODE_NO_PREFIXES);
 	printops.use_prefixes_for_all_units = (i == PREFIX_MODE_ALL_UNITS);
 	printops.use_prefixes_for_currencies = (i == PREFIX_MODE_ALL_UNITS || i == PREFIX_MODE_CURRENCIES);
@@ -7388,6 +7474,7 @@ void convert_result_to_unit_expression(string str) {
 	string ceu_str = CALCULATOR->unlocalizeExpression(str, pa);
 	bool b_puup = printops.use_unit_prefixes;
 	to_prefix = 0;
+	to_form = TO_FORM_OFF;
 	printops.use_unit_prefixes = true;
 	executeCommand(COMMAND_CONVERT_STRING, true, false, ceu_str);
 	printops.use_unit_prefixes = b_puup;

@@ -1341,6 +1341,8 @@ void do_completion(bool to_menu) {
 								if(!current_from_struct->isInteger() && current_from_struct->containsType(STRUCT_ADDITION) <= 0) b_match = 0;
 							} else if(p_type == 601) {
 								if(current_from_struct->containsType(STRUCT_ADDITION) <= 0) b_match = 0;
+							} else if(p_type >= 700 && p_type < 800) {
+								if(!current_from_struct->isNumber() || (current_from_struct->number() < Number(1, 1, PRECISION + 3) && current_from_struct->number() > Number(1, 1, -PRECISION))) b_match = 0;
 							}
 						}
 						if(b_match > highest_match) highest_match = b_match;
@@ -1947,6 +1949,12 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Unicode"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 281, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("utc")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC Time Zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 501, 9, NULL, -1);
+	COMPLETION_CONVERT_STRING("scientific") str += " <i>"; str += "sci"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Scientific Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 701, 9, NULL, -1);
+	COMPLETION_CONVERT_STRING("engineering") str += " <i>"; str += "eng"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Engineering Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 702, 9, NULL, -1);
+	COMPLETION_CONVERT_STRING("simple")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Simple Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 703, 9, NULL, -1);
 	gtk_list_store_append(completion_store, &completion_separator_iter); gtk_list_store_set(completion_store, &completion_separator_iter, 0, "", 1, "", 2, NULL, 3, FALSE, 4, 3, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 0, 9, NULL, -1);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID, GTK_SORT_ASCENDING);
 }

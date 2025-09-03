@@ -1730,7 +1730,7 @@ In addition there are two special parsing modes — RPN syntax (for details see 
 <sect1 id="qalculate-to">
 <title>The <quote>to</quote> (and <quote>where</quote>) operators</title>
 <para>
-Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed by an expression at the end of the mathematical expression is mainly used for unit conversion (see <xref linkend="qalculate-unit-conversion"/>). There are however also some convenient commands that can be typed after <quote> to </quote>. Here is a list of possible <quote>to</quote> values:
+Putting <quote> to </quote> (or a right arrow, e.g. <quote>-&gt;</quote> but not <quote>&gt;</quote>) followed by an expression at the end of the mathematical expression is mainly used for unit conversion (see <xref linkend="qalculate-unit-conversion"/>). There are however also some convenient commands that can be typed after <quote> to </quote>. Here is a list of possible <quote>to</quote> values:
 <variablelist>
 <varlistentry>
 <term>A unit or unit expression</term>
@@ -1835,6 +1835,18 @@ Putting <quote> to </quote> (or a right arrow, e.g. <quote>-></quote>) followed 
 <varlistentry>
 <term>1/#</term>
 <listitem><para>Show as mixed or simple (prepend with <quote>-</quote>) fraction with a specific denominator (<quote>2.7 to 1/3 ≈ 2 + 2/3</quote>, <quote>2.7 to -1/3 ≈ 8/3</quote>).</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>sci, scientific</term>
+<listitem><para>Show with scientific notation (<quote>123456 to sci = 1.234 56 × 10<sup>5</sup></quote></para></listitem>
+</varlistentry>
+<varlistentry>
+<term>eng, engineering</term>
+<listitem><para>Show with engineering notation (<quote>10<sup>11</sup> to eng = 100 × 10<sup>9</sup></quote></para></listitem>
+</varlistentry>
+<varlistentry>
+<term>simple</term>
+<listitem><para>Show with simple notation (<quote><quote>10<sup>15</sup> to simple = 1 000 000 000 000 000</quote></para></listitem>
 </varlistentry>
 <varlistentry>
 <term>partial fraction</term>

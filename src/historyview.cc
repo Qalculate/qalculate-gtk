@@ -806,6 +806,10 @@ string history_display_errors(bool add_to_history, GtkWindow *win, int type, boo
 				if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 				gtk_dialog_run(GTK_DIALOG(edialog));
 				gtk_widget_destroy(edialog);
+			} else if(mtype != MESSAGE_INFORMATION && CALCULATOR->message()->message().empty()) {
+				if(mtype == MESSAGE_ERROR || (mtype_highest != MESSAGE_ERROR && mtype == MESSAGE_WARNING)) {
+					mtype_highest = mtype;
+				}
 			} else {
 				if(index > 0) {
 					if(index == 1) str = "• " + str;

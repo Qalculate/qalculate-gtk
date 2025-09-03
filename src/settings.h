@@ -52,6 +52,8 @@ extern std::vector<Unit*> recent_units;
 extern unordered_map<std::string, cairo_surface_t*> flag_surfaces;
 extern int flagheight;
 
+#define TO_FORM_OFF -10000
+
 enum {
 	KEEP_EXPRESSION,
 	REPLACE_EXPRESSION_WITH_RESULT,

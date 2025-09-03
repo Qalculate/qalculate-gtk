@@ -2088,12 +2088,14 @@ void on_button_store_clicked(GtkButton*, gpointer) {
 	else edit_variable(NULL, NULL, NULL, main_window());
 }
 
+extern bool assumptions_warning_shown;
 void set_type(const char *var, AssumptionType at) {
 	if(calculation_blocked()) return;
 	Variable *v = CALCULATOR->getActiveVariable(var);
 	if(!v || v->isKnown()) return;
 	UnknownVariable *uv = (UnknownVariable*) v;
 	if(!uv->assumptions()) uv->setAssumptions(new Assumptions());
+	assumptions_warning_shown = true;
 	uv->assumptions()->setType(at);
 	expression_calculation_updated();
 }

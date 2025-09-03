@@ -263,7 +263,9 @@ void update_fp_entries(string sbin, int base, const Number *decnum) {
 					sfloat += expression_times_sign();
 					sfloat += " ";
 					sfloat += "2^";
+					po.digit_grouping = DIGIT_GROUPING_NONE;
 					sfloat += exponent.print(po);
+					po.digit_grouping = printops.digit_grouping;
 				}
 				if(b_approx) sfloat.insert(0, SIGN_ALMOST_EQUAL " ");
 				b_approx = false;

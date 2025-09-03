@@ -521,8 +521,10 @@ void on_menu_item_indicate_infinite_series_activate(GtkMenuItem *w, gpointer) {
 	}
 	result_format_updated();
 }
+extern int to_form;
 void on_menu_item_show_ending_zeroes_activate(GtkMenuItem *w, gpointer) {
 	printops.show_ending_zeroes = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	to_form = TO_FORM_OFF;
 	result_format_updated();
 }
 void on_menu_item_rounding_half_to_even_activate(GtkMenuItem *w, gpointer) {
@@ -585,11 +587,13 @@ extern bool scientific_notminuslast;
 void on_menu_item_negative_exponents_activate(GtkMenuItem *w, gpointer) {
 	printops.negative_exponents = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	if(printops.min_exp != EXP_NONE && printops.min_exp != EXP_PRECISION) scientific_negexp = printops.negative_exponents;
+	to_form = TO_FORM_OFF;
 	result_format_updated();
 }
 void on_menu_item_sort_minus_last_activate(GtkMenuItem *w, gpointer) {
 	printops.sort_options.minus_last = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	if(printops.min_exp != EXP_NONE && printops.min_exp != EXP_PRECISION) scientific_notminuslast = !printops.sort_options.minus_last;
+	to_form = TO_FORM_OFF;
 	result_format_updated();
 }
 void update_menu_numerical_display() {
@@ -696,11 +700,13 @@ void on_menu_item_abbreviate_names_activate(GtkMenuItem *w, gpointer) {
 extern char to_prefix;
 void on_menu_item_all_prefixes_activate(GtkMenuItem *w, gpointer) {
 	to_prefix = 0;
+	to_form = TO_FORM_OFF;
 	printops.use_all_prefixes = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	result_format_updated();
 }
 void on_menu_item_denominator_prefixes_activate(GtkMenuItem *w, gpointer) {
 	to_prefix = 0;
+	to_form = TO_FORM_OFF;
 	printops.use_denominator_prefix = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
 	result_format_updated();
 }
@@ -1026,8 +1032,10 @@ void on_menu_item_insert_vector_activate(GtkMenuItem*, gpointer) {
 	expression_insert_vector();
 }
 
+extern bool assumptions_warning_shown;
 void update_assumptions_items() {
 	block_calculation();
+	assumptions_warning_shown = true;
 	set_assumptions_items(CALCULATOR->defaultAssumptions()->type(), CALCULATOR->defaultAssumptions()->sign());
 	unblock_calculation();
 }
