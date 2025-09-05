@@ -4,6 +4,8 @@
 
 Qalculate! is a multi-purpose cross-platform desktop calculator. It is simple to use but provides power and versatility normally reserved for complicated math packages, as well as useful tools for everyday needs (such as currency conversion and percent calculation). Features include a large library of customizable functions, unit calculations and conversion, symbolic calculations (including integrals and equations), arbitrary precision, uncertainty propagation, interval arithmetic, plotting, and a user-friendly interface (GTK, Qt, and CLI).
 
+Visit the website at https://qalculate.github.io/ to see additional screenshots, read the manual, and download the latest version.
+
 ## Requirements
 * GTK (>= 3.10)
 * libqalculate (>= 5.6.0)
@@ -25,7 +27,7 @@ The resulting executable is named `qalculate-gtk`.
 ## Features
 Features specific to qalculate-gtk:
 
-* Graphical user interfaces implemented using GTK 3
+**Graphical user interface**
 * Flexible expression entry with customizable completion, hints, and continious display of parsed expression
 * Optional calculate-as-you-type mode
 * Small and ... not so small mode
@@ -34,7 +36,7 @@ Features specific to qalculate-gtk:
 * Practical menus give fast access to all advanced features
 * Customizable meta modes for quickly switching between different settings
 * Dialogs for management of and easy access to functions, variables and units (with quick conversion)
-* User friendly dialogs for functions, with description and entries for arguments
+* Dialogs for easy entry of all functions
 * Create/edit functions, variables and units
 * Easy editing of matrices and vectors
 * Various tools for fast conversion between number bases, floating point conversion, calendar conversion, and percentage calculation, and a period table
@@ -44,55 +46,62 @@ Features specific to qalculate-gtk:
 
 Features from libqalculate:
 
-* Calculation and parsing:
-   * Basic operations and operators: + - * / mod ^ E () && || ! < > >= <= != ~ & | << >> xor
-   * Fault-tolerant parsing of strings: log 5 / 2 .5 (3) + (2( 3 +5 = ln(5) / (2.5 * 3) + 2 * (3 + 5)
+**Calculation and parsing**
+   * All basic operations and operators: arithmetic, logical, bitwise, element-wise, (in)equalities
+   * Fault-tolerant parsing of strings: *log 5 / 2 .5 (3) + (2( 3 +5* = *ln(5) / (2.5 × 3) + 2 × (3 + 5)*
    * Expressions may contain any combination of numbers, functions, units, variables, vectors and matrices, and dates
    * Supports complex and infinite numbers
+   * Arbitrary precision
    * Propagation of uncertainty
    * Interval arithmetic (for determination of the number of significant digits or direct calculation with intervals of numbers)
-   * Supports all common number bases, as well as negative and non-integer radices, sexagesimal numbers, time format, and roman numerals
-   * Ability to disable functions, variables, units or unknown variables for less confusion: e.g. when you do not want (a+b)^2 to mean (are+barn)^2 but ("a"+"b")^2
-   * Controllable implicit multiplication
    * Matrices and vectors, and related operations (determinants etc.)
+   * Supports all common number bases, as well as negative and non-integer radices, sexagesimal numbers, time format, and roman numerals
+   * Ability to disable functions, variables, units or unknown variables for less confusion: e.g. when you do not want *(a+b)^2* to mean *(are+barn)^2* but *(\a+\b)^2*
+   * Controllable implicit multiplication
    * Verbose error messages
-   * Arbitrary precision
    * RPN mode
-* Result display:
+
+**Result display**
    * Supports all common number bases, as well as negative and non-integer radices, sexagesimal numbers, time format, and roman numerals
    * Many customization options: precision, max/min decimals, complex form, multiplication sign, etc.
-   * Exact or approximate: sqrt(32) returns 4 * sqrt(2) or 5.66
-   * Simple and mixed fractions: 4 / 6 * 2 = 1.333... = 4/3 = 1 + 1/3
-* Symbolic calculation:
-   * E.g. (x + y)^2 = x^2 + 2xy + y^2; 4 "apples" + 3 "oranges"
+   * Exact or approximate: *sqrt(32)* returns *4 × sqrt(2)* or *5.657*
+   * Simple and mixed fractions: *4 / 6 × 2* = *1.333…* = *4/3* = *1 + 1/3*
+
+**Symbolic calculations**
+   * E.g. *(x + y)^2* = *x^2 + 2xy + y^2*; *4 "apples" + 3 "oranges"*
    * Factorization and simplification
    * Differentiation and integration
    * Can solve most equations and inequalities
-   * Customizable assumptions give different results (e.g. ln(2x) = ln(2) + ln(x) if x is assumed positive)
-* Functions:
+   * Customizable assumptions give different results (e.g. *ln(2x) where x > 0* = *ln(2) + ln(x)*)
+
+**Functions**
    * Hundreds of flexible functions: trigonometry, exponents and logarithms, combinatorics, geometry, calculus, statistics, finance, time and date, etc.
    * Can easily be created, edited and saved to a standard XML file
-* Units:
+
+**Units**
    * Supports all SI units and prefixes (including binary), as well as imperial and other unit systems
-   * Automatic conversion: ft + yd + m = 2.2192 m
-   * Explicit conversion: 5 m/s to mi/h = 11.18 miles/hour
-   * Smart conversion: automatically converts 5 kg*m/s^2 to 5 N
+   * Automatic conversion: *ft + yd + m* = *2.2192 m*
+   * Explicit conversion: *5 m/s to mi/h* = *11.18 miles/hour*
+   * Smart conversion: automatically converts *5 kg × m/s^2* to *5 N*
    * Currency conversion with retrieval of daily exchange rates
    * Different name forms: abbreviation, singular, plural (m, meter, meters)
    * Can easily be created, edited and saved to a standard XML file
-* Variables and constants:
+
+**Variables and constants**
    * Basic constants: pi, e, etc.
    * Lots of physical constants (with or without units) and properties of chemical element
    * CSV file import and export
-   * Can easily be created, edited and saved to a standard XML file
+   * Can easily be created, edited and saved to a standard XML file (including by direct assignment, e.g. *x = 2 s*)
    * Flexible - may contain simple numbers, units, or whole expressions
    * Data sets with objects and associated properties in database-like structure
-* Plotting:
+
+**Plotting**
    * Uses Gnuplot
    * Can plot functions or data (matrices and vectors)
    * Ability to save plot to PNG image, postscript, etc.
    * Several customization options
-* and more...
+
+*…and more…*
 
 _For more details about the syntax, and available functions, units, and variables, please consult the manual (https://qalculate.github.io/manual/)_
 

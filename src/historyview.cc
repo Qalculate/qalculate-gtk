@@ -2960,23 +2960,33 @@ void on_popup_menu_item_history_bookmark_activate(GtkMenuItem *w, gpointer) {
 void on_popup_menu_item_history_comment_activate(GtkMenuItem *w, gpointer) {
 	bool b_edit = (strcmp(gtk_menu_item_get_label(w), _("Edit Comment…")) == 0);
 	string history_message;
-	GtkWidget *dialog = gtk_dialog_new_with_buttons(b_edit ? _("Edit Comment") : _("Add Comment"), main_window(), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
+	GtkWidget *dialog = gtk_dialog_new_with_buttons(_("Comment"), main_window(), (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), _("_Cancel"), GTK_RESPONSE_REJECT, _("_OK"), GTK_RESPONSE_ACCEPT, NULL);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_container_set_border_width(GTK_CONTAINER(dialog), 6);
-	GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
-	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
-	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox);
-	gtk_widget_show(hbox);
-	GtkWidget *label = gtk_label_new(_("Comment"));
-	gtk_widget_set_halign(label, GTK_ALIGN_START);
-	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, TRUE, 0);
-	gtk_widget_show(label);
-	GtkWidget *entry = gtk_entry_new();
-	gtk_entry_set_width_chars(GTK_ENTRY(entry), 35);
-	gtk_box_pack_end(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
+	GtkWidget *comment_frame = gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(comment_frame), GTK_SHADOW_IN);
+	g_object_set(comment_frame, "width-request", 300, NULL);
+	g_object_set(comment_frame, "height-request", 125, NULL);
+	gtk_widget_set_margin_bottom(comment_frame, 12);
+	gtk_widget_set_vexpand(comment_frame, TRUE);
+	gtk_widget_set_hexpand(comment_frame, TRUE);
+	gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), comment_frame);
+	GtkWidget *comment_edit = gtk_text_view_new();
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(comment_edit), GTK_WRAP_WORD);
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(comment_edit), TRUE);
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 18
+		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(comment_edit), 12);
+		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(comment_edit), 12);
+		gtk_text_view_set_top_margin(GTK_TEXT_VIEW(comment_edit), 12);
+		gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(comment_edit), 12);
+#else
+		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(comment_edit), 6);
+		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(comment_edit), 6);
+		gtk_text_view_set_pixels_above_lines(GTK_TEXT_VIEW(comment_edit), 6);
+#endif
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(comment_edit));
+	gtk_container_add(GTK_CONTAINER(comment_frame), comment_edit);
 	gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
-	g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(on_bookmark_entry_activated), (gpointer) dialog);
-	gtk_widget_show(entry);
 	GtkTreeIter iter;
 	gint hindex = -1;
 	if(b_edit) {
@@ -2995,11 +3005,17 @@ void on_popup_menu_item_history_comment_activate(GtkMenuItem *w, gpointer) {
 			}
 		}
 		if(hindex >= 0) {
-			gtk_entry_set_text(GTK_ENTRY(entry), inhistory[hindex].c_str());
+			gtk_text_buffer_set_text(buffer, inhistory[hindex].c_str(), -1);
 		}
 	}
+	gtk_widget_show_all(dialog);
 	if(gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
-		string history_message = gtk_entry_get_text(GTK_ENTRY(entry));
+		GtkTextIter istart, iend;
+		gtk_text_buffer_get_start_iter(buffer, &istart);
+		gtk_text_buffer_get_end_iter(buffer, &iend);
+		gchar *gstr = gtk_text_buffer_get_text(buffer, &istart, &iend, FALSE);
+		string history_message = gstr;
+		g_free(gstr);
 		remove_blank_ends(history_message);
 		if(hindex >= 0) {
 			if(history_message.empty()) {

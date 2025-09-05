@@ -915,11 +915,11 @@ void display_parse_status() {
 				} else if(equalsIgnoreCase(str_u, "unicode")) {
 					parsed_expression += _("Unicode");
 				} else if(equalsIgnoreCase(str_u, "sci") || EQUALS_IGNORECASE_AND_LOCAL(str_u, "scientific", _("scientific"))) {
-					parsed_expression += _("scientific form");
+					parsed_expression += _("scientific notation");
 				} else if(equalsIgnoreCase(str_u, "eng") || EQUALS_IGNORECASE_AND_LOCAL(str_u, "engineering", _("engineering"))) {
-					parsed_expression += _("engineering form");
+					parsed_expression += _("engineering notation");
 				} else if(EQUALS_IGNORECASE_AND_LOCAL(str_u, "simple", _("simple"))) {
-					parsed_expression += _("simple form");
+					parsed_expression += _("simple notation");
 				} else if(equalsIgnoreCase(str_u, "bases") || equalsIgnoreCase(str_u, _("bases"))) {
 					parsed_expression += _("number bases");
 				} else if(equalsIgnoreCase(str_u, "calendars") || equalsIgnoreCase(str_u, _("calendars"))) {
