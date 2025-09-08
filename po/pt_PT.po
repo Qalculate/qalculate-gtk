@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-04 19:08+0200\n"
-"PO-Revision-Date: 2025-03-02 18:37+0000\n"
+"PO-Revision-Date: 2025-09-08 19:11+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: \n"
 "Language: pt_PT\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.6\n"
 
 #: ../data/qalculate-gtk.desktop.in.h:1
 msgid "Calculator"
@@ -1970,9 +1970,8 @@ msgstr "DEL"
 
 #. Standard calculator button. Do not use more than three characters.
 #: ../data/main.ui.h:302 ../data/nbases.ui.h:31 ../src/keypad.cc:522
-#, fuzzy
 msgid "C"
-msgstr "AC"
+msgstr "C"
 
 #: ../data/main.ui.h:303 ../src/buttonseditdialog.cc:378 ../src/keypad.cc:524
 msgid "Previous result"
@@ -3112,15 +3111,16 @@ msgid "Copy result as unformatted ASCII by default"
 msgstr "Copiar o resultado como ASCII não formatado por defeito"
 
 #: ../data/preferences.ui.h:99
-#, fuzzy
 msgid "Use overline for repeating decimals"
-msgstr "Indicar decimais repetidos"
+msgstr "Use a linha superior para repetir decimais"
 
 #: ../data/preferences.ui.h:100
 msgid ""
 "Use overline (vinculum), instead of ellipsis, for repeating decimals when "
 "indicate repeating decimals is enabled."
 msgstr ""
+"Use uma linha superior (vinculum), em vez de reticências, para repetir "
+"decimais quando a indicação de repetição de decimais estiver ativada."
 
 #: ../data/preferences.ui.h:101
 msgid "Digit grouping"
@@ -3283,11 +3283,10 @@ msgid "Custom history font"
 msgstr "Fonte do histórico personalizado"
 
 #: ../data/preferences.ui.h:138
-#, fuzzy
 msgid "If you want to use a font other than the default in the history list"
 msgstr ""
-"Se pretender utilizar um tipo de letra diferente do predefinido para a lista "
-"de histórico"
+"Se pretender utilizar um tipo de letra diferente do padrão na lista do "
+"histórico"
 
 #: ../data/preferences.ui.h:139
 msgid "Fonts & Colors"
@@ -4586,7 +4585,7 @@ msgstr "Campo de expressão vazio."
 
 #: ../src/functioneditdialog.cc:931
 msgid "Conversion (using \"to\") is not supported in functions."
-msgstr ""
+msgstr "A conversão (usando \"para\") não é suportada em funções."
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
 #: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7509
@@ -5018,6 +5017,8 @@ msgstr ""
 #: ../src/mainwindow.cc:871
 msgid "Unknown variables (e.g. x, y, z) are by default assumed real."
 msgstr ""
+"Variáveis desconhecidas (por exemplo, x, y, z) são consideradas verdadeiras "
+"por padrão."
 
 #: ../src/mainwindow.cc:879
 msgid "Sinc Function"
@@ -5036,21 +5037,19 @@ msgid "Normalized"
 msgstr "Normalizada"
 
 #: ../src/mainwindow.cc:934
-#, fuzzy
 msgid "Interpretation of comma"
-msgstr "Interpretação de pontos"
+msgstr "Interpretação de vírgula"
 
 #: ../src/mainwindow.cc:934
 msgid "Interpretation of dots"
 msgstr "Interpretação de pontos"
 
 #: ../src/mainwindow.cc:944
-#, fuzzy
 msgid ""
 "Please select interpretation of comma (\",\")\n"
 "(this can later be changed in preferences)."
 msgstr ""
-"Selecione a interpretação de pontos (\".\")\n"
+"Selecione a interpretação de vírgula (\",\")\n"
 "(isto pode ser alterado mais tarde nas preferências)."
 
 #: ../src/mainwindow.cc:944
@@ -5066,9 +5065,8 @@ msgid "Both dot and comma as decimal separators"
 msgstr "Ponto e vírgula como separadores decimais"
 
 #: ../src/mainwindow.cc:954
-#, fuzzy
 msgid "Comma as thousands separator"
-msgstr "Ponto como separador de milhares"
+msgstr "Vírgula como separador de milhares"
 
 #: ../src/mainwindow.cc:954
 msgid "Dot as thousands separator"
@@ -5079,6 +5077,8 @@ msgid ""
 "Comma as separator for function arguments\n"
 "and matrix/vector elements"
 msgstr ""
+"Vírgula como separador para argumentos de função\n"
+"e elementos de matriz/vetor"
 
 #: ../src/mainwindow.cc:961
 msgid "Only dot as decimal separator"
