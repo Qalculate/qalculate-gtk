@@ -776,7 +776,7 @@ void display_parse_status() {
 			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
 			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			if(b_to && !str_e.empty()) {
-				if(!current_from_struct && !mparse.containsFunction(CALCULATOR->f_save) && (!CALCULATOR->f_plot || !mparse.containsFunction(CALCULATOR->f_plot))) {
+				if(!current_from_struct &&  && !mparse.containsFunctionId(FUNCTION_ID_SAVE) && !mparse.containsFunctionId(FUNCTION_ID_PLOT) && !mparse.containsFunctionId(FUNCTION_ID_EXPORT) && !mparse.containsFunctionId(FUNCTION_ID_LOAD) && !mparse.containsFunctionId(FUNCTION_ID_COMMAND)) {
 					current_from_struct = new MathStructure;
 					EvaluationOptions eo = evalops;
 					eo.structuring = STRUCTURING_NONE;
@@ -1035,6 +1035,7 @@ void display_parse_status() {
 						if(v && !v->isKnown()) v = NULL;
 						Prefix *p = NULL;
 						if(!u && !v && CALCULATOR->unitNameIsValid(str_u)) p = CALCULATOR->getPrefix(str_u);
+						CALCULATOR->startControl(100);
 						if(u) {
 							mparse_to = u;
 							if(!had_to_conv && !str_e.empty()) {
@@ -1087,6 +1088,7 @@ void display_parse_status() {
 							}
 							mparse_to.format(po);
 						}
+						CALCULATOR->stopControl();
 						if(p) {
 							parsed_expression += p->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, false, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(-1, true, TAG_TYPE_HTML, 0, true, po.hide_underscore_spaces);
 						} else {

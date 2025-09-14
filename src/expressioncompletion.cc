@@ -847,6 +847,17 @@ bool contains_related_unit(const MathStructure &m, Unit *u) {
 
 GtkTreeIter completion_separator_iter;
 extern bool display_expression_status;
+extern int to_form, to_base;
+
+const Number *from_struct_get_number(const MathStructure &m) {
+	if(m.isNumber()) return &m.number();
+	const Number *nr = NULL;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(m[i].isNumber()) return &m[i].number();
+		else if(!nr) nr = from_struct_get_number(m[i]);
+	}
+	return nr;
+}
 
 void do_completion(bool to_menu) {
 	if(!enable_completion && !to_menu) {gtk_widget_hide(completion_window); return;}
@@ -1300,7 +1311,7 @@ void do_completion(bool to_menu) {
 						if(current_from_struct && str.length() < 3) {
 							if(p_type >= 100 && p_type < 200) {
 								if(to_type == 5 || current_from_struct->containsType(STRUCT_UNIT) <= 0) b_match = 0;
-							} else if((p_type == 294 || (p_type == 292 && to_type == 4)) && !current_from_units.empty()) {
+							} else if((p_type == 294 || p_type == 295 || (p_type == 292 && to_type == 4)) && !current_from_units.empty()) {
 								bool b = false;
 								for(size_t i = 0; i < current_from_units.size(); i++) {
 									if(current_from_units[i] == CALCULATOR->getDegUnit()) {
@@ -1308,12 +1319,36 @@ void do_completion(bool to_menu) {
 										break;
 									}
 								}
-								if(!b) b_match = 0;
+								if(!b) {
+									b_match = 0;
+								} else if(str.empty()) {
+									int base = to_base;
+									if(base == 0) base = printops.base;
+									if((base == BASE_SEXAGESIMAL && p_type == 292) || (base == BASE_TIME && p_type == 293) || (base == BASE_LATITUDE && p_type == 294) || (base == BASE_LONGITUDE && p_type == 295)) {
+										b_match = 0;
+									}
+								}
 							} else if(p_type > 290 && p_type < 300 && (p_type != 292 || to_type >= 1)) {
 								if(!current_from_struct->isNumber() || (p_type > 290 && str.empty() && current_from_struct->isInteger())) b_match = 0;
+								if(str.empty()) {
+									int base = to_base;
+									if(base == 0) base = printops.base;
+									if((base == BASE_SEXAGESIMAL && p_type == 292) || (base == BASE_TIME && p_type == 293) || (base == BASE_LATITUDE && p_type == 294) || (base == BASE_LONGITUDE && p_type == 295)) {
+										b_match = 0;
+									}
+								}
 							} else if(p_type >= 200 && p_type <= 290 && (p_type != 200 || to_type == 1 || to_type >= 3)) {
-								if(!current_from_struct->isNumber()) b_match = 0;
-								else if(str.empty() && p_type >= 202 && !current_from_struct->isInteger()) b_match = 0;
+								if(!current_from_struct->isNumber()) {
+									b_match = 0;
+								} else if(str.empty() && p_type >= 202 && !current_from_struct->isInteger()) {
+									b_match = 0;
+								} else if(str.empty()) {
+									int base = to_base;
+									if(base == 0) base = printops.base;
+									if((p_type >= 202 && p_type <= 236 && base == p_type - 200) || (base == BASE_UNICODE && p_type == 281) || (base == BASE_BINARY_DECIMAL && p_type == 285) || (base == BASE_BIJECTIVE_26 && p_type == 290) || (base == BASE_ROMAN_NUMERALS && p_type == 280)) {
+										b_match = 0;
+									}
+								}
 							} else if(p_type >= 300 && p_type < 400) {
 								if(p_type == 300) {
 									if(!contains_rational_number(to_menu && current_displayed_result() ? *current_displayed_result() : *current_from_struct)) b_match = 0;
@@ -1332,17 +1367,57 @@ void do_completion(bool to_menu) {
 									}
 								} else {
 									if(!current_from_struct->isNumber()) b_match = 0;
+									if(p_type >= 310 && p_type <= 314) {
+										int base = to_base;
+										if(base == 0) base = printops.base;
+										if((base == BASE_FP16 && p_type == 310) || (base == BASE_FP32 && p_type == 311) || (base == BASE_FP64 && p_type == 312) || (base == BASE_FP80 && p_type == 313) || (base == BASE_FP128 && p_type == 314)) {
+											b_match = 0;
+										}
+									}
 								}
 							} else if(p_type >= 400 && p_type < 500) {
 								if(!contains_imaginary_number(*current_from_struct)) b_match = 0;
+								if(str.empty()) {
+									if(p_type == 404 && evalops.complex_number_form == COMPLEX_NUMBER_FORM_RECTANGULAR) b_match = 0;
+									else if(p_type == 403 && evalops.complex_number_form == COMPLEX_NUMBER_FORM_POLAR) b_match = 0;
+									else if(p_type == 402 && evalops.complex_number_form == COMPLEX_NUMBER_FORM_EXPONENTIAL) b_match = 0;
+									else if(p_type == 401 && evalops.complex_number_form == COMPLEX_NUMBER_FORM_CIS && !complex_angle_form) b_match = 0;
+									else if(p_type == 400 && evalops.complex_number_form == COMPLEX_NUMBER_FORM_CIS && complex_angle_form) b_match = 0;
+								}
 							} else if(p_type >= 500 && p_type < 600) {
 								if(!current_from_struct->isDateTime()) b_match = 0;
 							} else if(p_type == 600) {
-								if(!current_from_struct->isInteger() && current_from_struct->containsType(STRUCT_ADDITION) <= 0) b_match = 0;
+								if(!current_from_units.empty() || (!current_from_struct->isInteger() && current_from_struct->containsType(STRUCT_ADDITION) <= 0)) b_match = 0;
 							} else if(p_type == 601) {
-								if(current_from_struct->containsType(STRUCT_ADDITION) <= 0) b_match = 0;
+								if(current_from_units.empty() || current_from_struct->containsType(STRUCT_ADDITION) <= 0) b_match = 0;
 							} else if(p_type >= 700 && p_type < 800) {
-								if(!current_from_struct->isNumber() || (current_from_struct->number() < Number(1, 1, PRECISION + 3) && current_from_struct->number() > Number(1, 1, -PRECISION))) b_match = 0;
+								int exp = to_form;
+								if(exp == TO_FORM_OFF) exp = printops.min_exp;
+								if((p_type == 703 && (exp == 0 || !current_from_struct->isNumber())) || (p_type == 702 && exp == -3) || (p_type == 701 && exp > 0)) {
+									b_match = 0;
+								} else {
+									const Number *nr_p = from_struct_get_number(*current_from_struct);
+									if(!nr_p) {
+										b_match = 0;
+									} else {
+										int absexp = (exp < -1 ? -exp : exp);
+										Number nr(nr_p->hasImaginaryPart() ? nr_p->realPart() : *nr_p);
+										if(nr.isFraction()) {
+											nr.recip();
+											if(absexp == -1) absexp = PRECISION;
+										} else if(absexp == -1) {
+											absexp = PRECISION + 3;
+										}
+										nr.abs();
+										if(nr > Number(1, 1, 100)) {
+											if(p_type == 703 || (p_type == 701 && absexp <= 100 && exp > 0)) b_match = 0;
+										} else {
+											if((p_type == 703 && (absexp > 100 || nr < Number(1, 1, absexp))) || (p_type == 701 && absexp <= 100 && ((absexp > 0 && exp >= -1 && nr >= Number(1, 1, absexp)) || nr < Number(1, 1, 5))) || (p_type == 702 && nr < Number(1, 1, 5))) {
+												b_match = 0;
+											}
+										}
+									}
+								}
 							}
 						}
 						if(b_match > highest_match) highest_match = b_match;
@@ -1895,10 +1970,14 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Calendars"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 500, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("cis")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex cis Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 401, 9, NULL, -1);
+	COMPLETION_CONVERT_STRING("decimals")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Decimal Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 302, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("decimal") str += " <i>"; str += "dec"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Decimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 210, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("duodecimal") str += " <i>"; str += "duo"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Duodecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 212, 9, NULL, -1);
+	COMPLETION_CONVERT_STRING("engineering") str += " <i>"; str += "eng"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Engineering Notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 702, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("exponential")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Exponential Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 402, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("factors")
@@ -1917,14 +1996,12 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 300, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("1/")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, (string(_("Fraction")) + " (1/n)").c_str(), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 301, 9, NULL, -1);
-	COMPLETION_CONVERT_STRING("decimals")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Decimal Fraction"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 302, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("hexadecimal") str += " <i>"; str += "hex"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Hexadecimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 216, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("latitude") str += " <i>"; str += "latitude2"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Latitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("longitude") str += " <i>"; str += "longitude2"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Longitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 294, 9, NULL, -1);
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Longitude"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 295, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("mixed")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Mixed Units"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 102, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("octal") str += " <i>"; str += "oct"; str += "</i>";
@@ -1941,20 +2018,18 @@ void update_completion() {
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Complex Rectangular Form"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 404, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("roman")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Roman Numerals"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 280, 9, NULL, -1);
+	COMPLETION_CONVERT_STRING("scientific") str += " <i>"; str += "sci"; str += "</i>";
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Scientific Notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 701, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("sexagesimal") str += " <i>"; str += "sexa"; str += "</i>"; str += " <i>"; str += "sexa2"; str += "</i>"; str += " <i>"; str += "sexa3"; str += "</i>";
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Sexagesimal Number"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 292, 9, NULL, -1);
+	COMPLETION_CONVERT_STRING("simple")
+	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Simple Notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 703, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("time")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Time Format"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 293, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("unicode")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Unicode"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 281, 9, NULL, -1);
 	COMPLETION_CONVERT_STRING("utc")
 	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("UTC Time Zone"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 501, 9, NULL, -1);
-	COMPLETION_CONVERT_STRING("scientific") str += " <i>"; str += "sci"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Scientific Notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 701, 9, NULL, -1);
-	COMPLETION_CONVERT_STRING("engineering") str += " <i>"; str += "eng"; str += "</i>";
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Engineering Notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 702, 9, NULL, -1);
-	COMPLETION_CONVERT_STRING("simple")
-	gtk_list_store_append(completion_store, &iter); gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, _("Simple Notation"), 2, NULL, 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 703, 9, NULL, -1);
 	gtk_list_store_append(completion_store, &completion_separator_iter); gtk_list_store_set(completion_store, &completion_separator_iter, 0, "", 1, "", 2, NULL, 3, FALSE, 4, 3, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 0, 9, NULL, -1);
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(completion_store), GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID, GTK_SORT_ASCENDING);
 }
