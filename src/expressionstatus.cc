@@ -776,7 +776,7 @@ void display_parse_status() {
 			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
 			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			if(b_to && !str_e.empty()) {
-				if(!current_from_struct &&  && !mparse.containsFunctionId(FUNCTION_ID_SAVE) && !mparse.containsFunctionId(FUNCTION_ID_PLOT) && !mparse.containsFunctionId(FUNCTION_ID_EXPORT) && !mparse.containsFunctionId(FUNCTION_ID_LOAD) && !mparse.containsFunctionId(FUNCTION_ID_COMMAND)) {
+				if(!current_from_struct && !mparse.containsFunctionId(FUNCTION_ID_SAVE) && !mparse.containsFunctionId(FUNCTION_ID_PLOT) && !mparse.containsFunctionId(FUNCTION_ID_EXPORT) && !mparse.containsFunctionId(FUNCTION_ID_LOAD) && !mparse.containsFunctionId(FUNCTION_ID_COMMAND)) {
 					current_from_struct = new MathStructure;
 					EvaluationOptions eo = evalops;
 					eo.structuring = STRUCTURING_NONE;
