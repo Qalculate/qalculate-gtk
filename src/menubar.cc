@@ -446,7 +446,13 @@ void on_menu_item_ic_simple_activate(GtkMenuItem *w, gpointer) {
 	expression_calculation_updated();
 }
 void on_menu_item_interval_arithmetic_activate(GtkMenuItem *w, gpointer) {
-	CALCULATOR->useIntervalArithmetic(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)));
+	bool b = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	if(b == CALCULATOR->usesIntervalArithmetic()) return;
+	if(!b && !ask_question(_("Deactivation of interval arithmetic might result in inaccurate output. Do you want to deactivate it anyway?"))) {
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(w), true);
+		return;
+	}
+	CALCULATOR->useIntervalArithmetic(b);
 	expression_calculation_updated();
 }
 void on_menu_item_concise_uncertainty_input_activate(GtkMenuItem *w, gpointer) {
@@ -1638,7 +1644,13 @@ void create_vmenu() {
 			}
 		}
 		if(!b_empty) {
-			SUBMENU_ITEM_PREPEND(titem->item.c_str(), sub3)
+			if(printops.use_unicode_signs && titem->item.find("MeV*c^(-2)") != string::npos) {
+				string str = titem->item;
+				gsub("MeV*c^(-2)", "MeV/c²", str);
+				SUBMENU_ITEM_PREPEND(str.c_str(), sub3)
+			} else {
+				SUBMENU_ITEM_PREPEND(titem->item.c_str(), sub3)
+			}
 			menus.push(sub);
 			sub3 = sub;
 			for(size_t i = 0; i < titem->objects.size(); i++) {

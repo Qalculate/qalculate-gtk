@@ -149,7 +149,7 @@ bool title_matches(ExpressionItem *item, const string &str, size_t minlength) {
 	while(true) {
 		while(true) {
 			if(i >= title.length()) return false;
-			if(title[i] != ' ') break;
+			if(title[i] != ' ' && title[i] != '(') break;
 			i++;
 		}
 		size_t i2 = title.find(' ', i);
@@ -163,18 +163,38 @@ bool title_matches(ExpressionItem *item, const string &str, size_t minlength) {
 	}
 	return false;
 }
+bool test_unicode_length_from(const string &str, size_t i, size_t l) {
+	if(l == 0) return true;
+	for(; i < str.length(); i++) {
+		if((signed char) str[i] > 0 || (unsigned char) str[i] >= 0xC0) {
+			l--;
+			if(l == 0) return true;
+		}
+	}
+	return false;
+}
 bool name_matches(ExpressionItem *item, const string &str) {
 	for(size_t i2 = 1; i2 <= item->countNames(); i2++) {
-		if(item->getName(i2).case_sensitive) {
-			if(str == item->getName(i2).name.substr(0, str.length())) {
+		const ExpressionName *ename = &item->getName(i2);
+		if(ename->case_sensitive) {
+			if(str == ename->name.substr(0, str.length())) {
 				return true;
 			}
 		} else {
-			if(equalsIgnoreCase(str, item->getName(i2).name, 0, str.length(), 0)) {
+			if(equalsIgnoreCase(str, ename->name, 0, str.length(), 0)) {
 				return true;
 			}
-			unordered_map<const ExpressionName*, string>::iterator cap_it = capitalized_names.find(&item->getName(i2));
+			unordered_map<const ExpressionName*, string>::iterator cap_it = capitalized_names.find(ename);
 			if(cap_it != capitalized_names.end() && equalsIgnoreCase(str, cap_it->second, 0, str.length(), 0)) {
+				return true;
+			}
+		}
+		size_t i = 0;
+		while(true) {
+			i = ename->name.find("_", i);
+			if(i == string::npos || !test_unicode_length_from(ename->name, i + 1, 2)) break;
+			i++;
+			if((ename->case_sensitive && str == ename->name.substr(i, str.length())) || (!ename->case_sensitive && equalsIgnoreCase(str, ename->name, i, str.length() + i, 0))) {
 				return true;
 			}
 		}
@@ -182,16 +202,27 @@ bool name_matches(ExpressionItem *item, const string &str) {
 	return false;
 }
 int name_matches2(ExpressionItem *item, const string &str, size_t minlength, size_t *i_match = NULL) {
-	if(minlength > 1 && unicode_length(str) == 1) return 0;
+	if(minlength > 1 && !test_unicode_length_from(str, 0, 2)) return 0;
 	bool b_match = false;
 	for(size_t i2 = 1; i2 <= item->countNames(); i2++) {
-		if(equalsIgnoreCase(str, item->getName(i2).name, 0, str.length(), 0)) {
-			if(!item->getName(i2).case_sensitive && item->getName(i2).name.length() == str.length()) {
+		const ExpressionName *ename = &item->getName(i2);
+		if(equalsIgnoreCase(str, ename->name, 0, str.length(), 0)) {
+			if(!ename->case_sensitive && ename->name.length() == str.length()) {
 				if(i_match) *i_match = i2;
 				return 1;
 			}
 			if(i_match && *i_match == 0) *i_match = i2;
 			b_match = true;
+		}
+		size_t i = 0;
+		while(true) {
+			i = ename->name.find("_", i);
+			if(i == string::npos || !test_unicode_length_from(ename->name, i + 1, 2)) break;
+			i++;
+			if((ename->case_sensitive && str.length() <= ename->name.length() - i && str == ename->name.substr(i, str.length())) || (!ename->case_sensitive && equalsIgnoreCase(str, ename->name, i, str.length() + i, minlength))) {
+				b_match = true;
+				break;
+			}
 		}
 	}
 	return b_match ? 2 : 0;
@@ -381,14 +412,19 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	GtkTextIter object_start, object_end;
 	gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &object_start, current_object_start);
 	gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &object_end, current_object_end);
-	if(item && item->type() == TYPE_UNIT && ((Unit*) item)->subtype() == SUBTYPE_COMPOSITE_UNIT && (((CompositeUnit*) item)->countUnits() > 1 || !((CompositeUnit*) item)->get(1, &exp, &prefix) || exp != 1)) {
+	if(item && item->isHidden() && item->type() == TYPE_UNIT && item->subtype() == SUBTYPE_ALIAS_UNIT && ((AliasUnit*) item)->firstBaseUnit()->subtype() == SUBTYPE_COMPOSITE_UNIT && !((AliasUnit*) item)->firstBaseUnit()->isHidden() && ((AliasUnit*) item)->firstBaseUnit()->isActive()) {
+		PrintOptions po = printops;
+		po.can_display_unicode_string_arg = (void*) expression_edit_widget();
+		po.abbreviate_names = true;
+		str = ((AliasUnit*) item)->firstBaseUnit()->print(po, false, TAG_TYPE_HTML, true, false);
+	} else if(item && item->type() == TYPE_UNIT && item->subtype() == SUBTYPE_COMPOSITE_UNIT && (((CompositeUnit*) item)->countUnits() > 1 || !((CompositeUnit*) item)->get(1, &exp, &prefix) || exp != 1)) {
 		PrintOptions po = printops;
 		po.can_display_unicode_string_arg = (void*) expression_edit_widget();
 		po.abbreviate_names = true;
 		str = ((Unit*) item)->print(po, false, TAG_TYPE_HTML, true, false);
 	} else if(item) {
 		CompositeUnit *cu = NULL;
-		if(item->type() == TYPE_UNIT && ((Unit*) item)->subtype() == SUBTYPE_COMPOSITE_UNIT) {
+		if(item->type() == TYPE_UNIT && item->subtype() == SUBTYPE_COMPOSITE_UNIT) {
 			cu = (CompositeUnit*) item;
 			item = cu->get(1);
 		}
@@ -1130,7 +1166,7 @@ void do_completion(bool to_menu) {
 									b_match = (ename->name == str) ? 1 : 0;
 								} else {
 									for(size_t icap = 0; icap < 2; icap++) {
-										const std::string *namestr;
+										const string *namestr;
 										if(icap == 0) {
 											namestr = &ename->name;
 										} else {
@@ -1266,6 +1302,7 @@ void do_completion(bool to_menu) {
 								if(b_match == 6) break;
 							}
 						}
+						if(b_match == 6 && item->isHidden() && item != CALCULATOR->getLocalCurrency()) b_match = 0;
 						if(b_match == 6) {
 							gchar *gstr;
 							gtk_tree_model_get(GTK_TREE_MODEL(completion_store), &iter, 0, &gstr, -1);
@@ -1726,6 +1763,11 @@ void update_completion() {
 				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
 				if(CALCULATOR->variables[i] == CALCULATOR->v_percent) gtk_list_store_set(completion_store, &iter, 9, (CALCULATOR->variables[i]->title() + " (%)").c_str(), -1);
 				else if(CALCULATOR->variables[i] == CALCULATOR->v_permille) gtk_list_store_set(completion_store, &iter, 9, (CALCULATOR->variables[i]->title() + " (‰)").c_str(), -1);
+				if(printops.use_unicode_signs && CALCULATOR->variables[i]->title(false).find("MeV/c^2") != string::npos) {
+					string title = CALCULATOR->variables[i]->title();
+					gsub("MeV/c^2", "MeV/c²", title);
+					gtk_list_store_set(completion_store, &iter, 1, title.c_str(), -1);
+				}
 			} else {
 				Variable *v = CALCULATOR->variables[i];
 				string title;
@@ -1801,7 +1843,11 @@ void update_completion() {
 	for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
 		Unit *u = CALCULATOR->units[i];
 		if(u->isActive()) {
-			if(u->subtype() != SUBTYPE_COMPOSITE_UNIT) {
+			CompositeUnit *cu = (u->subtype() == SUBTYPE_COMPOSITE_UNIT ? (CompositeUnit*) u : NULL);
+			if(!cu && u->isHidden() && u->subtype() == SUBTYPE_ALIAS_UNIT && ((AliasUnit*) u)->firstBaseUnit()->subtype() == SUBTYPE_COMPOSITE_UNIT && !((AliasUnit*) u)->firstBaseUnit()->isHidden() && ((AliasUnit*) u)->firstBaseUnit()->isActive()) {
+				cu = (CompositeUnit*) ((AliasUnit*) u)->firstBaseUnit();
+			}
+			if(!cu) {
 				gtk_list_store_append(completion_store, &iter);
 				const ExpressionName *ename, *ename_r;
 				bool b = false;
@@ -1858,8 +1904,7 @@ void update_completion() {
 				}
 				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.empty() ? NULL : title2.c_str(), -1);
 				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.empty() ? NULL : title2.c_str(), -1);
-			} else if(!u->isHidden()) {
-				CompositeUnit *cu = (CompositeUnit*) u;
+			} else if(!cu->isHidden()) {
 				Prefix *prefix = NULL;
 				int exp = 1;
 				title = cu->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view);
@@ -1867,7 +1912,8 @@ void update_completion() {
 				bool tp = title2[title2.length() - 1] == ')';
 				title2 += " ";
 				if(!tp) title2 += "(";
-				if(cu->countUnits() == 1 && (u = cu->get(1, &exp, &prefix)) != NULL && prefix != NULL && exp == 1) {
+				Unit *u_i = NULL;
+				if(cu->countUnits() == 1 && (u_i = cu->get(1, &exp, &prefix)) != NULL && prefix != NULL && exp == 1) {
 					str = "";
 					for(size_t name_i = 0; name_i < 2; name_i++) {
 						const ExpressionName *ename;
@@ -1876,7 +1922,7 @@ void update_completion() {
 							bool b_italic = !str.empty();
 							if(b_italic) str += " <i>";
 							str += ename->formattedName(-1, false, true);
-							str += u->preferredInputName(name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true, true);
+							str += u_i->preferredInputName(name_i != 1, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true, true);
 							if(b_italic) str += "</i>";
 							if(!b_italic) title2 += str;
 						}
@@ -1904,7 +1950,7 @@ void update_completion() {
 						else title = cu->category().substr(i_slash, cu->category().length() - i_slash);
 					}
 				}
-				gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, cu, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.c_str(), -1);
+				gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.c_str(), -1);
 			}
 		}
 	}
