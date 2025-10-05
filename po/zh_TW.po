@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-25 09:57+0200\n"
-"PO-Revision-Date: 2025-04-30 22:02+0800\n"
+"PO-Revision-Date: 2025-10-05 14:09+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_TW\n"
@@ -29,7 +29,7 @@ msgstr "強大且易用的計算機"
 
 #: ../data/qalculate-gtk.desktop.in.h:3
 msgid "calculation;arithmetic;scientific;financial;"
-msgstr "計算;算術;科學;金融;"
+msgstr "計算;算術;科學;財務;"
 
 #: ../data/qalculate-gtk.appdata.xml.in.h:1
 msgid "Qalculate! (GTK UI)"
@@ -42,8 +42,8 @@ msgid ""
 "complicated math packages, as well as useful tools for everyday needs (such "
 "as currency conversion and percent calculation)."
 msgstr ""
-"Qalculate!是一款多功能的跨平台桌面計算器。它使用簡單然而提供了通常為複雜的數"
-"學套件保留的能力和多功能性，以及滿足日常需求的實用工具(例如貨幣轉換和百分比計"
+"Qalculate!是一款多用途的跨平台桌面計算器。它使用簡單然而提供了通常為複雜的數"
+"學套件保留的能力和多功能性，以及日常需求的實用工具(例如貨幣轉換和百分比計"
 "算)。"
 
 #: ../data/qalculate-gtk.appdata.xml.in.h:4
@@ -58,7 +58,7 @@ msgstr ""
 
 #: ../data/argumentrules.ui.h:1 ../data/functionedit.ui.h:25
 msgid "Argument Rules"
-msgstr "參數規則"
+msgstr "引數規則"
 
 #: ../data/argumentrules.ui.h:2 ../data/buttonsedit.ui.h:9
 #: ../data/csvexport.ui.h:2 ../data/csvimport.ui.h:2 ../data/datasetedit.ui.h:2
@@ -97,7 +97,7 @@ msgstr "確定(_O)"
 #: ../data/argumentrules.ui.h:4 ../data/buttonsedit.ui.h:12
 #: ../data/shortcuts.ui.h:11
 msgid "Argument name"
-msgstr "參數名稱"
+msgstr "引數名稱"
 
 #: ../data/argumentrules.ui.h:5
 msgid "Free"
@@ -211,7 +211,7 @@ msgstr "自訂條件"
 msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
-msgstr "例如，如果參數是必須具有相等列數和行數的矩陣: rows(\\x) = columns(\\x)"
+msgstr "例如，如果引數是必須具有相等列數和行數的矩陣: rows(\\x) = columns(\\x)"
 
 #: ../data/argumentrules.ui.h:31
 msgid "Allow matrix"
@@ -305,7 +305,7 @@ msgstr "值"
 
 #: ../data/calendarconversion.ui.h:1 ../data/main.ui.h:39
 msgid "Calendar Conversion"
-msgstr "日曆轉換"
+msgstr "曆法轉換"
 
 #: ../data/csvexport.ui.h:1
 msgid "Export CSV File"
@@ -417,7 +417,7 @@ msgstr "如果第一列包含欄標題"
 
 #: ../data/csvimport.ui.h:23
 msgid "Delimiter used to separate columns in the file"
-msgstr "檔案中用來分隔欄的定界符"
+msgstr "檔案中用來分離欄的定界符"
 
 #: ../data/csvimport.ui.h:29
 msgid "Custom delimiter"
@@ -530,11 +530,11 @@ msgstr "屬性"
 
 #: ../data/datasetedit.ui.h:31
 msgid "Object argument name"
-msgstr "物件參數名稱"
+msgstr "物件引數名稱"
 
 #: ../data/datasetedit.ui.h:32
 msgid "Property argument name"
-msgstr "屬性參數名稱"
+msgstr "屬性引數名稱"
 
 #: ../data/datasetedit.ui.h:33
 msgid "Default property"
@@ -645,7 +645,7 @@ msgstr "二進制表示法"
 
 #: ../data/floatingpoint.ui.h:7
 msgid "Floating point value"
-msgstr "浮點數"
+msgstr "浮點值"
 
 #: ../data/floatingpoint.ui.h:8
 msgid "Format"
@@ -698,7 +698,7 @@ msgid ""
 "Use \\x for the first, \\y for the second and \\z for the third argument. "
 "For more information click the help button."
 msgstr ""
-"使用\\x代表第一個參數，\\y代表第二個參數，\\z代表第三個參數。欲了解更多資訊，"
+"使用\\x代表第一個引數，\\y代表第二個引數，\\z代表第三個引數。欲了解更多資訊，"
 "請點擊幫助按鈕。"
 
 #: ../data/functionedit.ui.h:9 ../data/matrixedit.ui.h:15
@@ -715,7 +715,7 @@ msgid ""
 "Condition that must be true for the function (e.g. if the second argument "
 "must be greater than the first: \"\\y > \\x\")"
 msgstr ""
-"對函數來說必須為真的條件(例如，如果第二個參數必須大於第一個參數: \"\\y > "
+"對函數來說必須為真的條件(例如，如果第二個引數必須大於第一個引數: \"\\y > "
 "\\x\")"
 
 #: ../data/functionedit.ui.h:12
@@ -734,7 +734,7 @@ msgstr "移除(_R)"
 
 #: ../data/functionedit.ui.h:16 ../src/functionsdialog.cc:332
 msgid "Arguments"
-msgstr "參數"
+msgstr "引數"
 
 #: ../data/functionedit.ui.h:17
 msgid "Details"
@@ -983,7 +983,7 @@ msgstr "設定未知數…"
 
 #: ../data/main.ui.h:54
 msgid "Convert to Unit"
-msgstr "轉換為單位"
+msgstr "轉換到單位"
 
 #: ../data/main.ui.h:55
 msgid "Set Prefix"
@@ -991,15 +991,15 @@ msgstr "設定前綴"
 
 #: ../data/main.ui.h:56
 msgid "Convert to Unit Expression…"
-msgstr "轉換為單位表達式…"
+msgstr "轉換到單位表達式…"
 
 #: ../data/main.ui.h:57
 msgid "Convert to Base Units"
-msgstr "轉換為基本單位"
+msgstr "轉換到基本單位"
 
 #: ../data/main.ui.h:58
 msgid "Convert to Optimal Unit"
-msgstr "轉換為最佳單位"
+msgstr "轉換到最佳單位"
 
 #: ../data/main.ui.h:59 ../src/expressionedit.cc:1499
 msgid "Insert Date…"
@@ -1361,7 +1361,7 @@ msgstr "沒有額外轉換"
 
 #: ../data/main.ui.h:146
 msgid "Convert to Optimal SI Unit"
-msgstr "轉換為最佳SI單位"
+msgstr "轉換到最佳SI單位"
 
 #: ../data/main.ui.h:147
 msgid ""
@@ -1375,7 +1375,7 @@ msgstr ""
 
 #: ../data/main.ui.h:150
 msgid "Convert to Mixed Units"
-msgstr "轉換為混合單位"
+msgstr "轉換到混合單位"
 
 #: ../data/main.ui.h:151
 msgid "Abbreviate Names"
@@ -1761,9 +1761,8 @@ msgid "Clear the RPN stack"
 msgstr "清除RPN堆疊"
 
 #: ../data/main.ui.h:250
-#, fuzzy
 msgid "Unit(s) and prefix to convert result to"
-msgstr "轉換結果為的單位和前綴"
+msgstr "結果要轉換到的單位和前綴"
 
 #: ../data/main.ui.h:252
 msgid "Convert"
@@ -1777,7 +1776,7 @@ msgstr "連續轉換"
 msgid ""
 "Automatically convert result to the current unit expression as long as the "
 "conversion box is visible."
-msgstr "只要轉換框可見，就自動將結果轉換為目前的單位表達式。"
+msgstr "只要轉換框可見，就自動將結果轉換到目前的單位表達式。"
 
 #: ../data/main.ui.h:255
 msgid "Add prefix"
@@ -1951,9 +1950,8 @@ msgstr "DEL"
 
 #. Standard calculator button. Do not use more than three characters.
 #: ../data/main.ui.h:302 ../data/nbases.ui.h:31 ../src/keypad.cc:522
-#, fuzzy
 msgid "C"
-msgstr "AC"
+msgstr "C"
 
 #: ../data/main.ui.h:303 ../src/buttonseditdialog.cc:378 ../src/keypad.cc:524
 msgid "Previous result"
@@ -2034,9 +2032,8 @@ msgid "Protect"
 msgstr "保護"
 
 #: ../data/main.ui.h:323 ../src/historyview.cc:3205
-#, fuzzy
 msgid "Add Comment…"
-msgstr "加入書籤…"
+msgstr "加入註解…"
 
 #: ../data/main.ui.h:324
 msgid "Move To Top"
@@ -2132,15 +2129,15 @@ msgstr "縮寫名稱(_A)"
 
 #: ../data/main.ui.h:347
 msgid "C_onvert…"
-msgstr "轉換…(_o)"
+msgstr "轉換...(_o)"
 
 #: ../data/main.ui.h:348
 msgid "Convert to Base _Units"
-msgstr "轉換為基本單位(_U)"
+msgstr "轉換到基本單位(_U)"
 
 #: ../data/main.ui.h:349
 msgid "Convert _to Optimal Unit"
-msgstr "轉換為最佳單位(_t)"
+msgstr "轉換到最佳單位(_t)"
 
 #: ../data/main.ui.h:350
 msgid "Use Optimal Prefix"
@@ -2148,15 +2145,15 @@ msgstr "使用最佳前綴"
 
 #: ../data/main.ui.h:351
 msgid "Convert to"
-msgstr "轉換為"
+msgstr "轉換到"
 
 #: ../data/main.ui.h:352
 msgid "Convert to UTC"
-msgstr "轉換為UTC"
+msgstr "轉換到UTC"
 
 #: ../data/main.ui.h:353
 msgid "Convert to Calendars"
-msgstr "轉換為日曆"
+msgstr "轉換到曆法"
 
 #: ../data/main.ui.h:354
 msgid "Use prefixes for all units"
@@ -2398,7 +2395,7 @@ msgstr "2相比於1"
 
 #: ../data/percentage.ui.h:8
 msgid "Change from 1 to 2"
-msgstr "從1變為2"
+msgstr "從1變到2"
 
 #: ../data/percentage.ui.h:9
 msgid "Value 2"
@@ -2410,7 +2407,7 @@ msgstr "1相比於2"
 
 #: ../data/percentage.ui.h:11
 msgid "Change from 2 to 1"
-msgstr "從2變為1"
+msgstr "從2變到1"
 
 #: ../data/plot.ui.h:1
 msgid "Plot"
@@ -2567,11 +2564,11 @@ msgstr "最大y值"
 
 #: ../data/plot.ui.h:48
 msgid "Logarithmic x scale"
-msgstr "對數x刻度"
+msgstr "x軸對數尺度"
 
 #: ../data/plot.ui.h:49
 msgid "Logarithmic y scale"
-msgstr "對數y刻度"
+msgstr "y軸對數尺度"
 
 #: ../data/plot.ui.h:50
 msgid "X-axis label"
@@ -2726,7 +2723,7 @@ msgid ""
 "Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The "
 "exponentiation operator (^) can always be input using Ctrl+*."
 msgstr ""
-"使用鍵盤上的插入記號(^)輸入XOR(⊻)(否則使用Ctrl+^) 。指數運算子(^)總是可以使用"
+"使用鍵盤上的插入記號(^)輸入XOR(⊻)(否則使用Ctrl+^)。指數運算子(^)總是可以使用"
 "Ctrl+*輸入。"
 
 #: ../data/preferences.ui.h:21
@@ -2746,14 +2743,13 @@ msgid "Entered + parsed"
 msgstr "輸入+剖析"
 
 #: ../data/preferences.ui.h:25
-#, fuzzy
 msgid "Expression after calculation"
-msgstr "要計算的表達式"
+msgstr "計算後的表達式"
 
 #: ../data/preferences.ui.h:26
-#, fuzzy
+#| msgid "expression"
 msgid "Keep expression"
-msgstr "表達式"
+msgstr "保持表達式"
 
 #: ../data/preferences.ui.h:27 ../src/conversionview.cc:281
 #: ../src/expressionedit.cc:797
@@ -2762,11 +2758,11 @@ msgstr "清除表達式"
 
 #: ../data/preferences.ui.h:28
 msgid "Replace with result"
-msgstr ""
+msgstr "用結果取代"
 
 #: ../data/preferences.ui.h:29
 msgid "Replace with result if shorter"
-msgstr ""
+msgstr "如果較短則用結果取代"
 
 #: ../data/preferences.ui.h:30
 msgid "Add calculate-as-you-type result to history"
@@ -2953,7 +2949,7 @@ msgid ""
 "numbers. All binary numbers starting with 1 are negative, unless binary bits "
 "is set."
 msgstr ""
-"啟用二的補數表示法輸入負二進制數字。所有以1開始的二進制數字都是負數，除非設定"
+"啟用二的補數表示法輸入負二進制數字。所有以1起始的二進制數字都是負數，除非設定"
 "二進制位元。"
 
 #: ../data/preferences.ui.h:77
@@ -2962,7 +2958,7 @@ msgid ""
 "numbers. All hexadecimal numbers starting with 8 or higher are negative, "
 "unless binary bits is set."
 msgstr ""
-"啟用二的補數表示法輸入負十六進制數字。所有以8或更高開始的十六進制數字都是負"
+"啟用二的補數表示法輸入負十六進制數字。所有以8或更高起始的十六進制數字都是負"
 "數，除非設定二進制位元。"
 
 #: ../data/preferences.ui.h:78
@@ -3033,7 +3029,7 @@ msgstr "忽略數字中的逗號"
 msgid ""
 "Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
-msgstr "允許逗號','作為千位分隔符，而不是作為函數參數分隔符"
+msgstr "允許逗號','作為千位分隔符，而不是作為函數引數分隔符"
 
 #: ../data/preferences.ui.h:94
 msgid "Ignore dots in numbers"
@@ -3103,8 +3099,8 @@ msgstr "對資訊單位使用二進制前綴"
 
 #: ../data/preferences.ui.h:109
 msgid ""
-"Use binary, instead of decimal, prefixes by default for information units "
-"(e.g. bytes)."
+"Use binary, instead of decimal, prefixes by default for information units (e."
+"g. bytes)."
 msgstr "對資訊單位(例如位元組)預設使用二進制而不是十進制前綴。"
 
 #: ../data/preferences.ui.h:110
@@ -3113,13 +3109,13 @@ msgstr "複製無單位的未格式化ASCII"
 
 #: ../data/preferences.ui.h:111
 msgid "Conversion to local currency"
-msgstr "轉換為本地貨幣"
+msgstr "轉換到本地貨幣"
 
 #: ../data/preferences.ui.h:112
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
-msgstr "當啟用最佳單位轉換時，自動轉換為本地貨幣。"
+msgstr "當啟用最佳單位轉換時，自動轉換到本地貨幣。"
 
 #: ../data/preferences.ui.h:113
 msgid "Exchange rates updates"
@@ -3379,13 +3375,13 @@ msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
 "\n"
-"For non-linear relations use \\x for the factor and \\y for the exponent "
-"(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
+"For non-linear relations use \\x for the factor and \\y for the exponent (e."
+"g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
 "與基本單位的關係。對於線性關係，這應該只是一個數字。\n"
 "\n"
-"對於非線性關係，\\x代表係數，\\y代表指數（例如\"\\x + 273.15\"用於攝氏溫度和"
-"克耳文之間的關係）。"
+"對於非線性關係，\\x代表係數，\\y代表指數(例如\"\\x + 273.15\"用於攝氏溫度和克"
+"耳文之間的關係)。"
 
 #: ../data/unitedit.ui.h:36
 msgid "Specify for non-linear relation, for conversion back to the base unit."
@@ -3445,7 +3441,7 @@ msgstr "轉換(_o)"
 
 #: ../data/units.ui.h:22
 msgid "Convert the result to the selected unit"
-msgstr "將結果轉換為選擇的單位"
+msgstr "將結果轉換到選擇的單位"
 
 #: ../data/units.ui.h:23
 msgid "Type anywhere"
@@ -3566,7 +3562,7 @@ msgstr "相對誤差"
 
 #: ../src/buttonseditdialog.cc:351 ../src/keypad.cc:459
 msgid "Argument separator"
-msgstr "參數分隔符"
+msgstr "引數分隔符"
 
 #: ../src/buttonseditdialog.cc:351 ../src/buttonseditdialog.cc:365
 #: ../src/keypad.cc:459 ../src/keypad.cc:474
@@ -3668,12 +3664,12 @@ msgstr "選擇的農曆年不存在。"
 
 #: ../src/calendarconversiondialog.cc:65
 msgid "Conversion to Gregorian calendar failed."
-msgstr "轉換為格里曆失敗。"
+msgstr "轉換到格里曆失敗。"
 
 #: ../src/calendarconversiondialog.cc:90
 #, c-format
 msgid "Calendar conversion failed for: %s."
-msgstr "日曆轉換失敗: %s。"
+msgstr "曆法轉換失敗: %s。"
 
 #: ../src/calendarconversiondialog.cc:105
 msgid "Gregorian"
@@ -3801,7 +3797,7 @@ msgstr "資料檢索函數"
 #: ../src/datasetsdialog.cc:227 ../src/expressionstatus.cc:568
 #: ../src/functionsdialog.cc:271
 msgid "argument"
-msgstr "參數"
+msgstr "引數"
 
 #: ../src/datasetsdialog.cc:479
 msgid "New Data Object"
@@ -3972,7 +3968,7 @@ msgstr "二進制數字"
 
 #: ../src/expressioncompletion.cc:2001
 msgid "Calendars"
-msgstr "日曆"
+msgstr "曆法"
 
 #: ../src/expressioncompletion.cc:2003
 msgid "Complex cis Form"
@@ -3996,23 +3992,23 @@ msgstr "因子"
 
 #: ../src/expressioncompletion.cc:2017
 msgid "16-bit Floating Point Binary Format"
-msgstr "16位元浮點數二進制格式"
+msgstr "16位元浮點二進制格式"
 
 #: ../src/expressioncompletion.cc:2019
 msgid "32-bit Floating Point Binary Format"
-msgstr "32位元浮點數二進制格式"
+msgstr "32位元浮點二進制格式"
 
 #: ../src/expressioncompletion.cc:2021
 msgid "64-bit Floating Point Binary Format"
-msgstr "64位元浮點數二進制格式"
+msgstr "64位元浮點二進制格式"
 
 #: ../src/expressioncompletion.cc:2023
 msgid "80-bit (x86) Floating Point Binary Format"
-msgstr "80位元(x86)浮點數二進制格式"
+msgstr "80位元(x86)浮點二進制格式"
 
 #: ../src/expressioncompletion.cc:2025
 msgid "128-bit Floating Point Binary Format"
-msgstr "128位元浮點數二進制格式"
+msgstr "128位元浮點二進制格式"
 
 #: ../src/expressioncompletion.cc:2031
 msgid "Hexadecimal Number"
@@ -4188,7 +4184,7 @@ msgstr "CPLX"
 #: ../src/expressionstatus.cc:539
 #, c-format
 msgid "Too many arguments for %s()."
-msgstr "%s()的參數太多。"
+msgstr "%s()的引數太多。"
 
 #: ../src/expressionstatus.cc:709 ../src/expressionstatus.cc:711
 #: ../src/mainwindow.cc:1528 ../src/mainwindow.cc:5069
@@ -4323,36 +4319,30 @@ msgstr "時間格式"
 
 #: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1376
 #: ../src/mainwindow.cc:4806
-#, fuzzy
 msgid "scientific"
 msgstr "科學"
 
 #: ../src/expressionstatus.cc:918
-#, fuzzy
 msgid "scientific notation"
-msgstr "切換科學記法"
+msgstr "科學記法"
 
 #: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1379
 #: ../src/mainwindow.cc:4809
-#, fuzzy
 msgid "engineering"
 msgstr "工程"
 
 #: ../src/expressionstatus.cc:920
-#, fuzzy
 msgid "engineering notation"
-msgstr "工程"
+msgstr "工程記法"
 
 #: ../src/expressionstatus.cc:921 ../src/mainwindow.cc:1382
 #: ../src/mainwindow.cc:4812
-#, fuzzy
 msgid "simple"
 msgstr "簡單"
 
 #: ../src/expressionstatus.cc:922
-#, fuzzy
 msgid "simple notation"
-msgstr "切換簡單記法"
+msgstr "簡單記法"
 
 #: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1430
 #: ../src/mainwindow.cc:4862
@@ -4366,7 +4356,7 @@ msgstr "底數"
 #: ../src/expressionstatus.cc:925 ../src/expressionstatus.cc:926
 #: ../src/mainwindow.cc:1432 ../src/mainwindow.cc:4872
 msgid "calendars"
-msgstr "日曆"
+msgstr "曆法"
 
 #: ../src/expressionstatus.cc:927 ../src/mainwindow.cc:1454
 #: ../src/mainwindow.cc:4947
@@ -4522,7 +4512,7 @@ msgstr "表達式欄位為空。"
 
 #: ../src/functioneditdialog.cc:931
 msgid "Conversion (using \"to\") is not supported in functions."
-msgstr ""
+msgstr "在函數中不支援轉換(使用“to“)。"
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
 #: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7517
@@ -4641,12 +4631,11 @@ msgstr ""
 
 #: ../src/historyview.cc:2961 ../src/historyview.cc:3204
 msgid "Edit Comment…"
-msgstr ""
+msgstr "編輯註解…"
 
 #: ../src/historyview.cc:2963
-#, fuzzy
 msgid "Comment"
-msgstr "逗號"
+msgstr "註解"
 
 #: ../src/historyview.cc:3249
 msgid "No items found"
@@ -4698,7 +4687,7 @@ msgstr "Enter"
 
 #: ../src/insertfunctiondialog.cc:514
 msgid "Argument"
-msgstr "參數"
+msgstr "引數"
 
 #: ../src/insertfunctiondialog.cc:569
 msgid "True"
@@ -4849,8 +4838,8 @@ msgid ""
 msgstr ""
 "預設情況下，只有一個%s的實例(主視窗)被允許。\n"
 "\n"
-"如果同時開啟多個實例，只有最後關閉的視窗的定義(變數，函數等)、模式、偏好設定"
-"和歷史記錄會被儲存。\n"
+"如果同時開啟多個實例，只有最後關閉的視窗的定義(變數，函數等等)、模式、偏好設"
+"定和歷史記錄會被儲存。\n"
 "\n"
 "儘管如此，你還是想變更預設行為並允許多個同時存在的實例?"
 
@@ -4947,7 +4936,7 @@ msgstr ""
 
 #: ../src/mainwindow.cc:871
 msgid "Unknown variables (e.g. x, y, z) are by default assumed real."
-msgstr ""
+msgstr "未知變數(例如x、y、z)預設假設為實數。"
 
 #: ../src/mainwindow.cc:879
 msgid "Sinc Function"
@@ -4966,21 +4955,19 @@ msgid "Normalized"
 msgstr "正規化"
 
 #: ../src/mainwindow.cc:934
-#, fuzzy
 msgid "Interpretation of comma"
-msgstr "點的判讀"
+msgstr "逗號的判讀"
 
 #: ../src/mainwindow.cc:934
 msgid "Interpretation of dots"
 msgstr "點的判讀"
 
 #: ../src/mainwindow.cc:944
-#, fuzzy
 msgid ""
 "Please select interpretation of comma (\",\")\n"
 "(this can later be changed in preferences)."
 msgstr ""
-"請選擇點(\".\")的判讀\n"
+"請選擇逗號(\",\")的判讀\n"
 "(可以稍後在偏好設定中變更)。"
 
 #: ../src/mainwindow.cc:944
@@ -4996,9 +4983,8 @@ msgid "Both dot and comma as decimal separators"
 msgstr "點和逗號都作為小數分隔符"
 
 #: ../src/mainwindow.cc:954
-#, fuzzy
 msgid "Comma as thousands separator"
-msgstr "點作為千位分隔符"
+msgstr "逗號作為千位分隔符"
 
 #: ../src/mainwindow.cc:954
 msgid "Dot as thousands separator"
@@ -5009,6 +4995,8 @@ msgid ""
 "Comma as separator for function arguments\n"
 "and matrix/vector elements"
 msgstr ""
+"逗號作為函數引數\n"
+"和矩陣/向量元素的分隔符"
 
 #: ../src/mainwindow.cc:961
 msgid "Only dot as decimal separator"
@@ -5202,7 +5190,7 @@ msgid ""
 "(e.g. ans(1) for the first solution)."
 msgstr ""
 "包含最近計算的結果。方程式的多個結果表示為向量。使用ans(n)存取個別的解答(例如"
-"ans(1)用於第一個解答)。"
+"ans(1)代表第一個解答)。"
 
 #: ../src/mainwindow.cc:8605
 msgid "Answer 2"
@@ -5268,7 +5256,7 @@ msgstr "單位不存在"
 msgid ""
 "Deactivation of interval arithmetic might result in inaccurate output. Do "
 "you want to deactivate it anyway?"
-msgstr ""
+msgstr "停用區間算術可能導致不準確的輸出。你無論如何都想停用它嗎?"
 
 #: ../src/menubar.cc:1217
 msgid "Save Mode"
@@ -5600,27 +5588,27 @@ msgstr "插入智慧括號"
 
 #: ../src/util.cc:890
 msgid "Convert to unit"
-msgstr "轉換為單位"
+msgstr "轉換到單位"
 
 #: ../src/util.cc:891
 msgid "Convert to unit (entry)"
-msgstr "轉換為單位(輸入框)"
+msgstr "轉換到單位(輸入框)"
 
 #: ../src/util.cc:892
 msgid "Convert to optimal unit"
-msgstr "轉換為最佳單位"
+msgstr "轉換到最佳單位"
 
 #: ../src/util.cc:893
 msgid "Convert to base units"
-msgstr "轉換為基本單位"
+msgstr "轉換到基本單位"
 
 #: ../src/util.cc:894
 msgid "Convert to optimal prefix"
-msgstr "轉換為最佳前綴"
+msgstr "轉換到最佳前綴"
 
 #: ../src/util.cc:895
 msgid "Convert to number base"
-msgstr "轉換為底數"
+msgstr "轉換到底數"
 
 #: ../src/util.cc:896
 msgid "Factorize result"
@@ -5793,7 +5781,7 @@ msgstr "開啟浮點轉換"
 
 #: ../src/util.cc:947
 msgid "Open calendar conversion"
-msgstr "開啟日曆轉換"
+msgstr "開啟曆法轉換"
 
 #: ../src/util.cc:948
 msgid "Open percentage calculation tool"
@@ -5894,30 +5882,6 @@ msgstr "一個向量"
 #: ../src/variablesdialog.cc:317
 msgid "not matrix"
 msgstr "非矩陣"
-
-#, fuzzy
-#~ msgid "Edit Comment"
-#~ msgstr "編輯單位"
-
-#, fuzzy
-#~ msgid "Scientific Form"
-#~ msgstr "科學"
-
-#, fuzzy
-#~ msgid "Engineering Form"
-#~ msgstr "工程"
-
-#, fuzzy
-#~ msgid "Simple Form"
-#~ msgstr "時間格式"
-
-#, fuzzy
-#~ msgid "scientific form"
-#~ msgstr "科學"
-
-#, fuzzy
-#~ msgid "simple form"
-#~ msgstr "時間格式"
 
 #~ msgid "Accept the modification of argument rules"
 #~ msgstr "接受參數規則的修改"
