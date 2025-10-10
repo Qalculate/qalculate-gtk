@@ -182,9 +182,9 @@ bool equalsIgnoreCase(const string &str1, const string &str2, size_t i2, size_t 
 	size_t l = 0;
 	if(i2_end == string::npos) i2_end = str2.length();
 	for(size_t i1 = 0;; i1++, i2++) {
-		if(i2 >= i2_end) {
-			return i1 >= str1.length();
-		}
+		if(i2 >= i2_end) return i1 >= str1.length();
+		if(i1 >= str1.length()) break;
+		if(i2 >= str2.length()) return false;
 		if(i1 >= str1.length()) break;
 		if(((signed char) str1[i1] < 0 && i1 + 1 < str1.length()) || ((signed char) str2[i2] < 0 && i2 + 1 < str2.length())) {
 			size_t iu1 = 1, iu2 = 1;
@@ -556,7 +556,7 @@ void show_message(const gchar *text, GtkWindow *win) {
 }
 bool ask_question(const gchar *text, GtkWindow *win) {
 	if(!win) win = main_window();
-	GtkWidget *edialog = gtk_message_dialog_new(win, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_YES_NO, "%s", text);
+	GtkWidget *edialog = gtk_message_dialog_new(win, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s", text);
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
 	int question_answer = gtk_dialog_run(GTK_DIALOG(edialog));
 	gtk_widget_destroy(edialog);
@@ -1055,6 +1055,7 @@ string get_value_string(const MathStructure &mstruct_, int type, Prefix *prefix)
 		po.preserve_precision = true;
 		po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 		if(type == 1) po.show_ending_zeroes = false;
+		else po.restrict_to_parent_precision = false;
 		if(po.number_fraction_format == FRACTION_DECIMAL) po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 	}
 	string str = CALCULATOR->print(mstruct_, 100, po);

@@ -187,7 +187,7 @@ bool read_mode_line(size_t mode_index, string &svar, string &svalue, int &v) {
 		if(mode_index == 1) printops.min_exp = v;
 		else modes[mode_index].po.min_exp = v;
 	} else if(svar == "interval_arithmetic") {
-		if(version_numbers[0] >= 3) {
+		if((version_numbers[0] > 5 || (version_numbers[0] == 5 && version_numbers[1] >= 8))) {
 			if(mode_index == 1) CALCULATOR->useIntervalArithmetic(v);
 			else modes[mode_index].interval = v;
 		} else {
