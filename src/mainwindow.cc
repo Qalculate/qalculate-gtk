@@ -1571,7 +1571,11 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		CALCULATOR->beginTemporaryStopMessages();
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 		CALCULATOR->setSimplifiedPercentageUsed(false);
-		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), 100, evalops, parsed_mstruct, parsed_tostruct) || parsed_mstruct->contains(m_undefined) || contains_extreme_number(mauto)) {
+#ifdef _WIN32
+		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 20, evalops, parsed_mstruct, parsed_tostruct) || parsed_mstruct->contains(m_undefined) || contains_extreme_number(mauto)) {
+#else
+		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 50, evalops, parsed_mstruct, parsed_tostruct) || parsed_mstruct->contains(m_undefined) || contains_extreme_number(mauto)) {
+#endif
 			mauto.setAborted();
 		} else if(do_factors || do_pfe || do_expand) {
 			CALCULATOR->startControl(100);
@@ -1772,7 +1776,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			} else {
 				result_text = "";
 			}
-			if(unformatted_length(result_text) > 900) {
+			if(unformatted_length(result_text) > 900 || CALCULATOR->aborted()) {
 				CALCULATOR->endTemporaryStopMessages();
 				CALCULATOR->clearMessages();
 				b = false;
@@ -1782,7 +1786,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 				b = draw_result(displayed_mstruct_pre);
 				CALCULATOR->endTemporaryStopMessages(b);
 			}
-			if(b) {
+			if(b && !CALCULATOR->aborted()) {
 				result_autocalculated = true;
 				minimal_mode_show_resultview();
 				result_text_long = "";
@@ -2684,12 +2688,11 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		if(!view_thread->write(NULL)) SET_RESULT_RETURN
 	}
 
-	int i = 0;
-	while(b_busy && view_thread->running && i < 50) {
-		sleep_ms(10);
-		i++;
+	PREPARE_TIMECHECK(500)
+	for(int i = 0; b_busy && view_thread->running && i < 10000; i++) {
+		sleep_ms(1);
+		DO_TIMECHECK {break;}
 	}
-	i = 0;
 
 	if(b_busy && view_thread->running) {
 		if(stack_index == 0) draw_result_waiting();
@@ -2708,7 +2711,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 	}
 	while(b_busy && view_thread->running) {
 		while(gtk_events_pending()) gtk_main_iteration();
-		sleep_ms(100);
+		sleep_ms(10);
 	}
 	b_busy = true;
 	b_busy_result = true;
@@ -2948,7 +2951,7 @@ void executeCommand(int command_type, bool show_result, bool force, string ceu_s
 
 	bool title_set = false, was_busy = false;
 
-	int i = 0;
+	PREPARE_TIMECHECK(500)
 
 	MathStructure *mfactor = new MathStructure(*mstruct);
 	MathStructure parsebak(*parsed_mstruct);
@@ -2957,11 +2960,10 @@ void executeCommand(int command_type, bool show_result, bool force, string ceu_s
 
 	if((!command_thread->running && !command_thread->start()) || !command_thread->write(command_type) || !command_thread->write((void *) mfactor)) {unblock_error(); b_busy = false; b_busy_command = false; return;}
 
-	while(b_busy && command_thread->running && i < 50) {
-		sleep_ms(10);
-		i++;
+	for(int i = 0; b_busy && command_thread->running && i < 10000; i++) {
+		sleep_ms(1);
+		DO_TIMECHECK {break;}
 	}
-	i = 0;
 
 	draw_result_backup();
 
@@ -3008,7 +3010,7 @@ void executeCommand(int command_type, bool show_result, bool force, string ceu_s
 	}
 	while(b_busy && command_thread->running) {
 		while(gtk_events_pending()) gtk_main_iteration();
-		sleep_ms(100);
+		sleep_ms(10);
 	}
 	if(!command_thread->running) command_aborted = true;
 
@@ -3178,10 +3180,10 @@ void set_busy(bool b) {
 void abort_calculation() {
 	if(b_busy_expression || b_busy_result || b_busy_command) CALCULATOR->abort();
 	if(b_busy_command) {
-		int msecs = 5000;
-		while(b_busy && msecs > 0) {
+		PREPARE_TIMECHECK(5000)
+		for(int i = 0; b_busy && i < 10000; i++) {
 			sleep_ms(10);
-			msecs -= 10;
+			DO_TIMECHECK {break;}
 		}
 		if(b_busy) {
 			command_thread->cancel();
@@ -5245,12 +5247,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 
 	bool title_set = false, was_busy = false;
 
-	int i = 0;
-	while(CALCULATOR->busy() && i < 50) {
-		sleep_ms(10);
-		i++;
+	PREPARE_TIMECHECK(500)
+	for(int i = 0; CALCULATOR->busy() && i < 10000; i++) {
+		sleep_ms(1);
+		DO_TIMECHECK {break;}
 	}
-	i = 0;
 
 	if(CALCULATOR->busy()) {
 		if(update_window_title(_("Calculating…"))) title_set = true;
@@ -5269,7 +5270,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	}
 	while(CALCULATOR->busy()) {
 		while(gtk_events_pending()) gtk_main_iteration();
-		sleep_ms(100);
+		sleep_ms(10);
 	}
 
 	if(was_busy) {
@@ -7098,7 +7099,7 @@ bool do_shortcut(int type, string value) {
 					PrintOptions po = printops;
 					po.is_approximate = NULL;
 					po.can_display_unicode_string_arg = (void*) expression_edit_widget();
-					string str = cu.print(po, false, TAG_TYPE_HTML, true);
+					string str = cu.print(po, false, TAG_TYPE_HTML, true, false);
 					insert_text(str.c_str());
 				}
 			} else if(u && CALCULATOR->stillHasUnit(u)) {
@@ -7106,10 +7107,10 @@ bool do_shortcut(int type, string value) {
 					PrintOptions po = printops;
 					po.is_approximate = NULL;
 					po.can_display_unicode_string_arg = (void*) expression_edit_widget();
-					string str = ((CompositeUnit*) u)->print(po, false, TAG_TYPE_HTML, true);
+					string str = ((CompositeUnit*) u)->print(po, false, TAG_TYPE_HTML, true, false);
 					insert_text(str.c_str());
 				} else {
-					insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true).c_str());
+					insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true).c_str());
 				}
 			}
 			return true;
@@ -7620,9 +7621,9 @@ void insert_unit(Unit *u, bool add_to_recent) {
 		PrintOptions po = printops;
 		po.is_approximate = NULL;
 		po.can_display_unicode_string_arg = (void*) expression_edit_widget();
-		insert_text(((CompositeUnit*) u)->print(po, false, TAG_TYPE_HTML, true).c_str());
+		insert_text(((CompositeUnit*) u)->print(po, false, TAG_TYPE_HTML, true, false).c_str());
 	} else {
-		insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true).c_str());
+		insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true).c_str());
 	}
 	if(add_to_recent) unit_inserted(u);
 }

@@ -1,3 +1,18 @@
+2025-10-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix warnings when updating completion with preferences dialog not opened
+	* Include prefix in character count for completion of prefix + unit with minimum completion length > 1
+	* Fix minimum completion length for text string with Unicode characters
+	* Increase responsivenes by decreasing the length of sleep periods (from 10 to 1 ms) while waiting
+
+2025-10-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix wrong equals (not approximately) sign potentially shown in units and variables dialogs
+
+2025-10-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not input plural names of units
+
 2025-09-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Replace "MeV/c^2" and "MeV*c^(-2)" with "MeV/c²" in titles

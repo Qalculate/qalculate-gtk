@@ -332,10 +332,11 @@ void on_tUnits_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 				if(au->firstBaseUnit()->subtype() == SUBTYPE_COMPOSITE_UNIT) m.multiply(((CompositeUnit*) au->firstBaseUnit())->generateMathStructure());
 				else m.multiply(au->firstBaseUnit());
 				if(!mexp.isOne()) m.last() ^= mexp;
+				m.format(po);
+				string value = m.print(po);
 				if(m.isApproximate() || is_approximate) str += SIGN_ALMOST_EQUAL " ";
 				else str += "= ";
-				m.format(po);
-				str += m.print(po);
+				str += value;
 				if(au->hasNonlinearExpression() && !au->inverseExpression().empty()) {
 					str += "\n";
 					m.set("x");
@@ -357,10 +358,11 @@ void on_tUnits_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 					au->convertFromFirstBaseUnit(m, mexp);
 					m.multiply(au);
 					if(!mexp.isOne()) m.last() ^= mexp;
+					m.format(po);
+					value = m.print(po);
 					if(m.isApproximate() || is_approximate) str += SIGN_ALMOST_EQUAL " ";
 					else str += "= ";
-					m.format(po);
-					str += m.print(po);
+					str += value;
 				}
 			} else if(u->subtype() == SUBTYPE_COMPOSITE_UNIT) {
 				str += "= ";
@@ -722,10 +724,10 @@ void on_units_button_insert_clicked(GtkButton*, gpointer) {
 			PrintOptions po = printops;
 			po.is_approximate = NULL;
 			po.can_display_unicode_string_arg = (void*) expression_edit_widget();
-			string str = ((CompositeUnit*) u)->print(po, false, TAG_TYPE_HTML, true);
+			string str = ((CompositeUnit*) u)->print(po, false, TAG_TYPE_HTML, true, false);
 			insert_text(str.c_str());
 		} else {
-			insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, true, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true).c_str());
+			insert_text(u->preferredInputName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) expression_edit_widget()).formattedName(TYPE_UNIT, true).c_str());
 		}
 	}
 }

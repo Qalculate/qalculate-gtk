@@ -952,7 +952,7 @@ void do_completion(bool to_menu) {
 		gchar *gstr2 = gtk_text_buffer_get_text(expression_edit_buffer(), &object_start, &object_end, FALSE);
 		str = gstr2;
 		g_free(gstr2);
-		if(str.length() < (size_t) completion_min) {gtk_widget_hide(completion_window); return;}
+		if(unicode_length(str) < (size_t) completion_min) {gtk_widget_hide(completion_window); return;}
 	}
 	GtkTreeIter iter;
 	int matches = 0;
@@ -984,7 +984,7 @@ void do_completion(bool to_menu) {
 		if(current_function && current_function->subtype() == SUBTYPE_DATA_SET) {
 			arg = current_function->getArgumentDefinition(current_function_index);
 			if(arg && (arg->type() == ARGUMENT_TYPE_DATA_OBJECT || arg->type() == ARGUMENT_TYPE_DATA_PROPERTY)) {
-				if(arg->type() == ARGUMENT_TYPE_DATA_OBJECT && (str.empty() || str.length() < (size_t) completion_min)) {gtk_widget_hide(completion_window); return;}
+				if(arg->type() == ARGUMENT_TYPE_DATA_OBJECT && (str.empty() || unicode_length(str) < (size_t) completion_min)) {gtk_widget_hide(completion_window); return;}
 				if(current_function_index == 1) {
 					for(size_t i = 1; i <= current_function->countNames(); i++) {
 						if(str.find(current_function->getName(i).name) != string::npos) {
@@ -1091,13 +1091,13 @@ void do_completion(bool to_menu) {
 		if(!arg) {
 			vector<string> pstr;
 			vector<Prefix*> prefixes;
-			if(str.length() > (size_t) completion_min) {
+			if(!str.empty()) {
 				for(size_t pi = 1; ; pi++) {
 					Prefix *prefix = CALCULATOR->getPrefix(pi);
 					if(!prefix) break;
 					for(size_t name_i = 1; name_i <= prefix->countNames(); name_i++) {
 						const string *pname = &prefix->getName(name_i).name;
-						if(!pname->empty() && pname->length() < str.length() - completion_min + 1) {
+						if(!pname->empty() && pname->length() < str.length()) {
 							bool pmatch = true;
 							for(size_t i = 0; i < pname->length(); i++) {
 								if((*pname)[i] != str[i]) {

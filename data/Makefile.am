@@ -35,3 +35,4 @@ EXTRA_DIST = \
 	$(appdata_IN_FILES)	\
 	$(noinst_DATA)
 
+DISTCLEANFILES = $(desktop_DATA) $(appdata_DATA)

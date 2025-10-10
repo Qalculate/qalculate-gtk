@@ -265,4 +265,34 @@ unsigned int combo_get_bits(GtkComboBox *w, bool has_auto = true);
 #define SUBMENU_ITEM_PREPEND(x,y)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_prepend(GTK_MENU_SHELL(y), item); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
 #define SUBMENU_ITEM_INSERT(x,y,i)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_insert(GTK_MENU_SHELL(y), item, i); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
 
+#ifndef CLOCK_MONOTONIC
+#	define PREPARE_TIMECHECK(ms) \
+					struct timeval tv_end; \
+					gettimeofday(&tv_end, NULL); \
+					tv_end.tv_usec += ((ms) % 1000) * 1000; \
+					tv_end.tv_sec += ((ms) / 1000); \
+					if(tv_end.tv_usec >= 1000000L) { \
+						tv_end.tv_sec++; \
+						tv_end.tv_usec -= 1000000L; \
+					}
+#	define DO_TIMECHECK \
+					struct timeval tv; \
+					gettimeofday(&tv, NULL); \
+					if(tv.tv_sec > tv_end.tv_sec || (tv.tv_sec == tv_end.tv_sec && tv.tv_usec >= tv_end.tv_usec))
+#else
+#	define PREPARE_TIMECHECK(ms) \
+					struct timespec tv_end; \
+					clock_gettime(CLOCK_MONOTONIC, &tv_end); \
+					tv_end.tv_nsec += ((ms) % 1000) * 1000000L; \
+					tv_end.tv_sec += ((ms) / 1000); \
+					if(tv_end.tv_nsec >= 1000000000L) { \
+						tv_end.tv_sec++; \
+						tv_end.tv_nsec -= 1000000000L; \
+					}
+#	define DO_TIMECHECK \
+					struct timespec tv; \
+					clock_gettime(CLOCK_MONOTONIC, &tv); \
+					if(tv.tv_sec > tv_end.tv_sec || (tv.tv_sec == tv_end.tv_sec && tv.tv_nsec >= tv_end.tv_nsec))
+#endif
+
 #endif /* QALCULATE_GTK_UTIL_H */

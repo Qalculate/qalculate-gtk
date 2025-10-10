@@ -294,6 +294,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 					po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 					po.allow_non_usable = true;
 					po.is_approximate = &is_approximate;
+					string value = CALCULATOR->print(((KnownVariable*) v)->get(), 1000, po);
 					if(v->isApproximate() || is_approximate) {
 						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
 							str += SIGN_ALMOST_EQUAL " ";
@@ -304,7 +305,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 					} else {
 						str += "= ";
 					}
-					str += CALCULATOR->print(((KnownVariable*) v)->get(), 1000, po);
+					str += value;
 				}
 			} else {
 				if(((UnknownVariable*) v)->assumptions()) {
