@@ -32,6 +32,7 @@ enum {
 	COMMAND_CONVERT_STRING,
 	COMMAND_CONVERT_BASE,
 	COMMAND_CONVERT_OPTIMAL,
+	COMMAND_CONVERT_MIXED,
 	COMMAND_CALCULATE,
 	COMMAND_EVAL
 };
@@ -233,7 +234,14 @@ unsigned int combo_get_bits(GtkComboBox *w, bool has_auto = true);
 #define MENU_ITEM_WITH_INT(x,y,z)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), GINT_TO_POINTER(z)); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
 #define MENU_ITEM_WITH_STRING(x,y,z)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) z); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
 #define MENU_ITEM_WITH_POINTER(x,y,z)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) z); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
-#define MENU_ITEM_WITH_OBJECT(x,y)		item = gtk_menu_item_new_with_label(x->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str()); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) x); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
+#define MENU_ITEM_WITH_OBJECT(x,y)		if(printops.use_unicode_signs && x->title(false).find("MeV/c^2") != std::string::npos) {\
+							std::string xtitle = x->title(false);\
+							gsub("MeV/c^2", "MeV/c²", xtitle);\
+							item = gtk_menu_item_new_with_label(xtitle.c_str());\
+						} else {\
+							item = gtk_menu_item_new_with_label(x->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str());\
+						}\
+						gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) x); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);
 #define MENU_ITEM_WITH_POINTER_PREPEND(x,y,z)	item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) z); gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
 #define MENU_ITEM_WITH_OBJECT_PREPEND(x,y)	item = gtk_menu_item_new_with_label(x->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str()); gtk_widget_show (item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) x); gtk_menu_shell_prepend(GTK_MENU_SHELL(sub), item);
 #define MENU_ITEM_WITH_OBJECT_AND_FLAG(x,y)	{GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6); unordered_map<string, cairo_surface_t*>::const_iterator it_flag = flag_surfaces.find(x->referenceName()); GtkWidget *image_w; if(it_flag != flag_surfaces.end()) {image_w = gtk_image_new_from_surface(it_flag->second);} else {image_w = gtk_image_new();} gtk_widget_set_size_request(image_w, flagheight * 2, flagheight); gtk_container_add(GTK_CONTAINER(box), image_w); gtk_container_add(GTK_CONTAINER(box), gtk_label_new(x->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) sub).c_str())); item = gtk_menu_item_new(); gtk_container_add(GTK_CONTAINER(item), box); gtk_widget_show_all(item); g_signal_connect(G_OBJECT (item), "activate", G_CALLBACK(y), (gpointer) x); gtk_menu_shell_append(GTK_MENU_SHELL(sub), item);}
@@ -256,5 +264,35 @@ unsigned int combo_get_bits(GtkComboBox *w, bool has_auto = true);
 #define SUBMENU_ITEM(x,y)			item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_append(GTK_MENU_SHELL(y), item); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
 #define SUBMENU_ITEM_PREPEND(x,y)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_prepend(GTK_MENU_SHELL(y), item); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
 #define SUBMENU_ITEM_INSERT(x,y,i)		item = gtk_menu_item_new_with_label(x); gtk_widget_show (item); gtk_menu_shell_insert(GTK_MENU_SHELL(y), item, i); sub = gtk_menu_new(); gtk_widget_show (sub); gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), sub);
+
+#ifndef CLOCK_MONOTONIC
+#	define PREPARE_TIMECHECK(ms) \
+					struct timeval tv_end; \
+					gettimeofday(&tv_end, NULL); \
+					tv_end.tv_usec += ((ms) % 1000) * 1000; \
+					tv_end.tv_sec += ((ms) / 1000); \
+					if(tv_end.tv_usec >= 1000000L) { \
+						tv_end.tv_sec++; \
+						tv_end.tv_usec -= 1000000L; \
+					}
+#	define DO_TIMECHECK \
+					struct timeval tv; \
+					gettimeofday(&tv, NULL); \
+					if(tv.tv_sec > tv_end.tv_sec || (tv.tv_sec == tv_end.tv_sec && tv.tv_usec >= tv_end.tv_usec))
+#else
+#	define PREPARE_TIMECHECK(ms) \
+					struct timespec tv_end; \
+					clock_gettime(CLOCK_MONOTONIC, &tv_end); \
+					tv_end.tv_nsec += ((ms) % 1000) * 1000000L; \
+					tv_end.tv_sec += ((ms) / 1000); \
+					if(tv_end.tv_nsec >= 1000000000L) { \
+						tv_end.tv_sec++; \
+						tv_end.tv_nsec -= 1000000000L; \
+					}
+#	define DO_TIMECHECK \
+					struct timespec tv; \
+					clock_gettime(CLOCK_MONOTONIC, &tv); \
+					if(tv.tv_sec > tv_end.tv_sec || (tv.tv_sec == tv_end.tv_sec && tv.tv_nsec >= tv_end.tv_nsec))
+#endif
 
 #endif /* QALCULATE_GTK_UTIL_H */

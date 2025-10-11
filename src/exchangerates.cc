@@ -67,11 +67,11 @@ void fetch_exchange_rates(int timeout, int n) {
 	set_busy();
 	FetchExchangeRatesThread fetch_thread;
 	if(fetch_thread.start() && fetch_thread.write(timeout) && fetch_thread.write(n)) {
-		int i = 0;
-		while(fetch_thread.running && i < 50) {
-			while(gtk_events_pending()) gtk_main_iteration();
-			sleep_ms(10);
-			i++;
+		PREPARE_TIMECHECK(500)
+		for(int i = 0; fetch_thread.running && i < 10000; i++) {
+			while(i > 0 && i % 10 == 0 && gtk_events_pending()) gtk_main_iteration();
+			sleep_ms(1);
+			DO_TIMECHECK {break;}
 		}
 		if(fetch_thread.running) {
 			GtkWidget *dialog = gtk_message_dialog_new(main_window(), (GtkDialogFlags) (GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL), GTK_MESSAGE_INFO, GTK_BUTTONS_NONE, _("Fetching exchange rates."));

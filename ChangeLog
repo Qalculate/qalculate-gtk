@@ -1,3 +1,80 @@
+2025-10-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix warnings when updating completion with preferences dialog not opened
+	* Include prefix in character count for completion of prefix + unit with minimum completion length > 1
+	* Fix minimum completion length for text string with Unicode characters
+	* Increase responsivenes by decreasing the length of sleep periods (from 10 to 1 ms) while waiting
+
+2025-10-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix wrong equals (not approximately) sign potentially shown in units and variables dialogs
+
+2025-10-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not input plural names of units
+
+2025-09-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Replace "MeV/c^2" and "MeV*c^(-2)" with "MeV/c²" in titles
+
+2025-09-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Improve handling of hidden units (e.g. kph and cc) in completion and conversion menu
+	* Avoid slow display of extreme numbers (> 2^10000000) with calculate-as-you-type
+
+2025-09-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Show warning and ask for confirmation when decativating interval arithmetic
+	* (Re)activate interval arithmetic in qalc (if configuration from prevision version)
+
+2025-09-18 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix title matching for word preceded by parenthesis
+	* Match object name on words after underscore (e.g. oz in fl_oz)
+	* Fix restoring of expression after command when expression is not kept after calculation
+	* Improve "to mixed" (without preceding expression)
+
+2025-09-14 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Improve filtering of items in conversion menu
+	* Avoid possible freeze with malformed "to" expression
+
+2025-09-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Show warning about default assumptions the first time an equation is solved
+	* Show warning symbol when calculate as you type expression results in a question
+	* Add output in scientific (sci), engineering (eng), or simple notation as "to"-operator options
+	* Do not group digits in exponent in floating point conversion dialog
+	* Fix dot/comma and sinc interpretation dialogs after calculate as you type result is automatically added to history
+	* Do not show calculate as you type result for data set function with "info" (default) as second argument
+
+2025-08-30 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix floating point value, in floating point conversion dialog, for extended and microchip formats
+
+2025-08-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Automatically calculate expression selection (if calculate-as-you-type is enabled; shown in status field after 500 ms)
+	* Enable calculate-as-you-type by default
+
+2025-08-27 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add option (in popup menu) to add or edit comment in history; Add option (in preferences) to clear expression or replace with result
+
+2025-08-25 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix custom time zone in calculate-as-you-type result when added to history (after delay)
+
+2025-08-11 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Improve avoidance of unusable prefix and unit combinations in completion
+	* Do not show prefixes not recommended for specific unit (e.g. only show binary prefixes for information units) in completion
+	* Show conversion suggestions from the unit category in both input and output if base unit is the same (e.g. typography and length units)
+
+2025-08-06 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Replace edit-clear icon on keypad button with "C"
+
 2025-07-21 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Do not add linebreak in history after OR if result does not contain (in)equality

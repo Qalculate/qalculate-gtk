@@ -116,3 +116,4 @@ io.github.Qalculate.SearchProvider.service: Makefile
 endif
 
 
+DISTCLEANFILES = $(nodist_qalculate_gtk_SOURCES) $(nodist_qalculate_search_provider_SOURCES) $(dbusservice_DATA)

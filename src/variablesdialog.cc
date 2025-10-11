@@ -105,7 +105,13 @@ void update_variables_tree() {
 		gtk_tree_store_append(tVariableCategories_store, &iter, &iter2);
 		str += "/";
 		str += item->item;
-		gtk_tree_store_set(tVariableCategories_store, &iter, 0, item->item.c_str(), 1, str.c_str(), -1);
+		if(printops.use_unicode_signs && item->item.find("MeV*c^(-2)") != string::npos) {
+			string title = item->item;
+			gsub("MeV*c^(-2)", "MeV/c²", title);
+			gtk_tree_store_set(tVariableCategories_store, &iter, 0, title.c_str(), 1, str.c_str(), -1);
+		} else {
+			gtk_tree_store_set(tVariableCategories_store, &iter, 0, item->item.c_str(), 1, str.c_str(), -1);
+		}
 		if(str == selected_variable_category) {
 			EXPAND_TO_ITER(model, tVariableCategories, iter)
 			gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariableCategories)), &iter);
@@ -166,7 +172,13 @@ void update_variables_tree() {
 
 void setVariableTreeItem(GtkTreeIter &iter2, Variable *v) {
 	gtk_list_store_append(tVariables_store, &iter2);
-	gtk_list_store_set(tVariables_store, &iter2, 0, v->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tVariables).c_str(), 1, (gpointer) v, 2, TRUE, -1);
+	if(printops.use_unicode_signs && v->title(false).find("MeV/c^2") != string::npos) {
+		string title = v->title(false);
+		gsub("MeV/c^2", "MeV/c²", title);
+		gtk_list_store_set(tVariables_store, &iter2, 0, title.c_str(), 1, (gpointer) v, 2, TRUE, -1);
+	} else {
+		gtk_list_store_set(tVariables_store, &iter2, 0, v->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) tVariables).c_str(), 1, (gpointer) v, 2, TRUE, -1);
+	}
 	GtkTreeIter iter;
 	if(v == selected_variable && gtk_tree_model_filter_convert_child_iter_to_iter(GTK_TREE_MODEL_FILTER(tVariables_store_filter), &iter, &iter2)) {
 		gtk_tree_selection_select_iter(gtk_tree_view_get_selection(GTK_TREE_VIEW(tVariables)), &iter);
@@ -278,9 +290,11 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 					po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(variables_builder, "variables_textview_description");
 					po.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
 					po.base = 10;
+					po.restrict_to_parent_precision = false;
 					po.number_fraction_format = FRACTION_DECIMAL_EXACT;
 					po.allow_non_usable = true;
 					po.is_approximate = &is_approximate;
+					string value = CALCULATOR->print(((KnownVariable*) v)->get(), 1000, po);
 					if(v->isApproximate() || is_approximate) {
 						if(po.use_unicode_signs && (!po.can_display_unicode_string_function || (*po.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, po.can_display_unicode_string_arg))) {
 							str += SIGN_ALMOST_EQUAL " ";
@@ -291,7 +305,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 					} else {
 						str += "= ";
 					}
-					str += CALCULATOR->print(((KnownVariable*) v)->get(), 1000, po);
+					str += value;
 				}
 			} else {
 				if(((UnknownVariable*) v)->assumptions()) {

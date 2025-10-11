@@ -781,6 +781,7 @@ void on_preferences_spin_completion_delay_value_changed(GtkSpinButton *spin, gpo
 	set_expression_completion_settings(-1, -1, -1, -1, gtk_spin_button_get_value_as_int(spin));
 }
 void preferences_update_completion(bool initial) {
+	if(!preferences_builder) return;
 	bool c1 = false, c2 = false;
 	int m1 = 0, m2 = 0, d = 0;
 	get_expression_completion_settings(&c1, &c2, &m1, &m2, &d);
