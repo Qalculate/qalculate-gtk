@@ -5445,7 +5445,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				str = result_text;
 			}
 			gsub(" " SIGN_DIVISION_SLASH " ", DIVISION, str);
-			if(replace_expression == REPLACE_EXPRESSION_WITH_RESULT || unicode_length(str) < unicode_length(execute_str)) {
+			if(replace_expression == REPLACE_EXPRESSION_WITH_RESULT || unicode_length(str) < unicode_length(execute_str.empty() ? from_str : execute_str)) {
 				if(str == "0") {
 					clear_expression_text();
 					set_previous_expression("");

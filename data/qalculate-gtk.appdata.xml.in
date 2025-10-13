@@ -50,6 +50,38 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.8.0" date="2025-10-13">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Automatically calculate expression selection if calculate as you type is enabled</li>
+      <li>Add option to add or edit comment in history</li>
+      <li>Add option to clear expression or replace with result after calculation</li>
+      <li>Add output in scientific (sci), engineering (eng), ans simple notation as "to"-operator options</li>
+      <li>Improve completion</li>
+      <li>Replace edit-clear icon on keypad button with "C"</li>
+      <li>Support non-existing X-variables in plot dialog</li>
+      <li>Enable calculate as you type by default</li>
+      <li>Show warning about default assumptions the first time an equation is solved</li>
+      <li>Show warning symbol when calculate as you type expression results in a question</li>
+      <li>Show warning and ask for confirmation when deactivating interval arithmetic</li>
+      <li>Fix custom time zone in calculate as you type result when added to history</li>
+      <li>Fix floating point value in floating point conversion dialog for extended and microchip formats</li>
+      <li>Improve support (and fix segfault) for exponential notation in hexadecimal numbers</li>
+      <li>Add TeX point, TeX scaled point, twip, agate, darcy, kayser, lambert, foot-lambert, and cc units</li>
+      <li>Add compton wavelength constants for muon, neutron, proton, and tau</li>
+      <li>Update calculation of fraction of year (with day counting basis 0 and 1) to match method used in spreadsheets other than Gnumeric</li>
+      <li>Change default quantile algorithm from 8 to 7</li>
+      <li>Improve accuracy for intervals in solutions to equations when using interval arithmetic</li>
+      <li>Fix poolvar(), ttest(), cor(), dollarde() and dollarfr() functions</li>
+      <li>Fix inequality with 1/f(x) on one side, e.g. "1/(x-2) ≤ 2"</li>
+      <li>Fix value of Planck unit (was rounded to 7 decimals)</li>
+      <li>Fix segfault with extremely small numbers and high number of bits in floating point conversion</li>
+      <li>Fix crashes and freezes in some corner cases</li>
+      <li>Many minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.7.0" date="2025-08-04">
    <description>
     <p>Changes:</p>
