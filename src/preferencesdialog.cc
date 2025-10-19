@@ -54,6 +54,10 @@ void preferences_dialog_set(const gchar *obj, gboolean b) {
 	if(!preferences_builder) get_preferences_dialog();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, obj)), b);
 }
+void preferences_dialog_set_combo(const gchar *obj, int i) {
+	if(!preferences_builder) get_preferences_dialog();
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, obj)), i);
+}
 void on_colorbutton_text_color_color_set(GtkColorButton *w, gpointer) {
 	GdkRGBA c;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(w), &c);
@@ -707,20 +711,48 @@ void on_preferences_radiobutton_division_toggled(GtkToggleButton *w, gpointer) {
 		result_display_updated();
 	}
 }
-void on_preferences_radiobutton_digit_grouping_none_toggled(GtkToggleButton *w, gpointer) {
-	if(gtk_toggle_button_get_active(w)) {
+extern bool custom_digit_grouping, custom_digit_group_changed;
+extern string custom_digit_group_separator, custom_digit_group_format, saved_local_dgs, saved_local_dgf;
+void on_preferences_cgs_entry_changed(GtkEntry *w, gpointer) {
+	if(!custom_digit_grouping) return;
+	custom_digit_group_separator = gtk_entry_get_text(w);
+	CALCULATOR->local_digit_group_separator = custom_digit_group_separator;
+	custom_digit_group_changed = true;
+	result_format_updated();
+}
+void on_preferences_cgf_spin_value_changed(GtkSpinButton *w, gpointer) {
+	if(!custom_digit_grouping) return;
+	custom_digit_group_format = '0' + gtk_spin_button_get_value(w);
+	CALCULATOR->local_digit_group_format = "";
+	for(size_t i = 0; i < custom_digit_group_format.size(); i++) {
+		CALCULATOR->local_digit_group_format += custom_digit_group_format[i] - '0';
+	}
+	custom_digit_group_changed = true;
+	result_format_updated();
+}
+void on_preferences_combo_digit_grouping_changed(GtkComboBox *w, gpointer) {
+	int i = gtk_combo_box_get_active(w);
+	if(custom_digit_grouping) {
+		CALCULATOR->local_digit_group_separator = saved_local_dgs;
+		CALCULATOR->local_digit_group_format = saved_local_dgf;
+	} else if(i == 3) {
+		saved_local_dgs = CALCULATOR->local_digit_group_separator;
+		saved_local_dgf = CALCULATOR->local_digit_group_format;
+	}
+	custom_digit_grouping = false;
+	if(i == 0) {
 		printops.digit_grouping = DIGIT_GROUPING_NONE;
 		result_format_updated();
-	}
-}
-void on_preferences_radiobutton_digit_grouping_standard_toggled(GtkToggleButton *w, gpointer) {
-	if(gtk_toggle_button_get_active(w)) {
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), "");
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), 3);
+	} else if(i == 1) {
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), THIN_SPACE);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), 3);
 		printops.digit_grouping = DIGIT_GROUPING_STANDARD;
 		result_format_updated();
-	}
-}
-void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w, gpointer) {
-	if(gtk_toggle_button_get_active(w)) {
+	} else if(i == 2) {
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), CALCULATOR->local_digit_group_separator.c_str());
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), CALCULATOR->local_digit_group_format.empty() ? 3 : (int) CALCULATOR->local_digit_group_format[0]);
 		printops.digit_grouping = DIGIT_GROUPING_LOCALE;
 		if((!evalops.parse_options.comma_as_separator || CALCULATOR->getDecimalPoint() == COMMA) && CALCULATOR->local_digit_group_separator == COMMA) {
 			evalops.parse_options.comma_as_separator = true;
@@ -741,7 +773,20 @@ void on_preferences_radiobutton_digit_grouping_locale_toggled(GtkToggleButton *w
 		} else {
 			result_format_updated();
 		}
+	} else if(i == 3) {
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), custom_digit_group_separator.c_str());
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), custom_digit_group_format.empty() ? 3 : custom_digit_group_format[0] - '0');
+		printops.digit_grouping = DIGIT_GROUPING_LOCALE;
+		CALCULATOR->local_digit_group_format = "";
+		for(size_t i = 0; i < custom_digit_group_format.size(); i++) {
+			CALCULATOR->local_digit_group_format += custom_digit_group_format[i] - '0';
+		}
+		CALCULATOR->local_digit_group_separator = custom_digit_group_separator;
+		custom_digit_grouping = true;
+		result_format_updated();
 	}
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), custom_digit_grouping);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), custom_digit_grouping);
 }
 
 void on_preferences_checkbutton_enable_completion_toggled(GtkToggleButton *w, gpointer) {
@@ -973,18 +1018,25 @@ GtkWidget* get_preferences_dialog() {
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_division")), printops.use_unicode_signs);
 		switch(printops.digit_grouping) {
 			case DIGIT_GROUPING_STANDARD: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_digit_grouping_standard")), TRUE);
+				gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_digit_grouping")), 1);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), THIN_SPACE);
 				break;
 			}
 			case DIGIT_GROUPING_LOCALE: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_digit_grouping_locale")), TRUE);
+				gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_digit_grouping")), custom_digit_grouping ? 3 : 2);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), CALCULATOR->local_digit_group_separator.c_str());
+				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), CALCULATOR->local_digit_group_separator.empty() ? 3 : CALCULATOR->local_digit_group_separator[0]);
 				break;
 			}
 			default: {
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_radiobutton_digit_grouping_none")), TRUE);
+				gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_digit_grouping")), 0);
+				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), "");
+				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), 3);
 				break;
 			}
 		}
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), custom_digit_grouping);
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), custom_digit_grouping);
 		preferences_update_twos_complement(true);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_autocalc_history")), autocalc_history_delay >= 0 && !parsed_in_result);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_autocalc_history")), !parsed_in_result);
@@ -1064,8 +1116,9 @@ GtkWidget* get_preferences_dialog() {
 		G_CALLBACK(on_preferences_checkbutton_alternative_base_prefixes_toggled), "on_preferences_checkbutton_spell_out_logical_operators_toggled", G_CALLBACK(on_preferences_checkbutton_spell_out_logical_operators_toggled), "on_preferences_checkbutton_e_notation_toggled", G_CALLBACK(on_preferences_checkbutton_e_notation_toggled),
 		"on_preferences_checkbutton_lower_case_e_toggled", G_CALLBACK(on_preferences_checkbutton_lower_case_e_toggled), "on_preferences_checkbutton_repdeci_overline_toggled", G_CALLBACK(on_preferences_checkbutton_repdeci_overline_toggled), "on_preferences_checkbutton_decimal_comma_toggled", G_CALLBACK(on_preferences_checkbutton_decimal_comma_toggled), "on_preferences_checkbutton_imaginary_j_toggled", G_CALLBACK(on_preferences_checkbutton_imaginary_j_toggled),
 		"on_preferences_checkbutton_comma_as_separator_toggled", G_CALLBACK(on_preferences_checkbutton_comma_as_separator_toggled), "on_preferences_checkbutton_copy_ascii_toggled", G_CALLBACK(on_preferences_checkbutton_copy_ascii_toggled), "on_preferences_checkbutton_dot_as_separator_toggled", G_CALLBACK(on_preferences_checkbutton_dot_as_separator_toggled),
-		"on_preferences_radiobutton_digit_grouping_none_toggled", G_CALLBACK(on_preferences_radiobutton_digit_grouping_none_toggled), "on_preferences_radiobutton_digit_grouping_standard_toggled", G_CALLBACK(on_preferences_radiobutton_digit_grouping_standard_toggled), "on_preferences_radiobutton_digit_grouping_locale_toggled",
-		G_CALLBACK(on_preferences_radiobutton_digit_grouping_locale_toggled), "on_preferences_radiobutton_dot_toggled", G_CALLBACK(on_preferences_radiobutton_dot_toggled), "on_preferences_radiobutton_ex_toggled", G_CALLBACK(on_preferences_radiobutton_ex_toggled), "on_preferences_radiobutton_altdot_toggled", G_CALLBACK(on_preferences_radiobutton_altdot_toggled),
+		"on_preferences_combo_digit_grouping_changed", G_CALLBACK(on_preferences_combo_digit_grouping_changed),
+		"on_preferences_cgf_spin_value_changed", G_CALLBACK(on_preferences_cgf_spin_value_changed),
+		"on_preferences_cgs_entry_changed", G_CALLBACK(on_preferences_cgs_entry_changed), "on_preferences_radiobutton_dot_toggled", G_CALLBACK(on_preferences_radiobutton_dot_toggled), "on_preferences_radiobutton_ex_toggled", G_CALLBACK(on_preferences_radiobutton_ex_toggled), "on_preferences_radiobutton_altdot_toggled", G_CALLBACK(on_preferences_radiobutton_altdot_toggled),
 		"on_preferences_radiobutton_asterisk_toggled", G_CALLBACK(on_preferences_radiobutton_asterisk_toggled), "on_preferences_radiobutton_division_slash_toggled", G_CALLBACK(on_preferences_radiobutton_division_slash_toggled), "on_preferences_radiobutton_division_toggled", G_CALLBACK(on_preferences_radiobutton_division_toggled),
 		"on_preferences_radiobutton_slash_toggled", G_CALLBACK(on_preferences_radiobutton_slash_toggled), "on_preferences_checkbutton_binary_prefixes_toggled", G_CALLBACK(on_preferences_checkbutton_binary_prefixes_toggled), "on_preferences_checkbutton_copy_ascii_without_units_toggled",
 		G_CALLBACK(on_preferences_checkbutton_copy_ascii_without_units_toggled), "on_preferences_checkbutton_local_currency_conversion_toggled", G_CALLBACK(on_preferences_checkbutton_local_currency_conversion_toggled), "on_preferences_update_exchange_rates_spin_button_input", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_input),

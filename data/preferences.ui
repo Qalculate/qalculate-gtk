@@ -69,6 +69,13 @@
     <property name="step-increment">1</property>
     <property name="page-increment">7</property>
   </object>
+  <object class="GtkAdjustment" id="preferences_cgf_adjustment">
+    <property name="lower">1</property>
+    <property name="upper">20</property>
+    <property name="value">3</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">3</property>
+  </object>
   <object class="GtkDialog" id="preferences_dialog">
     <property name="can-focus">False</property>
     <property name="border-width">6</property>
@@ -985,7 +992,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <object class="GtkGrid" id="grid_twos">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="row-spacing">12</property>
+                    <property name="row-spacing">6</property>
                     <property name="column-spacing">12</property>
                     <child>
                       <object class="GtkCheckButton" id="preferences_checkbutton_twos_complement">
@@ -1342,7 +1349,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                     <property name="can-focus">False</property>
                     <property name="halign">start</property>
                     <property name="margin-top">12</property>
-                    <property name="row-spacing">12</property>
+                    <property name="row-spacing">6</property>
                     <property name="column-spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="preferences_label_digit_grouping">
@@ -1357,21 +1364,36 @@ Note that only the mode, history and definitions of the last closed instance wil
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="hbox3">
+                      <object class="GtkComboBoxText" id="preferences_combo_digit_grouping">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="active">0</property>
+                        <items>
+                          <item translatable="yes">None</item>
+                          <item translatable="yes">Standard</item>
+                          <item translatable="yes">Local</item>
+                          <item translatable="yes">Custom</item>
+                        </items>
+                        <signal name="changed" handler="on_preferences_combo_digit_grouping_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="hbox_cdg">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkRadioButton" id="preferences_radiobutton_digit_grouping_none">
-                            <property name="label" translatable="yes">off</property>
+                          <object class="GtkEntry" id="preferences_cgs_entry">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
-                            <property name="receives-default">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="active">True</property>
-                            <property name="draw-indicator">True</property>
-                            <signal name="toggled" handler="on_preferences_radiobutton_digit_grouping_none_toggled" swapped="no"/>
+                            <property name="width-chars">4</property>
+                            <property name="hexpand">True</property>
+                            <signal name="changed" handler="on_preferences_cgs_entry_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1380,15 +1402,15 @@ Note that only the mode, history and definitions of the last closed instance wil
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkRadioButton" id="preferences_radiobutton_digit_grouping_standard">
-                            <property name="label" translatable="yes">standard</property>
+                          <object class="GtkSpinButton" id="preferences_cgf_spin">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
-                            <property name="receives-default">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="draw-indicator">True</property>
-                            <property name="group">preferences_radiobutton_digit_grouping_none</property>
-                            <signal name="toggled" handler="on_preferences_radiobutton_digit_grouping_standard_toggled" swapped="no"/>
+                            <property name="hexpand">True</property>
+                            <property name="text">3</property>
+                            <property name="adjustment">preferences_cgf_adjustment</property>
+                            <property name="numeric">True</property>
+                            <property name="value">3</property>
+                            <signal name="value-changed" handler="on_preferences_cgf_spin_value_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1396,27 +1418,10 @@ Note that only the mode, history and definitions of the last closed instance wil
                             <property name="position">1</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkRadioButton" id="preferences_radiobutton_digit_grouping_locale">
-                            <property name="label" translatable="yes">local</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="receives-default">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="draw-indicator">True</property>
-                            <property name="group">preferences_radiobutton_digit_grouping_none</property>
-                            <signal name="toggled" handler="on_preferences_radiobutton_digit_grouping_locale_toggled" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
-                        <property name="top-attach">0</property>
+                        <property name="top-attach">1</property>
                       </packing>
                     </child>
                     <child>
@@ -1428,7 +1433,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">2</property>
+                        <property name="top-attach">3</property>
                       </packing>
                     </child>
                     <child>
@@ -1509,7 +1514,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
-                        <property name="top-attach">2</property>
+                        <property name="top-attach">3</property>
                       </packing>
                     </child>
                     <child>
@@ -1517,6 +1522,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
+			<property name="margin-top">6</property>
                         <property name="spacing">6</property>
                         <property name="homogeneous">True</property>
                         <child>
@@ -1573,7 +1579,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
-                        <property name="top-attach">1</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
@@ -1585,7 +1591,7 @@ Note that only the mode, history and definitions of the last closed instance wil
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">1</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                   </object>

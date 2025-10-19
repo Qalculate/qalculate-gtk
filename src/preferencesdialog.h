@@ -30,5 +30,6 @@ void preferences_rpn_mode_changed();
 void preferences_parsing_mode_changed();
 
 void preferences_dialog_set(const gchar *obj, gboolean b);
+void preferences_dialog_set_combo(const gchar *obj, int i);
 
 #endif /* PREFERENCES_DIALOG_H */

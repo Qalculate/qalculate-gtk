@@ -3552,9 +3552,9 @@ void set_option(string str) {
 		if(v < DIGIT_GROUPING_NONE || v > DIGIT_GROUPING_LOCALE) {
 			CALCULATOR->error(true, "Illegal value: %s.", svalue.c_str(), NULL);
 		} else {
-			if(v == DIGIT_GROUPING_NONE) preferences_dialog_set("preferences_radiobutton_digit_grouping_none", TRUE);
-			else if(v == DIGIT_GROUPING_STANDARD) preferences_dialog_set("preferences_radiobutton_digit_grouping_standard", TRUE);
-			else if(v == DIGIT_GROUPING_LOCALE) preferences_dialog_set("preferences_radiobutton_digit_grouping_locale", TRUE);
+			if(v == DIGIT_GROUPING_NONE) preferences_dialog_set_combo("preferences_combo_digit_grouping", 0);
+			else if(v == DIGIT_GROUPING_STANDARD) preferences_dialog_set_combo("preferences_combo_digit_grouping", 1);
+			else if(v == DIGIT_GROUPING_LOCALE) preferences_dialog_set_combo("preferences_combo_digit_grouping", 2);
 		}
 	} else if(equalsIgnoreCase(svar, "spell out logical") || svar == "spellout") SET_BOOL_PREF("preferences_checkbutton_spell_out_logical_operators")
 	else if((equalsIgnoreCase(svar, "ignore dot") || svar == "nodot") && CALCULATOR->getDecimalPoint() != DOT) SET_BOOL_PREF("preferences_checkbutton_dot_as_separator")
@@ -5772,6 +5772,9 @@ void set_disable_cursor_blinking(bool b) {
 	}
 }
 
+bool custom_digit_grouping = false, custom_digit_group_changed = false;;
+string custom_digit_group_separator = ",", custom_digit_group_format = "3", saved_local_dgs, saved_local_dgf;
+
 /*
 	load preferences from ~/.conf/qalculate/qalculate-gtk.cfg
 */
@@ -6091,7 +6094,16 @@ void load_preferences() {
 					} else if(svar == "digit_grouping") {
 						if(v >= DIGIT_GROUPING_NONE && v <= DIGIT_GROUPING_LOCALE) {
 							printops.digit_grouping = (DigitGrouping) v;
+						} else if(v == DIGIT_GROUPING_LOCALE + 1) {
+							custom_digit_grouping = true;
+							printops.digit_grouping = DIGIT_GROUPING_LOCALE;
 						}
+					} else if(svar == "custom_digit_group_separator") {
+						custom_digit_group_separator = svalue;
+						custom_digit_group_changed = true;
+					} else if(svar == "custom_digit_group_format") {
+						custom_digit_group_format = svalue;
+						custom_digit_group_changed = true;
 					} else if(svar == "rpn_keys") {
 						rpn_keys = v;
 					} else if(svar == "use_unicode_signs" && (version_numbers[0] > 0 || version_numbers[1] > 7 || (version_numbers[1] == 7 && version_numbers[2] > 0))) {
@@ -6286,6 +6298,15 @@ void load_preferences() {
 		}
 	} else {
 		first_time = true;
+	}
+	if(custom_digit_grouping) {
+		saved_local_dgs = CALCULATOR->local_digit_group_separator;
+		saved_local_dgf = CALCULATOR->local_digit_group_format;
+		CALCULATOR->local_digit_group_separator = custom_digit_group_separator;
+		CALCULATOR->local_digit_group_format = "";
+		for(size_t i = 0; i < custom_digit_group_format.size(); i++) {
+			CALCULATOR->local_digit_group_format += custom_digit_group_format[i] - '0';
+		}
 	}
 	if(default_shortcuts) {
 		keyboard_shortcut ks;
@@ -6586,7 +6607,9 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	fprintf(file, "spell_out_logical_operators=%i\n", printops.spell_out_logical_operators);
 	fprintf(file, "caret_as_xor=%i\n", caret_as_xor);
 	fprintf(file, "close_with_esc=%i\n", close_with_esc);
-	fprintf(file, "digit_grouping=%i\n", printops.digit_grouping);
+	fprintf(file, "digit_grouping=%i\n", custom_digit_grouping ? DIGIT_GROUPING_LOCALE + 1 : printops.digit_grouping);
+	if(custom_digit_group_changed) fprintf(file, "custom_digit_group_separator=%s\n", custom_digit_group_separator.c_str());
+	if(custom_digit_group_changed) fprintf(file, "custom_digit_group_format=%s\n", custom_digit_group_format.c_str());
 	fprintf(file, "copy_ascii=%i\n", copy_ascii);
 	fprintf(file, "copy_ascii_without_units=%i\n", copy_ascii_without_units);
 	fprintf(file, "decimal_comma=%i\n", b_decimal_comma);
