@@ -743,8 +743,9 @@ void on_preferences_combo_digit_grouping_changed(GtkComboBox *w, gpointer) {
 	if(i == 0) {
 		printops.digit_grouping = DIGIT_GROUPING_NONE;
 		result_format_updated();
+		gtk_adjustment_set_lower(GTK_ADJUSTMENT(gtk_builder_get_object(preferences_builder, "preferences_cgf_adjustment")), 0);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), "");
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), 3);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), 0);
 	} else if(i == 1) {
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), THIN_SPACE);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), 3);
@@ -752,7 +753,7 @@ void on_preferences_combo_digit_grouping_changed(GtkComboBox *w, gpointer) {
 		result_format_updated();
 	} else if(i == 2) {
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), CALCULATOR->local_digit_group_separator.c_str());
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), CALCULATOR->local_digit_group_format.empty() ? 3 : (int) CALCULATOR->local_digit_group_format[0]);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), CALCULATOR->local_digit_group_format.empty() || CALCULATOR->local_digit_group_format[0] == CHAR_MAX ? 3 : (int) CALCULATOR->local_digit_group_format[0]);
 		printops.digit_grouping = DIGIT_GROUPING_LOCALE;
 		if((!evalops.parse_options.comma_as_separator || CALCULATOR->getDecimalPoint() == COMMA) && CALCULATOR->local_digit_group_separator == COMMA) {
 			evalops.parse_options.comma_as_separator = true;
@@ -774,6 +775,7 @@ void on_preferences_combo_digit_grouping_changed(GtkComboBox *w, gpointer) {
 			result_format_updated();
 		}
 	} else if(i == 3) {
+		gtk_adjustment_set_lower(GTK_ADJUSTMENT(gtk_builder_get_object(preferences_builder, "preferences_cgf_adjustment")), 1);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), custom_digit_group_separator.c_str());
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), custom_digit_group_format.empty() ? 3 : custom_digit_group_format[0] - '0');
 		printops.digit_grouping = DIGIT_GROUPING_LOCALE;
@@ -1023,15 +1025,17 @@ GtkWidget* get_preferences_dialog() {
 				break;
 			}
 			case DIGIT_GROUPING_LOCALE: {
+				gtk_adjustment_set_lower(GTK_ADJUSTMENT(gtk_builder_get_object(preferences_builder, "preferences_cgf_adjustment")), 1);
 				gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_digit_grouping")), custom_digit_grouping ? 3 : 2);
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), CALCULATOR->local_digit_group_separator.c_str());
-				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), CALCULATOR->local_digit_group_separator.empty() ? 3 : CALCULATOR->local_digit_group_separator[0]);
+				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), CALCULATOR->local_digit_group_format.empty() || CALCULATOR->local_digit_group_format[0] == CHAR_MAX ? 3 : CALCULATOR->local_digit_group_format[0]);
 				break;
 			}
 			default: {
+				gtk_adjustment_set_lower(GTK_ADJUSTMENT(gtk_builder_get_object(preferences_builder, "preferences_cgf_adjustment")), 0);
 				gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_digit_grouping")), 0);
 				gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(preferences_builder, "preferences_cgs_entry")), "");
-				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), 3);
+				gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_cgf_spin")), 0);
 				break;
 			}
 		}
