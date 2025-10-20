@@ -5440,9 +5440,9 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				po.indicate_infinite_series = REPEATING_DECIMALS_OFF;
 				po.is_approximate = NULL;
 				str = CALCULATOR->print(*mstruct, 100, po);
-				if(str == CALCULATOR->abortedMessage()) str = result_text;
+				if(str == CALCULATOR->abortedMessage()) str = unhtmlize(result_text);
 			} else {
-				str = result_text;
+				str = unhtmlize(result_text);
 			}
 			gsub(" " SIGN_DIVISION_SLASH " ", DIVISION, str);
 			if(replace_expression == REPLACE_EXPRESSION_WITH_RESULT || unicode_length(str) < unicode_length(execute_str.empty() ? from_str : execute_str)) {
