@@ -110,6 +110,15 @@ size_t unformatted_length(const string &str) {
 	return l;
 }
 
+string replace_result_separators(string str) {
+	if(printops.digit_grouping == DIGIT_GROUPING_LOCALE && !evalops.parse_options.comma_as_separator && CALCULATOR->local_digit_group_separator == COMMA && printops.comma() == ";" && printops.decimalpoint() == ".") {
+		gsub(COMMA, "", str);
+	} else if(printops.digit_grouping == DIGIT_GROUPING_LOCALE && !evalops.parse_options.dot_as_separator && CALCULATOR->local_digit_group_separator == DOT && printops.decimalpoint() != DOT) {
+		gsub(DOT, "", str);
+	}
+	return str;
+}
+
 void remove_separator(string &copy_text) {
 	for(size_t i = ((CALCULATOR->local_digit_group_separator.empty() || CALCULATOR->local_digit_group_separator == " " || CALCULATOR->local_digit_group_separator == printops.decimalpoint()) ? 1 : 0); i < 4; i++) {
 		string str_sep;

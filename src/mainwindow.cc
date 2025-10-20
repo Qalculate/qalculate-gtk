@@ -486,7 +486,7 @@ string get_result_text() {
 		g_source_remove(autocalc_history_timeout_id);
 		do_autocalc_history_timeout(NULL);
 	}
-	return unhtmlize(result_text);
+	return replace_result_separators(unhtmlize(result_text));
 }
 
 tree_struct function_cats, unit_cats, variable_cats;
@@ -5445,6 +5445,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				str = unhtmlize(result_text);
 			}
 			gsub(" " SIGN_DIVISION_SLASH " ", DIVISION, str);
+			if(printops.digit_grouping == DIGIT_GROUPING_LOCALE) str = replace_result_separators(str);
 			if(replace_expression == REPLACE_EXPRESSION_WITH_RESULT || unicode_length(str) < unicode_length(execute_str.empty() ? from_str : execute_str)) {
 				if(str == "0") {
 					clear_expression_text();
@@ -7750,7 +7751,6 @@ void set_unknowns() {
 	}
 	g_signal_connect(G_OBJECT(entry[entry.size() - 1]), "activate", G_CALLBACK(on_unknown_entry_activated), (gpointer) dialog);
 	MathStructure msave(*mstruct);
-	string result_save = get_result_text();
 	gtk_widget_show_all(dialog);
 	bool b_changed = false;
 	vector<string> unknown_text;

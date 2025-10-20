@@ -151,6 +151,8 @@ gchar *font_name_to_css(const char *font_name, const char *w = "*");
 std::string unhtmlize(std::string str, bool b_ascii = false);
 size_t unformatted_length(const std::string &str);
 
+std::string replace_result_separators(std::string str);
+
 bool last_is_operator(std::string str, bool allow_exp = false);
 
 const char *sub_sign();
