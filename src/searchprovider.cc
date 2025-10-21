@@ -48,6 +48,7 @@ bool search_complex_angle_form = false;
 bool search_ignore_locale = false;
 bool search_adaptive_interval_display = true;
 bool search_do_imaginary_j = false;
+string search_default_currency;
 
 typedef struct _QalculateSearchProvider QalculateSearchProvider;
 typedef GObjectClass QalculateSearchProviderClass;
@@ -396,6 +397,8 @@ void load_preferences_search() {
 					parse_qalculate_version(svalue, version_numbers);
 				} else if(svar == "ignore_locale") {
 					search_ignore_locale = v;
+				} else if(svar == "default_currency") {
+					search_default_currency = svalue;
 				} else if(svar == "min_deci") {
 					search_po.min_decimals = v;
 				} else if(svar == "use_min_deci") {
@@ -617,6 +620,19 @@ int main (int argc, char *argv[]) {
 				break;
 			} else if(strcmp(line, "ignore_locale=0\n") == 0) {
 				break;
+			} else if(strncmp(line, "language=", 9) == 0) {
+				string search_lang = line + sizeof(char) * 9;
+				remove_blank_ends(search_lang);
+				if(!search_lang.empty()) {
+#	ifdef _WIN32
+					_putenv_s("LANGUAGE", search_lang.c_str());
+#	else
+					setenv("LANGUAGE", search_lang.c_str(), 1);
+					if(search_lang.find(".") == string::npos && search_lang.find("_") != string::npos) search_lang += ".utf8";
+					if(search_lang.find(".") != string::npos) setenv("LC_MESSAGES", search_lang.c_str(), 1);
+#	endif
+				}
+				break;
 			}
 		}
 		fclose(file);
@@ -639,6 +655,11 @@ int main (int argc, char *argv[]) {
 	CALCULATOR->loadExchangeRates();
 	if(!CALCULATOR->loadGlobalDefinitions()) g_print(_("Failed to load global definitions!\n"));
 	CALCULATOR->loadLocalDefinitions();
+
+	if(!search_default_currency.empty()) {
+		Unit *u = CALCULATOR->getActiveUnit(search_default_currency);
+		if(u) CALCULATOR->setLocalCurrency(u);
+	}
 
 	if(search_do_imaginary_j && CALCULATOR->v_i->hasName("j") == 0) {
 		ExpressionName ename = CALCULATOR->v_i->getName(1);

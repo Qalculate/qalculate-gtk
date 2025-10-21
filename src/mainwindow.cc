@@ -137,6 +137,8 @@ int auto_prefix = 0;
 bool ignore_locale = false;
 string custom_lang;
 
+string default_currency;
+
 bool auto_calculate = false;
 bool result_autocalculated = false;
 gint autocalc_history_timeout_id = 0;
@@ -5430,10 +5432,10 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		block_status();
 		block_completion();
 		block_expression_modified();
-		if(replace_expression == CLEAR_EXPRESSION) {
+		if(!rpn_mode && replace_expression == CLEAR_EXPRESSION) {
 			clear_expression_text();
 			set_previous_expression("");
-		} else if(replace_expression == REPLACE_EXPRESSION_WITH_RESULT || replace_expression == REPLACE_EXPRESSION_WITH_RESULT_IF_SHORTER) {
+		} else if(!rpn_mode && (replace_expression == REPLACE_EXPRESSION_WITH_RESULT || replace_expression == REPLACE_EXPRESSION_WITH_RESULT_IF_SHORTER)) {
 			if(!result_text_long.empty() && ((!mstruct->isApproximate() && result_text_approximate && printops.number_fraction_format == FRACTION_DECIMAL) || (printops.indicate_infinite_series && (result_text.find("¯") != string::npos || result_text.find("…") != string::npos || result_text.find("...") != string::npos)))) {
 				PrintOptions po = printops;
 				po.number_fraction_format = FRACTION_DECIMAL_EXACT;
@@ -6027,6 +6029,8 @@ void load_preferences() {
 						save_history_separately = v;
 					} else if(svar == "language") {
 						custom_lang = svalue;
+					} else if(svar == "default_currency") {
+						default_currency = svalue;
 					} else if(svar == "ignore_locale") {
 						ignore_locale = v;
 					} else if(svar == "window_title_mode") {
@@ -6566,6 +6570,7 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	write_variables_dialog_settings(file);
 	write_help_settings(file);
 	if(!custom_lang.empty()) fprintf(file, "language=%s\n", custom_lang.c_str());
+	if(!default_currency.empty()) fprintf(file, "default_currency=%s\n", default_currency.c_str());
 	fprintf(file, "ignore_locale=%i\n", ignore_locale);
 	fprintf(file, "load_global_definitions=%i\n", load_global_defs);
 	fprintf(file, "local_currency_conversion=%i\n", evalops.local_currency_conversion);
@@ -8635,6 +8640,10 @@ GtkWindow *main_window() {
 }
 
 void initialize_variables_and_functions() {
+	if(!default_currency.empty()) {
+		Unit *u = CALCULATOR->getActiveUnit(default_currency);
+		if(u) CALCULATOR->setLocalCurrency(u);
+	}
 	string ans_str = _("ans");
 	vans[0] = (KnownVariable*) CALCULATOR->addVariable(new KnownVariable(CALCULATOR->temporaryCategory(), ans_str, m_undefined, _("Last Answer"), false));
 	vans[0]->setDescription(_("Contains the result of the most recent calculation. Multiple results of an equation is represented as a vector. Access separate solutions using ans(n) (e.g. ans(1) for the first solution)."));

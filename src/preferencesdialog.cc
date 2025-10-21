@@ -19,6 +19,7 @@
 #endif
 #include <string.h>
 #include <stdio.h>
+#include <algorithm>
 
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
@@ -894,6 +895,36 @@ void on_preferences_button_history_font_font_set(GtkFontButton *w, gpointer) {
 void on_preferences_button_app_font_font_set(GtkFontButton *w, gpointer) {
 	set_app_font(gtk_font_chooser_get_font(GTK_FONT_CHOOSER(w)));
 }
+extern string default_currency;
+void on_preferences_combo_local_currency_changed(GtkComboBox *w, gpointer) {
+	char *gstr = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(w));
+	if(gstr) {
+		string str = gstr;
+		default_currency = str.substr(str.length() - 4, 3);
+		Unit *u = CALCULATOR->getActiveUnit(default_currency);
+		if(u) CALCULATOR->setLocalCurrency(u);
+		g_free(gstr);
+	}
+}
+
+string ellipsize_title(const string &s, size_t n) {
+	if(unicode_length(s) <= n) return s;
+	n -= 1;
+	for(size_t i = 0; i < s.length(); i++) {
+		if((signed char) s[i] >= 0 || (unsigned char) s[i] >= 0xC0) {
+			n--;
+			if(s[i] == '(' && i > 0 && s[i - 1] == ' ') {
+				return s.substr(0, i);
+			} else if(n == 0) {
+				if((signed char) s[i] < 0) {
+					while((signed char) s[i + 1] < 0 && (unsigned char) s[i + 1] < 0xC0) i++;
+				}
+				return s.substr(0, i + 1) + "…";
+			}
+		}
+	}
+	return s;
+}
 
 GtkWidget* get_preferences_dialog() {
 	if(!preferences_builder) {
@@ -1100,6 +1131,19 @@ GtkWidget* get_preferences_dialog() {
 #endif
 		preferences_update_completion(true);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_update_exchange_rates_spin_button")), (double) exchange_rates_frequency());
+		vector<string> curs;
+		for(size_t i = 0; i < CALCULATOR->units.size(); i++) {
+			if(CALCULATOR->units[i]->isCurrency() && CALCULATOR->units[i]->referenceName().length() == 3) {
+				curs.push_back(ellipsize_title(CALCULATOR->units[i]->title(), 20) + string(" (") + CALCULATOR->units[i]->referenceName() + ")");
+			}
+		}
+		std::sort(curs.begin(), curs.end(), std::locale());
+		string scur;
+		if(CALCULATOR->getLocalCurrency()) scur = CALCULATOR->getLocalCurrency()->referenceName();
+		for(size_t i = 0; i < curs.size(); i++) {
+			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(preferences_builder, "preferences_combo_local_currency")), curs[i].c_str());
+			if(curs[i].find(scur) == curs[i].length() - 4) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_local_currency")), i);
+		}
 
 		gtk_builder_add_callback_symbols(preferences_builder, "on_preferences_checkbutton_save_defs_toggled", G_CALLBACK(on_preferences_checkbutton_save_defs_toggled), "on_preferences_checkbutton_clear_history_toggled", G_CALLBACK(on_preferences_checkbutton_clear_history_toggled), "on_preferences_max_history_lines_spin_button_value_changed",
 		G_CALLBACK(on_preferences_max_history_lines_spin_button_value_changed), "on_preferences_checkbutton_save_history_separately_toggled",
@@ -1126,7 +1170,7 @@ GtkWidget* get_preferences_dialog() {
 		"on_preferences_radiobutton_asterisk_toggled", G_CALLBACK(on_preferences_radiobutton_asterisk_toggled), "on_preferences_radiobutton_division_slash_toggled", G_CALLBACK(on_preferences_radiobutton_division_slash_toggled), "on_preferences_radiobutton_division_toggled", G_CALLBACK(on_preferences_radiobutton_division_toggled),
 		"on_preferences_radiobutton_slash_toggled", G_CALLBACK(on_preferences_radiobutton_slash_toggled), "on_preferences_checkbutton_binary_prefixes_toggled", G_CALLBACK(on_preferences_checkbutton_binary_prefixes_toggled), "on_preferences_checkbutton_copy_ascii_without_units_toggled",
 		G_CALLBACK(on_preferences_checkbutton_copy_ascii_without_units_toggled), "on_preferences_checkbutton_local_currency_conversion_toggled", G_CALLBACK(on_preferences_checkbutton_local_currency_conversion_toggled), "on_preferences_update_exchange_rates_spin_button_input", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_input),
-		"on_preferences_update_exchange_rates_spin_button_output", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_output), "on_preferences_update_exchange_rates_spin_button_value_changed", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_value_changed), "on_preferences_radiobutton_temp_abs_toggled", G_CALLBACK(on_preferences_radiobutton_temp_abs_toggled),
+		"on_preferences_update_exchange_rates_spin_button_output", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_output), "on_preferences_update_exchange_rates_spin_button_value_changed", G_CALLBACK(on_preferences_update_exchange_rates_spin_button_value_changed), "on_preferences_combo_local_currency_changed", G_CALLBACK(on_preferences_combo_local_currency_changed), "on_preferences_radiobutton_temp_abs_toggled", G_CALLBACK(on_preferences_radiobutton_temp_abs_toggled),
 		"on_preferences_radiobutton_temp_rel_toggled", G_CALLBACK(on_preferences_radiobutton_temp_rel_toggled), "on_preferences_radiobutton_temp_hybrid_toggled", G_CALLBACK(on_preferences_radiobutton_temp_hybrid_toggled), "on_preferences_checkbutton_enable_completion_toggled", G_CALLBACK(on_preferences_checkbutton_enable_completion_toggled),
 		"on_preferences_checkbutton_enable_completion2_toggled", G_CALLBACK(on_preferences_checkbutton_enable_completion2_toggled), "on_preferences_spin_completion_min_value_changed", G_CALLBACK(on_preferences_spin_completion_min_value_changed), "on_preferences_spin_completion_min2_value_changed", G_CALLBACK(on_preferences_spin_completion_min2_value_changed),
 		"on_preferences_spin_completion_delay_value_changed", G_CALLBACK(on_preferences_spin_completion_delay_value_changed), "on_preferences_checkbutton_custom_status_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_status_font_toggled), "on_preferences_button_status_font_font_set", G_CALLBACK(on_preferences_button_status_font_font_set),
