@@ -23,7 +23,7 @@ void block_completion();
 void unblock_completion();
 
 bool completion_visible();
-void hide_completion();
+gboolean hide_completion();
 void toggle_completion_visible();
 bool activate_first_completion();
 

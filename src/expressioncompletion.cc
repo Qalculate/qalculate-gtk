@@ -282,8 +282,9 @@ void unblock_completion() {
 bool completion_visible() {
 	return gtk_widget_get_visible(completion_window);
 }
-void hide_completion() {
+gboolean hide_completion() {
 	gtk_widget_hide(completion_window);
+	return FALSE;
 }
 
 void set_current_object() {
@@ -1678,6 +1679,28 @@ string format_name(const ExpressionName *ename, int type) {
 	return name;
 }
 
+#define MAX_TITLE_LENGTH 45
+
+void ellipsize_title(string &str) {
+	if(unicode_length(str) > MAX_TITLE_LENGTH) {
+		size_t l = 0;
+		for(size_t i = 0; i < str.length(); i++) {
+			if(str[i] == '(' && l > MAX_TITLE_LENGTH - 10) {
+				str.resize(i);
+				break;
+			}
+			if((signed char) str[i] > 0 || (unsigned char) str[i] >= 0xC0) {
+				l++;
+				if(l >= MAX_TITLE_LENGTH - 4) {
+					str.resize(i);
+					str += "…";
+					break;
+				}
+			}
+		}
+	}
+}
+
 void update_completion() {
 
 	GtkTreeIter iter;
@@ -1707,7 +1730,9 @@ void update_completion() {
 			}
 			ellipsize_completion_names(str);
 			FIX_SUPSUB(str)
-			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view).c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
+			title = CALCULATOR->functions[i]->title(true, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) completion_view);
+			ellipsize_title(title);
+			gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, CALCULATOR->functions[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
 		}
 	}
 	for(size_t i = 0; i < CALCULATOR->variables.size(); i++) {
@@ -1759,15 +1784,13 @@ void update_completion() {
 			ellipsize_completion_names(str);
 			FIX_SUPSUB(str)
 			if(!CALCULATOR->variables[i]->title(false).empty()) {
-				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
-				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, CALCULATOR->variables[i]->title().c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
+				title = CALCULATOR->variables[i]->title();
+				if(printops.use_unicode_signs) gsub("MeV/c^2", "MeV/c²", title);
+				ellipsize_title(title);
+				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
+				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, CALCULATOR->variables[i], 3, FALSE, 4, 0, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, NULL, -1);
 				if(CALCULATOR->variables[i] == CALCULATOR->v_percent) gtk_list_store_set(completion_store, &iter, 9, (CALCULATOR->variables[i]->title() + " (%)").c_str(), -1);
 				else if(CALCULATOR->variables[i] == CALCULATOR->v_permille) gtk_list_store_set(completion_store, &iter, 9, (CALCULATOR->variables[i]->title() + " (‰)").c_str(), -1);
-				if(printops.use_unicode_signs && CALCULATOR->variables[i]->title(false).find("MeV/c^2") != string::npos) {
-					string title = CALCULATOR->variables[i]->title();
-					gsub("MeV/c^2", "MeV/c²", title);
-					gtk_list_store_set(completion_store, &iter, 1, title.c_str(), -1);
-				}
 			} else {
 				Variable *v = CALCULATOR->variables[i];
 				string title;
@@ -1902,6 +1925,10 @@ void update_completion() {
 						title += ")";
 					}
 				}
+				if(unicode_length(title) > MAX_TITLE_LENGTH) {
+					if(title2.empty()) title2 = title;
+					ellipsize_title(title);
+				}
 				if(b) gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.empty() ? NULL : title2.c_str(), -1);
 				else gtk_list_store_set(completion_store, &iter, 0, ename_r->name.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, it_flag == flag_surfaces.end() ? NULL : it_flag->second, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.empty() ? NULL : title2.c_str(), -1);
 			} else if(!cu->isHidden()) {
@@ -1950,6 +1977,7 @@ void update_completion() {
 						else title = cu->category().substr(i_slash, cu->category().length() - i_slash);
 					}
 				}
+				ellipsize_title(title);
 				gtk_list_store_set(completion_store, &iter, 0, str.c_str(), 1, title.c_str(), 2, u, 3, FALSE, 4, 0, 5, NULL, 6, PANGO_WEIGHT_NORMAL, 7, 0, 8, 1, 9, title2.c_str(), -1);
 			}
 		}

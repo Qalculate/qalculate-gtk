@@ -2692,6 +2692,7 @@ void create_menubar() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_fetch_exchange_rates")), CALCULATOR->canFetch());
 	update_mode_menu();
 
+	g_signal_connect(G_OBJECT(gtk_builder_get_object(main_builder, "menubar")), "button-press-event", G_CALLBACK(hide_completion), NULL);
 	if(RUNTIME_CHECK_GTK_VERSION(3, 22)) {
 		g_signal_connect(G_OBJECT(gtk_builder_get_object(main_builder, "file_menu_menu")), "popped-up", G_CALLBACK(hide_completion), NULL);
 		g_signal_connect(G_OBJECT(gtk_builder_get_object(main_builder, "edit_menu_menu")), "popped-up", G_CALLBACK(hide_completion), NULL);

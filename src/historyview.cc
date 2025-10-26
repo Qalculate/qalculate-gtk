@@ -669,17 +669,23 @@ string ellipsize_result(const string &result_text, size_t length) {
 	}
 	return result_text.substr(0, index1) + " (…) " + result_text.substr(index2, result_text.length() - index2);
 }
-string fix_history_string_new(const string &str2) {
-	string str = str2;
-	gsub("<sub class=\"nous\">", "<sub>", str);
-	gsub("<i class=\"symbol\">", "<i>", str);
-	gsub("<span style=\"text-decoration: overline\">", "<span overline=\"single\">", str);
-	return str;
-}
+
 void fix_history_string_new2(string &str) {
 	gsub("<sub class=\"nous\">", "<sub>", str);
 	gsub("<i class=\"symbol\">", "<i>", str);
 	gsub("<span style=\"text-decoration: overline\">", "<span overline=\"single\">", str);
+}
+string fix_history_string_new(const string &str2) {
+	string str = str2;
+	fix_history_string_new2(str);
+	return str;
+}
+string fix_history_string_new_i(const string &str2) {
+	string str = str2;
+	fix_history_string_new2(str);
+	gsub("<i>", "", str);
+	gsub("</i>", "", str);
+	return str;
 }
 
 void fix_history_string2(string &str) {
@@ -1345,7 +1351,7 @@ void reload_history(gint from_index) {
 							}
 							history_str += str2;
 							history_str += " ";
-							history_str += fix_history_string_new(inhistory[i]);
+							history_str += fix_history_string_new_i(inhistory[i]);
 							history_str += "</span>";
 							FIX_SUPSUB(history_str)
 						}
@@ -1360,7 +1366,7 @@ void reload_history(gint from_index) {
 							if(b_parse) {
 								str2 += " ";
 								size_t history_expr_i = str2.length();
-								str2 += inhistory[i];
+								str2 += fix_history_string_new_i(inhistory[i]);
 								add_line_breaks(str2, 3, history_expr_i);
 								FIX_SUPSUB(str2)
 								history_str += '\n';
@@ -1607,7 +1613,7 @@ void add_result_to_history(bool &update_history, bool update_parse, bool registe
 				str += "\">  ";
 				str += str2;
 				str += " ";
-				str += fix_history_string_new(parsed_text);
+				str += fix_history_string_new_i(parsed_text);
 				str += "</span>";
 				FIX_SUPSUB(str)
 			}
@@ -1626,7 +1632,7 @@ void add_result_to_history(bool &update_history, bool update_parse, bool registe
 				if(b_parse) {
 					str2 += " ";
 					size_t history_expr_i = str2.length();
-					str2 += fix_history_string_new(parsed_text);
+					str2 += fix_history_string_new_i(parsed_text);
 					add_line_breaks(str2, 3, history_expr_i);
 					FIX_SUPSUB(str2)
 					str += '\n';
