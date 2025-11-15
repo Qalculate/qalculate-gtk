@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 08:17+0200\n"
+"POT-Creation-Date: 2025-11-11 20:24+0100\n"
 "PO-Revision-Date: 2025-03-12 22:03+0100\n"
 "Last-Translator: Piotr Sokół <psokol.l10n@gmail.com>\n"
 "Language-Team: \n"
@@ -70,8 +70,8 @@ msgstr "Reguły argumentu"
 #: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7 ../data/unitedit.ui.h:3
 #: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
 #: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
-#: ../src/expressionedit.cc:1317 ../src/historyview.cc:2820
-#: ../src/historyview.cc:2918 ../src/historyview.cc:2963
+#: ../src/expressionedit.cc:1327 ../src/historyview.cc:2826
+#: ../src/historyview.cc:2924 ../src/historyview.cc:2969
 #: ../src/importcsvdialog.cc:49 ../src/importcsvdialog.cc:51
 #: ../src/insertfunctiondialog.cc:65 ../src/insertfunctiondialog.cc:108
 #: ../src/insertfunctiondialog.cc:110 ../src/insertfunctiondialog.cc:973
@@ -88,8 +88,8 @@ msgstr "_Anuluj"
 #: ../data/datasets.ui.h:3 ../data/functionedit.ui.h:4
 #: ../data/matrixedit.ui.h:4 ../data/shortcuts.ui.h:9 ../data/unitedit.ui.h:4
 #: ../data/unknownedit.ui.h:4 ../data/variableedit.ui.h:4
-#: ../src/expressionedit.cc:1317 ../src/historyview.cc:2820
-#: ../src/historyview.cc:2918 ../src/historyview.cc:2963
+#: ../src/expressionedit.cc:1327 ../src/historyview.cc:2826
+#: ../src/historyview.cc:2924 ../src/historyview.cc:2969
 #: ../src/insertfunctiondialog.cc:65 ../src/insertfunctiondialog.cc:973
 #: ../src/insertfunctiondialog.cc:1081 ../src/mainwindow.cc:717
 #: ../src/mainwindow.cc:810 ../src/mainwindow.cc:881 ../src/mainwindow.cc:936
@@ -195,7 +195,7 @@ msgstr "Plik"
 msgid "Angle"
 msgstr "Kąt"
 
-#: ../data/argumentrules.ui.h:26 ../src/expressioncompletion.cc:1046
+#: ../data/argumentrules.ui.h:26 ../src/expressioncompletion.cc:1047
 msgid "Data object"
 msgstr "Obiekt danych"
 
@@ -257,7 +257,7 @@ msgstr "Rodzaj"
 #: ../data/matrixedit.ui.h:5 ../data/unitedit.ui.h:5 ../data/unknownedit.ui.h:5
 #: ../data/variableedit.ui.h:5 ../src/conversionview.cc:508
 #: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:444
-#: ../src/historyview.cc:2925 ../src/menubar.cc:1224
+#: ../src/historyview.cc:2931 ../src/menubar.cc:1224
 #: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1008
 msgid "Name"
 msgstr "Nazwa"
@@ -271,7 +271,7 @@ msgstr "Dostosuj przyciski klawiatury"
 #: ../data/functions.ui.h:2 ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2
 #: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:2
 #: ../data/preferences.ui.h:2 ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2
-#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2785
+#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2791
 #: ../src/insertfunctiondialog.cc:448 ../src/mainwindow.cc:721
 #: ../src/mainwindow.cc:722 ../src/mainwindow.cc:724 ../src/matrixdialog.cc:381
 #: ../src/periodictabledialog.cc:86
@@ -690,7 +690,7 @@ msgstr "Mikroprocesor 24-bitowy"
 msgid "Microchip 32-bit"
 msgstr "Mikroprocesor 32-bitowy"
 
-#: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:835
+#: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:863
 msgid "Edit Function"
 msgstr "Edycja funkcji"
 
@@ -810,7 +810,7 @@ msgid "(De)activate the selected function"
 msgstr "Dezaktywuje wybraną funkcję"
 
 #: ../data/functions.ui.h:13 ../data/units.ui.h:18 ../data/variables.ui.h:13
-#: ../src/functionsdialog.cc:431 ../src/unitsdialog.cc:388 ../src/util.cc:1345
+#: ../src/functionsdialog.cc:431 ../src/unitsdialog.cc:388 ../src/util.cc:1341
 #: ../src/variablesdialog.cc:351
 msgid "Deac_tivate"
 msgstr "Dezak_tywuj"
@@ -1010,15 +1010,15 @@ msgstr "Konwertowanie do jednostki podstawowej"
 msgid "Convert to Optimal Unit"
 msgstr "Konwertowanie do jednostki optymalnej"
 
-#: ../data/main.ui.h:59 ../src/expressionedit.cc:1499
+#: ../data/main.ui.h:59 ../src/expressionedit.cc:1509
 msgid "Insert Date…"
 msgstr "Wstaw datę…"
 
-#: ../data/main.ui.h:60 ../src/expressionedit.cc:1500
+#: ../data/main.ui.h:60 ../src/expressionedit.cc:1510
 msgid "Insert Matrix…"
 msgstr "Wstaw macierz…"
 
-#: ../data/main.ui.h:61 ../src/expressionedit.cc:1501
+#: ../data/main.ui.h:61 ../src/expressionedit.cc:1511
 msgid "Insert Vector…"
 msgstr "Wstaw wektor…"
 
@@ -1042,8 +1042,8 @@ msgstr "_Preferencje"
 msgid "_Mode"
 msgstr "_Tryb"
 
-#: ../data/main.ui.h:68 ../src/expressioncompletion.cc:2009
-#: ../src/expressionedit.cc:1471
+#: ../data/main.ui.h:68 ../src/expressioncompletion.cc:2037
+#: ../src/expressionedit.cc:1481
 msgid "Number Base"
 msgstr "Podstawa liczbowa"
 
@@ -1052,36 +1052,36 @@ msgid "Select Result and Expression Base…"
 msgstr "Wybierz podstawę wyniku i wyrażenia…"
 
 #: ../data/main.ui.h:70 ../data/nbases.ui.h:4 ../data/preferences.ui.h:70
-#: ../data/setbase.ui.h:3 ../src/expressionedit.cc:1474 ../src/keypad.cc:1012
+#: ../data/setbase.ui.h:3 ../src/expressionedit.cc:1484 ../src/keypad.cc:1012
 #: ../src/numberbasesdialog.cc:209 ../src/numberbasesdialog.cc:251
 msgid "Binary"
 msgstr "Dwójkowa"
 
 #: ../data/main.ui.h:71 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/expressionedit.cc:1475 ../src/keypad.cc:1013
+#: ../src/expressionedit.cc:1485 ../src/keypad.cc:1013
 #: ../src/numberbasesdialog.cc:210 ../src/numberbasesdialog.cc:252
 msgid "Octal"
 msgstr "Ósemkowa"
 
 #: ../data/main.ui.h:72 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/expressionedit.cc:1476 ../src/keypad.cc:1014
+#: ../src/expressionedit.cc:1486 ../src/keypad.cc:1014
 #: ../src/numberbasesdialog.cc:211 ../src/numberbasesdialog.cc:253
 msgid "Decimal"
 msgstr "Dziesiętna"
 
 #: ../data/main.ui.h:73 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/expressionedit.cc:1477 ../src/numberbasesdialog.cc:212
+#: ../src/expressionedit.cc:1487 ../src/numberbasesdialog.cc:212
 #: ../src/numberbasesdialog.cc:254
 msgid "Duodecimal"
 msgstr "Dwunastkowa"
 
 #: ../data/main.ui.h:74 ../data/nbases.ui.h:11 ../data/preferences.ui.h:72
-#: ../data/setbase.ui.h:7 ../src/expressionedit.cc:1478 ../src/keypad.cc:1015
+#: ../data/setbase.ui.h:7 ../src/expressionedit.cc:1488 ../src/keypad.cc:1015
 #: ../src/numberbasesdialog.cc:213 ../src/numberbasesdialog.cc:255
 msgid "Hexadecimal"
 msgstr "Szesnastkowa"
 
-#: ../data/main.ui.h:75 ../src/expressionedit.cc:1480
+#: ../data/main.ui.h:75 ../src/expressionedit.cc:1490
 msgid "Other…"
 msgstr "Inna…"
 
@@ -1089,12 +1089,12 @@ msgstr "Inna…"
 msgid "Sexagesimal"
 msgstr "Sześćdziesiątkowa"
 
-#: ../data/main.ui.h:77 ../src/expressioncompletion.cc:2074
+#: ../data/main.ui.h:77 ../src/expressioncompletion.cc:2102
 msgid "Time Format"
 msgstr "Format czasu"
 
-#: ../data/main.ui.h:78 ../src/expressioncompletion.cc:2066
-#: ../src/expressionedit.cc:1479
+#: ../data/main.ui.h:78 ../src/expressioncompletion.cc:2094
+#: ../src/expressionedit.cc:1489
 msgid "Roman Numerals"
 msgstr "Cyfry rzymskie"
 
@@ -1198,19 +1198,19 @@ msgstr "Zaokrąglanie w górę"
 msgid "Round Down"
 msgstr "Zaokrąglanie w dół"
 
-#: ../data/main.ui.h:104 ../src/expressioncompletion.cc:2064
+#: ../data/main.ui.h:104 ../src/expressioncompletion.cc:2092
 msgid "Complex Rectangular Form"
 msgstr "Zespolony postać prostokątna"
 
-#: ../data/main.ui.h:105 ../src/expressioncompletion.cc:2028
+#: ../data/main.ui.h:105 ../src/expressioncompletion.cc:2056
 msgid "Complex Exponential Form"
 msgstr "Zespolona postać wykładnicza"
 
-#: ../data/main.ui.h:106 ../src/expressioncompletion.cc:2060
+#: ../data/main.ui.h:106 ../src/expressioncompletion.cc:2088
 msgid "Complex Polar Form"
 msgstr "Zespolona postać biegunowa"
 
-#: ../data/main.ui.h:107 ../src/expressioncompletion.cc:2003
+#: ../data/main.ui.h:107 ../src/expressioncompletion.cc:2031
 msgid "Complex Angle/Phasor Notation"
 msgstr "Zespolona postać wskazowa"
 
@@ -1502,7 +1502,7 @@ msgstr ""
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr ""
 
-#: ../data/main.ui.h:179 ../src/expressionedit.cc:1461
+#: ../data/main.ui.h:179 ../src/expressionedit.cc:1471
 #: ../src/mainwindow.cc:1017
 msgid "Parsing Mode"
 msgstr "Tryb parsowania"
@@ -1594,11 +1594,11 @@ msgstr "Aktywuje stos ONP"
 msgid "RPN Mode"
 msgstr "Tryb ONP"
 
-#: ../data/main.ui.h:203 ../src/expressionedit.cc:1482
+#: ../data/main.ui.h:203 ../src/expressionedit.cc:1492
 msgid "Meta Modes"
 msgstr "Tryby meta"
 
-#: ../data/main.ui.h:204 ../src/expressionedit.cc:1496
+#: ../data/main.ui.h:204 ../src/expressionedit.cc:1506
 msgid "Save Mode…"
 msgstr "Zapisz tryb…"
 
@@ -1638,7 +1638,7 @@ msgstr "Sprawdź uaktualnienia"
 msgid "_About"
 msgstr "_O programie"
 
-#: ../data/main.ui.h:215 ../src/util.cc:940
+#: ../data/main.ui.h:215 ../src/util.cc:936
 msgid "Toggle minimal window"
 msgstr "Przełącza wyświetlanie w minimalnym oknie"
 
@@ -1706,7 +1706,7 @@ msgstr "Podnosi do potęgi zaznaczonej wartość"
 msgid "Calculate the square root of the selected value"
 msgstr "Oblicza pierwiastek kwadratowy zaznaczonej wartości"
 
-#: ../data/main.ui.h:231 ../src/historyview.cc:3693
+#: ../data/main.ui.h:231 ../src/historyview.cc:3699
 msgid "History"
 msgstr "Historia"
 
@@ -1825,8 +1825,8 @@ msgstr "Przełącza wyświetlanie klawiatury programistycznej"
 msgid "Exact"
 msgstr "Dokładnie"
 
-#: ../data/main.ui.h:262 ../src/expressioncompletion.cc:2042
-#: ../src/expressioncompletion.cc:2044
+#: ../data/main.ui.h:262 ../src/expressioncompletion.cc:2070
+#: ../src/expressioncompletion.cc:2072
 msgid "Fraction"
 msgstr "Ułamek"
 
@@ -1903,7 +1903,7 @@ msgstr "STO"
 msgid "Convert number bases"
 msgstr "Konwertuje podstawy liczbowe"
 
-#: ../data/main.ui.h:283 ../src/util.cc:943
+#: ../data/main.ui.h:283 ../src/util.cc:939
 msgid "Manage units"
 msgstr "Zarządzanie jednostkami"
 
@@ -2021,7 +2021,7 @@ msgstr "Wstaw tekst"
 msgid "Insert Parsed Text"
 msgstr "Wstaw sparsowany tekst"
 
-#: ../data/main.ui.h:315 ../src/searchprovider.cc:208
+#: ../data/main.ui.h:315 ../src/searchprovider.cc:209
 msgid "Copy"
 msgstr "Skopiuj"
 
@@ -2037,11 +2037,11 @@ msgstr "Skopiuj pełny tekst"
 msgid "Search…"
 msgstr "Szukaj…"
 
-#: ../data/main.ui.h:319 ../src/historyview.cc:3215 ../src/historyview.cc:3230
+#: ../data/main.ui.h:319 ../src/historyview.cc:3221 ../src/historyview.cc:3236
 msgid "Search by Date…"
 msgstr "Szukaj wg daty…"
 
-#: ../data/main.ui.h:320 ../src/historyview.cc:3212
+#: ../data/main.ui.h:320 ../src/historyview.cc:3218
 msgid "Add Bookmark…"
 msgstr "Dodaj zakładkę…"
 
@@ -2053,7 +2053,7 @@ msgstr "Zakładki"
 msgid "Protect"
 msgstr "Chronienie"
 
-#: ../data/main.ui.h:323 ../src/historyview.cc:3205
+#: ../data/main.ui.h:323 ../src/historyview.cc:3211
 #, fuzzy
 msgid "Add Comment…"
 msgstr "Dodaj zakładkę…"
@@ -2130,7 +2130,7 @@ msgstr "D_ziesiętna"
 msgid "_Hexadecimal"
 msgstr "_Szesnastkowa"
 
-#: ../data/main.ui.h:342 ../src/expressioncompletion.cc:2020
+#: ../data/main.ui.h:342 ../src/expressioncompletion.cc:2048
 msgid "Decimal Fraction"
 msgstr "Ułamek dziesiętny"
 
@@ -2248,7 +2248,7 @@ msgstr "Wybierz podstawę liczbową…"
 msgid "Display Expression Status"
 msgstr "Wyświetlanie statusu wyrażenia"
 
-#: ../data/main.ui.h:371 ../src/util.cc:945
+#: ../data/main.ui.h:371 ../src/util.cc:941
 msgid "Store result"
 msgstr "Zachowanie wyniku"
 
@@ -2323,7 +2323,7 @@ msgid "Names"
 msgstr "Nazwy"
 
 #: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1
-#: ../src/expressioncompletion.cc:2005
+#: ../src/expressioncompletion.cc:2033
 msgid "Number Bases"
 msgstr "Podstawy liczbowe"
 
@@ -2392,7 +2392,7 @@ msgid "Bitwise NOT"
 msgstr "Bitowe NOT"
 
 #: ../data/nbases.ui.h:30 ../data/percentage.ui.h:4
-#: ../src/buttonseditdialog.cc:376 ../src/expressionedit.cc:1413
+#: ../src/buttonseditdialog.cc:376 ../src/expressionedit.cc:1423
 #: ../src/keypad.cc:522
 msgid "Clear"
 msgstr "Wyczyść"
@@ -2788,7 +2788,7 @@ msgid "Keep expression"
 msgstr "wyrażenie"
 
 #: ../data/preferences.ui.h:27 ../src/conversionview.cc:281
-#: ../src/expressionedit.cc:797
+#: ../src/expressionedit.cc:812
 msgid "Clear expression"
 msgstr "Czyści wyrażenie"
 
@@ -2862,7 +2862,7 @@ msgstr "Wypełnienie przycisku"
 
 #: ../data/preferences.ui.h:44 ../src/buttonseditdialog.cc:183
 #: ../src/datasetsdialog.cc:524 ../src/modes.cc:46 ../src/modes.cc:57
-#: ../src/util.cc:1044
+#: ../src/util.cc:1040
 msgid "Default"
 msgstr "Domyślny"
 
@@ -3265,23 +3265,28 @@ msgid "Text color"
 msgstr "Kolor tekstu"
 
 #: ../data/preferences.ui.h:137
+#, fuzzy
+msgid "Highlight parenthesis background"
+msgstr "Prawy nawias"
+
+#: ../data/preferences.ui.h:138
 msgid "Custom application font"
 msgstr "Dostosowana czcionka programu"
 
-#: ../data/preferences.ui.h:138
+#: ../data/preferences.ui.h:139
 msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr "Używa czcionki innej niż domyślna w całym interfejsie programu"
 
-#: ../data/preferences.ui.h:139
+#: ../data/preferences.ui.h:140
 msgid "Custom history font"
 msgstr "Dostosowana czcionka historii"
 
-#: ../data/preferences.ui.h:140
+#: ../data/preferences.ui.h:141
 msgid "If you want to use a font other than the default in the history list"
 msgstr "Używa czcionki innej niż domyślna na liście historii"
 
-#: ../data/preferences.ui.h:141
+#: ../data/preferences.ui.h:142
 msgid "Fonts & Colors"
 msgstr "Czcionki i kolory"
 
@@ -3671,13 +3676,13 @@ msgctxt "Keypad"
 msgid "Add"
 msgstr "Dodawanie"
 
-#: ../src/buttonseditdialog.cc:372 ../src/expressionstatus.cc:693
-#: ../src/keypad.cc:517 ../src/keypad.cc:2757 ../src/util.cc:949
+#: ../src/buttonseditdialog.cc:372 ../src/expressionstatus.cc:703
+#: ../src/keypad.cc:517 ../src/keypad.cc:2757 ../src/util.cc:945
 msgid "M+ (memory plus)"
 msgstr "M+ (dodanie do pamięci)"
 
-#: ../src/buttonseditdialog.cc:376 ../src/expressionstatus.cc:683
-#: ../src/keypad.cc:522 ../src/keypad.cc:2754 ../src/util.cc:946
+#: ../src/buttonseditdialog.cc:376 ../src/expressionstatus.cc:693
+#: ../src/keypad.cc:522 ../src/keypad.cc:2754 ../src/util.cc:942
 msgid "MC (memory clear)"
 msgstr "MC (wyczyszczenie pamięci)"
 
@@ -3685,8 +3690,8 @@ msgstr "MC (wyczyszczenie pamięci)"
 msgid "Backspace"
 msgstr ""
 
-#: ../src/buttonseditdialog.cc:377 ../src/expressionstatus.cc:698
-#: ../src/keypad.cc:523 ../src/keypad.cc:2758 ../src/util.cc:950
+#: ../src/buttonseditdialog.cc:377 ../src/expressionstatus.cc:708
+#: ../src/keypad.cc:523 ../src/keypad.cc:2758 ../src/util.cc:946
 msgid "M− (memory minus)"
 msgstr "M- (odjęcie z pamięci)"
 
@@ -3694,18 +3699,18 @@ msgstr "M- (odjęcie z pamięci)"
 msgid "Previous result (static)"
 msgstr "Poprzedni wynik (statyczny)"
 
-#: ../src/buttonseditdialog.cc:379 ../src/expressionedit.cc:804
+#: ../src/buttonseditdialog.cc:379 ../src/expressionedit.cc:819
 #: ../src/keypad.cc:532 ../src/keypad.cc:3535
 msgid "Calculate expression"
 msgstr "Obliczenie wyrażenia"
 
 #: ../src/buttonseditdialog.cc:379 ../src/keypad.cc:532 ../src/keypad.cc:2755
-#: ../src/util.cc:947
+#: ../src/util.cc:943
 msgid "MR (memory recall)"
 msgstr "MR (przywołanie z pamięci)"
 
-#: ../src/buttonseditdialog.cc:379 ../src/expressionstatus.cc:688
-#: ../src/keypad.cc:532 ../src/keypad.cc:2756 ../src/util.cc:948
+#: ../src/buttonseditdialog.cc:379 ../src/expressionstatus.cc:698
+#: ../src/keypad.cc:532 ../src/keypad.cc:2756 ../src/util.cc:944
 msgid "MS (memory store)"
 msgstr "MS (przechowanie w pamięci)"
 
@@ -3803,7 +3808,7 @@ msgstr "tekst"
 msgid "approximate"
 msgstr "przybliżony"
 
-#: ../src/dataseteditdialog.cc:97 ../src/expressioncompletion.cc:1825
+#: ../src/dataseteditdialog.cc:97 ../src/expressioncompletion.cc:1848
 #: ../src/variablesdialog.cc:330
 msgid "number"
 msgstr "liczba"
@@ -3819,7 +3824,7 @@ msgid "key"
 msgstr "klucz"
 
 #: ../src/dataseteditdialog.cc:306 ../src/dataseteditdialog.cc:442
-#: ../src/functioneditdialog.cc:910 ../src/importcsvdialog.cc:149
+#: ../src/functioneditdialog.cc:938 ../src/importcsvdialog.cc:149
 #: ../src/matrixeditdialog.cc:553 ../src/menubar.cc:1243
 #: ../src/uniteditdialog.cc:331 ../src/unknowneditdialog.cc:191
 #: ../src/variableeditdialog.cc:279
@@ -3834,7 +3839,7 @@ msgstr "Edycja zbioru danych (globalnie)"
 msgid "New Data Set"
 msgstr "Nowy zbiór danych"
 
-#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:941
+#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:969
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -3860,13 +3865,13 @@ msgid "New Data Object"
 msgstr "Nowy obiekt danych"
 
 #: ../src/drawstructure.cc:644 ../src/drawstructure.cc:2770
-#: ../src/expressionedit.cc:582 ../src/expressionstatus.cc:1166
-#: ../src/expressionstatus.cc:1202 ../src/historyview.cc:704
-#: ../src/historyview.cc:1289 ../src/historyview.cc:1343
-#: ../src/historyview.cc:1596 ../src/historyview.cc:1656
-#: ../src/historyview.cc:2179 ../src/insertfunctiondialog.cc:298
-#: ../src/keypad.cc:3109 ../src/mainwindow.cc:2776 ../src/searchprovider.cc:151
-#: ../src/searchprovider.cc:199 ../src/searchprovider.cc:200
+#: ../src/expressionedit.cc:597 ../src/expressionstatus.cc:1177
+#: ../src/expressionstatus.cc:1213 ../src/historyview.cc:710
+#: ../src/historyview.cc:1295 ../src/historyview.cc:1349
+#: ../src/historyview.cc:1602 ../src/historyview.cc:1662
+#: ../src/historyview.cc:2185 ../src/insertfunctiondialog.cc:298
+#: ../src/keypad.cc:3109 ../src/mainwindow.cc:2776 ../src/searchprovider.cc:152
+#: ../src/searchprovider.cc:200 ../src/searchprovider.cc:201
 #: ../src/variablesdialog.cc:303
 #, fuzzy
 msgid "approx."
@@ -3876,8 +3881,8 @@ msgstr "w przybliżeniu"
 msgid "and"
 msgstr "i"
 
-#: ../src/drawstructure.cc:1846 ../src/historyview.cc:927
-#: ../src/historyview.cc:962 ../src/historyview.cc:963
+#: ../src/drawstructure.cc:1846 ../src/historyview.cc:933
+#: ../src/historyview.cc:968 ../src/historyview.cc:969
 msgid "or"
 msgstr "lub"
 
@@ -3940,249 +3945,249 @@ msgstr ""
 "Nie można wyeksportować do pliku \n"
 "%s"
 
-#: ../src/expressioncompletion.cc:1775
+#: ../src/expressioncompletion.cc:1798
 msgid "a previous result"
 msgstr "poprzedni wynik"
 
-#: ../src/expressioncompletion.cc:1788
+#: ../src/expressioncompletion.cc:1811
 msgid "matrix"
 msgstr "macierz"
 
-#: ../src/expressioncompletion.cc:1790
+#: ../src/expressioncompletion.cc:1813
 msgid "vector"
 msgstr "wektor"
 
-#: ../src/expressioncompletion.cc:1811 ../src/variablesdialog.cc:315
+#: ../src/expressioncompletion.cc:1834 ../src/variablesdialog.cc:315
 msgid "positive"
 msgstr "dodatnia"
 
-#: ../src/expressioncompletion.cc:1812 ../src/variablesdialog.cc:316
+#: ../src/expressioncompletion.cc:1835 ../src/variablesdialog.cc:316
 msgid "non-positive"
 msgstr "niedodatnia"
 
-#: ../src/expressioncompletion.cc:1813 ../src/variablesdialog.cc:317
+#: ../src/expressioncompletion.cc:1836 ../src/variablesdialog.cc:317
 msgid "negative"
 msgstr "ujemna"
 
-#: ../src/expressioncompletion.cc:1814 ../src/variablesdialog.cc:318
+#: ../src/expressioncompletion.cc:1837 ../src/variablesdialog.cc:318
 msgid "non-negative"
 msgstr "nieujemna"
 
-#: ../src/expressioncompletion.cc:1815 ../src/variablesdialog.cc:319
+#: ../src/expressioncompletion.cc:1838 ../src/variablesdialog.cc:319
 msgid "non-zero"
 msgstr "niezerowa"
 
-#: ../src/expressioncompletion.cc:1820 ../src/variablesdialog.cc:326
+#: ../src/expressioncompletion.cc:1843 ../src/variablesdialog.cc:326
 msgid "boolean"
 msgstr "logiczna"
 
-#: ../src/expressioncompletion.cc:1821 ../src/variablesdialog.cc:325
+#: ../src/expressioncompletion.cc:1844 ../src/variablesdialog.cc:325
 msgid "integer"
 msgstr "całkowita"
 
-#: ../src/expressioncompletion.cc:1822 ../src/variablesdialog.cc:327
+#: ../src/expressioncompletion.cc:1845 ../src/variablesdialog.cc:327
 msgid "rational"
 msgstr "wymierna"
 
-#: ../src/expressioncompletion.cc:1823 ../src/variablesdialog.cc:328
+#: ../src/expressioncompletion.cc:1846 ../src/variablesdialog.cc:328
 msgid "real"
 msgstr "rzeczywista"
 
-#: ../src/expressioncompletion.cc:1824 ../src/variablesdialog.cc:329
+#: ../src/expressioncompletion.cc:1847 ../src/variablesdialog.cc:329
 msgid "complex"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:1826
+#: ../src/expressioncompletion.cc:1849
 msgid "(not matrix)"
 msgstr "(nie macierz)"
 
-#: ../src/expressioncompletion.cc:1829 ../src/variablesdialog.cc:334
+#: ../src/expressioncompletion.cc:1852 ../src/variablesdialog.cc:334
 msgid "unknown"
 msgstr "nieznana"
 
-#: ../src/expressioncompletion.cc:1831
+#: ../src/expressioncompletion.cc:1854
 msgid "default assumptions"
 msgstr "domyślne założenia"
 
-#: ../src/expressioncompletion.cc:1977
+#: ../src/expressioncompletion.cc:2005
 msgid "Prefix"
 msgstr "Prefiks"
 
-#: ../src/expressioncompletion.cc:2007
+#: ../src/expressioncompletion.cc:2035
 msgid "Base Units"
 msgstr "Jednostki podstawowe"
 
-#: ../src/expressioncompletion.cc:2010
+#: ../src/expressioncompletion.cc:2038
 msgid "Binary-Coded Decimal"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2012
+#: ../src/expressioncompletion.cc:2040
 msgid "Bijective Base-26"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2014
+#: ../src/expressioncompletion.cc:2042
 msgid "Binary Number"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2016
+#: ../src/expressioncompletion.cc:2044
 msgid "Calendars"
 msgstr "Kalendarze"
 
-#: ../src/expressioncompletion.cc:2018
+#: ../src/expressioncompletion.cc:2046
 msgid "Complex cis Form"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2022
+#: ../src/expressioncompletion.cc:2050
 msgid "Decimal Number"
 msgstr "Liczba dziesiętna"
 
-#: ../src/expressioncompletion.cc:2024
+#: ../src/expressioncompletion.cc:2052
 msgid "Duodecimal Number"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2026
+#: ../src/expressioncompletion.cc:2054
 #, fuzzy
 msgid "Engineering Notation"
 msgstr "Inżynierski"
 
-#: ../src/expressioncompletion.cc:2030
+#: ../src/expressioncompletion.cc:2058
 msgid "Factors"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2032
+#: ../src/expressioncompletion.cc:2060
 msgid "16-bit Floating Point Binary Format"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2034
+#: ../src/expressioncompletion.cc:2062
 msgid "32-bit Floating Point Binary Format"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2036
+#: ../src/expressioncompletion.cc:2064
 msgid "64-bit Floating Point Binary Format"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2038
+#: ../src/expressioncompletion.cc:2066
 msgid "80-bit (x86) Floating Point Binary Format"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2040
+#: ../src/expressioncompletion.cc:2068
 msgid "128-bit Floating Point Binary Format"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2046
+#: ../src/expressioncompletion.cc:2074
 msgid "Hexadecimal Number"
 msgstr "Liczba szesnastkowa"
 
-#: ../src/expressioncompletion.cc:2048
+#: ../src/expressioncompletion.cc:2076
 msgid "Latitude"
 msgstr "Szerokość geograficzna"
 
-#: ../src/expressioncompletion.cc:2050
+#: ../src/expressioncompletion.cc:2078
 msgid "Longitude"
 msgstr "Długość geograficzna"
 
-#: ../src/expressioncompletion.cc:2052
+#: ../src/expressioncompletion.cc:2080
 msgid "Mixed Units"
 msgstr "Jednostki mieszane"
 
-#: ../src/expressioncompletion.cc:2054
+#: ../src/expressioncompletion.cc:2082
 msgid "Octal Number"
 msgstr "Liczba ósemkowa"
 
-#: ../src/expressioncompletion.cc:2056
+#: ../src/expressioncompletion.cc:2084
 msgid "Optimal Units"
 msgstr "Optymalne jednostki"
 
-#: ../src/expressioncompletion.cc:2058
+#: ../src/expressioncompletion.cc:2086
 #, fuzzy
 msgid "Expanded Partial Fractions"
 msgstr "Rozszerzone ułamki cząstkowe"
 
-#: ../src/expressioncompletion.cc:2062 ../src/menubar.cc:1746
+#: ../src/expressioncompletion.cc:2090 ../src/menubar.cc:1746
 msgid "Optimal Prefix"
 msgstr "Optymalny prefiks"
 
-#: ../src/expressioncompletion.cc:2068
+#: ../src/expressioncompletion.cc:2096
 #, fuzzy
 msgid "Scientific Notation"
 msgstr "Przełączenie notacji naukowej"
 
-#: ../src/expressioncompletion.cc:2070
+#: ../src/expressioncompletion.cc:2098
 msgid "Sexagesimal Number"
 msgstr "Liczba szesnastkowa"
 
-#: ../src/expressioncompletion.cc:2072
+#: ../src/expressioncompletion.cc:2100
 #, fuzzy
 msgid "Simple Notation"
 msgstr "Przełączenie notacji zwykłej"
 
-#: ../src/expressioncompletion.cc:2076 ../src/expressionstatus.cc:916
+#: ../src/expressioncompletion.cc:2104 ../src/expressionstatus.cc:927
 msgid "Unicode"
 msgstr ""
 
-#: ../src/expressioncompletion.cc:2078
+#: ../src/expressioncompletion.cc:2106
 msgid "UTC Time Zone"
 msgstr "Strefa czasowa UTC"
 
-#: ../src/expressionedit.cc:786
+#: ../src/expressionedit.cc:801
 msgid "Stop process"
 msgstr ""
 
-#: ../src/expressionedit.cc:804 ../src/expressionedit.cc:1783
+#: ../src/expressionedit.cc:819 ../src/expressionedit.cc:1843
 #: ../src/keypad.cc:3531
 msgid "Calculate expression and add to stack"
 msgstr "Oblicza wyrażenie i dodaje do stosu"
 
-#: ../src/expressionedit.cc:1317 ../src/historyview.cc:2820
+#: ../src/expressionedit.cc:1327 ../src/historyview.cc:2826
 #: ../src/insertfunctiondialog.cc:65
 msgid "Select date"
 msgstr "Wybór daty"
 
-#: ../src/expressionedit.cc:1416
+#: ../src/expressionedit.cc:1426
 msgid "Clear History"
 msgstr "Wyczyść historię"
 
-#: ../src/expressionedit.cc:1420
+#: ../src/expressionedit.cc:1430
 msgid "Abort"
 msgstr "Anuluj"
 
-#: ../src/expressionedit.cc:1423
+#: ../src/expressionedit.cc:1433
 msgid "Undo"
 msgstr "Cofnij"
 
-#: ../src/expressionedit.cc:1426
+#: ../src/expressionedit.cc:1436
 msgid "Redo"
 msgstr "Ponów"
 
-#: ../src/expressionedit.cc:1431
+#: ../src/expressionedit.cc:1441
 msgid "Completion Mode"
 msgstr "Tryb uzupełniania"
 
-#: ../src/expressionedit.cc:1444
+#: ../src/expressionedit.cc:1454
 msgid "Limited strict completion"
 msgstr "Ograniczone ścisłe uzupełnianie"
 
-#: ../src/expressionedit.cc:1445
+#: ../src/expressionedit.cc:1455
 msgid "Strict completion"
 msgstr "Ścisłe uzupełnianie"
 
-#: ../src/expressionedit.cc:1446
+#: ../src/expressionedit.cc:1456
 msgid "Limited full completion"
 msgstr "Ograniczone pełne uzupełnianie"
 
-#: ../src/expressionedit.cc:1447
+#: ../src/expressionedit.cc:1457
 msgid "Full completion"
 msgstr "Pełne uzupełnianie"
 
-#: ../src/expressionedit.cc:1448
+#: ../src/expressionedit.cc:1458
 msgid "No completion"
 msgstr "Brak uzupełniania"
 
-#: ../src/expressionedit.cc:1457
+#: ../src/expressionedit.cc:1467
 msgid "Delayed completion"
 msgstr "Opóźnione uzupełnianie"
 
-#: ../src/expressionedit.cc:1459
+#: ../src/expressionedit.cc:1469
 msgid "Customize completion…"
 msgstr "Dostosuj uzupełnianie…"
 
@@ -4248,320 +4253,320 @@ msgstr "CPLX"
 msgid "Too many arguments for %s()."
 msgstr "Za dużo argumentów dla %s()."
 
-#: ../src/expressionstatus.cc:709 ../src/expressionstatus.cc:711
+#: ../src/expressionstatus.cc:720 ../src/expressionstatus.cc:722
 #: ../src/mainwindow.cc:1544 ../src/mainwindow.cc:5087
-#: ../src/searchprovider.cc:115
+#: ../src/searchprovider.cc:116
 msgid "factorize"
 msgstr ""
 
-#: ../src/expressionstatus.cc:712 ../src/expressionstatus.cc:714
+#: ../src/expressionstatus.cc:723 ../src/expressionstatus.cc:725
 #: ../src/mainwindow.cc:1547 ../src/mainwindow.cc:5090
-#: ../src/searchprovider.cc:115
+#: ../src/searchprovider.cc:116
 msgid "expand"
 msgstr ""
 
-#: ../src/expressionstatus.cc:879 ../src/mainwindow.cc:1320
+#: ../src/expressionstatus.cc:890 ../src/mainwindow.cc:1320
 #: ../src/mainwindow.cc:4752
 msgid "hexadecimal"
 msgstr ""
 
-#: ../src/expressionstatus.cc:880 ../src/expressionstatus.cc:1000
+#: ../src/expressionstatus.cc:891 ../src/expressionstatus.cc:1011
 msgid "hexadecimal number"
 msgstr ""
 
-#: ../src/expressionstatus.cc:881 ../src/mainwindow.cc:1323
+#: ../src/expressionstatus.cc:892 ../src/mainwindow.cc:1323
 #: ../src/mainwindow.cc:4755
 msgid "octal"
 msgstr ""
 
-#: ../src/expressionstatus.cc:882
+#: ../src/expressionstatus.cc:893
 msgid "octal number"
 msgstr ""
 
-#: ../src/expressionstatus.cc:883 ../src/mainwindow.cc:1326
+#: ../src/expressionstatus.cc:894 ../src/mainwindow.cc:1326
 #: ../src/mainwindow.cc:4758
 msgid "decimal"
 msgstr ""
 
-#: ../src/expressionstatus.cc:884
+#: ../src/expressionstatus.cc:895
 msgid "decimal number"
 msgstr ""
 
-#: ../src/expressionstatus.cc:885 ../src/mainwindow.cc:1330
+#: ../src/expressionstatus.cc:896 ../src/mainwindow.cc:1330
 #: ../src/mainwindow.cc:4762
 msgid "duodecimal"
 msgstr ""
 
-#: ../src/expressionstatus.cc:886 ../src/expressionstatus.cc:888
+#: ../src/expressionstatus.cc:897 ../src/expressionstatus.cc:899
 msgid "duodecimal number"
 msgstr ""
 
-#: ../src/expressionstatus.cc:889 ../src/mainwindow.cc:1338
+#: ../src/expressionstatus.cc:900 ../src/mainwindow.cc:1338
 #: ../src/mainwindow.cc:4770
 msgid "binary"
 msgstr ""
 
-#: ../src/expressionstatus.cc:890 ../src/expressionstatus.cc:994
+#: ../src/expressionstatus.cc:901 ../src/expressionstatus.cc:1005
 msgid "binary number"
 msgstr ""
 
-#: ../src/expressionstatus.cc:891 ../src/mainwindow.cc:1341
+#: ../src/expressionstatus.cc:902 ../src/mainwindow.cc:1341
 #: ../src/mainwindow.cc:4773
 msgid "roman"
 msgstr ""
 
-#: ../src/expressionstatus.cc:892
+#: ../src/expressionstatus.cc:903
 msgid "roman numerals"
 msgstr "cyfry rzymskie"
 
-#: ../src/expressionstatus.cc:893 ../src/mainwindow.cc:1344
+#: ../src/expressionstatus.cc:904 ../src/mainwindow.cc:1344
 #: ../src/mainwindow.cc:4776
 msgid "bijective"
 msgstr ""
 
-#: ../src/expressionstatus.cc:894
+#: ../src/expressionstatus.cc:905
 msgid "bijective base-26"
 msgstr ""
 
-#: ../src/expressionstatus.cc:896
+#: ../src/expressionstatus.cc:907
 msgid "binary-coded decimal"
 msgstr ""
 
-#: ../src/expressionstatus.cc:897 ../src/mainwindow.cc:1350
+#: ../src/expressionstatus.cc:908 ../src/mainwindow.cc:1350
 #: ../src/mainwindow.cc:1353 ../src/mainwindow.cc:1356
 #: ../src/mainwindow.cc:4782 ../src/mainwindow.cc:4785
 #: ../src/mainwindow.cc:4788
 msgid "sexagesimal"
 msgstr ""
 
-#: ../src/expressionstatus.cc:898
+#: ../src/expressionstatus.cc:909
 msgid "sexagesimal number"
 msgstr ""
 
-#: ../src/expressionstatus.cc:899 ../src/expressionstatus.cc:900
+#: ../src/expressionstatus.cc:910 ../src/expressionstatus.cc:911
 #: ../src/mainwindow.cc:1359 ../src/mainwindow.cc:1362
 #: ../src/mainwindow.cc:4791 ../src/mainwindow.cc:4794
 msgid "latitude"
 msgstr ""
 
-#: ../src/expressionstatus.cc:901 ../src/expressionstatus.cc:902
+#: ../src/expressionstatus.cc:912 ../src/expressionstatus.cc:913
 #: ../src/mainwindow.cc:1365 ../src/mainwindow.cc:1368
 #: ../src/mainwindow.cc:4797 ../src/mainwindow.cc:4800
 msgid "longitude"
 msgstr ""
 
-#: ../src/expressionstatus.cc:904
+#: ../src/expressionstatus.cc:915
 msgid "32-bit floating point"
 msgstr ""
 
-#: ../src/expressionstatus.cc:906
+#: ../src/expressionstatus.cc:917
 msgid "64-bit floating point"
 msgstr ""
 
-#: ../src/expressionstatus.cc:908
+#: ../src/expressionstatus.cc:919
 msgid "16-bit floating point"
 msgstr ""
 
-#: ../src/expressionstatus.cc:910
+#: ../src/expressionstatus.cc:921
 msgid "80-bit (x86) floating point"
 msgstr ""
 
-#: ../src/expressionstatus.cc:912
+#: ../src/expressionstatus.cc:923
 msgid "128-bit floating point"
 msgstr ""
 
-#: ../src/expressionstatus.cc:913 ../src/mainwindow.cc:1386
+#: ../src/expressionstatus.cc:924 ../src/mainwindow.cc:1386
 #: ../src/mainwindow.cc:4818
 msgid "time"
 msgstr ""
 
-#: ../src/expressionstatus.cc:914
+#: ../src/expressionstatus.cc:925
 msgid "time format"
 msgstr ""
 
-#: ../src/expressionstatus.cc:917 ../src/mainwindow.cc:1392
+#: ../src/expressionstatus.cc:928 ../src/mainwindow.cc:1392
 #: ../src/mainwindow.cc:4824
 #, fuzzy
 msgid "scientific"
 msgstr "Naukowy"
 
-#: ../src/expressionstatus.cc:918
+#: ../src/expressionstatus.cc:929
 #, fuzzy
 msgid "scientific notation"
 msgstr "Przełączenie notacji naukowej"
 
-#: ../src/expressionstatus.cc:919 ../src/mainwindow.cc:1395
+#: ../src/expressionstatus.cc:930 ../src/mainwindow.cc:1395
 #: ../src/mainwindow.cc:4827
 #, fuzzy
 msgid "engineering"
 msgstr "Inżynierski"
 
-#: ../src/expressionstatus.cc:920
+#: ../src/expressionstatus.cc:931
 #, fuzzy
 msgid "engineering notation"
 msgstr "Inżynierski"
 
-#: ../src/expressionstatus.cc:921 ../src/mainwindow.cc:1398
+#: ../src/expressionstatus.cc:932 ../src/mainwindow.cc:1398
 #: ../src/mainwindow.cc:4830
 #, fuzzy
 msgid "simple"
 msgstr "Zwykły"
 
-#: ../src/expressionstatus.cc:922
+#: ../src/expressionstatus.cc:933
 #, fuzzy
 msgid "simple notation"
 msgstr "Przełączenie notacji zwykłej"
 
-#: ../src/expressionstatus.cc:923 ../src/mainwindow.cc:1446
+#: ../src/expressionstatus.cc:934 ../src/mainwindow.cc:1446
 #: ../src/mainwindow.cc:4880
 msgid "bases"
 msgstr ""
 
-#: ../src/expressionstatus.cc:924
+#: ../src/expressionstatus.cc:935
 msgid "number bases"
 msgstr ""
 
-#: ../src/expressionstatus.cc:925 ../src/expressionstatus.cc:926
+#: ../src/expressionstatus.cc:936 ../src/expressionstatus.cc:937
 #: ../src/mainwindow.cc:1448 ../src/mainwindow.cc:4890
 msgid "calendars"
 msgstr ""
 
-#: ../src/expressionstatus.cc:927 ../src/mainwindow.cc:1470
+#: ../src/expressionstatus.cc:938 ../src/mainwindow.cc:1470
 #: ../src/mainwindow.cc:4965
 msgid "optimal"
 msgstr ""
 
-#: ../src/expressionstatus.cc:928
+#: ../src/expressionstatus.cc:939
 msgid "optimal unit"
 msgstr ""
 
-#: ../src/expressionstatus.cc:929 ../src/mainwindow.cc:1475
+#: ../src/expressionstatus.cc:940 ../src/mainwindow.cc:1475
 #: ../src/mainwindow.cc:4977
 msgid "prefix"
 msgstr "prefiks"
 
-#: ../src/expressionstatus.cc:930
+#: ../src/expressionstatus.cc:941
 msgid "optimal prefix"
 msgstr "optymalny prefiks"
 
 #. base units
-#: ../src/expressionstatus.cc:931 ../src/mainwindow.cc:1480
+#: ../src/expressionstatus.cc:942 ../src/mainwindow.cc:1480
 #: ../src/mainwindow.cc:4981
 #, fuzzy
 msgctxt "Units"
 msgid "base"
 msgstr "podstawa"
 
-#: ../src/expressionstatus.cc:932
+#: ../src/expressionstatus.cc:943
 msgid "base units"
 msgstr "jednostki podstawowe"
 
-#: ../src/expressionstatus.cc:933 ../src/mainwindow.cc:1485
+#: ../src/expressionstatus.cc:944 ../src/mainwindow.cc:1485
 #: ../src/mainwindow.cc:4993
 msgid "mixed"
 msgstr ""
 
-#: ../src/expressionstatus.cc:934
+#: ../src/expressionstatus.cc:945
 msgid "mixed units"
 msgstr "jednostki mieszane"
 
-#: ../src/expressionstatus.cc:935 ../src/expressionstatus.cc:936
+#: ../src/expressionstatus.cc:946 ../src/expressionstatus.cc:947
 #: ../src/mainwindow.cc:1490 ../src/mainwindow.cc:5005
 msgid "factors"
 msgstr ""
 
-#: ../src/expressionstatus.cc:937 ../src/mainwindow.cc:1493
+#: ../src/expressionstatus.cc:948 ../src/mainwindow.cc:1493
 #: ../src/mainwindow.cc:5015
 msgid "partial fraction"
 msgstr ""
 
-#: ../src/expressionstatus.cc:938
+#: ../src/expressionstatus.cc:949
 msgid "expanded partial fractions"
 msgstr ""
 
-#: ../src/expressionstatus.cc:939 ../src/mainwindow.cc:1450
+#: ../src/expressionstatus.cc:950 ../src/mainwindow.cc:1450
 #: ../src/mainwindow.cc:4900
 msgid "rectangular"
 msgstr ""
 
-#: ../src/expressionstatus.cc:939 ../src/mainwindow.cc:1450
+#: ../src/expressionstatus.cc:950 ../src/mainwindow.cc:1450
 #: ../src/mainwindow.cc:4900
 msgid "cartesian"
 msgstr ""
 
-#: ../src/expressionstatus.cc:940
+#: ../src/expressionstatus.cc:951
 msgid "complex rectangular form"
 msgstr ""
 
-#: ../src/expressionstatus.cc:941 ../src/mainwindow.cc:1454
+#: ../src/expressionstatus.cc:952 ../src/mainwindow.cc:1454
 #: ../src/mainwindow.cc:4913
 msgid "exponential"
 msgstr ""
 
-#: ../src/expressionstatus.cc:942
+#: ../src/expressionstatus.cc:953
 msgid "complex exponential form"
 msgstr ""
 
-#: ../src/expressionstatus.cc:943 ../src/mainwindow.cc:1458
+#: ../src/expressionstatus.cc:954 ../src/mainwindow.cc:1458
 #: ../src/mainwindow.cc:4926
 msgid "polar"
 msgstr ""
 
-#: ../src/expressionstatus.cc:944
+#: ../src/expressionstatus.cc:955
 msgid "complex polar form"
 msgstr ""
 
-#: ../src/expressionstatus.cc:946
+#: ../src/expressionstatus.cc:957
 msgid "complex cis form"
 msgstr ""
 
-#: ../src/expressionstatus.cc:947 ../src/mainwindow.cc:1466
+#: ../src/expressionstatus.cc:958 ../src/mainwindow.cc:1466
 #: ../src/mainwindow.cc:4952
 msgid "angle"
 msgstr ""
 
-#: ../src/expressionstatus.cc:948
+#: ../src/expressionstatus.cc:959
 msgid "complex angle notation"
 msgstr ""
 
-#: ../src/expressionstatus.cc:949 ../src/mainwindow.cc:1466
+#: ../src/expressionstatus.cc:960 ../src/mainwindow.cc:1466
 #: ../src/mainwindow.cc:4952
 msgid "phasor"
 msgstr ""
 
-#: ../src/expressionstatus.cc:950
+#: ../src/expressionstatus.cc:961
 msgid "complex phasor notation"
 msgstr ""
 
-#: ../src/expressionstatus.cc:952
+#: ../src/expressionstatus.cc:963
 msgid "UTC time zone"
 msgstr "Strefa czasowa UTC"
 
 #. number base #
-#: ../src/expressionstatus.cc:1004 ../src/mainwindow.cc:1497
+#: ../src/expressionstatus.cc:1015 ../src/mainwindow.cc:1497
 #: ../src/mainwindow.cc:5025
 msgctxt "Number base"
 msgid "base"
 msgstr "podstawa"
 
-#: ../src/expressionstatus.cc:1005
+#: ../src/expressionstatus.cc:1016
 #, c-format
 msgid "number base %s"
 msgstr "podstawa liczbowa %s"
 
-#: ../src/expressionstatus.cc:1009 ../src/mainwindow.cc:1501
+#: ../src/expressionstatus.cc:1020 ../src/mainwindow.cc:1501
 #: ../src/mainwindow.cc:5029
 #, fuzzy
 msgid "decimals"
 msgstr "Miejsca dziesiętne"
 
-#: ../src/expressionstatus.cc:1010
+#: ../src/expressionstatus.cc:1021
 #, fuzzy
 msgid "decimal fraction"
 msgstr "Ułamek dziesiętny"
 
-#: ../src/expressionstatus.cc:1015 ../src/expressionstatus.cc:1021
-#: ../src/util.cc:665
+#: ../src/expressionstatus.cc:1026 ../src/expressionstatus.cc:1032
+#: ../src/util.cc:661
 msgid "fraction"
 msgstr ""
 
@@ -4569,25 +4574,25 @@ msgstr ""
 msgid "Reference"
 msgstr "Odniesienie"
 
-#: ../src/functioneditdialog.cc:837
+#: ../src/functioneditdialog.cc:865
 msgid "Edit Function (global)"
 msgstr "Edycja funkcji (globalnie)"
 
-#: ../src/functioneditdialog.cc:839
+#: ../src/functioneditdialog.cc:867
 msgid "New Function"
 msgstr "Nowa funkcja"
 
-#: ../src/functioneditdialog.cc:925
+#: ../src/functioneditdialog.cc:953
 msgid "Empty expression field."
 msgstr "Puste pole wyrażenia."
 
-#: ../src/functioneditdialog.cc:931
+#: ../src/functioneditdialog.cc:959
 msgid "Conversion (using \"to\") is not supported in functions."
 msgstr ""
 
 #: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
 #: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7561
-#: ../src/menubar.cc:1599 ../src/util.cc:1295 ../src/util.cc:1296
+#: ../src/menubar.cc:1599 ../src/util.cc:1291 ../src/util.cc:1292
 msgid "User functions"
 msgstr "Funkcje użytkownika"
 
@@ -4595,7 +4600,7 @@ msgstr "Funkcje użytkownika"
 #: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7559
 #: ../src/mainwindow.cc:7591 ../src/mainwindow.cc:7615
 #: ../src/unitsdialog.cc:174 ../src/unitsdialog.cc:175
-#: ../src/unitsdialog.cc:235 ../src/util.cc:1297 ../src/util.cc:1298
+#: ../src/unitsdialog.cc:235 ../src/util.cc:1293 ../src/util.cc:1294
 #: ../src/variablesdialog.cc:161 ../src/variablesdialog.cc:162
 #: ../src/variablesdialog.cc:213
 #, fuzzy
@@ -4629,7 +4634,7 @@ msgstr "domyślny: "
 msgid "Requirement"
 msgstr "Wymaganie"
 
-#: ../src/functionsdialog.cc:433 ../src/unitsdialog.cc:390 ../src/util.cc:1349
+#: ../src/functionsdialog.cc:433 ../src/unitsdialog.cc:390 ../src/util.cc:1345
 #: ../src/variablesdialog.cc:353
 msgid "Ac_tivate"
 msgstr "A_ktywuj"
@@ -4655,12 +4660,12 @@ msgstr "Indeks historii %s nie istnieje."
 msgid "History Parsed Expression"
 msgstr ""
 
-#: ../src/historyview.cc:818 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
+#: ../src/historyview.cc:824 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
 #: ../src/plotdialog.cc:486
 msgid "It took too long to generate the plot data."
 msgstr "Wykreślanie danych trwało zbyt długo."
 
-#: ../src/historyview.cc:818
+#: ../src/historyview.cc:824
 msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
@@ -4668,32 +4673,32 @@ msgstr ""
 "Wykreślanie danych trwało zbyt długo. Proszę zmniejszyć częstotliwość "
 "próbkowania lub zwiększyć ograniczenie czasu w preferencjach."
 
-#: ../src/historyview.cc:2148 ../src/mainwindow.cc:2526
+#: ../src/historyview.cc:2154 ../src/mainwindow.cc:2526
 msgid "RPN Register Moved"
 msgstr ""
 
-#: ../src/historyview.cc:2154 ../src/mainwindow.cc:2527
+#: ../src/historyview.cc:2160 ../src/mainwindow.cc:2527
 #: ../src/mainwindow.cc:5319
 msgid "RPN Operation"
 msgstr ""
 
-#: ../src/historyview.cc:2785
+#: ../src/historyview.cc:2791
 msgid "Search"
 msgstr "Wyszukiwanie"
 
-#: ../src/historyview.cc:2785
+#: ../src/historyview.cc:2791
 msgid "_Search"
 msgstr "_Wyszukaj"
 
-#: ../src/historyview.cc:2863 ../src/historyview.cc:3211
+#: ../src/historyview.cc:2869 ../src/historyview.cc:3217
 msgid "Remove Bookmark"
 msgstr "Usuń zakładkę"
 
-#: ../src/historyview.cc:2918
+#: ../src/historyview.cc:2924
 msgid "Add Bookmark"
 msgstr "Dodawanie zakładki"
 
-#: ../src/historyview.cc:2946
+#: ../src/historyview.cc:2952
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -4701,20 +4706,20 @@ msgstr ""
 "Zakładka z wprowadzoną nazwą już istnieje.\n"
 "Zastąpić ją?"
 
-#: ../src/historyview.cc:2961 ../src/historyview.cc:3204
+#: ../src/historyview.cc:2967 ../src/historyview.cc:3210
 msgid "Edit Comment…"
 msgstr ""
 
-#: ../src/historyview.cc:2963
+#: ../src/historyview.cc:2969
 #, fuzzy
 msgid "Comment"
 msgstr "Przecinek"
 
-#: ../src/historyview.cc:3249
+#: ../src/historyview.cc:3255
 msgid "No items found"
 msgstr "Nie odnaleziono elementów"
 
-#: ../src/historyview.cc:3683 ../src/stackview.cc:794
+#: ../src/historyview.cc:3689 ../src/stackview.cc:794
 msgid "Index"
 msgstr "Indeks"
 
@@ -4794,7 +4799,7 @@ msgstr "Środkowy przycisk: %s"
 msgid "Raise (Ctrl+*)"
 msgstr ""
 
-#: ../src/keypad.cc:810 ../src/util.cc:908
+#: ../src/keypad.cc:810 ../src/util.cc:904
 msgid "Set unknowns"
 msgstr "Ustal niewiadome"
 
@@ -4893,7 +4898,7 @@ msgstr "Wprowadza wyrażenie do obliczenia"
 msgid "[EXPRESSION]"
 msgstr "[WYRAŻENIE]"
 
-#: ../src/main.cc:151 ../src/searchprovider.cc:640
+#: ../src/main.cc:151 ../src/searchprovider.cc:656
 #, c-format
 msgid "Failed to load global definitions!\n"
 msgstr "Nie udało się wczytać globalnych definicji!\n"
@@ -5206,15 +5211,15 @@ msgstr "Nie można skopiować pliku do %s."
 msgid "translator-credits"
 msgstr "Piotr Sokół <psokol.l10n@gmail.com>, 2023-2025."
 
-#: ../src/mainwindow.cc:7593 ../src/menubar.cc:1687 ../src/util.cc:1291
-#: ../src/util.cc:1292 ../src/variablesdialog.cc:143
+#: ../src/mainwindow.cc:7593 ../src/menubar.cc:1687 ../src/util.cc:1287
+#: ../src/util.cc:1288 ../src/variablesdialog.cc:143
 #: ../src/variablesdialog.cc:144 ../src/variablesdialog.cc:215
 msgid "User variables"
 msgstr "Zmienne użytkownika"
 
 #: ../src/mainwindow.cc:7617 ../src/menubar.cc:1427 ../src/menubar.cc:1522
 #: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
-#: ../src/unitsdialog.cc:237 ../src/util.cc:1293 ../src/util.cc:1294
+#: ../src/unitsdialog.cc:237 ../src/util.cc:1289 ../src/util.cc:1290
 msgid "User units"
 msgstr "Jednostki użytkownika"
 
@@ -5335,7 +5340,7 @@ msgstr "Prefiksy"
 msgid "No Prefix"
 msgstr "Bez prefiksu"
 
-#: ../src/menubar.cc:2702
+#: ../src/menubar.cc:2703
 msgid "Open Settings Folder"
 msgid_plural "Open Settings Folders"
 msgstr[0] "Otwórz katalog ustawień"
@@ -5550,7 +5555,7 @@ msgstr "Wybór pliku do zapisania obrazu PNG"
 msgid "Copied"
 msgstr "Skopiowano"
 
-#: ../src/searchprovider.cc:209
+#: ../src/searchprovider.cc:210
 msgid "Copy result to clipboard"
 msgstr ""
 
@@ -5615,311 +5620,311 @@ msgstr "Edycja nieznanej zmiennej (globalnie)"
 msgid "New Unknown Variable"
 msgstr "Nowa nieznana zmienna"
 
-#: ../src/util.cc:890
+#: ../src/util.cc:886
 msgid "Insert function"
 msgstr "Wstawienie funkcji"
 
-#: ../src/util.cc:891
+#: ../src/util.cc:887
 msgid "Insert function (dialog)"
 msgstr "Wstawienie funkcji (okno dialogowe)"
 
-#: ../src/util.cc:892
+#: ../src/util.cc:888
 msgid "Insert variable"
 msgstr "Wstawienie zmiennej"
 
-#: ../src/util.cc:893
+#: ../src/util.cc:889
 msgid "Insert unit"
 msgstr "Wstawienie jednostki"
 
-#: ../src/util.cc:894
+#: ../src/util.cc:890
 msgid "Insert text"
 msgstr "Wstawienie tekstu"
 
-#: ../src/util.cc:895
+#: ../src/util.cc:891
 msgid "Insert date"
 msgstr "Wstawienie daty"
 
-#: ../src/util.cc:896
+#: ../src/util.cc:892
 msgid "Insert vector"
 msgstr "Wstawienie wektora"
 
-#: ../src/util.cc:897
+#: ../src/util.cc:893
 msgid "Insert matrix"
 msgstr "Wstawienie macierzy"
 
-#: ../src/util.cc:898
+#: ../src/util.cc:894
 msgid "Insert smart parentheses"
 msgstr "Wstawienie inteligentnych nawiasów"
 
-#: ../src/util.cc:899
+#: ../src/util.cc:895
 msgid "Convert to unit"
 msgstr "Skonwertowanie do jednostki"
 
-#: ../src/util.cc:900
+#: ../src/util.cc:896
 msgid "Convert to unit (entry)"
 msgstr "Skonwertowanie do jednostki (wprowadzenie)"
 
-#: ../src/util.cc:901
+#: ../src/util.cc:897
 msgid "Convert to optimal unit"
 msgstr "Skonwertowanie do optymalnej jednostki"
 
-#: ../src/util.cc:902
+#: ../src/util.cc:898
 msgid "Convert to base units"
 msgstr "Skonwertowanie do podstawowej jednostki"
 
-#: ../src/util.cc:903
+#: ../src/util.cc:899
 msgid "Convert to optimal prefix"
 msgstr "Skonwertowanie do optymalnego prefiksu"
 
-#: ../src/util.cc:904
+#: ../src/util.cc:900
 msgid "Convert to number base"
 msgstr "Skonwertowanie do podstawy liczbowej"
 
-#: ../src/util.cc:905
+#: ../src/util.cc:901
 msgid "Factorize result"
 msgstr ""
 
-#: ../src/util.cc:906
+#: ../src/util.cc:902
 msgid "Expand result"
 msgstr ""
 
-#: ../src/util.cc:907
+#: ../src/util.cc:903
 msgid "Expand partial fractions"
 msgstr ""
 
-#: ../src/util.cc:909
+#: ../src/util.cc:905
 msgid "RPN: down"
 msgstr "ONP: przeniesienie w dół"
 
-#: ../src/util.cc:910
+#: ../src/util.cc:906
 msgid "RPN: up"
 msgstr "ONP: przeniesienie w górę"
 
-#: ../src/util.cc:911
+#: ../src/util.cc:907
 msgid "RPN: swap"
 msgstr ""
 
-#: ../src/util.cc:912
+#: ../src/util.cc:908
 msgid "RPN: copy"
 msgstr "ONP: skopiowanie"
 
-#: ../src/util.cc:913
+#: ../src/util.cc:909
 msgid "RPN: lastx"
 msgstr ""
 
-#: ../src/util.cc:914
+#: ../src/util.cc:910
 msgid "RPN: delete register"
 msgstr "ONP: usunięcie rejestru"
 
-#: ../src/util.cc:915
+#: ../src/util.cc:911
 msgid "RPN: clear stack"
 msgstr "ONP: wyczyszczenie stosu"
 
-#: ../src/util.cc:916
+#: ../src/util.cc:912
 msgid "Load meta mode"
 msgstr "Wczytanie trybu meta"
 
-#: ../src/util.cc:917
+#: ../src/util.cc:913
 msgid "Set expression base"
 msgstr "Ustalenie podstawy liczbowej wyrażenia"
 
-#: ../src/util.cc:918
+#: ../src/util.cc:914
 msgid "Set result base"
 msgstr "Ustalenie podstawy liczbowej wyniku"
 
-#: ../src/util.cc:919
+#: ../src/util.cc:915
 msgid "Toggle exact mode"
 msgstr "Przełączenie trybu dokładnego"
 
-#: ../src/util.cc:920
+#: ../src/util.cc:916
 msgid "Set angle unit to degrees"
 msgstr "Ustalenie jednostek kąta na stopnie"
 
-#: ../src/util.cc:921
+#: ../src/util.cc:917
 msgid "Set angle unit to radians"
 msgstr "Ustalenie jednostek kąta na radiany"
 
-#: ../src/util.cc:922
+#: ../src/util.cc:918
 msgid "Set angle unit to gradians"
 msgstr "Ustalenie jednostek kąta na gradiany"
 
-#: ../src/util.cc:923
+#: ../src/util.cc:919
 msgid "Toggle simple fractions"
 msgstr "Przełączenie ułamków prostych"
 
-#: ../src/util.cc:924
+#: ../src/util.cc:920
 msgid "Toggle mixed fractions"
 msgstr "Przełączenie ułamków mieszanych"
 
-#: ../src/util.cc:925
+#: ../src/util.cc:921
 msgid "Toggle scientific notation"
 msgstr "Przełączenie notacji naukowej"
 
-#: ../src/util.cc:926
+#: ../src/util.cc:922
 msgid "Toggle simple notation"
 msgstr "Przełączenie notacji zwykłej"
 
-#: ../src/util.cc:927
+#: ../src/util.cc:923
 msgid "Toggle precision"
 msgstr "Przełączenie precyzji"
 
-#: ../src/util.cc:928
+#: ../src/util.cc:924
 msgid "Toggle max decimals"
 msgstr "Przełączenie maksymalnej liczby miejsc dziesiętnych"
 
-#: ../src/util.cc:929
+#: ../src/util.cc:925
 msgid "Toggle min decimals"
 msgstr "Przełączenie minimalnej liczby miejsc dziesiętnych"
 
-#: ../src/util.cc:930
+#: ../src/util.cc:926
 msgid "Toggle max/min decimals"
 msgstr "Przełączenie maksymalnej/minimalnej liczby miejsc dziesiętnych"
 
-#: ../src/util.cc:931
+#: ../src/util.cc:927
 msgid "Toggle RPN mode"
 msgstr "Przełączenie trybu ONP"
 
-#: ../src/util.cc:932
+#: ../src/util.cc:928
 msgid "Toggle calculate as you type"
 msgstr "Przełączenie obliczania podczas wprowadzania"
 
-#: ../src/util.cc:933
+#: ../src/util.cc:929
 msgid "Toggle programming keypad"
 msgstr "Przełączenie widoczności klawiatury programistycznej"
 
-#: ../src/util.cc:934
+#: ../src/util.cc:930
 msgid "Show keypad"
 msgstr "Wyświetlenie klawiatury"
 
-#: ../src/util.cc:935
+#: ../src/util.cc:931
 msgid "Show history"
 msgstr "Wyświetlenie historii"
 
-#: ../src/util.cc:936
+#: ../src/util.cc:932
 msgid "Search history"
 msgstr "Przeszukiwanie historii"
 
-#: ../src/util.cc:937
+#: ../src/util.cc:933
 msgid "Clear history"
 msgstr "Wyczyszczenie historii"
 
-#: ../src/util.cc:938
+#: ../src/util.cc:934
 msgid "Show conversion"
 msgstr "Wyświetlenie konwersji"
 
-#: ../src/util.cc:939
+#: ../src/util.cc:935
 msgid "Show RPN stack"
 msgstr "Wyświetlenie stosu ONP"
 
-#: ../src/util.cc:941
+#: ../src/util.cc:937
 msgid "Manage variables"
 msgstr "Zarządzanie zmiennymi"
 
-#: ../src/util.cc:942
+#: ../src/util.cc:938
 msgid "Manage functions"
 msgstr "Zarządzanie funkcjami"
 
-#: ../src/util.cc:944
+#: ../src/util.cc:940
 msgid "Manage data sets"
 msgstr "Zarządzanie zbiorami danych"
 
-#: ../src/util.cc:951
+#: ../src/util.cc:947
 msgid "New variable"
 msgstr "Nowa zmienna"
 
-#: ../src/util.cc:952
+#: ../src/util.cc:948
 msgid "New function"
 msgstr "Nowa funkcja"
 
-#: ../src/util.cc:953
+#: ../src/util.cc:949
 msgid "Open plot functions/data"
 msgstr "Otwarcie wykreślania funkcji/danych"
 
-#: ../src/util.cc:954
+#: ../src/util.cc:950
 msgid "Open convert number bases"
 msgstr "Otwarcie konwertowania podstaw liczbowych"
 
-#: ../src/util.cc:955
+#: ../src/util.cc:951
 msgid "Open floating point conversion"
 msgstr "Otwarcie konwertowanie liczb zmiennoprzecinkowych"
 
-#: ../src/util.cc:956
+#: ../src/util.cc:952
 msgid "Open calendar conversion"
 msgstr "Otwarcie konwertowania kalendarza"
 
-#: ../src/util.cc:957
+#: ../src/util.cc:953
 msgid "Open percentage calculation tool"
 msgstr "Otwarcie narzędzia obliczeń procentowych"
 
-#: ../src/util.cc:958
+#: ../src/util.cc:954
 msgid "Open periodic table"
 msgstr "Otwarcie układu okresowego"
 
-#: ../src/util.cc:959
+#: ../src/util.cc:955
 msgid "Update exchange rates"
 msgstr "Uaktualnienie kursów walut"
 
-#: ../src/util.cc:960
+#: ../src/util.cc:956
 msgid "Copy result"
 msgstr "Skopiowanie wyniku"
 
-#: ../src/util.cc:961
+#: ../src/util.cc:957
 msgid "Insert result"
 msgstr "Wstawienie wyniku"
 
-#: ../src/util.cc:962
+#: ../src/util.cc:958
 msgid "Save result image"
 msgstr "Zapisanie obrazu wynikowego"
 
-#: ../src/util.cc:963
+#: ../src/util.cc:959
 msgid "Help"
 msgstr "Wyświetlenie pomocy"
 
-#: ../src/util.cc:964
+#: ../src/util.cc:960
 msgid "Quit"
 msgstr "Zakończenie działania programu"
 
-#: ../src/util.cc:965
+#: ../src/util.cc:961
 msgid "Toggle chain mode"
 msgstr "Przełączenie trybu łańcuchowego"
 
-#: ../src/util.cc:966
+#: ../src/util.cc:962
 msgid "Toggle keep above"
 msgstr "Przełączenie utrzymywania ponad oknami"
 
-#: ../src/util.cc:967
+#: ../src/util.cc:963
 msgid "Show/hide completion"
 msgstr "Przełączenie wyświetlania uzupełniania"
 
-#: ../src/util.cc:968
+#: ../src/util.cc:964
 msgid "Perform completion (activate first item)"
 msgstr "Wykonanie uzupełnienie (aktywowanie pierwszego elementu)"
 
-#: ../src/util.cc:1036
+#: ../src/util.cc:1032
 msgid "Formatted result"
 msgstr "Sformatowany wynik"
 
-#: ../src/util.cc:1037
+#: ../src/util.cc:1033
 msgid "Unformatted ASCII result"
 msgstr "Niesformatowany wynik ASCII"
 
-#: ../src/util.cc:1038
+#: ../src/util.cc:1034
 msgid "Unformatted ASCII result without units"
 msgstr "Niesformatowany wynik ASCII bez jednostek"
 
-#: ../src/util.cc:1039
+#: ../src/util.cc:1035
 msgid "Formatted expression"
 msgstr "Sformatowane wyrażenie"
 
-#: ../src/util.cc:1040
+#: ../src/util.cc:1036
 msgid "Unformatted ASCII expression"
 msgstr "Niesformatowane wyrażenie ASCII"
 
-#: ../src/util.cc:1041
+#: ../src/util.cc:1037
 msgid "Formatted expression + result"
 msgstr "Sformatowane wyrażenie i wynik"
 
-#: ../src/util.cc:1042
+#: ../src/util.cc:1038
 msgid "Unformatted ASCII expression + result"
 msgstr "Niesformatowane wyrażenie i wynik ASCII"
 

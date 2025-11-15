@@ -2010,7 +2010,7 @@ Note that only the mode, history and definitions of the last closed instance wil
               </packing>
             </child>
             <child>
-              <!-- n-columns=2 n-rows=15 -->
+              <!-- n-columns=2 n-rows=16 -->
               <object class="GtkGrid" id="grid_fonts">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -2231,6 +2231,23 @@ Note that only the mode, history and definitions of the last closed instance wil
                   <packing>
                     <property name="left-attach">1</property>
                     <property name="top-attach">12</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="preferences_checkbutton_highlight_background">
+                    <property name="label" translatable="yes">Highlight parenthesis background</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="margin-top">6</property>
+                    <property name="use-underline">True</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_preferences_checkbutton_highlight_background_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">15</property>
+                    <property name="width">2</property>
                   </packing>
                 </child>
                 <child>

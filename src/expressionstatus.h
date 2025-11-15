@@ -49,6 +49,7 @@ std::vector<MathStructure> &current_parsed_to();
 void clear_parsed_expression();
 const std::string &current_parsed_expression_text();
 MathFunction *current_parsed_function();
+size_t current_parsed_function_index();
 
 bool read_expression_status_settings_line(std::string &svar, std::string &svalue, int &v);
 void write_expression_status_settings(FILE *file);

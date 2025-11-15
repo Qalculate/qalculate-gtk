@@ -349,7 +349,7 @@ bool element_needs_parenthesis(const string &str_e) {
 			}
 			case '\'': {
 				if(in_cit2) in_cit2 = false;
-				else if(!in_cit1) in_cit1 = true;
+				else if(!in_cit1) in_cit2 = true;
 				break;
 			}
 			default: {

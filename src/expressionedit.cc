@@ -48,7 +48,7 @@ extern GtkBuilder *main_builder;
 
 GtkWidget *expressiontext;
 GtkTextBuffer *expressionbuffer;
-GtkTextTag *expression_par_tag;
+GtkTextTag *expression_par_tag, *expression_par_u_tag;
 int expression_lines = -1;
 size_t undo_index = 0;
 int block_add_to_undo = 0;
@@ -66,6 +66,7 @@ extern bool minimal_mode;
 bool use_custom_expression_font = false, save_custom_expression_font = false;
 string custom_expression_font;
 int replace_expression = KEEP_EXPRESSION;
+bool highlight_background = false;
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 
@@ -96,6 +97,8 @@ bool read_expression_edit_settings_line(string &svar, string &svalue, int &v) {
 		save_custom_expression_font = true;
 	} else if(svar == "replace_expression") {
 		replace_expression = v;
+	} else if(svar == "highlight_parenthesis_background") {
+		highlight_background = v;
 	} else if(!read_expression_completion_settings_line(svar, svalue, v)) {
 		return false;
 	}
@@ -106,6 +109,7 @@ void write_expression_edit_settings(FILE *file) {
 	fprintf(file, "use_custom_expression_font=%i\n", use_custom_expression_font);
 	if(use_custom_expression_font || save_custom_expression_font) fprintf(file, "custom_expression_font=%s\n", custom_expression_font.c_str());
 	fprintf(file, "replace_expression=%i\n", replace_expression);
+	if(highlight_background) fprintf(file, "highlight_parenthesis_background=%i\n", highlight_background);
 	write_expression_completion_settings(file);
 }
 bool read_expression_history_line(string &svar, string &svalue) {
@@ -411,6 +415,7 @@ void expression_select_all() {
 	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
 	gtk_text_buffer_select_range(expression_edit_buffer(), &istart, &iend);
 	gtk_text_buffer_remove_tag(expression_edit_buffer(), expression_par_tag, &istart, &iend);
+	gtk_text_buffer_remove_tag(expression_edit_buffer(), expression_par_u_tag, &istart, &iend);
 }
 void brace_wrap() {
 	string expr = get_expression_text();
@@ -503,7 +508,9 @@ void highlight_parentheses() {
 	gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &icur, mcur);
 	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
 	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+	bool at_end = gtk_text_iter_equal(&icur, &iend);
 	gtk_text_buffer_remove_tag(expression_edit_buffer(), expression_par_tag, &istart, &iend);
+	gtk_text_buffer_remove_tag(expression_edit_buffer(), expression_par_u_tag, &istart, &iend);
 	bool b = false;
 	b = (gtk_text_iter_get_char(&icur) == ')');
 	if(!b && gtk_text_iter_backward_char(&icur)) {
@@ -528,6 +535,10 @@ void highlight_parentheses() {
 			inext = ipar2;
 			gtk_text_iter_forward_char(&inext);
 			gtk_text_buffer_apply_tag(expression_edit_buffer(), expression_par_tag, &ipar2, &inext);
+		} else {
+			GtkTextIter inext = icur;
+			gtk_text_iter_forward_char(&inext);
+			gtk_text_buffer_apply_tag(expression_edit_buffer(), expression_par_u_tag, &icur, &inext);
 		}
 	} else {
 		b = (gtk_text_iter_get_char(&icur) == '(');
@@ -553,6 +564,10 @@ void highlight_parentheses() {
 				inext = ipar2;
 				gtk_text_iter_forward_char(&inext);
 				gtk_text_buffer_apply_tag(expression_edit_buffer(), expression_par_tag, &ipar2, &inext);
+			} else if(!at_end) {
+				GtkTextIter inext = icur;
+				gtk_text_iter_forward_char(&inext);
+				gtk_text_buffer_apply_tag(expression_edit_buffer(), expression_par_u_tag, &icur, &inext);
 			}
 		}
 	}
@@ -1119,11 +1134,6 @@ return TRUE;}
 			overwrite_expression_selection(CALCULATOR->getDecimalPoint().c_str());
 			return TRUE;
 		}
-		/*case GDK_KEY_braceleft: {}
-		case GDK_KEY_braceright: {
-			if(expression_in_quotes()) break;
-			return TRUE;
-		}*/
 	}
 	if(state & GDK_CONTROL_MASK && keyval == GDK_KEY_c && !gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
 		copy_result();
@@ -1546,7 +1556,20 @@ gboolean on_expressiontext_button_press_event(GtkWidget*, GdkEventButton *event,
 	return FALSE;
 }
 
-void update_expression_colors(bool initial, bool text_color_set) {
+void set_expression_highlight_background(bool b) {
+	highlight_background = b;
+	update_expression_colors(false, false);
+}
+bool get_expression_highlight_background() {
+	return highlight_background && get_expression_enable_highlight_background();
+}
+bool get_expression_enable_highlight_background() {
+	GdkRGBA c;
+	gtk_style_context_get_color(gtk_widget_get_style_context(expression_edit_widget()), GTK_STATE_FLAG_NORMAL, &c);
+	return c.green < 0.8;
+}
+
+void update_expression_colors(bool initial, bool keep_pars) {
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
 
 	gint scalefactor = gtk_widget_get_scale_factor(GTK_WIDGET(gtk_builder_get_object(main_builder, "expression_button_equals")));
@@ -1584,7 +1607,7 @@ void update_expression_colors(bool initial, bool text_color_set) {
 
 #endif
 
-	if(initial || !text_color_set) {
+	if(initial || !keep_pars) {
 		GdkRGBA c;
 		gtk_style_context_get_color(gtk_widget_get_style_context(expression_edit_widget()), GTK_STATE_FLAG_NORMAL, &c);
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 16
@@ -1595,25 +1618,60 @@ void update_expression_colors(bool initial, bool text_color_set) {
 		}
 #endif
 		GdkRGBA c_par = c;
-		if(c_par.green >= 0.8) {
-			c_par.red /= 1.5;
-			c_par.blue /= 1.5;
+		if(c.green >= 0.8) {
+			c_par.red /= 2;
+			c_par.blue /= 2;
 			c_par.green = 1.0;
 		} else {
-			if(c_par.green >= 0.5) c_par.green = 1.0;
-			else c_par.green += 0.5;
+			if(highlight_background) {
+				c_par.red = 0.7;
+				c_par.green = 0.95;
+				c_par.blue = 0.75;
+			} else {
+				if(c_par.green >= 0.5) c_par.green = 1.0;
+				else if(c_par.green > 0.1) c_par.green += 0.5;
+				else c_par.green = 0.6;
+			}
+		}
+		GdkRGBA c_par_u = c;
+		if(c.green >= 0.8) {
+			c_par_u.red = 1.0;
+			c_par_u.blue /= 2;
+			c_par_u.green /= 2;
+		} else {
+			if(highlight_background) {
+				c_par_u.red = 1;
+				c_par_u.green = 0.8;
+				c_par_u.blue = 0.8;
+			} else {
+				if(c_par_u.red >= 0.5) c_par_u.red = 1.0;
+				else if(c_par_u.red > 0.2) c_par_u.red += 0.5;
+				else c_par_u.red = 0.7;
+			}
 		}
 		if(initial) {
-			PangoLayout *layout_par = gtk_widget_create_pango_layout(expression_edit_widget(), "()");
+			PangoLayout *layout_par = gtk_widget_create_pango_layout(expression_edit_widget(), "(1)");
 			gint w1 = 0, w2 = 0;
 			pango_layout_get_pixel_size(layout_par, &w1, NULL);
-			pango_layout_set_markup(layout_par, "<b>()</b>", -1);
+			pango_layout_set_markup(layout_par, "<b>(</b>1<b>)</b>", -1);
 			pango_layout_get_pixel_size(layout_par, &w2, NULL);
 			g_object_unref(layout_par);
-			if(w1 == w2) expression_par_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar", "foreground-rgba", &c_par, "weight", PANGO_WEIGHT_BOLD, NULL);
-			else expression_par_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar", "foreground-rgba", &c_par, NULL);
+			if(c.green >= 0.8 || !highlight_background) {
+				if(w1 == w2) expression_par_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar", "foreground-rgba", &c_par, "weight", PANGO_WEIGHT_BOLD, NULL);
+				else expression_par_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar", "foreground-rgba", &c_par, NULL);
+				if(w1 == w2) expression_par_u_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar_u", "foreground-rgba", &c_par_u, "weight", PANGO_WEIGHT_BOLD, NULL);
+				else expression_par_u_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar_u", "foreground-rgba", &c_par_u, NULL);
+			} else {
+				if(w1 == w2) expression_par_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar", "background-rgba", &c_par, "weight", PANGO_WEIGHT_BOLD, NULL);
+				else expression_par_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar", "background-rgba", &c_par, NULL);
+				if(w1 == w2) expression_par_u_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar_u", "background-rgba", &c_par_u, "weight", PANGO_WEIGHT_BOLD, NULL);
+				else expression_par_u_tag = gtk_text_buffer_create_tag(expression_edit_buffer(), "curpar_u", "background-rgba", &c_par_u, NULL);
+			}
 		} else {
-			g_object_set(G_OBJECT(expression_par_tag), "foreground-rgba", &c_par, NULL);
+			if(c.green >= 0.8 || !highlight_background) g_object_set(G_OBJECT(expression_par_tag), "foreground-rgba", &c_par, "background-rgba", NULL, NULL);
+			else g_object_set(G_OBJECT(expression_par_tag), "background-rgba", &c_par, "foreground-rgba", NULL, NULL);
+			if(c.green >= 0.8 || !highlight_background) g_object_set(G_OBJECT(expression_par_u_tag), "foreground-rgba", &c_par_u, "background-rgba", NULL, NULL);
+			else g_object_set(G_OBJECT(expression_par_u_tag), "background-rgba", &c_par_u, "foreground-rgba", NULL, NULL);
 		}
 	}
 }
@@ -1649,13 +1707,15 @@ void expression_font_modified() {
 	while(gtk_events_pending()) gtk_main_iteration();
 	set_expression_size_request();
 	set_expression_operator_symbols();
-	PangoLayout *layout_par = gtk_widget_create_pango_layout(expression_edit_widget(), "()");
+	PangoLayout *layout_par = gtk_widget_create_pango_layout(expression_edit_widget(), "(1)");
 	gint w1 = 0, w2 = 0;
 	pango_layout_get_pixel_size(layout_par, &w1, NULL);
-	pango_layout_set_markup(layout_par, "<b>()</b>", -1);
+	pango_layout_set_markup(layout_par, "<b>(</b>1<b>)</b>", -1);
 	pango_layout_get_pixel_size(layout_par, &w2, NULL);
 	if(w1 == w2) g_object_set(expression_par_tag, "weight", PANGO_WEIGHT_BOLD, NULL);
 	else g_object_set(expression_par_tag, "weight", PANGO_WEIGHT_NORMAL, NULL);
+	if(w1 == w2) g_object_set(expression_par_u_tag, "weight", PANGO_WEIGHT_BOLD, NULL);
+	else g_object_set(expression_par_u_tag, "weight", PANGO_WEIGHT_NORMAL, NULL);
 }
 
 void update_expression_font(bool initial) {

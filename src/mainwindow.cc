@@ -1178,6 +1178,13 @@ bool contains_extreme_number(const MathStructure &m) {
 	}
 	return false;
 }
+bool contains_undefined_log(const MathStructure &m) {
+	if(m.isFunction() && m.function()->id() == FUNCTION_ID_LOGN && m.size() == 2 && m[0].isUndefined() && m[1].isNumber()) return true;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_undefined_log(m[i])) return true;
+	}
+	return false;
+}
 
 void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	if(result_blocked() || calculation_blocked()) return;
@@ -1573,10 +1580,21 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		CALCULATOR->beginTemporaryStopMessages();
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode | PARSE_PERCENT_AS_ORDINARY_CONSTANT);
 		CALCULATOR->setSimplifiedPercentageUsed(false);
+		bool function_in_progress = (current_parsed_function() && (int) current_parsed_function_index() < current_parsed_function()->minargs());
+		if(function_in_progress) {
+			GtkTextIter ipos;
+			gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, gtk_text_buffer_get_insert(expression_edit_buffer()));
+			if(!gtk_text_iter_is_end(&ipos)) {
+				gtk_text_iter_forward_char(&ipos);
+				if(!gtk_text_iter_is_end(&ipos)) {
+					function_in_progress = false;
+				}
+			}
+		}
 #ifdef _WIN32
-		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 20, evalops, parsed_mstruct, parsed_tostruct) || parsed_mstruct->contains(m_undefined) || contains_extreme_number(mauto)) {
+		if(function_in_progress || !CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 20, evalops, parsed_mstruct, parsed_tostruct) || contains_undefined_log(*parsed_mstruct) || contains_extreme_number(mauto)) {
 #else
-		if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 50, evalops, parsed_mstruct, parsed_tostruct) || parsed_mstruct->contains(m_undefined) || contains_extreme_number(mauto)) {
+		if(function_in_progress || !CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 50, evalops, parsed_mstruct, parsed_tostruct) || contains_undefined_log(*parsed_mstruct) || contains_extreme_number(mauto)) {
 #endif
 			mauto.setAborted();
 		} else if(do_factors || do_pfe || do_expand) {
@@ -5969,7 +5987,7 @@ void load_preferences() {
 
 	version_numbers[0] = 5;
 	version_numbers[1] = 8;
-	version_numbers[2] = 0;
+	version_numbers[2] = 2;
 
 	if(file) {
 		char line[1000000L];

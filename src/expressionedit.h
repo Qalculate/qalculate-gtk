@@ -22,6 +22,9 @@ void set_expression_font(const char *str);
 const char *expression_font(bool return_default = false);
 void expression_font_modified();
 void set_expression_size_request();
+void set_expression_highlight_background(bool);
+bool get_expression_highlight_background();
+bool get_expression_enable_highlight_background();
 
 GtkWidget *expression_edit_widget();
 GtkTextBuffer *expression_edit_buffer();

@@ -319,10 +319,6 @@ const gchar *key_press_get_symbol(GdkEventKey *event, bool do_caret_as_xor, bool
 		case GDK_KEY_plus: {
 			return "+";
 		}
-		case GDK_KEY_braceleft: {}
-		case GDK_KEY_braceright: {
-			return "";
-		}
 	}
 	return NULL;
 }

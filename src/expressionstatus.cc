@@ -58,7 +58,7 @@ vector<Unit*> current_from_units;
 MathStructure current_status_struct;
 MathStructure mwhere;
 vector<MathStructure> displayed_parsed_to;
-size_t current_function_index = 0;
+size_t current_function_index = 0, current_function_index_true = 0;
 MathFunction *current_function = NULL;
 int block_display_parse = 0;
 extern bool parsed_in_result;
@@ -120,6 +120,9 @@ const string &current_parsed_expression_text() {
 }
 MathFunction *current_parsed_function() {
 	return current_function;
+}
+size_t current_parsed_function_index() {
+	return current_function_index_true;
 }
 
 void block_status() {
@@ -642,6 +645,16 @@ bool expression_output_updated() {
 	return expression_has_changed2;
 }
 
+void replace_control_characters_gtk(string &str) {
+	for(size_t i = 0; i < str.size();) {
+		if((str[i] > 0 && str[i] < 9) || ((str[i] > 13 && str[i] < 32) && str[i] != '\e')) {
+			str.erase(i, 1);
+		} else {
+			i++;
+		}
+	}
+}
+
 void display_parse_status() {
 	current_function = NULL;
 	if(auto_calculate && !rpn_mode && expression_output_updated()) current_status_struct.setAborted();
@@ -702,6 +715,7 @@ void display_parse_status() {
 	}
 	gsub(ID_WRAP_LEFT, LEFT_PARENTHESIS, text);
 	gsub(ID_WRAP_RIGHT, RIGHT_PARENTHESIS, text);
+	replace_control_characters_gtk(text);
 	remove_duplicate_blanks(text);
 	size_t i = text.find_first_of(SPACES);
 	if(i != string::npos) {
@@ -757,6 +771,7 @@ void display_parse_status() {
 	bool b_func = false;
 	if(mfunc.isFunction()) {
 		current_function = mfunc.function();
+		current_function_index_true = mfunc.countChildren();
 		if(mfunc.countChildren() == 0) {
 			current_function_index = 1;
 			b_func = display_function_hint(mfunc.function(), 1);

@@ -560,6 +560,9 @@ void preferences_update_expression_status() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_scale_autocalc_history")), autocalc_history_delay >= 0 && !parsed_in_result);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "label_autocalc_history")), autocalc_history_delay >= 0 && !parsed_in_result);
 }
+void on_preferences_checkbutton_highlight_background_toggled(GtkToggleButton *w, gpointer) {
+	set_expression_highlight_background(gtk_toggle_button_get_active(w));
+}
 extern int gtk_theme;
 void on_preferences_combo_theme_changed(GtkComboBox *w, gpointer) {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
@@ -576,6 +579,10 @@ void on_preferences_combo_theme_changed(GtkComboBox *w, gpointer) {
 		default: {gtk_css_provider_load_from_data(app_provider_theme, "", -1, NULL);}
 	}
 	update_colors(false);
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_highlight_background"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_highlight_background_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_highlight_background")), get_expression_highlight_background());
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(preferences_builder, "preferences_checkbutton_highlight_background"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_preferences_checkbutton_highlight_background_toggled, NULL);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_highlight_background")), get_expression_enable_highlight_background());
 	reload_history();
 	GdkRGBA c;
 	gdk_rgba_parse(&c, text_color.c_str());
@@ -1144,6 +1151,8 @@ GtkWidget* get_preferences_dialog() {
 			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(gtk_builder_get_object(preferences_builder, "preferences_combo_local_currency")), curs[i].c_str());
 			if(curs[i].find(scur) == curs[i].length() - 4) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_local_currency")), i);
 		}
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_highlight_background")), get_expression_highlight_background());
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_highlight_background")), get_expression_enable_highlight_background());
 
 		gtk_builder_add_callback_symbols(preferences_builder, "on_preferences_checkbutton_save_defs_toggled", G_CALLBACK(on_preferences_checkbutton_save_defs_toggled), "on_preferences_checkbutton_clear_history_toggled", G_CALLBACK(on_preferences_checkbutton_clear_history_toggled), "on_preferences_max_history_lines_spin_button_value_changed",
 		G_CALLBACK(on_preferences_max_history_lines_spin_button_value_changed), "on_preferences_checkbutton_save_history_separately_toggled",
@@ -1179,7 +1188,7 @@ GtkWidget* get_preferences_dialog() {
 		"on_colorbutton_status_warning_color_color_set", G_CALLBACK(on_colorbutton_status_warning_color_color_set), "on_colorbutton_status_error_color_color_set", G_CALLBACK(on_colorbutton_status_error_color_color_set), "on_colorbutton_text_color_color_set", G_CALLBACK(on_colorbutton_text_color_color_set), "on_preferences_button_app_font_font_set",
 		G_CALLBACK(on_preferences_button_app_font_font_set), "on_preferences_button_history_font_font_set", G_CALLBACK(on_preferences_button_history_font_font_set), "on_preferences_checkbutton_custom_app_font_toggled", G_CALLBACK(on_preferences_checkbutton_custom_app_font_toggled), "on_preferences_checkbutton_custom_history_font_toggled",
 		G_CALLBACK(on_preferences_checkbutton_custom_history_font_toggled), "on_preferences_checkbutton_disable_cursor_blinking_toggled",
-		G_CALLBACK(on_preferences_checkbutton_disable_cursor_blinking_toggled), NULL);
+		G_CALLBACK(on_preferences_checkbutton_disable_cursor_blinking_toggled), "on_preferences_checkbutton_highlight_background_toggled", G_CALLBACK(on_preferences_checkbutton_highlight_background_toggled), NULL);
 
 		gtk_builder_connect_signals(preferences_builder, NULL);
 

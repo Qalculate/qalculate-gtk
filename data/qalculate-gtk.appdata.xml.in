@@ -50,6 +50,21 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.8.2" date="2025-11-17">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Highlight unmatched parenthesis (with red color)</li>
+      <li>Option to colorize background of highlighted parenthesis when light theme is used</li>
+      <li>New functions: reshape(), circshift(), replacePart()</li>
+      <li>Functions mergevectors() and area() renamed to slice() and part()</li>
+      <li>v[i, ...]=... syntax for assignment of part of matrix/vector variable</li>
+      <li>Improve language handling for functions, units, and variables</li>
+      <li>Limit the range of supported arguments in bessely, besselj, binomial, and igamma functions (to avoid segfault and very slow unabortable calculations)</li>
+      <li>Fix handling of single quotation marks</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.8.1" date="2025-10-27">
    <description>
     <p>Changes:</p>
