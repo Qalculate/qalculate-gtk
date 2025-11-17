@@ -945,7 +945,11 @@ run_function_edit_dialog:
 		string str2 = gstr;
 		g_free(gstr);
 		remove_blank_ends(str2);
+		gsub("{", "\a", str2);
+		gsub("}", "\b", str2);
 		fix_expression(str2);
+		gsub("\a", "{", str2);
+		gsub("\b", "}", str2);
 		if(!(f && f->isBuiltin()) && str2.empty()) {
 			//no expression/relation -- open dialog again
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);

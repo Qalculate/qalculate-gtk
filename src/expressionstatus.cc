@@ -778,6 +778,10 @@ void display_parse_status() {
 		} else {
 			current_function_index = mfunc.countChildren();
 			b_func = display_function_hint(mfunc.function(), mfunc.countChildren());
+			if(mfunc.last().isZero()) {
+				size_t i = str_e.find_last_not_of(SPACES);
+				if(i != string::npos && (str_e[i] == COMMA_CH || str_e[i] == ';')) current_function_index_true--;
+			}
 		}
 	}
 	if(expression_output_updated()) {

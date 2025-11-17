@@ -200,6 +200,7 @@ bool contains_fraction(MathStructure &m, bool in_div = false);
 bool contains_plot_or_save(const std::string &str);
 bool contains_convertible_unit(MathStructure &m);
 bool contains_prefix(const MathStructure &m);
+void fix_expression(std::string &str);
 
 bool test_supsub(GtkWidget *w);
 

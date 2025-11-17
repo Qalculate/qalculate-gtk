@@ -1178,13 +1178,6 @@ bool contains_extreme_number(const MathStructure &m) {
 	}
 	return false;
 }
-bool contains_undefined_log(const MathStructure &m) {
-	if(m.isFunction() && m.function()->id() == FUNCTION_ID_LOGN && m.size() == 2 && m[0].isUndefined() && m[1].isNumber()) return true;
-	for(size_t i = 0; i < m.size(); i++) {
-		if(contains_undefined_log(m[i])) return true;
-	}
-	return false;
-}
 
 void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	if(result_blocked() || calculation_blocked()) return;
@@ -1592,9 +1585,9 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			}
 		}
 #ifdef _WIN32
-		if(function_in_progress || !CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 20, evalops, parsed_mstruct, parsed_tostruct) || contains_undefined_log(*parsed_mstruct) || contains_extreme_number(mauto)) {
+		if(function_in_progress || !CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 20, evalops, parsed_mstruct, parsed_tostruct) || contains_extreme_number(mauto)) {
 #else
-		if(function_in_progress || !CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 50, evalops, parsed_mstruct, parsed_tostruct) || contains_undefined_log(*parsed_mstruct) || contains_extreme_number(mauto)) {
+		if(function_in_progress || !CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 50, evalops, parsed_mstruct, parsed_tostruct) || contains_extreme_number(mauto)) {
 #endif
 			mauto.setAborted();
 		} else if(do_factors || do_pfe || do_expand) {
@@ -4422,11 +4415,11 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					b = false;
 				}
 				if(b) {
-					if(expr.find("\\") == string::npos) {
-						gsub("x", "\\x", expr);
-						gsub("y", "\\y", expr);
-						gsub("z", "\\z", expr);
-					}
+					gsub("{", "\a", expr);
+					gsub("}", "\b", expr);
+					fix_expression(expr);
+					gsub("\a", "{", expr);
+					gsub("\b", "}", expr);
 					if(f && f->isLocal() && f->subtype() == SUBTYPE_USER_FUNCTION) {
 						((UserFunction*) f)->setFormula(expr);
 						if(f->countNames() == 0) {
