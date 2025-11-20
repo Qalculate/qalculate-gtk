@@ -16,12 +16,14 @@ noinst_DATA = argumentrules.ui buttonsedit.ui calendarconversion.ui csvexport.ui
 desktop_IN_FILES = qalculate-gtk.desktop.in
 desktop_DATA = $(desktop_IN_FILES:.desktop.in=.desktop)
 desktopdir = $(datadir)/applications
-@INTLTOOL_DESKTOP_RULE@
+qalculate-gtk.desktop: qalculate-gtk.desktop.in
+	$(AM_V_GEN) $(MSGFMT) --desktop --template $< -d $(top_srcdir)/po -o $@
 
 appdata_IN_FILES = qalculate-gtk.appdata.xml.in
 appdata_DATA = $(appdata_IN_FILES:.xml.in=.xml)
 appdatadir = $(datadir)/metainfo
-@INTLTOOL_XML_RULE@
+qalculate-gtk.appdata.xml: qalculate-gtk.appdata.xml.in
+	$(AM_V_GEN) $(MSGFMT) --xml --template $< -d $(top_srcdir)/po -o $@
 
 if ENABLE_SEARCH_PROVIDER
 searchproviderdata_DATA = io.github.Qalculate.search-provider.ini
