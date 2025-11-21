@@ -9,6 +9,7 @@ noinst_DATA = argumentrules.ui buttonsedit.ui calendarconversion.ui csvexport.ui
 	nbases.ui shortcuts.ui setbase.ui percentage.ui periodictable.ui plot.ui precision.ui preferences.ui \
 	unitedit.ui units.ui unknownedit.ui variableedit.ui variables.ui \
 	flags.gresource.xml ui.gresource.xml $(top_srcdir)/data/flags/*.png \
+	qalculate-gtk.noinst.appdata.xml \
 	org.gnome.ShellSearchProvider2.xml io.github.Qalculate.search-provider.ini
 
 # this is for gnome
@@ -23,7 +24,12 @@ appdata_IN_FILES = qalculate-gtk.appdata.xml.in
 appdata_DATA = $(appdata_IN_FILES:.xml.in=.xml)
 appdatadir = $(datadir)/metainfo
 qalculate-gtk.appdata.xml: qalculate-gtk.appdata.xml.in
-	$(AM_V_GEN) $(MSGFMT) --xml --template $< -d $(top_srcdir)/po -o $@
+	$(AM_V_GEN)GETTEXTDATADIRS=$(srcdir) $(MSGFMT) --xml --template $< -d $(top_srcdir)/po -o $@
+
+qalculate-gtk.noinst.appdata.xml: qalculate-gtk.appdata.xml.in
+	$(AM_V_GEN)sed '/<releases>/,/<\/releases>/d' $< >$@
+
+all: qalculate-gtk.noinst.appdata.xml.in
 
 if ENABLE_SEARCH_PROVIDER
 searchproviderdata_DATA = io.github.Qalculate.search-provider.ini
