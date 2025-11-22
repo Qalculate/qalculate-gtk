@@ -7,36 +7,41 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate 3.16\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-11 20:24+0100\n"
+"Report-Msgid-Bugs-To: https://github.com/Qalculate/qalculate-gtk/issues\n"
+"POT-Creation-Date: 2025-11-22 08:52+0100\n"
 "PO-Revision-Date: 2021-08-23 16:48+0800\n"
 "Last-Translator: tuberry <orzun@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <orzun@foxmail.com>\n"
-"Language: zh_CHS\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 "X-Generator: Gtranslator 40.0\n"
 
-#: ../data/qalculate-gtk.desktop.in.h:1
+#: data/qalculate-gtk.desktop.in:3 src/mainwindow.cc:8456
+#: src/mainwindow.cc:8463
+msgid "Qalculate!"
+msgstr "Qalculate!"
+
+#: data/qalculate-gtk.desktop.in:4
 msgid "Calculator"
 msgstr "计算器"
 
-#: ../data/qalculate-gtk.desktop.in.h:2
-#: ../data/qalculate-gtk.appdata.xml.in.h:2 ../src/mainwindow.cc:7064
+#: data/qalculate-gtk.desktop.in:5 data/qalculate-gtk.noinst.appdata.xml:8
+#: src/mainwindow.cc:7075
 msgid "Powerful and easy to use calculator"
 msgstr "强大而易用的计算器"
 
-#: ../data/qalculate-gtk.desktop.in.h:3
+#: data/qalculate-gtk.desktop.in:14
 msgid "calculation;arithmetic;scientific;financial;"
 msgstr "计算;算术;科学;金融;"
 
-#: ../data/qalculate-gtk.appdata.xml.in.h:1
+#: data/qalculate-gtk.noinst.appdata.xml:7
 msgid "Qalculate! (GTK UI)"
 msgstr "Qalculate! (GTK UI)"
 
-#: ../data/qalculate-gtk.appdata.xml.in.h:3
+#: data/qalculate-gtk.noinst.appdata.xml:10
 msgid ""
 "Qalculate! is a multi-purpose cross-platform desktop calculator. It is "
 "simple to use but provides power and versatility normally reserved for "
@@ -46,7 +51,7 @@ msgstr ""
 "Qalculate!是一款多功能的跨平台桌面计算器。它既简单易用又能提供复杂数学软件通"
 "常所具有的功用，以及满足日常所需的实用工具(如货币换算和百分比计算)。"
 
-#: ../data/qalculate-gtk.appdata.xml.in.h:4
+#: data/qalculate-gtk.noinst.appdata.xml:16
 msgid ""
 "Features include a large library of customizable functions, unit "
 "calculations and conversion, physical constants, symbolic calculations "
@@ -56,644 +61,640 @@ msgstr ""
 "功能包括庞大的可定制函数库、单位计算与换算、物理常数、符号计算(包含积分和方"
 "程)、高精度计算、误差传递、区间运算、作图和用户友好的界面。"
 
-#: ../data/argumentrules.ui.h:1 ../data/functionedit.ui.h:25
+#: data/qalculate-gtk.noinst.appdata.xml:26
+msgid "The main window with history visible"
+msgstr ""
+
+#: data/qalculate-gtk.noinst.appdata.xml:30
+msgid "The main window with keypad visible"
+msgstr ""
+
+#: data/argumentrules.ui:22 data/functionedit.ui:618
 msgid "Argument Rules"
 msgstr "参数规则"
 
-#: ../data/argumentrules.ui.h:2 ../data/buttonsedit.ui.h:9
-#: ../data/csvexport.ui.h:2 ../data/csvimport.ui.h:2 ../data/datasetedit.ui.h:2
-#: ../data/datasets.ui.h:2 ../data/functionedit.ui.h:3 ../data/matrix.ui.h:2
-#: ../data/matrixedit.ui.h:3 ../data/shortcuts.ui.h:7 ../data/unitedit.ui.h:3
-#: ../data/unknownedit.ui.h:3 ../data/variableedit.ui.h:3
-#: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
-#: ../src/expressionedit.cc:1327 ../src/historyview.cc:2826
-#: ../src/historyview.cc:2924 ../src/historyview.cc:2969
-#: ../src/importcsvdialog.cc:49 ../src/importcsvdialog.cc:51
-#: ../src/insertfunctiondialog.cc:65 ../src/insertfunctiondialog.cc:108
-#: ../src/insertfunctiondialog.cc:110 ../src/insertfunctiondialog.cc:973
-#: ../src/insertfunctiondialog.cc:1081 ../src/mainwindow.cc:717
-#: ../src/mainwindow.cc:6766 ../src/mainwindow.cc:6768
-#: ../src/mainwindow.cc:7732 ../src/matrixdialog.cc:389 ../src/menubar.cc:1217
-#: ../src/menubar.cc:1258 ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
-#: ../src/resultview.cc:548 ../src/resultview.cc:550
+#: data/argumentrules.ui:37 data/buttonsedit.ui:244 data/csvexport.ui:23
+#: data/csvimport.ui:31 data/datasetedit.ui:23 data/datasetedit.ui:332
+#: data/datasets.ui:24 data/functionedit.ui:38 data/functionedit.ui:633
+#: data/matrix.ui:40 data/matrixedit.ui:53 data/shortcuts.ui:175
+#: data/unitedit.ui:59 data/unknownedit.ui:38 data/variableedit.ui:38
+#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47
+#: src/expressionedit.cc:1327 src/historyview.cc:2826 src/historyview.cc:2924
+#: src/historyview.cc:2969 src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
+#: src/insertfunctiondialog.cc:65 src/insertfunctiondialog.cc:108
+#: src/insertfunctiondialog.cc:110 src/insertfunctiondialog.cc:973
+#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:717
+#: src/mainwindow.cc:6777 src/mainwindow.cc:6779 src/mainwindow.cc:7743
+#: src/matrixdialog.cc:389 src/menubar.cc:1217 src/menubar.cc:1258
+#: src/plotdialog.cc:378 src/plotdialog.cc:380 src/resultview.cc:548
+#: src/resultview.cc:550
 msgid "_Cancel"
 msgstr "取消(_C)"
 
-#: ../data/argumentrules.ui.h:3 ../data/buttonsedit.ui.h:10
-#: ../data/csvexport.ui.h:3 ../data/csvimport.ui.h:4 ../data/datasetedit.ui.h:3
-#: ../data/datasets.ui.h:3 ../data/functionedit.ui.h:4
-#: ../data/matrixedit.ui.h:4 ../data/shortcuts.ui.h:9 ../data/unitedit.ui.h:4
-#: ../data/unknownedit.ui.h:4 ../data/variableedit.ui.h:4
-#: ../src/expressionedit.cc:1327 ../src/historyview.cc:2826
-#: ../src/historyview.cc:2924 ../src/historyview.cc:2969
-#: ../src/insertfunctiondialog.cc:65 ../src/insertfunctiondialog.cc:973
-#: ../src/insertfunctiondialog.cc:1081 ../src/mainwindow.cc:717
-#: ../src/mainwindow.cc:810 ../src/mainwindow.cc:881 ../src/mainwindow.cc:936
-#: ../src/mainwindow.cc:1017 ../src/mainwindow.cc:1073
-#: ../src/mainwindow.cc:7732
+#: data/argumentrules.ui:52 data/buttonsedit.ui:259 data/csvexport.ui:38
+#: data/csvimport.ui:47 data/datasetedit.ui:38 data/datasetedit.ui:347
+#: data/datasets.ui:39 data/functionedit.ui:53 data/functionedit.ui:654
+#: data/matrixedit.ui:68 data/shortcuts.ui:205 data/unitedit.ui:74
+#: data/unknownedit.ui:53 data/variableedit.ui:53 src/expressionedit.cc:1327
+#: src/historyview.cc:2826 src/historyview.cc:2924 src/historyview.cc:2969
+#: src/insertfunctiondialog.cc:65 src/insertfunctiondialog.cc:973
+#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:717 src/mainwindow.cc:810
+#: src/mainwindow.cc:881 src/mainwindow.cc:936 src/mainwindow.cc:1017
+#: src/mainwindow.cc:1073 src/mainwindow.cc:7743
 msgid "_OK"
 msgstr "确定(_O)"
 
-#: ../data/argumentrules.ui.h:4 ../data/buttonsedit.ui.h:12
-#: ../data/shortcuts.ui.h:11
+#: data/argumentrules.ui:85 data/buttonsedit.ui:337 data/shortcuts.ui:283
 msgid "Argument name"
 msgstr "参数名"
 
-#: ../data/argumentrules.ui.h:5
+#: data/argumentrules.ui:102
 msgid "Free"
 msgstr "任意"
 
-#: ../data/argumentrules.ui.h:6 ../data/datasetedit.ui.h:15 ../data/main.ui.h:7
-#: ../data/unknownedit.ui.h:9
+#: data/argumentrules.ui:103 data/datasetedit.ui:213 data/main.ui:277
+#: data/main.ui:430 data/main.ui:578 data/main.ui:2406 data/unknownedit.ui:144
 msgid "Number"
 msgstr "数字"
 
-#: ../data/argumentrules.ui.h:7 ../data/main.ui.h:11
-#: ../data/unknownedit.ui.h:12
+#: data/argumentrules.ui:104 data/main.ui:312 data/main.ui:465 data/main.ui:613
+#: data/main.ui:2445 data/unknownedit.ui:147
 msgid "Integer"
 msgstr "整数"
 
-#: ../data/argumentrules.ui.h:8
+#: data/argumentrules.ui:105
 msgid "Symbol"
 msgstr "符号"
 
-#: ../data/argumentrules.ui.h:9 ../data/datasetedit.ui.h:14
+#: data/argumentrules.ui:106 data/datasetedit.ui:212
 msgid "Text"
 msgstr "文本"
 
-#: ../data/argumentrules.ui.h:10
+#: data/argumentrules.ui:107
 msgid "Date"
 msgstr "日期"
 
-#: ../data/argumentrules.ui.h:11 ../data/main.ui.h:22 ../data/matrix.ui.h:10
-#: ../data/matrixedit.ui.h:12 ../src/matrixdialog.cc:392
+#: data/argumentrules.ui:108 data/main.ui:747 data/matrix.ui:204
+#: data/matrixedit.ui:271 src/matrixdialog.cc:392
 msgid "Vector"
 msgstr "向量"
 
-#: ../data/argumentrules.ui.h:12 ../data/csvimport.ui.h:13 ../data/main.ui.h:21
-#: ../data/matrix.ui.h:1 ../data/matrixedit.ui.h:10 ../src/matrixdialog.cc:394
+#: data/argumentrules.ui:109 data/csvimport.ui:173 data/main.ui:738
+#: data/matrix.ui:24 data/matrix.ui:186 data/matrixedit.ui:252
+#: src/matrixdialog.cc:394
 msgid "Matrix"
 msgstr "矩阵"
 
-#: ../data/argumentrules.ui.h:13
+#: data/argumentrules.ui:110
 msgid "Positive number"
 msgstr "正数"
 
-#: ../data/argumentrules.ui.h:14
+#: data/argumentrules.ui:111
 msgid "Non-zero number"
 msgstr "非零数"
 
-#: ../data/argumentrules.ui.h:15
+#: data/argumentrules.ui:112
 msgid "Non-negative number"
 msgstr "非负数"
 
-#: ../data/argumentrules.ui.h:16
+#: data/argumentrules.ui:113
 msgid "Positive integer"
 msgstr "正整数"
 
-#: ../data/argumentrules.ui.h:17
+#: data/argumentrules.ui:114
 msgid "Non-zero integer"
 msgstr "非零整数"
 
-#: ../data/argumentrules.ui.h:18
+#: data/argumentrules.ui:115
 msgid "Non-negative integer"
 msgstr "非负整数"
 
-#: ../data/argumentrules.ui.h:19 ../data/main.ui.h:12
-#: ../data/unknownedit.ui.h:13
+#: data/argumentrules.ui:116 data/main.ui:321 data/main.ui:474 data/main.ui:622
+#: data/main.ui:2455 data/unknownedit.ui:148
 msgid "Boolean"
 msgstr "布尔值"
 
-#: ../data/argumentrules.ui.h:20 ../src/dataseteditdialog.cc:478
+#: data/argumentrules.ui:117 src/dataseteditdialog.cc:478
 msgid "Object"
 msgstr "对象"
 
-#: ../data/argumentrules.ui.h:21 ../data/datasetedit.ui.h:35
-#: ../data/main.ui.h:24 ../data/plot.ui.h:9 ../src/functionsdialog.cc:579
+#: data/argumentrules.ui:118 data/datasetedit.ui:765 data/main.ui:765
+#: data/plot.ui:235 src/functionsdialog.cc:579
 msgid "Function"
 msgstr "函数"
 
-#: ../data/argumentrules.ui.h:22 ../data/main.ui.h:26
+#: data/argumentrules.ui:119 data/main.ui:783 data/main.ui:4437
 msgid "Unit"
 msgstr "单位"
 
-#: ../data/argumentrules.ui.h:23 ../data/main.ui.h:20
-#: ../src/variablesdialog.cc:529
+#: data/argumentrules.ui:120 data/main.ui:729 src/variablesdialog.cc:529
 msgid "Variable"
 msgstr "变量"
 
-#: ../data/argumentrules.ui.h:24 ../data/csvexport.ui.h:12
-#: ../data/csvimport.ui.h:6
+#: data/argumentrules.ui:121 data/csvexport.ui:162 data/csvimport.ui:82
 msgid "File"
 msgstr "文件"
 
-#: ../data/argumentrules.ui.h:25
+#: data/argumentrules.ui:122
 msgid "Angle"
 msgstr "角度"
 
-#: ../data/argumentrules.ui.h:26 ../src/expressioncompletion.cc:1047
+#: data/argumentrules.ui:123 src/expressioncompletion.cc:1047
 msgid "Data object"
 msgstr "数据对象"
 
-#: ../data/argumentrules.ui.h:27
+#: data/argumentrules.ui:124
 msgid "Data property"
 msgstr "数据属性"
 
-#: ../data/argumentrules.ui.h:28
+#: data/argumentrules.ui:136
 msgid "Enable rules and type test"
 msgstr "启用规则和类型测试"
 
-#: ../data/argumentrules.ui.h:29
+#: data/argumentrules.ui:154
 msgid "Custom condition"
 msgstr "自定义条件"
 
-#: ../data/argumentrules.ui.h:30
+#: data/argumentrules.ui:173
 msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
 msgstr "例如，若参数必须是一个有相同数量行和列的矩阵：rows(\\x) = columns(\\x)"
 
-#: ../data/argumentrules.ui.h:31
+#: data/argumentrules.ui:186
 msgid "Allow matrix"
 msgstr "允许矩阵"
 
-#: ../data/argumentrules.ui.h:32
+#: data/argumentrules.ui:203
 msgid "Forbid zero"
 msgstr "禁用零"
 
-#: ../data/argumentrules.ui.h:33
+#: data/argumentrules.ui:219
 msgid "Handle vector"
 msgstr "处理向量"
 
-#: ../data/argumentrules.ui.h:34
+#: data/argumentrules.ui:223
 msgid "Calculate function for each separate element in vector."
 msgstr "对向量中每个单独元素计算函数。"
 
-#: ../data/argumentrules.ui.h:35
+#: data/argumentrules.ui:236
 msgid "Min"
 msgstr "最小"
 
-#: ../data/argumentrules.ui.h:36
+#: data/argumentrules.ui:252 data/argumentrules.ui:306
 msgid "Include equals"
 msgstr "包含等于"
 
-#: ../data/argumentrules.ui.h:37
+#: data/argumentrules.ui:290
 msgid "Max"
 msgstr "最大"
 
-#: ../data/argumentrules.ui.h:38 ../data/unknownedit.ui.h:7
-#: ../src/dataseteditdialog.cc:230 ../src/functioneditdialog.cc:450
+#: data/argumentrules.ui:347 data/unknownedit.ui:119
+#: src/dataseteditdialog.cc:230 src/functioneditdialog.cc:450
 msgid "Type"
 msgstr "类型"
 
-#: ../data/argumentrules.ui.h:39 ../data/csvimport.ui.h:8
-#: ../data/datasetedit.ui.h:4 ../data/functionedit.ui.h:5
-#: ../data/matrixedit.ui.h:5 ../data/unitedit.ui.h:5 ../data/unknownedit.ui.h:5
-#: ../data/variableedit.ui.h:5 ../src/conversionview.cc:508
-#: ../src/dataseteditdialog.cc:227 ../src/functioneditdialog.cc:444
-#: ../src/historyview.cc:2931 ../src/menubar.cc:1224
-#: ../src/nameseditdialog.cc:155 ../src/unitsdialog.cc:1008
+#: data/argumentrules.ui:359 data/csvimport.ui:106 data/datasetedit.ui:72
+#: data/datasetedit.ui:656 data/functionedit.ui:93 data/matrixedit.ui:107
+#: data/unitedit.ui:113 data/unknownedit.ui:88 data/variableedit.ui:92
+#: src/conversionview.cc:508 src/dataseteditdialog.cc:227
+#: src/functioneditdialog.cc:444 src/historyview.cc:2931 src/menubar.cc:1224
+#: src/nameseditdialog.cc:155 src/unitsdialog.cc:1008
 msgid "Name"
 msgstr "名称"
 
-#: ../data/buttonsedit.ui.h:1 ../data/main.ui.h:65
+#: data/buttonsedit.ui:10 data/main.ui:1162
 msgid "Customize Keypad Buttons"
 msgstr "自定义键盘按钮"
 
-#: ../data/buttonsedit.ui.h:2 ../data/calendarconversion.ui.h:2
-#: ../data/datasets.ui.h:5 ../data/decimals.ui.h:2 ../data/floatingpoint.ui.h:2
-#: ../data/functions.ui.h:2 ../data/namesedit.ui.h:2 ../data/nbases.ui.h:2
-#: ../data/percentage.ui.h:5 ../data/plot.ui.h:5 ../data/precision.ui.h:2
-#: ../data/preferences.ui.h:2 ../data/setbase.ui.h:2 ../data/shortcuts.ui.h:2
-#: ../data/units.ui.h:2 ../data/variables.ui.h:2 ../src/historyview.cc:2791
-#: ../src/insertfunctiondialog.cc:448 ../src/mainwindow.cc:721
-#: ../src/mainwindow.cc:722 ../src/mainwindow.cc:724 ../src/matrixdialog.cc:381
-#: ../src/periodictabledialog.cc:86
+#: data/buttonsedit.ui:25 data/calendarconversion.ui:26 data/datasets.ui:129
+#: data/decimals.ui:45 data/floatingpoint.ui:27 data/functions.ui:24
+#: data/namesedit.ui:24 data/nbases.ui:24 data/percentage.ui:56 data/plot.ui:99
+#: data/precision.ui:31 data/preferences.ui:98 data/setbase.ui:38
+#: data/shortcuts.ui:25 data/units.ui:26 data/variables.ui:24
+#: src/historyview.cc:2791 src/insertfunctiondialog.cc:448
+#: src/mainwindow.cc:721 src/mainwindow.cc:722 src/mainwindow.cc:724
+#: src/matrixdialog.cc:381 src/periodictabledialog.cc:86
 msgid "_Close"
 msgstr "关闭(_C)"
 
-#: ../data/buttonsedit.ui.h:3 ../src/buttonseditdialog.cc:418
+#: data/buttonsedit.ui:70 src/buttonseditdialog.cc:418
 msgid "Label"
 msgstr "标签"
 
-#: ../data/buttonsedit.ui.h:4 ../src/buttonseditdialog.cc:421
+#: data/buttonsedit.ui:107 src/buttonseditdialog.cc:421
 msgid "Left-click"
 msgstr "左键"
 
-#: ../data/buttonsedit.ui.h:5 ../src/buttonseditdialog.cc:424
+#: data/buttonsedit.ui:123 src/buttonseditdialog.cc:424
 msgid "Right-click"
 msgstr "右键"
 
-#: ../data/buttonsedit.ui.h:6 ../src/buttonseditdialog.cc:427
+#: data/buttonsedit.ui:139 src/buttonseditdialog.cc:427
 msgid "Middle-click"
 msgstr "中键"
 
-#: ../data/buttonsedit.ui.h:7
+#: data/buttonsedit.ui:165
 msgid "Reset"
 msgstr "重置"
 
-#: ../data/buttonsedit.ui.h:8
+#: data/buttonsedit.ui:228
 msgid "Button Action"
 msgstr "按钮动作"
 
-#: ../data/buttonsedit.ui.h:11 ../data/floatingpoint.ui.h:3
-#: ../data/shortcuts.ui.h:10 ../data/variableedit.ui.h:7
-#: ../src/insertfunctiondialog.cc:512 ../src/shortcutsdialog.cc:579
-#: ../src/stackview.cc:800
+#: data/buttonsedit.ui:321 data/floatingpoint.ui:62 data/shortcuts.ui:267
+#: data/variableedit.ui:122 src/insertfunctiondialog.cc:512
+#: src/shortcutsdialog.cc:579 src/stackview.cc:800
 msgid "Value"
 msgstr "值"
 
-#: ../data/calendarconversion.ui.h:1 ../data/main.ui.h:39
+#: data/calendarconversion.ui:8 data/main.ui:899
 msgid "Calendar Conversion"
 msgstr "日历换算"
 
-#: ../data/csvexport.ui.h:1
+#: data/csvexport.ui:8
 msgid "Export CSV File"
 msgstr "导出CSV文件"
 
-#: ../data/csvexport.ui.h:4
+#: data/csvexport.ui:69
 msgid "Current result"
 msgstr "当前结果"
 
-#: ../data/csvexport.ui.h:5
+#: data/csvexport.ui:85
 msgid "Matrix/vector variable"
 msgstr "矩阵/向量变量"
 
-#: ../data/csvexport.ui.h:6 ../data/csvimport.ui.h:20
+#: data/csvexport.ui:104 data/csvimport.ui:262
 msgid "Delimiter"
 msgstr "分隔符"
 
-#: ../data/csvexport.ui.h:7 ../data/csvimport.ui.h:24
+#: data/csvexport.ui:130 data/csvimport.ui:293
 msgid "Comma"
 msgstr "逗号"
 
-#: ../data/csvexport.ui.h:8 ../data/csvimport.ui.h:25
+#: data/csvexport.ui:131 data/csvimport.ui:294
 msgid "Tabulator"
 msgstr "制表符"
 
-#: ../data/csvexport.ui.h:9 ../data/csvimport.ui.h:26
+#: data/csvexport.ui:132 data/csvimport.ui:295
 msgid "Semicolon"
 msgstr "分号"
 
-#: ../data/csvexport.ui.h:10 ../data/csvimport.ui.h:27
+#: data/csvexport.ui:133 data/csvimport.ui:296
 msgid "Space"
 msgstr "空格"
 
-#: ../data/csvexport.ui.h:11 ../data/csvimport.ui.h:28
+#: data/csvexport.ui:134 data/csvimport.ui:297
 msgid "Other"
 msgstr "其他"
 
-#: ../data/csvimport.ui.h:1
+#: data/csvimport.ui:15
 msgid "Import CSV File"
 msgstr "导入CSV文件"
 
-#: ../data/csvimport.ui.h:3
+#: data/csvimport.ui:36
 msgid "Do not import the file"
 msgstr "不导入文件"
 
-#: ../data/csvimport.ui.h:5
+#: data/csvimport.ui:52
 msgid "Import the file"
 msgstr "导入文件"
 
-#: ../data/csvimport.ui.h:7
+#: data/csvimport.ui:94
 msgid "Import as"
 msgstr "导入为"
 
-#: ../data/csvimport.ui.h:9 ../data/datasetedit.ui.h:5
-#: ../data/functionedit.ui.h:19 ../data/matrixedit.ui.h:20
-#: ../data/unitedit.ui.h:7 ../data/variableedit.ui.h:13
+#: data/csvimport.ui:118 data/datasetedit.ui:84 data/datasetedit.ui:386
+#: data/functionedit.ui:479 data/matrixedit.ui:454 data/unitedit.ui:137
+#: data/variableedit.ui:250
 msgid "Descriptive name"
 msgstr "描述性名称"
 
-#: ../data/csvimport.ui.h:10 ../data/functionedit.ui.h:18 ../data/main.ui.h:251
-#: ../data/matrixedit.ui.h:18 ../data/unitedit.ui.h:6
-#: ../data/variableedit.ui.h:11 ../src/conversionview.cc:519
-#: ../src/functionsdialog.cc:593 ../src/unitsdialog.cc:1022
-#: ../src/variablesdialog.cc:543
+#: data/csvimport.ui:130 data/functionedit.ui:449 data/main.ui:4389
+#: data/matrixedit.ui:425 data/unitedit.ui:125 data/variableedit.ui:223
+#: src/conversionview.cc:519 src/functionsdialog.cc:593 src/unitsdialog.cc:1022
+#: src/variablesdialog.cc:543
 msgid "Category"
 msgstr "类别"
 
-#: ../data/csvimport.ui.h:11
+#: data/csvimport.ui:142
 msgid "First row"
 msgstr "第一行"
 
-#: ../data/csvimport.ui.h:12
+#: data/csvimport.ui:153
 msgid "Name of the data file to import"
 msgstr "要导入的数据文件的名称"
 
-#: ../data/csvimport.ui.h:14
+#: data/csvimport.ui:177
 msgid "If a matrix shall be generated from the contents of the file"
 msgstr "若要从文件内容生成矩阵或向量"
 
-#: ../data/csvimport.ui.h:15
+#: data/csvimport.ui:191
 msgid "Vectors"
 msgstr "向量"
 
-#: ../data/csvimport.ui.h:16
+#: data/csvimport.ui:195
 msgid "If vectors shall be generated from the contents of the file"
 msgstr "若要从文件内容生成矩阵或向量"
 
-#: ../data/csvimport.ui.h:17
+#: data/csvimport.ui:217
 msgid ""
 "Name (or name prefix) used to reference generated variable(s) in expressions"
 msgstr "用于引用表达式中生成的变量名(或名称前缀)"
 
-#: ../data/csvimport.ui.h:18 ../data/matrixedit.ui.h:21
-#: ../data/variableedit.ui.h:12
+#: data/csvimport.ui:232 data/matrixedit.ui:465 data/variableedit.ui:234
 msgid "Title displayed in menus and in variable manager"
 msgstr "菜单和变量管理器中显示的名称"
 
-#: ../data/csvimport.ui.h:19
+#: data/csvimport.ui:245
 msgid "The first row with data to import in the file"
 msgstr "文件中要导入数据的第一行"
 
-#: ../data/csvimport.ui.h:21
+#: data/csvimport.ui:271
 msgid "Includes headings"
 msgstr "包括标题"
 
-#: ../data/csvimport.ui.h:22
+#: data/csvimport.ui:275
 msgid "If the first row contains column headings"
 msgstr "若第一行包含列标题"
 
-#: ../data/csvimport.ui.h:23
+#: data/csvimport.ui:290
 msgid "Delimiter used to separate columns in the file"
 msgstr "文件中用于分隔列的分隔符"
 
-#: ../data/csvimport.ui.h:29
+#: data/csvimport.ui:311
 msgid "Custom delimiter"
 msgstr "自定义分隔符"
 
-#: ../data/datasetedit.ui.h:1
+#: data/datasetedit.ui:8
 msgid "Edit Data Property"
 msgstr "编辑数据属性"
 
-#: ../data/datasetedit.ui.h:6 ../data/functionedit.ui.h:23
-#: ../data/matrixedit.ui.h:22 ../data/unitedit.ui.h:9
-#: ../data/variableedit.ui.h:14
+#: data/datasetedit.ui:96 data/datasetedit.ui:410 data/functionedit.ui:522
+#: data/functionedit.ui:593 data/matrixedit.ui:480 data/matrixedit.ui:502
+#: data/unitedit.ui:161 data/variableedit.ui:262 data/variableedit.ui:327
 msgid "Description"
 msgstr "描述"
 
-#: ../data/datasetedit.ui.h:7
+#: data/datasetedit.ui:108
 msgid "Value Type"
 msgstr "值类型"
 
-#: ../data/datasetedit.ui.h:8
+#: data/datasetedit.ui:117
 msgid "Use as key"
 msgstr "用作键"
 
-#: ../data/datasetedit.ui.h:9
+#: data/datasetedit.ui:133
 msgid "Case sensitive value"
 msgstr "区分大小写的值"
 
-#: ../data/datasetedit.ui.h:10
+#: data/datasetedit.ui:149
 msgid "Approximate value"
 msgstr "近似值"
 
-#: ../data/datasetedit.ui.h:11
+#: data/datasetedit.ui:165
 msgid "Value uses brackets"
 msgstr "值使用括号"
 
-#: ../data/datasetedit.ui.h:12
+#: data/datasetedit.ui:180
 msgid "Hide"
 msgstr "隐藏"
 
-#: ../data/datasetedit.ui.h:13 ../data/main.ui.h:249
+#: data/datasetedit.ui:199 data/main.ui:4345
 msgid "Unit expression"
 msgstr "单位表达式"
 
-#: ../data/datasetedit.ui.h:16 ../data/functionedit.ui.h:8 ../data/plot.ui.h:8
-#: ../src/functioneditdialog.cc:470 ../src/plotdialog.cc:776
+#: data/datasetedit.ui:214 data/functionedit.ui:149 data/functionedit.ui:689
+#: data/plot.ui:197 src/functioneditdialog.cc:470 src/plotdialog.cc:776
 msgid "Expression"
 msgstr "表达式"
 
-#: ../data/datasetedit.ui.h:17
+#: data/datasetedit.ui:242
 msgid "Name used for reference"
 msgstr "引用名称"
 
-#: ../data/datasetedit.ui.h:18
+#: data/datasetedit.ui:259 data/datasetedit.ui:479
 msgid "Title displayed in menus and in data set manager"
 msgstr "菜单和数据集管理器中显示的标题"
 
-#: ../data/datasetedit.ui.h:19
+#: data/datasetedit.ui:279 data/datasetedit.ui:285
 msgid "Description of this data property"
 msgstr "此数据属性的说明"
 
-#: ../data/datasetedit.ui.h:20 ../src/dataseteditdialog.cc:364
+#: data/datasetedit.ui:317 src/dataseteditdialog.cc:364
 msgid "Edit Data Set"
 msgstr "编辑数据集"
 
-#: ../data/datasetedit.ui.h:21
+#: data/datasetedit.ui:398
 msgid "Data file"
 msgstr "数据文件"
 
-#: ../data/datasetedit.ui.h:22
+#: data/datasetedit.ui:422
 msgid "Copyright"
 msgstr "版权"
 
-#: ../data/datasetedit.ui.h:23
+#: data/datasetedit.ui:462
 msgid "Description of this data set"
 msgstr "此数据集的说明"
 
-#: ../data/datasetedit.ui.h:24 ../data/unitedit.ui.h:16
+#: data/datasetedit.ui:517 data/unitedit.ui:293
 msgid "General"
 msgstr "通用"
 
-#: ../data/datasetedit.ui.h:25
+#: data/datasetedit.ui:535
 msgid "Properties:"
 msgstr "属性:"
 
-#: ../data/datasetedit.ui.h:26
+#: data/datasetedit.ui:553
 msgid "Definition of the properties of this data set"
 msgstr "此数据集的属性定义"
 
-#: ../data/datasetedit.ui.h:27 ../data/functions.ui.h:6 ../data/main.ui.h:19
-#: ../data/units.ui.h:11 ../data/variables.ui.h:6
+#: data/datasetedit.ui:574 data/functions.ui:258 data/main.ui:720
+#: data/units.ui:452 data/variables.ui:261
 msgid "_New"
 msgstr "新建(_N)"
 
-#: ../data/datasetedit.ui.h:28 ../data/functionedit.ui.h:14
-#: ../data/functions.ui.h:8 ../data/main.ui.h:44 ../data/namesedit.ui.h:4
-#: ../data/shortcuts.ui.h:4 ../data/units.ui.h:13 ../data/variables.ui.h:8
+#: data/datasetedit.ui:590 data/functionedit.ui:271 data/functionedit.ui:374
+#: data/functions.ui:275 data/main.ui:959 data/namesedit.ui:101
+#: data/shortcuts.ui:103 data/units.ui:469 data/variables.ui:278
 msgid "_Edit"
 msgstr "编辑(_E)"
 
-#: ../data/datasetedit.ui.h:29 ../data/functions.ui.h:10 ../data/units.ui.h:15
-#: ../data/variables.ui.h:10 ../src/menubar.cc:1258
+#: data/datasetedit.ui:606 data/functions.ui:292 data/units.ui:486
+#: data/variables.ui:295 src/menubar.cc:1258
 msgid "_Delete"
 msgstr "删除(_D)"
 
-#: ../data/datasetedit.ui.h:30 ../src/datasetsdialog.cc:163
-#: ../src/functionsdialog.cc:391
+#: data/datasetedit.ui:636 src/datasetsdialog.cc:163 src/functionsdialog.cc:391
 msgid "Properties"
 msgstr "属性"
 
-#: ../data/datasetedit.ui.h:31
+#: data/datasetedit.ui:668
 msgid "Object argument name"
 msgstr "对象参数名称"
 
-#: ../data/datasetedit.ui.h:32
+#: data/datasetedit.ui:680
 msgid "Property argument name"
 msgstr "属性参数名称"
 
-#: ../data/datasetedit.ui.h:33
+#: data/datasetedit.ui:692
 msgid "Default property"
 msgstr "默认属性"
 
-#: ../data/datasetedit.ui.h:34
+#: data/datasetedit.ui:703
 msgid "Name used to invoke the function in expressions"
 msgstr "用于在表达式中调用的函数名"
 
-#: ../data/datasets.ui.h:1 ../src/datasetsdialog.cc:477
+#: data/datasets.ui:8 src/datasetsdialog.cc:477
 msgid "Edit Data Object"
 msgstr "编辑数据对象"
 
-#: ../data/datasets.ui.h:4 ../data/main.ui.h:48 ../src/dataseteditdialog.cc:470
+#: data/datasets.ui:114 data/main.ui:995 src/dataseteditdialog.cc:470
 msgid "Data Sets"
 msgstr "数据集"
 
-#: ../data/datasets.ui.h:6 ../data/main.ui.h:25 ../src/datasetsdialog.cc:432
+#: data/datasets.ui:175 data/main.ui:774 src/datasetsdialog.cc:432
 msgid "Data Set"
 msgstr "数据集"
 
-#: ../data/datasets.ui.h:7
+#: data/datasets.ui:215
 msgid "Create a new data set"
 msgstr "创建新数据集"
 
-#: ../data/datasets.ui.h:8
+#: data/datasets.ui:237
 msgid "Edit the selected data set"
 msgstr "编辑所选数据集"
 
-#: ../data/datasets.ui.h:9
+#: data/datasets.ui:259
 msgid "Delete the selected data set"
 msgstr "删除所选数据集"
 
-#: ../data/datasets.ui.h:10
+#: data/datasets.ui:303
 msgid "Objects"
 msgstr "对象"
 
-#: ../data/datasets.ui.h:11
+#: data/datasets.ui:344
 msgid "Create a new data object"
 msgstr "创建新的数据对象"
 
-#: ../data/datasets.ui.h:12
+#: data/datasets.ui:366
 msgid "Edit the selected data object"
 msgstr "编辑所选数据对象"
 
-#: ../data/datasets.ui.h:13
+#: data/datasets.ui:388
 msgid "Remove the selected data object"
 msgstr "删除所选数据对象"
 
-#: ../data/datasets.ui.h:14
+#: data/datasets.ui:471
 msgid "Data Set Description"
 msgstr "数据集描述"
 
-#: ../data/datasets.ui.h:15
+#: data/datasets.ui:551
 msgid "Object Attributes"
 msgstr "对象属性"
 
-#: ../data/decimals.ui.h:1
+#: data/decimals.ui:26
 msgid "Decimals"
 msgstr "小数"
 
-#: ../data/decimals.ui.h:3 ../data/matrix.ui.h:3 ../data/plot.ui.h:6
-#: ../data/precision.ui.h:3
+#: data/decimals.ui:50 data/matrix.ui:45 data/plot.ui:104 data/precision.ui:36
 msgid "Close this window"
 msgstr "关闭此窗口"
 
-#: ../data/decimals.ui.h:4
+#: data/decimals.ui:78
 msgid "Min decimals"
 msgstr "最小小数"
 
-#: ../data/decimals.ui.h:5
+#: data/decimals.ui:93
 msgid "Max decimals"
 msgstr "最大小数"
 
-#: ../data/decimals.ui.h:6
+#: data/decimals.ui:108
 msgid "Significant digits"
 msgstr "有效数字"
 
-#: ../data/decimals.ui.h:7
+#: data/decimals.ui:126
 msgid "Minimal number of displayed decimals"
 msgstr "显示小数的最小数目"
 
-#: ../data/decimals.ui.h:8
+#: data/decimals.ui:143
 msgid "Maximal number of decimals to display (and round to)"
 msgstr "所显示的最大小数(并舍入)"
 
-#: ../data/decimals.ui.h:9
+#: data/decimals.ui:162
 #, fuzzy
 msgid ""
 "Maximal number of significant digits to display (by default determined by "
 "precision)"
 msgstr "所显示的最大小数(并舍入)"
 
-#: ../data/floatingpoint.ui.h:1
+#: data/floatingpoint.ui:11
 msgid "Floating Point Conversion"
 msgstr "浮点换算"
 
-#: ../data/floatingpoint.ui.h:4
+#: data/floatingpoint.ui:106
 msgid "Hexadecimal representation"
 msgstr "十六进制表示"
 
-#: ../data/floatingpoint.ui.h:5
+#: data/floatingpoint.ui:119
 msgid "Conversion error"
 msgstr "换算误差"
 
-#: ../data/floatingpoint.ui.h:6
+#: data/floatingpoint.ui:132
 msgid "Binary representation"
 msgstr "二进制表示"
 
-#: ../data/floatingpoint.ui.h:7
+#: data/floatingpoint.ui:145
 msgid "Floating point value"
 msgstr "浮点值"
 
-#: ../data/floatingpoint.ui.h:8
+#: data/floatingpoint.ui:158
 msgid "Format"
 msgstr "格式"
 
-#: ../data/floatingpoint.ui.h:9
+#: data/floatingpoint.ui:172
 msgid "16-bit (half precision)"
 msgstr "16位(半精度)"
 
-#: ../data/floatingpoint.ui.h:10
+#: data/floatingpoint.ui:173
 msgid "32-bit (single precision)"
 msgstr "32位(单精度)"
 
-#: ../data/floatingpoint.ui.h:11
+#: data/floatingpoint.ui:174
 msgid "64-bit (double precision)"
 msgstr "64位(双精度)"
 
-#: ../data/floatingpoint.ui.h:12
+#: data/floatingpoint.ui:175
 msgid "80-bit (x86 extended format)"
 msgstr "80位 (x86扩展格式)"
 
-#: ../data/floatingpoint.ui.h:13
+#: data/floatingpoint.ui:176
 msgid "128-bit (quadruple precision)"
 msgstr "128位(四倍精度)"
 
-#: ../data/floatingpoint.ui.h:14
+#: data/floatingpoint.ui:177
 msgid "Microchip 24-bit"
 msgstr ""
 
-#: ../data/floatingpoint.ui.h:15
+#: data/floatingpoint.ui:178
 msgid "Microchip 32-bit"
 msgstr ""
 
-#: ../data/functionedit.ui.h:1 ../src/functioneditdialog.cc:863
+#: data/functionedit.ui:8 src/functioneditdialog.cc:863
 msgid "Edit Function"
 msgstr "编辑函数"
 
-#: ../data/functionedit.ui.h:2 ../data/main.ui.h:210 ../data/matrixedit.ui.h:2
-#: ../data/plot.ui.h:2 ../data/unitedit.ui.h:2 ../data/unknownedit.ui.h:2
-#: ../data/variableedit.ui.h:2
+#: data/functionedit.ui:23 data/main.ui:2844 data/matrixedit.ui:38
+#: data/plot.ui:66 data/unitedit.ui:44 data/unknownedit.ui:23
+#: data/variableedit.ui:23
 msgid "_Help"
 msgstr "帮助(_H)"
 
-#: ../data/functionedit.ui.h:6
+#: data/functionedit.ui:104
 msgid "Name used to invoke this function in expressions"
 msgstr "用于在表达式中调用的函数名"
 
-#: ../data/functionedit.ui.h:7
+#: data/functionedit.ui:128
 msgid ""
 "Use \\x for the first, \\y for the second and \\z for the third argument. "
 "For more information click the help button."
@@ -701,417 +702,429 @@ msgstr ""
 "第一个参数使用\\x，第二个参数使用\\y，第三个参数使用\\z。 更多信息请点击帮助"
 "按钮。。"
 
-#: ../data/functionedit.ui.h:9 ../data/matrixedit.ui.h:15
-#: ../data/variableedit.ui.h:9
+#: data/functionedit.ui:165 data/matrixedit.ui:362 data/variableedit.ui:184
 msgid "Required"
 msgstr "必需的"
 
-#: ../data/functionedit.ui.h:10
+#: data/functionedit.ui:186
 msgid "Condition"
 msgstr "条件"
 
-#: ../data/functionedit.ui.h:11
+#: data/functionedit.ui:197
 msgid ""
 "Condition that must be true for the function (e.g. if the second argument "
 "must be greater than the first: \"\\y > \\x\")"
 msgstr "函数必须为真的条件。例如，若第二个参数必须大于第一个参数: “\\y > \\x”"
 
-#: ../data/functionedit.ui.h:12
+#: data/functionedit.ui:215
 msgid "Sub-functions"
 msgstr "子函数"
 
-#: ../data/functionedit.ui.h:13 ../data/namesedit.ui.h:3 ../data/plot.ui.h:35
-#: ../data/shortcuts.ui.h:3
+#: data/functionedit.ui:255 data/functionedit.ui:358 data/namesedit.ui:85
+#: data/plot.ui:521 data/shortcuts.ui:87
 msgid "_Add"
 msgstr "添加(_A)"
 
-#: ../data/functionedit.ui.h:15 ../data/namesedit.ui.h:5 ../data/plot.ui.h:37
-#: ../data/shortcuts.ui.h:5
+#: data/functionedit.ui:287 data/functionedit.ui:390 data/namesedit.ui:117
+#: data/plot.ui:554 data/shortcuts.ui:120
 msgid "_Remove"
 msgstr "移除(_R)"
 
-#: ../data/functionedit.ui.h:16 ../src/functionsdialog.cc:332
+#: data/functionedit.ui:317 src/functionsdialog.cc:332
 msgid "Arguments"
 msgstr "参数"
 
-#: ../data/functionedit.ui.h:17
+#: data/functionedit.ui:429
 msgid "Details"
 msgstr "细节"
 
-#: ../data/functionedit.ui.h:20
+#: data/functionedit.ui:490
 msgid "Title displayed in menus and in function manager"
 msgstr "菜单和函数管理器中显示的标题"
 
-#: ../data/functionedit.ui.h:21
+#: data/functionedit.ui:502
 msgid "Hide function"
 msgstr "隐藏函数"
 
-#: ../data/functionedit.ui.h:22
+#: data/functionedit.ui:505
 msgid "If this function shall be hidden in menus"
 msgstr "若要在菜单中隐藏此函数"
 
-#: ../data/functionedit.ui.h:24
+#: data/functionedit.ui:557
 msgid "Example"
 msgstr "示例"
 
-#: ../data/functionedit.ui.h:26
+#: data/functionedit.ui:638 data/functionedit.ui:642
 msgid "Do not save modifications"
 msgstr "不保存修改"
 
-#: ../data/functionedit.ui.h:27 ../src/functioneditdialog.cc:475
+#: data/functionedit.ui:724 src/functioneditdialog.cc:475
 msgid "Precalculate"
 msgstr "预计算"
 
-#: ../data/functionedit.ui.h:28
+#: data/functionedit.ui:728
 msgid "Calculate the subfunction once only, before the main function"
 msgstr "在父函数之前只计算一次子函数"
 
-#: ../data/functions.ui.h:1 ../data/main.ui.h:46
+#: data/functions.ui:8 data/main.ui:977 data/main.ui:2116
 msgid "Functions"
 msgstr "函数"
 
-#: ../data/functions.ui.h:3 ../data/units.ui.h:8 ../data/variables.ui.h:3
+#: data/functions.ui:102 data/units.ui:235 data/variables.ui:80
 msgid "Categor_y"
 msgstr "类别(_y)"
 
-#: ../data/functions.ui.h:4
+#: data/functions.ui:129
 msgid "_Function"
 msgstr "函数(_F)"
 
-#: ../data/functions.ui.h:5 ../data/units.ui.h:10 ../data/variables.ui.h:5
+#: data/functions.ui:201 data/units.ui:395 data/variables.ui:204
 msgid "Desc_ription"
 msgstr "描述(_r)"
 
-#: ../data/functions.ui.h:7 ../data/main.ui.h:277
+#: data/functions.ui:263 data/main.ui:5434
 msgid "Create a new function"
 msgstr "创建新函数"
 
-#: ../data/functions.ui.h:9
+#: data/functions.ui:280
 msgid "Edit the selected function"
 msgstr "编辑所选函数"
 
-#: ../data/functions.ui.h:11
+#: data/functions.ui:297
 msgid "Delete the selected function"
 msgstr "删除所选函数"
 
-#: ../data/functions.ui.h:12
+#: data/functions.ui:316
 msgid "(De)activate the selected function"
 msgstr "(取消)激活所选函数"
 
-#: ../data/functions.ui.h:13 ../data/units.ui.h:18 ../data/variables.ui.h:13
-#: ../src/functionsdialog.cc:431 ../src/unitsdialog.cc:388 ../src/util.cc:1341
-#: ../src/variablesdialog.cc:351
+#: data/functions.ui:322 data/units.ui:516 data/variables.ui:325
+#: src/functionsdialog.cc:431 src/unitsdialog.cc:388 src/util.cc:1341
+#: src/variablesdialog.cc:351
 msgid "Deac_tivate"
 msgstr "停用(_t)"
 
-#: ../data/functions.ui.h:14 ../src/insertfunctiondialog.cc:452
+#: data/functions.ui:335 src/insertfunctiondialog.cc:452
 msgid "C_alculate"
 msgstr "计算(_a)"
 
-#: ../data/functions.ui.h:15
+#: data/functions.ui:340
 msgid "Insert (or execute) the selected function into the expression entry"
 msgstr "在表达式框中插入(或执行)所选函数"
 
-#: ../data/functions.ui.h:16 ../data/plot.ui.h:36
+#: data/functions.ui:352 data/plot.ui:537 data/plot.ui:800 data/plot.ui:1358
 msgid "A_pply"
 msgstr "应用(_p)"
 
-#: ../data/functions.ui.h:17
+#: data/functions.ui:357
 msgid "Apply the selected function to the current expression"
 msgstr "将所选函数应用于当前表达式"
 
-#: ../data/main.ui.h:1
+#: data/main.ui:69 data/main.ui:151 data/main.ui:201 data/main.ui:2334
+#: data/main.ui:9387
 msgid "Degrees"
 msgstr "度"
 
-#: ../data/main.ui.h:2
+#: data/main.ui:78 data/main.ui:160 data/main.ui:210 data/main.ui:2344
+#: data/main.ui:9396
 msgid "Radians"
 msgstr "弧度"
 
-#: ../data/main.ui.h:3
+#: data/main.ui:87 data/main.ui:169 data/main.ui:219 data/main.ui:2354
+#: data/main.ui:9405
 msgid "Gradians"
 msgstr "梯度"
 
-#: ../data/main.ui.h:4 ../src/variablesdialog.cc:337
+#: data/main.ui:246 data/main.ui:399 data/main.ui:547
+#: src/variablesdialog.cc:337
 msgid "Default assumptions"
 msgstr "默认假设"
 
-#: ../data/main.ui.h:5 ../data/unknownedit.ui.h:14
-#: ../src/periodictabledialog.cc:143
+#: data/main.ui:260 data/main.ui:338 data/main.ui:413 data/main.ui:490
+#: data/main.ui:561 data/main.ui:639 data/main.ui:2386 data/main.ui:2472
+#: data/unknownedit.ui:164 src/periodictabledialog.cc:143
 msgid "Unknown"
 msgstr "未知数"
 
-#: ../data/main.ui.h:6
+#: data/main.ui:268 data/main.ui:421 data/main.ui:569 data/main.ui:2396
 msgid "Not Matrix"
 msgstr "非矩阵"
 
-#: ../data/main.ui.h:8
+#: data/main.ui:285 data/main.ui:438 data/main.ui:586 data/main.ui:2415
 msgid "Complex"
 msgstr "复数"
 
-#: ../data/main.ui.h:9
+#: data/main.ui:294 data/main.ui:447 data/main.ui:595 data/main.ui:2425
 msgid "Real"
 msgstr "实数"
 
-#: ../data/main.ui.h:10
+#: data/main.ui:303 data/main.ui:456 data/main.ui:604 data/main.ui:2435
 msgid "Rational"
 msgstr "有理数"
 
-#: ../data/main.ui.h:13 ../data/unknownedit.ui.h:19
+#: data/main.ui:347 data/main.ui:499 data/main.ui:648 data/main.ui:2482
+#: data/unknownedit.ui:169
 msgid "Non-Zero"
 msgstr "非零数"
 
-#: ../data/main.ui.h:14 ../data/unknownedit.ui.h:15
+#: data/main.ui:356 data/main.ui:508 data/main.ui:657 data/main.ui:2492
+#: data/unknownedit.ui:165
 msgid "Positive"
 msgstr "正数"
 
-#: ../data/main.ui.h:15 ../data/unknownedit.ui.h:16
+#: data/main.ui:365 data/main.ui:517 data/main.ui:666 data/main.ui:2502
+#: data/unknownedit.ui:166
 msgid "Non-Negative"
 msgstr "非负数"
 
-#: ../data/main.ui.h:16 ../data/unknownedit.ui.h:17
+#: data/main.ui:374 data/main.ui:526 data/main.ui:675 data/main.ui:2512
+#: data/unknownedit.ui:167
 msgid "Negative"
 msgstr "负数"
 
-#: ../data/main.ui.h:17 ../data/unknownedit.ui.h:18
+#: data/main.ui:383 data/main.ui:535 data/main.ui:684 data/main.ui:2522
+#: data/unknownedit.ui:168
 msgid "Non-Positive"
 msgstr "非正数"
 
-#: ../data/main.ui.h:18
+#: data/main.ui:711
 msgid "_File"
 msgstr "文件(_F)"
 
-#: ../data/main.ui.h:23
+#: data/main.ui:756
 msgid "Unknown Variable"
 msgstr "未知变量"
 
-#: ../data/main.ui.h:27
+#: data/main.ui:796
 msgid "Import CSV File…"
 msgstr "导入CSV文件…"
 
-#: ../data/main.ui.h:28
+#: data/main.ui:805
 msgid "Export CSV File…"
 msgstr "导出CSV文件…"
 
-#: ../data/main.ui.h:29
+#: data/main.ui:814
 msgid "_Store Result…"
 msgstr "存储结果(_S)…"
 
-#: ../data/main.ui.h:30
+#: data/main.ui:823
 msgid "Save Result Image…"
 msgstr "保存结果图像…"
 
-#: ../data/main.ui.h:31
+#: data/main.ui:838
 msgid "Save local functions, variables and units"
 msgstr "保存局部函数，变量和单位"
 
-#: ../data/main.ui.h:32
+#: data/main.ui:839
 msgid "Save Definitions"
 msgstr "保存定义"
 
-#: ../data/main.ui.h:33
+#: data/main.ui:848
 msgid "Import Definitions File…"
 msgstr "导入定义文件…"
 
-#: ../data/main.ui.h:34
+#: data/main.ui:857
 msgid "Fetch current exchange rates from the Internet"
 msgstr "从网络上获取当前汇率"
 
-#: ../data/main.ui.h:35
+#: data/main.ui:858
 msgid "Update Exchange Rates"
 msgstr "更新汇率"
 
-#: ../data/main.ui.h:36
+#: data/main.ui:873
 msgid "Plot Functions/Data"
 msgstr "函数/数据绘图"
 
-#: ../data/main.ui.h:37
+#: data/main.ui:882
 msgid "Convert Number Bases"
 msgstr "数字进制换算"
 
-#: ../data/main.ui.h:38
+#: data/main.ui:891
 msgid "Floating Point Conversion (IEEE 754)"
 msgstr "浮点换算(IEEE 754)"
 
-#: ../data/main.ui.h:40
+#: data/main.ui:908
 msgid "Percentage Calculation Tool"
 msgstr "百分比计算"
 
-#: ../data/main.ui.h:41 ../data/periodictable.ui.h:1
+#: data/main.ui:916 data/periodictable.ui:8
 msgid "Periodic Table"
 msgstr "元素周期表"
 
-#: ../data/main.ui.h:42
+#: data/main.ui:931
 msgid "Minimal Window"
 msgstr "最小窗口"
 
-#: ../data/main.ui.h:43
+#: data/main.ui:946
 msgid "_Quit"
 msgstr "退出(_Q)"
 
-#: ../data/main.ui.h:45 ../data/variables.ui.h:1
+#: data/main.ui:968 data/main.ui:2106 data/variables.ui:8
 msgid "Variables"
 msgstr "变量"
 
-#: ../data/main.ui.h:47 ../data/units.ui.h:1
+#: data/main.ui:986 data/main.ui:2126 data/units.ui:8
 msgid "Units"
 msgstr "单位"
 
-#: ../data/main.ui.h:49 ../src/keypad.cc:815 ../src/keypad.cc:3298
-#: ../src/keypad.cc:3416
+#: data/main.ui:1010 data/main.ui:2555 data/main.ui:6029 data/main.ui:6860
+#: src/keypad.cc:815 src/keypad.cc:3298 src/keypad.cc:3416
 msgid "Factorize"
 msgstr "分解"
 
-#: ../data/main.ui.h:50 ../src/keypad.cc:813 ../src/keypad.cc:3307
-#: ../src/keypad.cc:3419
+#: data/main.ui:1019 data/main.ui:2545 src/keypad.cc:813 src/keypad.cc:3307
+#: src/keypad.cc:3419
 msgid "Expand"
 msgstr "展开"
 
-#: ../data/main.ui.h:51
+#: data/main.ui:1028 data/main.ui:8689
 msgid "Apply partial fraction decomposition to the current result."
 msgstr "部分分式分解当前结果。"
 
-#: ../data/main.ui.h:52 ../src/keypad.cc:817
+#: data/main.ui:1029 data/main.ui:8690 src/keypad.cc:817
 msgid "Expand Partial Fractions"
 msgstr "展开部分分式"
 
-#: ../data/main.ui.h:53
+#: data/main.ui:1038 data/main.ui:8699
 msgid "Set Unknowns…"
 msgstr "设置未知数…"
 
-#: ../data/main.ui.h:54
+#: data/main.ui:1047 data/main.ui:8370
 msgid "Convert to Unit"
 msgstr "换算单位"
 
-#: ../data/main.ui.h:55
+#: data/main.ui:1055
 msgid "Set Prefix"
 msgstr "设置前缀"
 
-#: ../data/main.ui.h:56
+#: data/main.ui:1063
 msgid "Convert to Unit Expression…"
 msgstr "换算为单位表达式…"
 
-#: ../data/main.ui.h:57
+#: data/main.ui:1072 data/main.ui:2037
 msgid "Convert to Base Units"
 msgstr "换算为基本单位"
 
-#: ../data/main.ui.h:58
+#: data/main.ui:1081 data/main.ui:2047
 msgid "Convert to Optimal Unit"
 msgstr "换算为最优单位"
 
-#: ../data/main.ui.h:59 ../src/expressionedit.cc:1509
+#: data/main.ui:1096 src/expressionedit.cc:1509
 msgid "Insert Date…"
 msgstr "插入日期…"
 
-#: ../data/main.ui.h:60 ../src/expressionedit.cc:1510
+#: data/main.ui:1105 src/expressionedit.cc:1510
 msgid "Insert Matrix…"
 msgstr "插入矩阵…"
 
-#: ../data/main.ui.h:61 ../src/expressionedit.cc:1511
+#: data/main.ui:1114 src/expressionedit.cc:1511
 msgid "Insert Vector…"
 msgstr "插入向量…"
 
-#: ../data/main.ui.h:62
+#: data/main.ui:1129
 msgid "_Copy Result"
 msgstr "复制结果(_C)"
 
-#: ../data/main.ui.h:63
+#: data/main.ui:1138
 msgid "Copy Result as Unformatted ASCII"
 msgstr "复制结果为未格式化的 ASCII"
 
-#: ../data/main.ui.h:64 ../data/shortcuts.ui.h:1
+#: data/main.ui:1153 data/shortcuts.ui:10
 msgid "Keyboard Shortcuts"
 msgstr "键盘快捷键"
 
-#: ../data/main.ui.h:66
+#: data/main.ui:1171
 msgid "_Preferences"
 msgstr "首选项(_P)"
 
-#: ../data/main.ui.h:67
+#: data/main.ui:1193
 msgid "_Mode"
 msgstr "模式(_M)"
 
-#: ../data/main.ui.h:68 ../src/expressioncompletion.cc:2037
-#: ../src/expressionedit.cc:1481
+#: data/main.ui:1202 src/expressioncompletion.cc:2037
+#: src/expressionedit.cc:1481
 msgid "Number Base"
 msgstr "数字进制"
 
-#: ../data/main.ui.h:69
+#: data/main.ui:1211
 msgid "Select Result and Expression Base…"
 msgstr "选择结果和表达式进制…"
 
-#: ../data/main.ui.h:70 ../data/nbases.ui.h:4 ../data/preferences.ui.h:70
-#: ../data/setbase.ui.h:3 ../src/expressionedit.cc:1484 ../src/keypad.cc:1012
-#: ../src/numberbasesdialog.cc:209 ../src/numberbasesdialog.cc:251
+#: data/main.ui:1226 data/main.ui:4717 data/nbases.ui:77
+#: data/preferences.ui:999 data/preferences.ui:1055 data/setbase.ui:84
+#: data/setbase.ui:323 src/expressionedit.cc:1484 src/keypad.cc:1012
+#: src/numberbasesdialog.cc:209 src/numberbasesdialog.cc:251
 msgid "Binary"
 msgstr "二进制"
 
-#: ../data/main.ui.h:71 ../data/nbases.ui.h:5 ../data/setbase.ui.h:4
-#: ../src/expressionedit.cc:1485 ../src/keypad.cc:1013
-#: ../src/numberbasesdialog.cc:210 ../src/numberbasesdialog.cc:252
+#: data/main.ui:1235 data/main.ui:4718 data/nbases.ui:90 data/setbase.ui:101
+#: data/setbase.ui:340 src/expressionedit.cc:1485 src/keypad.cc:1013
+#: src/numberbasesdialog.cc:210 src/numberbasesdialog.cc:252
 msgid "Octal"
 msgstr "八进制"
 
-#: ../data/main.ui.h:72 ../data/nbases.ui.h:3 ../data/setbase.ui.h:5
-#: ../src/expressionedit.cc:1486 ../src/keypad.cc:1014
-#: ../src/numberbasesdialog.cc:211 ../src/numberbasesdialog.cc:253
+#: data/main.ui:1245 data/main.ui:4719 data/nbases.ui:64 data/setbase.ui:118
+#: data/setbase.ui:357 src/expressionedit.cc:1486 src/keypad.cc:1014
+#: src/numberbasesdialog.cc:211 src/numberbasesdialog.cc:253
 msgid "Decimal"
 msgstr "十进制"
 
-#: ../data/main.ui.h:73 ../data/nbases.ui.h:10 ../data/setbase.ui.h:6
-#: ../src/expressionedit.cc:1487 ../src/numberbasesdialog.cc:212
-#: ../src/numberbasesdialog.cc:254
+#: data/main.ui:1256 data/main.ui:4720 data/main.ui:8874 data/nbases.ui:181
+#: data/setbase.ui:135 data/setbase.ui:374 src/expressionedit.cc:1487
+#: src/numberbasesdialog.cc:212 src/numberbasesdialog.cc:254
 msgid "Duodecimal"
 msgstr "十二进制"
 
-#: ../data/main.ui.h:74 ../data/nbases.ui.h:11 ../data/preferences.ui.h:72
-#: ../data/setbase.ui.h:7 ../src/expressionedit.cc:1488 ../src/keypad.cc:1015
-#: ../src/numberbasesdialog.cc:213 ../src/numberbasesdialog.cc:255
+#: data/main.ui:1265 data/main.ui:4721 data/nbases.ui:210
+#: data/preferences.ui:1015 data/preferences.ui:1071 data/setbase.ui:152
+#: data/setbase.ui:391 src/expressionedit.cc:1488 src/keypad.cc:1015
+#: src/numberbasesdialog.cc:213 src/numberbasesdialog.cc:255
 msgid "Hexadecimal"
 msgstr "十六进制"
 
-#: ../data/main.ui.h:75 ../src/expressionedit.cc:1490
+#: data/main.ui:1275 data/main.ui:4725 data/main.ui:8923
+#: src/expressionedit.cc:1490
 msgid "Other…"
 msgstr "其他…"
 
-#: ../data/main.ui.h:76 ../data/setbase.ui.h:8
+#: data/main.ui:1291 data/main.ui:4722 data/main.ui:8893 data/setbase.ui:169
 msgid "Sexagesimal"
 msgstr "六十进制"
 
-#: ../data/main.ui.h:77 ../src/expressioncompletion.cc:2102
+#: data/main.ui:1301 data/main.ui:8903 src/expressioncompletion.cc:2102
 msgid "Time Format"
 msgstr "时间格式"
 
-#: ../data/main.ui.h:78 ../src/expressioncompletion.cc:2094
-#: ../src/expressionedit.cc:1489
+#: data/main.ui:1311 src/expressioncompletion.cc:2094
+#: src/expressionedit.cc:1489
 msgid "Roman Numerals"
 msgstr "罗马数字"
 
-#: ../data/main.ui.h:79
+#: data/main.ui:1325
 msgid "Numerical Display"
 msgstr "数值显示"
 
-#: ../data/main.ui.h:80
+#: data/main.ui:1334 data/main.ui:4695
 msgid "Normal"
 msgstr "常规"
 
-#: ../data/main.ui.h:81
+#: data/main.ui:1344 data/main.ui:4696 data/main.ui:8748
 msgid "Engineering"
 msgstr "工程"
 
-#: ../data/main.ui.h:82
+#: data/main.ui:1354 data/main.ui:4697
 msgid "Scientific"
 msgstr "科学"
 
-#: ../data/main.ui.h:83
+#: data/main.ui:1364
 msgid "Purely Scientific"
 msgstr "纯科学"
 
-#: ../data/main.ui.h:84
+#: data/main.ui:1374 data/main.ui:4699
 msgid "Simple"
 msgstr "简单"
 
-#: ../data/main.ui.h:85
+#: data/main.ui:1390
 msgid ""
 "Off: 1/7 ≈ 0.14285714\n"
 "On: 1/7 = 0.142857 142857..."
@@ -1119,15 +1132,15 @@ msgstr ""
 "关: 1/7 ≈ 0.14285714\n"
 "开: 1/7 = 0.142857 142857..."
 
-#: ../data/main.ui.h:87
+#: data/main.ui:1392
 msgid "Indicate Repeating Decimals"
 msgstr "指示循环小数"
 
-#: ../data/main.ui.h:88
+#: data/main.ui:1401
 msgid "Show Ending Zeroes"
 msgstr "显示结尾的零"
 
-#: ../data/main.ui.h:89
+#: data/main.ui:1410
 msgid ""
 "Off: -x + y\n"
 "On: y - x"
@@ -1135,94 +1148,94 @@ msgstr ""
 "关: -x + y\n"
 "开: y - x"
 
-#: ../data/main.ui.h:91
+#: data/main.ui:1412
 msgid "Sort Minus Last"
 msgstr "减号排至末尾"
 
-#: ../data/main.ui.h:92
+#: data/main.ui:1428
 #, fuzzy
 msgid "Round Halfway Numbers Away from Zero"
 msgstr "中数约至偶数"
 
-#: ../data/main.ui.h:93
+#: data/main.ui:1439
 msgid "Round Halfway Numbers to Even"
 msgstr "中数约至偶数"
 
-#: ../data/main.ui.h:94
+#: data/main.ui:1449
 msgid "Other Rounding Methods"
 msgstr ""
 
-#: ../data/main.ui.h:95
+#: data/main.ui:1459
 #, fuzzy
 msgid "Round Halfway Numbers to Odd"
 msgstr "中数约至偶数"
 
-#: ../data/main.ui.h:96
+#: data/main.ui:1470
 #, fuzzy
 msgid "Round Halfway Numbers Toward Zero"
 msgstr "中数约至偶数"
 
-#: ../data/main.ui.h:97
+#: data/main.ui:1481
 #, fuzzy
 msgid "Round Halfway Numbers to Random"
 msgstr "中数约至偶数"
 
-#: ../data/main.ui.h:98
+#: data/main.ui:1492
 #, fuzzy
 msgid "Round Halfway Numbers Up"
 msgstr "中数约至偶数"
 
-#: ../data/main.ui.h:99
+#: data/main.ui:1503
 #, fuzzy
 msgid "Round Halfway Numbers Down"
 msgstr "中数约至偶数"
 
-#: ../data/main.ui.h:100
+#: data/main.ui:1514
 msgid "Round Toward Zero"
 msgstr ""
 
-#: ../data/main.ui.h:101
+#: data/main.ui:1525
 #, fuzzy
 msgid "Round Away from Zero"
 msgstr "中数约至偶数"
 
-#: ../data/main.ui.h:102
+#: data/main.ui:1536
 msgid "Round Up"
 msgstr ""
 
-#: ../data/main.ui.h:103
+#: data/main.ui:1547
 msgid "Round Down"
 msgstr ""
 
-#: ../data/main.ui.h:104 ../src/expressioncompletion.cc:2092
+#: data/main.ui:1568 data/main.ui:8794 src/expressioncompletion.cc:2092
 msgid "Complex Rectangular Form"
 msgstr "复矩形形式"
 
-#: ../data/main.ui.h:105 ../src/expressioncompletion.cc:2056
+#: data/main.ui:1579 data/main.ui:8805 src/expressioncompletion.cc:2056
 msgid "Complex Exponential Form"
 msgstr "复指数形式"
 
-#: ../data/main.ui.h:106 ../src/expressioncompletion.cc:2088
+#: data/main.ui:1590 data/main.ui:8816 src/expressioncompletion.cc:2088
 msgid "Complex Polar Form"
 msgstr "复极坐标形式"
 
-#: ../data/main.ui.h:107 ../src/expressioncompletion.cc:2031
+#: data/main.ui:1601 data/main.ui:8827 src/expressioncompletion.cc:2031
 msgid "Complex Angle/Phasor Notation"
 msgstr "复角/相量记号"
 
-#: ../data/main.ui.h:108
+#: data/main.ui:1616
 msgid "Rational Number Form"
 msgstr "有理数形式"
 
-#: ../data/main.ui.h:109
+#: data/main.ui:1625
 msgid "1/3 ≈ 0.33333"
 msgstr "1/3 ≈ 0.33333"
 
-#: ../data/main.ui.h:110
+#: data/main.ui:1626
 msgid "Decimal Fractions"
 msgstr "小数"
 
-#: ../data/main.ui.h:111
+#: data/main.ui:1636
 msgid ""
 "3/9 = 1/3\n"
 "6/4 = 1.5"
@@ -1230,112 +1243,112 @@ msgstr ""
 "3/9 = 1/3\n"
 "6/4 = 1.5"
 
-#: ../data/main.ui.h:113
+#: data/main.ui:1638
 msgid "Exact Decimal Fractions"
 msgstr "精确小数"
 
-#: ../data/main.ui.h:114
+#: data/main.ui:1648
 msgid "6/4 = 3/2"
 msgstr "6/4 = 3/2"
 
-#: ../data/main.ui.h:115
+#: data/main.ui:1649
 msgid "Simple Fractions"
 msgstr "简单分数"
 
-#: ../data/main.ui.h:116
+#: data/main.ui:1659
 msgid "6/4 = 1+1/2"
 msgstr "6/4 = 1+1/2"
 
-#: ../data/main.ui.h:117
+#: data/main.ui:1660
 msgid "Mixed Fractions"
 msgstr "混合分数"
 
 #. Mixed fraction
-#: ../data/main.ui.h:119
+#: data/main.ui:1776
 msgid "Mixed"
 msgstr "混合"
 
-#: ../data/main.ui.h:120
+#: data/main.ui:1824
 msgid "Interval Display"
 msgstr "区间显示"
 
-#: ../data/main.ui.h:121 ../src/mainwindow.cc:1046
+#: data/main.ui:1832 src/mainwindow.cc:1046
 msgid "Adaptive"
 msgstr "自适应"
 
-#: ../data/main.ui.h:122
+#: data/main.ui:1840
 msgid "Significant Digits"
 msgstr "有效数字"
 
-#: ../data/main.ui.h:123 ../src/buttonseditdialog.cc:350 ../src/keypad.cc:458
+#: data/main.ui:1849 src/buttonseditdialog.cc:350 src/keypad.cc:458
 msgid "Interval"
 msgstr "区间"
 
-#: ../data/main.ui.h:124
+#: data/main.ui:1858
 msgid "Plus/Minus"
 msgstr "加/减"
 
-#: ../data/main.ui.h:125 ../data/preferences.ui.h:118 ../src/mainwindow.cc:830
+#: data/main.ui:1867 data/preferences.ui:1807 src/mainwindow.cc:830
 msgid "Relative"
 msgstr "相对"
 
-#: ../data/main.ui.h:126
+#: data/main.ui:1876
 msgid "Concise"
 msgstr ""
 
-#: ../data/main.ui.h:127
+#: data/main.ui:1885
 msgid "Midpoint"
 msgstr "中点"
 
-#: ../data/main.ui.h:128
+#: data/main.ui:1916
 msgid "Allow concise uncertainty input"
 msgstr ""
 
-#: ../data/main.ui.h:129
+#: data/main.ui:1928
 msgid "Unit Display"
 msgstr "单位显示"
 
-#: ../data/main.ui.h:130
+#: data/main.ui:1937 data/main.ui:9105
 msgid "Do not use any prefixes in result"
 msgstr "结果不使用任何前缀"
 
-#: ../data/main.ui.h:131
+#: data/main.ui:1946 data/main.ui:9114
 msgid "Show prefixes for primarily SI and CGS units."
 msgstr "显示主要的SI和CGS单位前缀。"
 
-#: ../data/main.ui.h:132
+#: data/main.ui:1947 data/main.ui:9115
 msgid "Use prefixes for selected units"
 msgstr "为所选单位使用前缀"
 
-#: ../data/main.ui.h:133
+#: data/main.ui:1956 data/main.ui:9124
 msgid "Use prefixes also for currencies"
 msgstr "对货币也使用前缀"
 
-#: ../data/main.ui.h:134
+#: data/main.ui:1965
 msgid "Use prefixs for all units"
 msgstr "对所有单位使用前缀"
 
-#: ../data/main.ui.h:135
+#: data/main.ui:1980
 msgid ""
 "Enables automatic use of hekto, deka, deci and centi when prefixes are "
 "enabled"
 msgstr "启用前缀时，自动使用百、十、分和厘"
 
-#: ../data/main.ui.h:136
+#: data/main.ui:1981
 msgid "Enable All SI Prefixes"
 msgstr "启用所有SI前缀"
 
-#: ../data/main.ui.h:137
+#: data/main.ui:1990
 msgid ""
 "Enables automatic setting of prefix for denominator in addition to the "
 "numerator"
 msgstr "除分子外，还可自动设置分母的前缀"
 
-#: ../data/main.ui.h:138
+#: data/main.ui:1991 data/main.ui:9157
 msgid "Enable Denominator Prefixes"
 msgstr "启用分母前缀"
 
-#: ../data/main.ui.h:139
+#: data/main.ui:2000
 msgid ""
 "Off: J / K\n"
 "On: J·K^-1"
@@ -1343,11 +1356,11 @@ msgstr ""
 "关: J / K\n"
 "开: J·K^-1"
 
-#: ../data/main.ui.h:141
+#: data/main.ui:2002
 msgid "Negative Exponents"
 msgstr "负指数"
 
-#: ../data/main.ui.h:142
+#: data/main.ui:2010
 msgid ""
 "Off: (2 m)/s\n"
 "On: 2 (m/s)"
@@ -1355,19 +1368,19 @@ msgstr ""
 "关: (2 m)/s\n"
 "开: 2 (m/s)"
 
-#: ../data/main.ui.h:144
+#: data/main.ui:2012
 msgid "Place Units Separately"
 msgstr "单独放置单位"
 
-#: ../data/main.ui.h:145
+#: data/main.ui:2027
 msgid "No Additional Conversion"
 msgstr "无额外换算"
 
-#: ../data/main.ui.h:146
+#: data/main.ui:2057
 msgid "Convert to Optimal SI Unit"
 msgstr "换算为最优SI单位"
 
-#: ../data/main.ui.h:147
+#: data/main.ui:2067 data/main.ui:9064
 msgid ""
 "If enabled:\n"
 "15 in = 1 ft + 3 in\n"
@@ -1377,55 +1390,55 @@ msgstr ""
 "15 in = 1 ft + 3 in\n"
 "3.2 h = 3 h + 12 min"
 
-#: ../data/main.ui.h:150
+#: data/main.ui:2070 data/main.ui:9067
 msgid "Convert to Mixed Units"
 msgstr "换算为混合单位"
 
-#: ../data/main.ui.h:151
+#: data/main.ui:2082
 msgid "Abbreviate Names"
 msgstr "缩写名称"
 
-#: ../data/main.ui.h:152
+#: data/main.ui:2097
 msgid "Enabled Objects"
 msgstr "启用对象"
 
-#: ../data/main.ui.h:153
+#: data/main.ui:2136
 msgid "Unknowns"
 msgstr "未知数"
 
-#: ../data/main.ui.h:154
+#: data/main.ui:2152
 msgid "Units in Physical Constants"
 msgstr "物理常数单位"
 
-#: ../data/main.ui.h:155
+#: data/main.ui:2161
 msgid "If not enabled, treats all variables as unknown"
 msgstr "若未启用，则将所有变量视为未知"
 
-#: ../data/main.ui.h:156
+#: data/main.ui:2162
 msgid "Calculate Variables"
 msgstr "计算变量"
 
-#: ../data/main.ui.h:157
+#: data/main.ui:2178
 msgid "Disables/enables complex numbers in result"
 msgstr "禁用/启用结果中的复数"
 
-#: ../data/main.ui.h:158
+#: data/main.ui:2179
 msgid "Allow Complex Result"
 msgstr "允许复数结果"
 
-#: ../data/main.ui.h:159
+#: data/main.ui:2189
 msgid "Disables/enables infinite numbers in result"
 msgstr "禁用/启用结果中的无穷数"
 
-#: ../data/main.ui.h:160
+#: data/main.ui:2190
 msgid "Allow Infinite Result"
 msgstr "允许无限结果"
 
-#: ../data/main.ui.h:161
+#: data/main.ui:2210
 msgid "Approximation"
 msgstr "近似估算"
 
-#: ../data/main.ui.h:162
+#: data/main.ui:2219
 msgid ""
 "Off: 1/2 × pi ≈ 1.5707963\n"
 "On: 1/2 × pi = 0.5 pi"
@@ -1433,94 +1446,92 @@ msgstr ""
 "关: 1/2 × pi ≈ 1.5707963\n"
 "开: 1/2 × pi = 0.5 pi"
 
-#: ../data/main.ui.h:164
+#: data/main.ui:2221
 msgid "Always Exact"
 msgstr "总是精确"
 
-#: ../data/main.ui.h:165
+#: data/main.ui:2230
 msgid "Try Exact"
 msgstr "尝试精确"
 
-#: ../data/main.ui.h:166 ../src/datasetsdialog.cc:525
+#: data/main.ui:2240 src/datasetsdialog.cc:525
 msgid "Approximate"
 msgstr "近似值"
 
-#: ../data/main.ui.h:167
+#: data/main.ui:2256 data/main.ui:2300
 msgid "Interval Arithmetic"
 msgstr "区间运算"
 
-#: ../data/main.ui.h:168
+#: data/main.ui:2270
 msgid "Interval Calculation"
 msgstr "区间计算"
 
-#: ../data/main.ui.h:169
+#: data/main.ui:2290
 msgid "Variance Formula"
 msgstr "方差公式"
 
-#: ../data/main.ui.h:170
+#: data/main.ui:2324
 msgid "Change angle unit used in trigonometric functions"
 msgstr "改变三角函数中的角度单位"
 
-#: ../data/main.ui.h:171
+#: data/main.ui:2325
 msgid "Angle Unit"
 msgstr "角度单位"
 
-#: ../data/main.ui.h:172 ../data/plot.ui.h:27 ../data/preferences.ui.h:102
-#: ../src/buttonseditdialog.cc:462
+#: data/main.ui:2364 data/plot.ui:423 data/plot.ui:1329
+#: data/preferences.ui:1372 src/buttonseditdialog.cc:462
 msgid "None"
 msgstr "无"
 
-#: ../data/main.ui.h:173
+#: data/main.ui:2378
 msgid "Assumptions"
 msgstr "前提假设"
 
-#: ../data/main.ui.h:174
+#: data/main.ui:2536
 msgid "Algebraic Mode"
 msgstr "代数模式"
 
-#: ../data/main.ui.h:175
+#: data/main.ui:2571 data/main.ui:8722
 msgid "Assume that unknown denominators are non-zero"
 msgstr "假设未知分母非零"
 
-#: ../data/main.ui.h:176
+#: data/main.ui:2572 data/main.ui:8723
 msgid "Non-Zero Denominators"
 msgstr "非零分母"
 
-#: ../data/main.ui.h:177
+#: data/main.ui:2581
 msgid "Warn when unknown denominators are assumed non-zero"
 msgstr "假设未知分母为非零时发出警告"
 
-#: ../data/main.ui.h:178
+#: data/main.ui:2582
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "警告分母假定非零"
 
-#: ../data/main.ui.h:179 ../src/expressionedit.cc:1471
-#: ../src/mainwindow.cc:1017
+#: data/main.ui:2601 src/expressionedit.cc:1471 src/mainwindow.cc:1017
 msgid "Parsing Mode"
 msgstr "解析模式"
 
-#: ../data/main.ui.h:180
+#: data/main.ui:2612 data/main.ui:9451
 msgid "Adaptive Parsing"
 msgstr "自适应解析"
 
-#: ../data/main.ui.h:181
+#: data/main.ui:2623 data/main.ui:9461
 msgid "Parse Implicit Multiplication First"
 msgstr "隐式乘法优先解析"
 
-#: ../data/main.ui.h:182
+#: data/main.ui:2634 data/main.ui:9472
 msgid "Conventional Parsing"
 msgstr "常规解析"
 
-#: ../data/main.ui.h:183
+#: data/main.ui:2644 data/main.ui:9483
 msgid "Chain Syntax"
 msgstr "链式语法"
 
-#: ../data/main.ui.h:184
+#: data/main.ui:2656 data/main.ui:9494
 msgid "RPN Syntax"
 msgstr "逆波兰式语法"
 
-#: ../data/main.ui.h:186
-#, no-c-format
+#: data/main.ui:2671
 msgid ""
 "Off: 100 + 20% = 100 +  20/100 = 100.2\n"
 "On: 100 + 20% = 100 × 120% = 120"
@@ -1528,12 +1539,12 @@ msgstr ""
 "关: 100 + 20% = 100 +  20/100 = 100.2\n"
 "开: 100 + 20% = 100 × 120% = 120"
 
-#: ../data/main.ui.h:188
+#: data/main.ui:2673
 #, fuzzy
 msgid "Simplified Percentage Calculation"
 msgstr "百分比"
 
-#: ../data/main.ui.h:189
+#: data/main.ui:2682
 msgid ""
 "Off: xy = x × y\n"
 "On: xy != x × y"
@@ -1541,11 +1552,11 @@ msgstr ""
 "关: xy = x × y\n"
 "开: xy != x × y"
 
-#: ../data/main.ui.h:191
+#: data/main.ui:2684
 msgid "Limit Implicit Multiplication"
 msgstr "限制隐式乘法"
 
-#: ../data/main.ui.h:192
+#: data/main.ui:2692
 msgid ""
 "Parse decimal numbers as approximations with precision equal to the number "
 "of digits.\n"
@@ -1558,236 +1569,242 @@ msgstr ""
 "关: 1.1 × 3.20 = 3.52\n"
 "开: 1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.16"
 
-#: ../data/main.ui.h:196
+#: data/main.ui:2696 data/main.ui:9436
 msgid "Read Precision"
 msgstr "读取精度"
 
-#: ../data/main.ui.h:197
+#: data/main.ui:2714
 msgid "_Precision"
 msgstr "精度(_P)"
 
-#: ../data/main.ui.h:198
+#: data/main.ui:2723
 msgid "_Decimals"
 msgstr "小数(_D)"
 
-#: ../data/main.ui.h:199
+#: data/main.ui:2738
 msgid "Calculate As You Type"
 msgstr "输入时计算"
 
-#: ../data/main.ui.h:200
+#: data/main.ui:2747
 msgid "Chain Mode"
 msgstr "链式模式"
 
-#: ../data/main.ui.h:201
+#: data/main.ui:2756
 msgid "Activate the RPN stack."
 msgstr "激活RPN栈。"
 
-#: ../data/main.ui.h:202
+#: data/main.ui:2757
 msgid "RPN Mode"
 msgstr "逆波兰模式"
 
-#: ../data/main.ui.h:203 ../src/expressionedit.cc:1492
+#: data/main.ui:2771 data/main.ui:9172 src/expressionedit.cc:1492
 msgid "Meta Modes"
 msgstr "元模式"
 
-#: ../data/main.ui.h:204 ../src/expressionedit.cc:1506
+#: data/main.ui:2786 data/main.ui:9187 src/expressionedit.cc:1506
 msgid "Save Mode…"
 msgstr "保存模式…"
 
-#: ../data/main.ui.h:205
+#: data/main.ui:2795
 msgid "Delete Mode…"
 msgstr "删除模式…"
 
-#: ../data/main.ui.h:206
+#: data/main.ui:2807
 msgid "Save Default _Mode"
 msgstr "保存默认模式(_M)"
 
-#: ../data/main.ui.h:207
+#: data/main.ui:2820
 msgid "Fu_nctions"
 msgstr "函数(_n)"
 
-#: ../data/main.ui.h:208
+#: data/main.ui:2828
 msgid "_Variables"
 msgstr "变量(_V)"
 
-#: ../data/main.ui.h:209
+#: data/main.ui:2836
 msgid "_Units"
 msgstr "单位(_U)"
 
-#: ../data/main.ui.h:211
+#: data/main.ui:2853
 msgid "_Contents"
 msgstr "内容(_C)"
 
-#: ../data/main.ui.h:212
+#: data/main.ui:2862
 msgid "Report a Bug"
 msgstr "报告错误"
 
-#: ../data/main.ui.h:213
+#: data/main.ui:2870
 msgid "Check for Updates"
 msgstr "检查更新"
 
-#: ../data/main.ui.h:214
+#: data/main.ui:2879
 msgid "_About"
 msgstr "关于(_A)"
 
-#: ../data/main.ui.h:215 ../src/util.cc:936
+#: data/main.ui:3130 src/util.cc:936
 msgid "Toggle minimal window"
 msgstr "切换最小窗口"
 
-#: ../data/main.ui.h:216
+#: data/main.ui:3272
 msgid "Calculation result"
 msgstr "计算结果"
 
-#: ../data/main.ui.h:217
+#: data/main.ui:3384
 msgid "_Keypad"
 msgstr "键盘(_K)"
 
-#: ../data/main.ui.h:218
+#: data/main.ui:3408
 msgid ""
 "Toggles persistent keypad (makes it possible to show keypad and history "
 "simultaneously)"
 msgstr "切换常驻键盘(可同时显示键盘和历史)"
 
-#: ../data/main.ui.h:219
+#: data/main.ui:3438
 msgid "_History"
 msgstr "历史(_H)"
 
-#: ../data/main.ui.h:220
+#: data/main.ui:3462
 msgid "C_onversion"
 msgstr "换算(_o)"
 
-#: ../data/main.ui.h:221
+#: data/main.ui:3485 data/main.ui:4326
 msgid "RPN Stack"
 msgstr "RPN栈"
 
-#: ../data/main.ui.h:222
+#: data/main.ui:3568
 msgid "Insert the selected value"
 msgstr "插入所选值"
 
-#: ../data/main.ui.h:223
+#: data/main.ui:3591
 msgid "Insert the selected text"
 msgstr "插入所选文本"
 
-#: ../data/main.ui.h:224
+#: data/main.ui:3624
 msgid "Copy the selected text"
 msgstr "复制所选文本"
 
-#: ../data/main.ui.h:225
+#: data/main.ui:3652
 msgid "Add the selected value(s)"
 msgstr "加上所选值"
 
-#: ../data/main.ui.h:226
+#: data/main.ui:3674
 msgid "Subtract the selected value(s)"
 msgstr "减去所选值"
 
-#: ../data/main.ui.h:227
+#: data/main.ui:3696
 msgid "Multiply the selected value(s)"
 msgstr "乘以所选值"
 
-#: ../data/main.ui.h:228
+#: data/main.ui:3718
 msgid "Divide the the selected value(s)"
 msgstr "除以所选值"
 
-#: ../data/main.ui.h:229
+#: data/main.ui:3740
 msgid "Raise to the power of the selected value"
 msgstr "幂乘所选值"
 
-#: ../data/main.ui.h:230
+#: data/main.ui:3763
 msgid "Calculate the square root of the selected value"
 msgstr "计算所选值的平方根"
 
-#: ../data/main.ui.h:231 ../src/historyview.cc:3699
+#: data/main.ui:3802 src/historyview.cc:3699
 msgid "History"
 msgstr "历史"
 
-#: ../data/main.ui.h:233
+#. Fixes missing support for context in ui file translations
+#: data/main.ui:3832 src/stackview.cc:845
+msgctxt "Keypad"
+msgid "Add the two top values together"
+msgstr "将顶部两个值相加"
+
+#: data/main.ui:3855
 msgid "Subtract the top value from the second value"
 msgstr "从第二值减去顶部值"
 
-#: ../data/main.ui.h:234
+#: data/main.ui:3878
 msgid "Multiply the top two values"
 msgstr "将顶部两个值相乘"
 
-#: ../data/main.ui.h:235
+#: data/main.ui:3901
 msgid "Divide the second value by the top value"
 msgstr "将第二个值除以顶部值"
 
-#: ../data/main.ui.h:236
+#: data/main.ui:3924
 msgid "Raise the second value to the power of the top value"
 msgstr "将第二个值幂乘顶部值"
 
-#: ../data/main.ui.h:237
+#: data/main.ui:3964
 msgid "Negate the top value (Ctrl+-)"
 msgstr "取反顶部值(Ctrl+-)"
 
-#: ../data/main.ui.h:238
+#: data/main.ui:3988
 msgid "Invert the top value"
 msgstr "取倒顶部值"
 
-#: ../data/main.ui.h:239
+#: data/main.ui:4012
 msgid "Calculate the square root of the top value"
 msgstr "计算顶部值的平方根"
 
-#: ../data/main.ui.h:240
+#: data/main.ui:4045
 msgid "Calculate the sum of all values"
 msgstr "计算所有值的和"
 
-#: ../data/main.ui.h:241 ../src/stackview.cc:687 ../src/stackview.cc:747
+#: data/main.ui:4113 src/stackview.cc:687 src/stackview.cc:747
 msgid "Rotate the stack or move selected register up"
 msgstr "循环栈或上移选定寄存器"
 
-#: ../data/main.ui.h:242 ../src/stackview.cc:695 ../src/stackview.cc:748
+#: data/main.ui:4136 src/stackview.cc:695 src/stackview.cc:748
 msgid "Rotate the stack or move selected register down"
 msgstr "循环栈或下移选定寄存器"
 
-#: ../data/main.ui.h:243 ../src/stackview.cc:703 ../src/stackview.cc:749
+#: data/main.ui:4158 src/stackview.cc:703 src/stackview.cc:749
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr "交换顶部两个值或将所选值移到栈顶"
 
-#: ../data/main.ui.h:244 ../src/stackview.cc:711 ../src/stackview.cc:750
+#: data/main.ui:4196 src/stackview.cc:711 src/stackview.cc:750
 msgid "Copy the selected or top value to the top of the stack"
 msgstr "将选定的或顶部值复制到栈顶"
 
-#: ../data/main.ui.h:245 ../src/stackview.cc:719 ../src/stackview.cc:751
+#: data/main.ui:4218 src/stackview.cc:719 src/stackview.cc:751
 msgid "Enter the top value from before the last numeric operation"
 msgstr "输入上次数值操作前的顶部值"
 
-#: ../data/main.ui.h:246 ../src/stackview.cc:727 ../src/stackview.cc:752
+#: data/main.ui:4240 src/stackview.cc:727 src/stackview.cc:752
 msgid "Delete the top or selected value"
 msgstr "删除顶部值或所选值"
 
-#: ../data/main.ui.h:247
+#: data/main.ui:4272
 msgid "Edit the selected value"
 msgstr "编辑所选值"
 
-#: ../data/main.ui.h:248 ../src/stackview.cc:735 ../src/stackview.cc:753
+#: data/main.ui:4294 src/stackview.cc:735 src/stackview.cc:753
 msgid "Clear the RPN stack"
 msgstr "清空RPN栈"
 
-#: ../data/main.ui.h:250
+#: data/main.ui:4356
 msgid "Unit(s) and prefix to convert result to"
 msgstr "换算结果的单位和前缀"
 
-#: ../data/main.ui.h:252
+#: data/main.ui:4499
 msgid "Convert"
 msgstr "换算"
 
-#: ../data/main.ui.h:253
+#: data/main.ui:4520
 msgid "Continuous conversion"
 msgstr "连续换算"
 
-#: ../data/main.ui.h:254
+#: data/main.ui:4524
 msgid ""
 "Automatically convert result to the current unit expression as long as the "
 "conversion box is visible."
 msgstr "只要换算框可见，就自动将结果换算为当前单位表达式。"
 
-#: ../data/main.ui.h:255
+#: data/main.ui:4537
 msgid "Add prefix"
 msgstr "添加前缀"
 
-#: ../data/main.ui.h:256
+#: data/main.ui:4541
 msgid ""
 "If unit expression does not contain any prefixes, use optimal prefix.\n"
 "\n"
@@ -1797,896 +1814,916 @@ msgstr ""
 "\n"
 "这可以通过在单位表达式前加上 ? 或 0 来覆盖。"
 
-#: ../data/main.ui.h:259
+#: data/main.ui:4569
 msgid "Conversion"
 msgstr "换算"
 
-#: ../data/main.ui.h:260 ../src/keypad.cc:3568 ../src/keypad.cc:3598
+#: data/main.ui:4602 src/keypad.cc:3568 src/keypad.cc:3598
 msgid "Show/hide programming keypad"
 msgstr "显示/隐藏编程键盘"
 
-#: ../data/main.ui.h:261 ../src/datasetsdialog.cc:526
+#: data/main.ui:4658 data/main.ui:8714 data/main.ui:9427
+#: src/datasetsdialog.cc:526
 msgid "Exact"
 msgstr "精确"
 
-#: ../data/main.ui.h:262 ../src/expressioncompletion.cc:2070
-#: ../src/expressioncompletion.cc:2072
+#: data/main.ui:4678 src/expressioncompletion.cc:2070
+#: src/expressioncompletion.cc:2072
 msgid "Fraction"
 msgstr "分数"
 
-#: ../data/main.ui.h:263
+#: data/main.ui:4692
 msgid "Numerical display"
 msgstr "数值显示"
 
-#: ../data/main.ui.h:264
+#: data/main.ui:4698
 msgid "Pure"
 msgstr "纯净"
 
-#: ../data/main.ui.h:265
+#: data/main.ui:4714
 msgid "Number base"
 msgstr "数字进制"
 
-#: ../data/main.ui.h:266 ../data/setbase.ui.h:9
+#: data/main.ui:4723 data/setbase.ui:186
 msgid "Time format"
 msgstr "时间格式"
 
-#: ../data/main.ui.h:267
+#: data/main.ui:4724 data/main.ui:8913
 msgid "Roman"
 msgstr "罗马"
 
-#: ../data/main.ui.h:268
+#: data/main.ui:4808
 msgid "sin"
 msgstr "sin"
 
-#: ../data/main.ui.h:269
+#: data/main.ui:4859
 msgid "cos"
 msgstr "cos"
 
-#: ../data/main.ui.h:270
+#: data/main.ui:4910
 msgid "tan"
 msgstr "tan"
 
-#: ../data/main.ui.h:271
+#: data/main.ui:4961
 msgid "ln"
 msgstr "ln"
 
-#: ../data/main.ui.h:272
+#: data/main.ui:5005
 msgid "Equals"
 msgstr "等于"
 
-#: ../data/main.ui.h:273
+#: data/main.ui:5067
 msgid "sqrt"
 msgstr "sqrt"
 
-#: ../data/main.ui.h:274
+#: data/main.ui:5118
 msgid "sum"
 msgstr "sum"
 
-#: ../data/main.ui.h:275
+#: data/main.ui:5162 data/main.ui:5218 data/main.ui:5274
 msgid "Unknown variable"
 msgstr "未知变量"
 
-#: ../data/main.ui.h:276
+#: data/main.ui:5337
 msgid "mod"
 msgstr "mod"
 
-#: ../data/main.ui.h:278
+#: data/main.ui:5547
 msgid "mean"
 msgstr "mean"
 
-#: ../data/main.ui.h:279 ../src/keypad.cc:1017
+#: data/main.ui:5591 src/keypad.cc:1017
 msgid "Store result as a variable"
 msgstr "将结果储存为变量"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:281
+#: data/main.ui:5601 data/main.ui:6560
 msgid "STO"
 msgstr "STO"
 
-#: ../data/main.ui.h:282
+#: data/main.ui:5647
 msgid "Convert number bases"
 msgstr "换算数字进制"
 
-#: ../data/main.ui.h:283 ../src/util.cc:939
+#: data/main.ui:5756 src/util.cc:939
 msgid "Manage units"
 msgstr "管理单位"
 
-#: ../data/main.ui.h:285
+#. Fixes missing support for context in ui file translations
+#: data/main.ui:5766 src/keypad.cc:3609
+msgctxt "Manage units button"
+msgid "u"
+msgstr "u"
+
+#: data/main.ui:5863
 msgid "Conversion operator"
 msgstr "换算运算符"
 
-#: ../data/main.ui.h:287
+#: data/main.ui:5873 src/keypad.cc:3610
+msgctxt "Button for convert to operator"
+msgid "to"
+msgstr "to"
+
+#: data/main.ui:5974
 msgid "Kilogram"
 msgstr "千克"
 
-#: ../data/main.ui.h:288 ../data/nbases.ui.h:14 ../src/expressionstatus.cc:388
-#: ../src/keypad.cc:2851 ../src/keypad.cc:2852 ../src/keypad.cc:2853
+#: data/main.ui:6108 data/nbases.ui:280 src/expressionstatus.cc:391
+#: src/keypad.cc:2851 src/keypad.cc:2852 src/keypad.cc:2853
 msgid "BIN"
 msgstr "BIN"
 
-#: ../data/main.ui.h:289 ../data/nbases.ui.h:15 ../src/expressionstatus.cc:393
-#: ../src/keypad.cc:2855 ../src/keypad.cc:2856 ../src/keypad.cc:2857
+#: data/main.ui:6130 data/nbases.ui:294 src/expressionstatus.cc:396
+#: src/keypad.cc:2855 src/keypad.cc:2856 src/keypad.cc:2857
 msgid "OCT"
 msgstr "OCT"
 
-#: ../data/main.ui.h:290 ../data/nbases.ui.h:16 ../src/keypad.cc:2859
-#: ../src/keypad.cc:2860 ../src/keypad.cc:2861
+#: data/main.ui:6152 data/nbases.ui:308 src/keypad.cc:2859 src/keypad.cc:2860
+#: src/keypad.cc:2861
 msgid "DEC"
 msgstr "DEC"
 
-#: ../data/main.ui.h:291 ../data/preferences.ui.h:75
+#: data/main.ui:6204 data/preferences.ui:1046
 msgid "Two's complement input"
 msgstr "二的补码输入"
 
-#: ../data/main.ui.h:292 ../data/preferences.ui.h:74
+#: data/main.ui:6225 data/preferences.ui:1034
 msgid "Two's complement output"
 msgstr "二的补码输出"
 
-#: ../data/main.ui.h:293 ../data/nbases.ui.h:26 ../src/buttonseditdialog.cc:371
-#: ../src/keypad.cc:387 ../src/keypad.cc:388 ../src/keypad.cc:516
-#: ../src/keypad.cc:693
+#: data/main.ui:6339 data/nbases.ui:878 src/buttonseditdialog.cc:371
+#: src/keypad.cc:387 src/keypad.cc:388 src/keypad.cc:516 src/keypad.cc:693
 msgid "Bitwise Exclusive OR"
 msgstr "按位异或"
 
-#: ../data/main.ui.h:294 ../data/nbases.ui.h:32 ../src/keypad.cc:689
+#: data/main.ui:6382 data/nbases.ui:966 src/keypad.cc:689
 msgid "Bitwise Left Shift"
 msgstr "按位左移"
 
-#: ../data/main.ui.h:295 ../data/nbases.ui.h:33 ../src/keypad.cc:690
+#: data/main.ui:6404 data/nbases.ui:988 src/keypad.cc:690
 msgid "Bitwise Right Shift"
 msgstr "按位右移"
 
-#: ../data/main.ui.h:296
+#: data/main.ui:6882
 msgid "Floating point conversion"
 msgstr "浮点换算"
 
-#: ../data/main.ui.h:297
+#: data/main.ui:6950
 msgid "Show/hide left keypad"
 msgstr "显示/隐藏左侧键盘"
 
-#: ../data/main.ui.h:298
+#: data/main.ui:6975
 msgid "Show/hide right keypad"
 msgstr "显示/隐藏右侧键盘"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:300 ../data/nbases.ui.h:29 ../src/keypad.cc:523
+#: data/main.ui:7584 data/nbases.ui:929 src/keypad.cc:523
 msgid "DEL"
 msgstr "DEL"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:302 ../data/nbases.ui.h:31 ../src/keypad.cc:522
+#: data/main.ui:7606 data/nbases.ui:951 src/keypad.cc:522
 #, fuzzy
 msgid "C"
 msgstr "AC"
 
-#: ../data/main.ui.h:303 ../src/buttonseditdialog.cc:378 ../src/keypad.cc:524
+#: data/main.ui:7694 src/buttonseditdialog.cc:378 src/keypad.cc:524
 msgid "Previous result"
 msgstr "前一结果"
 
 #. Standard calculator button. Do not use more than three characters.
-#: ../data/main.ui.h:305 ../src/keypad.cc:524
+#: data/main.ui:7703 src/keypad.cc:524
 msgid "ANS"
 msgstr "ANS"
 
-#: ../data/main.ui.h:306 ../src/keypad.cc:477
+#: data/main.ui:8028 src/keypad.cc:477
 msgid "EXP"
 msgstr "EXP"
 
-#: ../data/main.ui.h:307
+#: data/main.ui:8362
 msgid "Add to Expression"
 msgstr "添加到表达式"
 
-#: ../data/main.ui.h:308
+#: data/main.ui:8382
 msgid "Persistent Keypad"
 msgstr "常驻键盘"
 
-#: ../data/main.ui.h:309
+#: data/main.ui:8394 data/main.ui:9315 data/main.ui:9599
 msgid "Edit"
 msgstr "编辑"
 
-#: ../data/main.ui.h:310 ../data/nbases.ui.h:28 ../src/buttonseditdialog.cc:377
-#: ../src/keypad.cc:523
+#: data/main.ui:8402 data/main.ui:8421 data/main.ui:8595 data/main.ui:9366
+#: data/main.ui:9606 data/nbases.ui:922 src/buttonseditdialog.cc:377
+#: src/keypad.cc:523
 msgid "Delete"
 msgstr "删除"
 
-#: ../data/main.ui.h:311
+#: data/main.ui:8414 data/main.ui:8588
 msgid "Update"
 msgstr "更新"
 
-#: ../data/main.ui.h:312
+#: data/main.ui:8432
 msgid "Insert Value"
 msgstr "插入值"
 
-#: ../data/main.ui.h:313
+#: data/main.ui:8440 data/main.ui:9243
 msgid "Insert Text"
 msgstr "插入文本"
 
-#: ../data/main.ui.h:314
+#: data/main.ui:8448
 msgid "Insert Parsed Text"
 msgstr "插入已解析文本"
 
-#: ../data/main.ui.h:315 ../src/searchprovider.cc:209
+#: data/main.ui:8456 data/main.ui:9265 data/main.ui:9548
+#: src/searchprovider.cc:209
 msgid "Copy"
 msgstr "复制"
 
-#: ../data/main.ui.h:316
+#: data/main.ui:8464 data/main.ui:8638 data/main.ui:9557
 msgid "Copy Unformatted ASCII"
 msgstr "复制未格式化的 ASCII"
 
-#: ../data/main.ui.h:317
+#: data/main.ui:8473
 msgid "Copy Full Text"
 msgstr "复制全文"
 
-#: ../data/main.ui.h:318
+#: data/main.ui:8487
 msgid "Search…"
 msgstr "搜索…"
 
-#: ../data/main.ui.h:319 ../src/historyview.cc:3221 ../src/historyview.cc:3236
+#: data/main.ui:8496 src/historyview.cc:3221 src/historyview.cc:3236
 msgid "Search by Date…"
 msgstr "按日期搜索…"
 
-#: ../data/main.ui.h:320 ../src/historyview.cc:3218
+#: data/main.ui:8511 src/historyview.cc:3218
 msgid "Add Bookmark…"
 msgstr "添加书签…"
 
-#: ../data/main.ui.h:321
+#: data/main.ui:8520
 msgid "Bookmarks"
 msgstr "书签"
 
-#: ../data/main.ui.h:322
+#: data/main.ui:8534
 msgid "Protect"
 msgstr "保护"
 
-#: ../data/main.ui.h:323 ../src/historyview.cc:3211
+#: data/main.ui:8543 src/historyview.cc:3211
 #, fuzzy
 msgid "Add Comment…"
 msgstr "添加书签…"
 
-#: ../data/main.ui.h:324
+#: data/main.ui:8558
 msgid "Move To Top"
 msgstr "移动到顶部"
 
-#: ../data/main.ui.h:325
+#: data/main.ui:8567
 msgid "Remove"
 msgstr "移除"
 
-#: ../data/main.ui.h:326
+#: data/main.ui:8576
 msgid "Clear All"
 msgstr "全部清除"
 
-#: ../data/main.ui.h:327
+#: data/main.ui:8605
 #, fuzzy
 msgid "Show Parsed Expression"
 msgstr "已解析表达式"
 
-#: ../data/main.ui.h:328
+#: data/main.ui:8614
 #, fuzzy
 msgid "Show Result"
 msgstr "结果"
 
-#: ../data/main.ui.h:329
+#: data/main.ui:8629
 msgid "_Copy"
 msgstr "复制(_C)"
 
-#: ../data/main.ui.h:330
+#: data/main.ui:8647
 msgid "_Store…"
 msgstr "存储(_S)…"
 
-#: ../data/main.ui.h:331
+#: data/main.ui:8656
 msgid "Save Image…"
 msgstr "保存图像…"
 
-#: ../data/main.ui.h:332
+#: data/main.ui:8671
 msgid "_Factorize"
 msgstr "因子分解(_F)"
 
-#: ../data/main.ui.h:333
+#: data/main.ui:8680
 msgid "_Expand"
 msgstr "展开(_E)"
 
-#: ../data/main.ui.h:334
+#: data/main.ui:8738
 msgid "_Normal"
 msgstr "常规(_N)"
 
-#: ../data/main.ui.h:335
+#: data/main.ui:8758
 msgid "Sc_ientific"
 msgstr "科学(_i)"
 
-#: ../data/main.ui.h:336
+#: data/main.ui:8768
 msgid "Purel_y Scientific"
 msgstr "纯科学(_y)"
 
-#: ../data/main.ui.h:337
+#: data/main.ui:8778
 msgid "Simp_le"
 msgstr "简单(_l)"
 
-#: ../data/main.ui.h:338
+#: data/main.ui:8844
 msgid "_Binary"
 msgstr "二进制(_B)"
 
-#: ../data/main.ui.h:339
+#: data/main.ui:8853
 msgid "_Octal"
 msgstr "八进制(_O)"
 
-#: ../data/main.ui.h:340
+#: data/main.ui:8863
 msgid "_Decimal"
 msgstr "十进制(_D)"
 
-#: ../data/main.ui.h:341
+#: data/main.ui:8883
 msgid "_Hexadecimal"
 msgstr "十六进制(_H)"
 
-#: ../data/main.ui.h:342 ../src/expressioncompletion.cc:2048
+#: data/main.ui:8939 src/expressioncompletion.cc:2048
 msgid "Decimal Fraction"
 msgstr "十进分数"
 
-#: ../data/main.ui.h:343
+#: data/main.ui:8949
 msgid "Exact Decimal Fraction"
 msgstr "精确十进分数"
 
-#: ../data/main.ui.h:344
+#: data/main.ui:8959
 msgid "Simple Fraction"
 msgstr "简单分数"
 
-#: ../data/main.ui.h:345
+#: data/main.ui:8969
 msgid "Mixed Fraction"
 msgstr "混合分数"
 
-#: ../data/main.ui.h:346
+#: data/main.ui:8993
 msgid "_Abbreviate Names"
 msgstr "缩写名称(_A)"
 
-#: ../data/main.ui.h:347
+#: data/main.ui:9008
 msgid "C_onvert…"
 msgstr "换算…(_o)"
 
-#: ../data/main.ui.h:348
+#: data/main.ui:9017
 msgid "Convert to Base _Units"
 msgstr "换算为基本单位(_U)"
 
-#: ../data/main.ui.h:349
+#: data/main.ui:9026
 msgid "Convert _to Optimal Unit"
 msgstr "换算为最优单位(_t)"
 
-#: ../data/main.ui.h:350
+#: data/main.ui:9035
 msgid "Use Optimal Prefix"
 msgstr "使用最优前缀"
 
-#: ../data/main.ui.h:351
+#: data/main.ui:9043
 msgid "Convert to"
 msgstr "换算为"
 
-#: ../data/main.ui.h:352
+#: data/main.ui:9081
 msgid "Convert to UTC"
 msgstr "换算为UTC"
 
-#: ../data/main.ui.h:353
+#: data/main.ui:9090
 msgid "Convert to Calendars"
 msgstr "换算为日历"
 
-#: ../data/main.ui.h:354
+#: data/main.ui:9133
 msgid "Use prefixes for all units"
 msgstr "对所有单位使用前缀"
 
-#: ../data/main.ui.h:355
+#: data/main.ui:9148
 msgid "Enable All SI Prefi_xes"
 msgstr "启用所有SI前缀(_x)"
 
-#: ../data/main.ui.h:356
+#: data/main.ui:9206
 msgid "View/Edit Matrix"
 msgstr "查看/编辑矩阵"
 
-#: ../data/main.ui.h:357
+#: data/main.ui:9215
 msgid "View/Edit Vector"
 msgstr "查看/编辑矢量"
 
-#: ../data/main.ui.h:358
+#: data/main.ui:9230 data/main.ui:9533
 #, fuzzy
 msgid "Show Parsed Expression in Result Field"
 msgstr "表达式字段为空。"
 
-#: ../data/main.ui.h:359
+#: data/main.ui:9251
 msgid "Copy Text"
 msgstr "复制文本"
 
-#: ../data/main.ui.h:360
+#: data/main.ui:9274
 msgid "To Top"
 msgstr "到顶部"
 
-#: ../data/main.ui.h:361
+#: data/main.ui:9282
 msgid "Swap"
 msgstr "交换"
 
-#: ../data/main.ui.h:362
+#: data/main.ui:9291
 msgid "Up"
 msgstr "向上"
 
-#: ../data/main.ui.h:363
+#: data/main.ui:9300
 msgid "Down"
 msgstr "向下"
 
-#: ../data/main.ui.h:364
+#: data/main.ui:9324
 msgid "Negate"
 msgstr "取反"
 
-#: ../data/main.ui.h:365
+#: data/main.ui:9333
 msgid "Invert"
 msgstr "取倒"
 
-#: ../data/main.ui.h:366
+#: data/main.ui:9342
 msgid "Square"
 msgstr "平方"
 
-#: ../data/main.ui.h:367
+#: data/main.ui:9351
 msgid "Square Root"
 msgstr "平方根"
 
-#: ../data/main.ui.h:368
+#: data/main.ui:9374
 msgid "Clear Stack"
 msgstr "清空栈"
 
-#: ../data/main.ui.h:369
+#: data/main.ui:9511
 msgid "Select Number Base…"
 msgstr "选择数字进制…"
 
-#: ../data/main.ui.h:370
+#: data/main.ui:9524
 #, fuzzy
 msgid "Display Expression Status"
 msgstr "显示表达式状态"
 
-#: ../data/main.ui.h:371 ../src/util.cc:941
+#: data/main.ui:9570 src/util.cc:941
 msgid "Store result"
 msgstr "存储结果"
 
 #. Add current result to variable value
-#: ../data/main.ui.h:373
+#: data/main.ui:9577
 msgid "Add result"
 msgstr "加上结果"
 
 #. Subtruct current result from variable value
-#: ../data/main.ui.h:375
+#: data/main.ui:9585
 msgid "Subtract result"
 msgstr "减去结果"
 
-#: ../data/matrix.ui.h:4 ../data/units.ui.h:19 ../data/variables.ui.h:14
-#: ../src/insertfunctiondialog.cc:334 ../src/insertfunctiondialog.cc:455
+#: data/matrix.ui:56 data/units.ui:529 data/variables.ui:338
+#: src/insertfunctiondialog.cc:334 src/insertfunctiondialog.cc:455
 msgid "_Insert"
 msgstr "插入(_I)"
 
-#: ../data/matrix.ui.h:5
+#: data/matrix.ui:61
 msgid "Insert the matrix/vector into the expression"
 msgstr "将矩阵/向量插入表达式"
 
-#: ../data/matrix.ui.h:6 ../data/matrixedit.ui.h:6 ../src/matrixdialog.cc:280
-#: ../src/matrixdialog.cc:288
+#: data/matrix.ui:96 data/matrixedit.ui:120 src/matrixdialog.cc:280
+#: src/matrixdialog.cc:288
 msgid "Elements"
 msgstr "元素"
 
-#: ../data/matrix.ui.h:7 ../data/matrixedit.ui.h:8
+#: data/matrix.ui:114 data/matrixedit.ui:186
 msgid "Number of rows in this matrix (rows displayed for vectors)"
 msgstr "此矩阵的行数(向量显示的行)"
 
-#: ../data/matrix.ui.h:8 ../data/matrixedit.ui.h:9
+#: data/matrix.ui:148 data/matrixedit.ui:221
 msgid "Number of columns in this matrix (columns displayed for vectors)"
 msgstr "此矩阵的列数(向量显示的列)"
 
-#: ../data/matrix.ui.h:9 ../data/matrixedit.ui.h:11
+#: data/matrix.ui:190 data/matrix.ui:208 data/matrixedit.ui:256
+#: data/matrixedit.ui:275
 msgid "If this is a matrix or vector"
 msgstr "若这是矩阵或向量"
 
-#: ../data/matrix.ui.h:11 ../data/matrixedit.ui.h:13
+#: data/matrix.ui:268 data/matrixedit.ui:305
 msgid "Current element:"
 msgstr "当前元素:"
 
-#: ../data/matrixedit.ui.h:1 ../src/matrixeditdialog.cc:404
+#: data/matrixedit.ui:22 src/matrixeditdialog.cc:404
 msgid "Edit Matrix"
 msgstr "编辑矩阵"
 
-#: ../data/matrixedit.ui.h:7 ../data/variableedit.ui.h:6
+#: data/matrixedit.ui:161 data/variableedit.ui:103
 msgid "Name used to reference this variable in expressions"
 msgstr "用于在表达式中引用的变量名"
 
-#: ../data/matrixedit.ui.h:14 ../data/unknownedit.ui.h:21
-#: ../data/variableedit.ui.h:8
+#: data/matrixedit.ui:333 data/unknownedit.ui:199 data/variableedit.ui:155
 msgid "Temporary"
 msgstr "临时"
 
-#: ../data/matrixedit.ui.h:16 ../data/variableedit.ui.h:15
+#: data/matrixedit.ui:403 data/variableedit.ui:295
 msgid "Hide variable"
 msgstr "隐藏变量"
 
-#: ../data/matrixedit.ui.h:17 ../data/variableedit.ui.h:16
+#: data/matrixedit.ui:406 data/variableedit.ui:298
 #, fuzzy
 msgid "If this variable shall be hidden in menus"
 msgstr "若要该单位在菜单中隐藏"
 
-#: ../data/matrixedit.ui.h:19 ../data/variableedit.ui.h:10
+#: data/matrixedit.ui:436 data/variableedit.ui:202
 msgid "The category this variable belongs to"
 msgstr "此变量所属的类别"
 
-#: ../data/namesedit.ui.h:1
+#: data/namesedit.ui:8
 msgid "Names"
 msgstr "名称"
 
-#: ../data/nbases.ui.h:1 ../data/setbase.ui.h:1
-#: ../src/expressioncompletion.cc:2033
+#: data/nbases.ui:8 data/setbase.ui:22 src/expressioncompletion.cc:2033
 msgid "Number Bases"
 msgstr "数字进制"
 
-#: ../data/nbases.ui.h:6
+#: data/nbases.ui:102
 msgid "Binary value"
 msgstr "二进制值"
 
-#: ../data/nbases.ui.h:7
+#: data/nbases.ui:118
 msgid "Decimal value"
 msgstr "十进制值"
 
-#: ../data/nbases.ui.h:8
+#: data/nbases.ui:134 data/nbases.ui:163 data/nbases.ui:193
 msgid "Octal value"
 msgstr "八进制值"
 
-#: ../data/nbases.ui.h:9 ../data/setbase.ui.h:10
-#: ../src/numberbasesdialog.cc:214 ../src/numberbasesdialog.cc:256
+#: data/nbases.ui:151 data/setbase.ui:203 data/setbase.ui:408
+#: src/numberbasesdialog.cc:214 src/numberbasesdialog.cc:256
 msgid "Roman numerals"
 msgstr "罗马数字"
 
-#: ../data/nbases.ui.h:12
+#: data/nbases.ui:222
 msgid "Hexadecimal value"
 msgstr "十六进制值"
 
-#: ../data/nbases.ui.h:13
+#: data/nbases.ui:246
 #, fuzzy
 msgid "Show/hide keypad"
 msgstr "显示/隐藏左侧键盘"
 
-#: ../data/nbases.ui.h:17 ../src/expressionstatus.cc:398
+#: data/nbases.ui:322 src/expressionstatus.cc:401
 msgid "DUO"
 msgstr "DUO"
 
-#: ../data/nbases.ui.h:18 ../src/expressionstatus.cc:403 ../src/keypad.cc:2863
-#: ../src/keypad.cc:2864 ../src/keypad.cc:2865
+#: data/nbases.ui:337 src/expressionstatus.cc:406 src/keypad.cc:2863
+#: src/keypad.cc:2864 src/keypad.cc:2865
 msgid "HEX"
 msgstr "HEX"
 
-#: ../data/nbases.ui.h:19
+#: data/nbases.ui:351
 msgid "ROM"
 msgstr "ROM"
 
-#: ../data/nbases.ui.h:21 ../src/buttonseditdialog.cc:375 ../src/keypad.cc:520
+#. Fixes missing support for context in ui file translations
+#. Mathematical operation
+#: data/nbases.ui:746 src/buttonseditdialog.cc:372 src/keypad.cc:517
+#: src/numberbasesdialog.cc:866
+msgctxt "Keypad"
+msgid "Add"
+msgstr "加"
+
+#: data/nbases.ui:768 src/buttonseditdialog.cc:375 src/keypad.cc:520
 msgid "Subtract"
 msgstr "减"
 
-#: ../data/nbases.ui.h:22 ../src/buttonseditdialog.cc:371 ../src/keypad.cc:516
+#: data/nbases.ui:790 src/buttonseditdialog.cc:371 src/keypad.cc:516
 msgid "Multiply"
 msgstr "乘"
 
-#: ../data/nbases.ui.h:23 ../src/buttonseditdialog.cc:370 ../src/keypad.cc:515
+#: data/nbases.ui:812 src/buttonseditdialog.cc:370 src/keypad.cc:515
 msgid "Divide"
 msgstr "除"
 
-#: ../data/nbases.ui.h:24 ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
-#: ../src/keypad.cc:691 ../src/keypad.cc:1008
+#: data/nbases.ui:834 src/buttonseditdialog.cc:372 src/keypad.cc:517
+#: src/keypad.cc:691 src/keypad.cc:1008
 msgid "Bitwise AND"
 msgstr "按位与"
 
-#: ../data/nbases.ui.h:25 ../src/buttonseditdialog.cc:375 ../src/keypad.cc:520
-#: ../src/keypad.cc:692 ../src/keypad.cc:1009
+#: data/nbases.ui:856 src/buttonseditdialog.cc:375 src/keypad.cc:520
+#: src/keypad.cc:692 src/keypad.cc:1009
 msgid "Bitwise OR"
 msgstr "按位或"
 
-#: ../data/nbases.ui.h:27 ../src/keypad.cc:694 ../src/keypad.cc:1010
+#: data/nbases.ui:900 src/keypad.cc:694 src/keypad.cc:1010
 msgid "Bitwise NOT"
 msgstr "按位非"
 
-#: ../data/nbases.ui.h:30 ../data/percentage.ui.h:4
-#: ../src/buttonseditdialog.cc:376 ../src/expressionedit.cc:1423
-#: ../src/keypad.cc:522
+#: data/nbases.ui:944 data/percentage.ui:41 src/buttonseditdialog.cc:376
+#: src/expressionedit.cc:1423 src/keypad.cc:522
 msgid "Clear"
 msgstr "清除"
 
-#: ../data/percentage.ui.h:1
+#: data/percentage.ui:6
 msgid ""
 "Enter two values, of which at most one is a percentage, and the others will "
 "be calculated for you."
 msgstr "输入两个值，其中最多一个是百分比，其他值会帮你计算。"
 
-#: ../data/percentage.ui.h:2
+#: data/percentage.ui:11
 msgid "Percentage"
 msgstr "百分比"
 
-#: ../data/percentage.ui.h:3
+#: data/percentage.ui:26
 msgid "Calculate"
 msgstr "计算"
 
-#: ../data/percentage.ui.h:6
+#: data/percentage.ui:97
 msgid "Value 1"
 msgstr "甲值"
 
-#: ../data/percentage.ui.h:7
+#: data/percentage.ui:109
 msgid "2 compared to 1"
 msgstr "乙相比于甲"
 
-#: ../data/percentage.ui.h:8
+#: data/percentage.ui:137 data/percentage.ui:281
 msgid "Change from 1 to 2"
 msgstr "甲转变为乙"
 
-#: ../data/percentage.ui.h:9
+#: data/percentage.ui:181
 msgid "Value 2"
 msgstr "乙值"
 
-#: ../data/percentage.ui.h:10
+#: data/percentage.ui:209
 msgid "1 compared to 2"
 msgstr "甲相比于乙"
 
-#: ../data/percentage.ui.h:11
+#: data/percentage.ui:253
 msgid "Change from 2 to 1"
 msgstr "乙转变为甲"
 
-#: ../data/plot.ui.h:1
+#: data/plot.ui:50
 msgid "Plot"
 msgstr "作图"
 
-#: ../data/plot.ui.h:3 ../src/menubar.cc:1217 ../src/plotdialog.cc:378
-#: ../src/plotdialog.cc:380 ../src/resultview.cc:548 ../src/resultview.cc:550
+#: data/plot.ui:82 src/menubar.cc:1217 src/plotdialog.cc:378
+#: src/plotdialog.cc:380 src/resultview.cc:548 src/resultview.cc:550
 msgid "_Save"
 msgstr "保存(_S)"
 
-#: ../data/plot.ui.h:4
+#: data/plot.ui:87
 msgid "Save as png, svg, postscript, eps, latex or fig"
 msgstr "另存为png，svg，postscript，eps，latex或fig"
 
-#: ../data/plot.ui.h:7 ../src/dataseteditdialog.cc:224 ../src/plotdialog.cc:773
+#: data/plot.ui:156 data/plot.ui:856 src/dataseteditdialog.cc:224
+#: src/plotdialog.cc:773
 msgid "Title"
 msgstr "标题"
 
-#: ../data/plot.ui.h:10
+#: data/plot.ui:252
 msgid "Vector/matrix"
 msgstr "向量/矩阵"
 
-#: ../data/plot.ui.h:11
+#: data/plot.ui:269
 msgid "Paired matrix"
 msgstr "成对矩阵"
 
-#: ../data/plot.ui.h:12
+#: data/plot.ui:286
 msgid "Rows"
 msgstr "行"
 
-#: ../data/plot.ui.h:13
+#: data/plot.ui:290
 msgid "if you want to split matrix in rows instead of columns"
 msgstr "若要按行而不是按列拆分矩阵"
 
-#: ../data/plot.ui.h:14
+#: data/plot.ui:318
 msgid "X variable"
 msgstr "X变量"
 
-#: ../data/plot.ui.h:15
+#: data/plot.ui:330
 msgid "The variable name used in expression"
 msgstr "表达式中使用的变量名"
 
-#: ../data/plot.ui.h:16
+#: data/plot.ui:360
 msgid "Style"
 msgstr "风格"
 
-#: ../data/plot.ui.h:17
+#: data/plot.ui:374
 msgid "Line"
 msgstr "线"
 
-#: ../data/plot.ui.h:18
+#: data/plot.ui:375
 msgid "Points"
 msgstr "点"
 
-#: ../data/plot.ui.h:19
+#: data/plot.ui:376
 msgid "Line with points"
 msgstr "点+线"
 
-#: ../data/plot.ui.h:20
+#: data/plot.ui:377
 msgid "Boxes/bars"
 msgstr "框/条"
 
-#: ../data/plot.ui.h:21
+#: data/plot.ui:378
 msgid "Histogram"
 msgstr "直方图"
 
-#: ../data/plot.ui.h:22
+#: data/plot.ui:379
 msgid "Steps"
 msgstr "步骤"
 
-#: ../data/plot.ui.h:23
+#: data/plot.ui:380
 msgid "Candlesticks"
 msgstr "K线图"
 
-#: ../data/plot.ui.h:24
+#: data/plot.ui:381
 msgid "Dots"
 msgstr "小点"
 
-#: ../data/plot.ui.h:25
+#: data/plot.ui:382
 msgid "Polar"
 msgstr "极坐标"
 
-#: ../data/plot.ui.h:26
+#: data/plot.ui:409
 msgid "Smoothing"
 msgstr "平滑"
 
-#: ../data/plot.ui.h:28
+#: data/plot.ui:424
 msgid "Monotonic"
 msgstr "单调"
 
-#: ../data/plot.ui.h:29
+#: data/plot.ui:425
 msgid "Natural cubic splines"
 msgstr "自然三次样条"
 
-#: ../data/plot.ui.h:30
+#: data/plot.ui:426
 msgid "Bezier"
 msgstr "贝塞尔"
 
-#: ../data/plot.ui.h:31
+#: data/plot.ui:427
 msgid "Bezier (monotonic)"
 msgstr "贝塞尔(单调)"
 
-#: ../data/plot.ui.h:32
+#: data/plot.ui:454
 msgid "Y-axis"
 msgstr "Y轴"
 
-#: ../data/plot.ui.h:33
+#: data/plot.ui:469
 msgid "Primary"
 msgstr "主坐标轴"
 
-#: ../data/plot.ui.h:34
+#: data/plot.ui:485
 msgid "Secondary"
 msgstr "次坐标轴"
 
-#: ../data/plot.ui.h:38
+#: data/plot.ui:608
 msgid "Data"
 msgstr "数据"
 
-#: ../data/plot.ui.h:39
+#: data/plot.ui:633
 msgid "Minimum x value"
 msgstr "最小x值"
 
-#: ../data/plot.ui.h:40
+#: data/plot.ui:673
 msgid "Maximum x value"
 msgstr "最大x值"
 
-#: ../data/plot.ui.h:41
+#: data/plot.ui:710
 msgid "Sampling rate"
 msgstr "采样率"
 
-#: ../data/plot.ui.h:42
+#: data/plot.ui:756
 msgid "Step size"
 msgstr "步长"
 
-#: ../data/plot.ui.h:43
+#: data/plot.ui:830
 msgid "Function Range"
 msgstr "函数范围"
 
-#: ../data/plot.ui.h:44
+#: data/plot.ui:892
 msgid "Display grid"
 msgstr "显示网格"
 
-#: ../data/plot.ui.h:45
+#: data/plot.ui:908
 msgid "Display full border"
 msgstr "显示完整边框"
 
-#: ../data/plot.ui.h:46
+#: data/plot.ui:936
 msgid "Minimum y value"
 msgstr "最小y值"
 
-#: ../data/plot.ui.h:47
+#: data/plot.ui:983
 msgid "Maximum y value"
 msgstr "最大y值"
 
-#: ../data/plot.ui.h:48
+#: data/plot.ui:1030
 msgid "Logarithmic x scale"
 msgstr "对数x刻度"
 
-#: ../data/plot.ui.h:49
+#: data/plot.ui:1076
 msgid "Logarithmic y scale"
 msgstr "对数y刻度"
 
-#: ../data/plot.ui.h:50
+#: data/plot.ui:1125
 msgid "X-axis label"
 msgstr "X轴标签"
 
-#: ../data/plot.ui.h:51
+#: data/plot.ui:1164
 msgid "Y-axis label"
 msgstr "Y轴标签"
 
-#: ../data/plot.ui.h:52
+#: data/plot.ui:1203
 msgid "Line width"
 msgstr "线宽"
 
-#: ../data/plot.ui.h:53
+#: data/plot.ui:1245
 msgid "Color display"
 msgstr "彩色显示"
 
-#: ../data/plot.ui.h:54
+#: data/plot.ui:1260
 msgid "Color"
 msgstr "颜色"
 
-#: ../data/plot.ui.h:55
+#: data/plot.ui:1276
 msgid "Monochrome"
 msgstr "单色"
 
-#: ../data/plot.ui.h:56
+#: data/plot.ui:1315
 msgid "Legend placement"
 msgstr "图例位置"
 
-#: ../data/plot.ui.h:57
+#: data/plot.ui:1330
 msgid "Top-left"
 msgstr "左上"
 
-#: ../data/plot.ui.h:58
+#: data/plot.ui:1331
 msgid "Top-right"
 msgstr "右上"
 
-#: ../data/plot.ui.h:59
+#: data/plot.ui:1332
 msgid "Bottom-left"
 msgstr "左下"
 
-#: ../data/plot.ui.h:60
+#: data/plot.ui:1333
 msgid "Bottom-right"
 msgstr "右下"
 
-#: ../data/plot.ui.h:61
+#: data/plot.ui:1334
 msgid "Below"
 msgstr "下面"
 
-#: ../data/plot.ui.h:62
+#: data/plot.ui:1335
 msgid "Outside"
 msgstr "外面"
 
-#: ../data/plot.ui.h:63
+#: data/plot.ui:1388
 msgid "Appearance"
 msgstr "外观"
 
-#: ../data/precision.ui.h:1
+#: data/precision.ui:15 data/precision.ui:88
 msgid "Precision"
 msgstr "精确度"
 
-#: ../data/precision.ui.h:4
+#: data/precision.ui:48
 msgid "_Recalculate"
 msgstr "重新计算(_R)"
 
-#: ../data/precision.ui.h:5
+#: data/precision.ui:53 data/precision.ui:58
 msgid "Recalculate expression"
 msgstr "重新计算表达式"
 
-#: ../data/precision.ui.h:6
+#: data/precision.ui:99
 msgid ""
 "The number of significant digits to display/calculate (simple arithmetics "
 "are always calculated exact)"
 msgstr "要显示/计算的有效位数(简单运算总是精确计算)"
 
-#: ../data/preferences.ui.h:1
+#: data/preferences.ui:82
 msgid "Preferences"
 msgstr "首选项"
 
-#: ../data/preferences.ui.h:3
+#: data/preferences.ui:135
 msgid "Save definitions on exit"
 msgstr "退出时保存定义"
 
-#: ../data/preferences.ui.h:4
+#: data/preferences.ui:139
 msgid ""
 "If changes to functions, units and variables shall be saved automatically"
 msgstr "若要函数、单位和变量在发生变化时自动保存"
 
-#: ../data/preferences.ui.h:5
+#: data/preferences.ui:152
 msgid "Clear history on exit"
 msgstr "退出时清除历史记录"
 
-#: ../data/preferences.ui.h:6
+#: data/preferences.ui:176
 msgid "Max history lines saved"
 msgstr ""
 
-#: ../data/preferences.ui.h:7
+#: data/preferences.ui:210
 msgid "Save history to separate file"
 msgstr ""
 
-#: ../data/preferences.ui.h:8
+#: data/preferences.ui:226
 msgid "Allow multiple instances"
 msgstr "允许多个实例"
 
-#: ../data/preferences.ui.h:9
+#: data/preferences.ui:230
 msgid ""
 "Allow multiple instances of the Qalculate! main window to be open at the "
 "same time.\n"
@@ -2698,41 +2735,41 @@ msgstr ""
 "\n"
 "请注意，只有最后关闭的实例模式、历史和定义会被保存。"
 
-#: ../data/preferences.ui.h:12
+#: data/preferences.ui:245
 msgid "Notify when a new version is available"
 msgstr "当有新版本时通知我"
 
-#: ../data/preferences.ui.h:13
+#: data/preferences.ui:261
 msgid "Save mode on exit"
 msgstr "退出时保存模式"
 
-#: ../data/preferences.ui.h:14
+#: data/preferences.ui:265
 msgid "If the mode of the calculator shall be restored"
 msgstr "若要恢复计算器模式"
 
-#: ../data/preferences.ui.h:15
+#: data/preferences.ui:278
 msgid "Close application with Escape key"
 msgstr ""
 
-#: ../data/preferences.ui.h:16
+#: data/preferences.ui:282
 #, fuzzy
 msgid ""
 "Close the application with the Escape key if the expression field is empty."
 msgstr "当主窗口关闭时，将应用程序隐藏在系统托盘中"
 
-#: ../data/preferences.ui.h:17
+#: data/preferences.ui:295
 msgid "Use keyboard keys for RPN"
 msgstr "用键盘键操作RPN"
 
-#: ../data/preferences.ui.h:18
+#: data/preferences.ui:299
 msgid "Use keyboard operator keys for RPN operations (+-*/^)."
 msgstr "使用键盘操作键进行RPN操作(+-*/^)。"
 
-#: ../data/preferences.ui.h:19
+#: data/preferences.ui:313
 msgid "Use caret for bitwise XOR"
 msgstr "插入符号(^)作为按位异或"
 
-#: ../data/preferences.ui.h:20
+#: data/preferences.ui:317
 msgid ""
 "Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The "
 "exponentiation operator (^) can always be input using Ctrl+*."
@@ -2740,591 +2777,587 @@ msgstr ""
 "使用键盘上的插入符(^)输入XOR (⊻)(否则使用Ctrl+^)。指数运算符(^)总是可以用"
 "Ctrl+*输入。"
 
-#: ../data/preferences.ui.h:21
+#: data/preferences.ui:341
 #, fuzzy
 msgid "Expression in history"
 msgstr "表达式"
 
-#: ../data/preferences.ui.h:22
+#: data/preferences.ui:354
 msgid "Parsed"
 msgstr ""
 
-#: ../data/preferences.ui.h:23
+#: data/preferences.ui:355
 #, fuzzy
 msgid "Entered"
 msgstr "开始"
 
-#: ../data/preferences.ui.h:24
+#: data/preferences.ui:356
 msgid "Entered + parsed"
 msgstr ""
 
-#: ../data/preferences.ui.h:25
+#: data/preferences.ui:370
 #, fuzzy
 msgid "Expression after calculation"
 msgstr "要计算的表达式"
 
-#: ../data/preferences.ui.h:26
+#: data/preferences.ui:383
 #, fuzzy
 msgid "Keep expression"
 msgstr "expression"
 
-#: ../data/preferences.ui.h:27 ../src/conversionview.cc:281
-#: ../src/expressionedit.cc:812
+#: data/preferences.ui:384 src/conversionview.cc:281 src/expressionedit.cc:812
 msgid "Clear expression"
 msgstr "清除表达式"
 
-#: ../data/preferences.ui.h:28
+#: data/preferences.ui:385
 msgid "Replace with result"
 msgstr ""
 
-#: ../data/preferences.ui.h:29
+#: data/preferences.ui:386
 msgid "Replace with result if shorter"
 msgstr ""
 
-#: ../data/preferences.ui.h:30
+#: data/preferences.ui:410
 msgid "Add calculate-as-you-type result to history"
 msgstr "向历史记录中添加“输入时计算”的结果。"
 
-#: ../data/preferences.ui.h:31
+#: data/preferences.ui:430
 msgid "Delay:"
 msgstr "延时："
 
-#: ../data/preferences.ui.h:32
+#: data/preferences.ui:470
 msgid "Time limit for plot:"
 msgstr "作图时间限制:"
 
-#: ../data/preferences.ui.h:33
+#: data/preferences.ui:507
 msgid "Behavior"
 msgstr "行为"
 
-#: ../data/preferences.ui.h:34
+#: data/preferences.ui:524
 msgid "Use system tray icon"
 msgstr "使用系统托盘图标"
 
-#: ../data/preferences.ui.h:35
+#: data/preferences.ui:527
 msgid "Hides the application in the system tray when the main window is closed"
 msgstr "当主窗口关闭时，将应用程序隐藏在系统托盘中"
 
-#: ../data/preferences.ui.h:36
+#: data/preferences.ui:540
 msgid "Hide on startup"
 msgstr "启动时隐藏"
 
-#: ../data/preferences.ui.h:37
+#: data/preferences.ui:555
 msgid "Remember window position"
 msgstr "记住窗口位置"
 
-#: ../data/preferences.ui.h:38
+#: data/preferences.ui:571
 msgid "Keep above other windows"
 msgstr "窗口置顶"
 
-#: ../data/preferences.ui.h:39
+#: data/preferences.ui:575
 msgid ""
 "Keep the main window above other windows (depending on platform and settings "
 "this might not work)"
 msgstr "保持主窗口置顶(在有的系统及设置下可能不起作用)"
 
-#: ../data/preferences.ui.h:40
+#: data/preferences.ui:588
 msgid "Enable Unicode symbols"
 msgstr "启用Unicode符号"
 
-#: ../data/preferences.ui.h:41
+#: data/preferences.ui:592
 msgid "Disable this if you have problems with some fancy characters"
 msgstr "若您觉得某些花哨的字符有问题，请禁用此功能"
 
-#: ../data/preferences.ui.h:42
+#: data/preferences.ui:605
 msgid "Ignore system language (requires restart)"
 msgstr "忽略系统语言(需要重启)"
 
-#: ../data/preferences.ui.h:43
+#: data/preferences.ui:631
 msgid "Button padding"
 msgstr "按钮填充"
 
-#: ../data/preferences.ui.h:44 ../src/buttonseditdialog.cc:183
-#: ../src/datasetsdialog.cc:524 ../src/modes.cc:46 ../src/modes.cc:57
-#: ../src/util.cc:1040
+#: data/preferences.ui:651 data/preferences.ui:689 data/preferences.ui:762
+#: data/preferences.ui:792 src/buttonseditdialog.cc:183
+#: src/datasetsdialog.cc:524 src/modes.cc:46 src/modes.cc:57 src/util.cc:1040
 msgid "Default"
 msgstr "默认值"
 
-#: ../data/preferences.ui.h:45
+#: data/preferences.ui:674
 msgid "/"
 msgstr "/"
 
-#: ../data/preferences.ui.h:46
+#: data/preferences.ui:720
 msgid "Application name"
 msgstr "应用程序名称"
 
-#: ../data/preferences.ui.h:47
+#: data/preferences.ui:721
 msgid "Result"
 msgstr "结果"
 
-#: ../data/preferences.ui.h:48
+#: data/preferences.ui:722
 msgid "Application name + result"
 msgstr "应用程序名称+结果"
 
-#: ../data/preferences.ui.h:49 ../src/menubar.cc:1265
+#: data/preferences.ui:723 src/menubar.cc:1265
 msgid "Mode"
 msgstr "模式"
 
-#: ../data/preferences.ui.h:50
+#: data/preferences.ui:724
 msgid "Application name + mode"
 msgstr "应用程序名称+模式"
 
-#: ../data/preferences.ui.h:51
+#: data/preferences.ui:738
 msgid "Window title"
 msgstr "窗口标题"
 
-#: ../data/preferences.ui.h:52
+#: data/preferences.ui:750
 msgid "Theme"
 msgstr "主题"
 
-#: ../data/preferences.ui.h:53
+#: data/preferences.ui:763
 msgid "Light"
 msgstr "浅色"
 
-#: ../data/preferences.ui.h:54
+#: data/preferences.ui:764
 msgid "Dark"
 msgstr "深色"
 
-#: ../data/preferences.ui.h:55
+#: data/preferences.ui:765
 msgid "High contrast"
 msgstr "高对比度"
 
-#: ../data/preferences.ui.h:56
+#: data/preferences.ui:766
 msgid "Dark high contrast"
 msgstr "深色高对比度"
 
-#: ../data/preferences.ui.h:57
+#: data/preferences.ui:780
 msgid "Language"
 msgstr "语言"
 
-#: ../data/preferences.ui.h:58
+#: data/preferences.ui:821
 msgid "Tooltips"
 msgstr ""
 
-#: ../data/preferences.ui.h:59
+#: data/preferences.ui:835
 #, fuzzy
 msgid "Show all"
 msgstr "显示键盘"
 
-#: ../data/preferences.ui.h:60
+#: data/preferences.ui:836
 #, fuzzy
 msgid "Hide in keypad"
 msgstr "显示/隐藏右侧键盘"
 
-#: ../data/preferences.ui.h:61
+#: data/preferences.ui:837
 #, fuzzy
 msgid "Hide all"
 msgstr "隐藏"
 
-#: ../data/preferences.ui.h:62
+#: data/preferences.ui:863
 msgid "Number of expression lines"
 msgstr "表达式行数"
 
-#: ../data/preferences.ui.h:63
+#: data/preferences.ui:898
 msgid "Display expression status"
 msgstr "显示表达式状态"
 
-#: ../data/preferences.ui.h:64
+#: data/preferences.ui:902
 msgid ""
 "If as-you-type expression status shall be displayed below the expression "
 "entry"
 msgstr "若要在表达式框下方显示表达式键入状态"
 
-#: ../data/preferences.ui.h:65
+#: data/preferences.ui:916
 #, fuzzy
 msgid "Show parsed expression in result field"
 msgstr "表达式字段为空。"
 
-#: ../data/preferences.ui.h:66
+#: data/preferences.ui:920
 #, fuzzy
 msgid ""
 "If as-you-type expression interpretation shall be displayed in the result "
 "field"
 msgstr "若要在表达式框下方显示表达式键入状态"
 
-#: ../data/preferences.ui.h:67
+#: data/preferences.ui:934
 msgid "Persistent keypad"
 msgstr "常驻键盘"
 
-#: ../data/preferences.ui.h:68
+#: data/preferences.ui:950
 msgid "Disable cursor blinking"
 msgstr ""
 
-#: ../data/preferences.ui.h:69
+#: data/preferences.ui:975
 msgid "Look & Feel"
 msgstr "外观"
 
-#: ../data/preferences.ui.h:71
+#: data/preferences.ui:1003
 msgid ""
 "If two's complement representation shall be used for negative binary numbers."
 msgstr "若要对负二进制数应用二的补码表示法。"
 
-#: ../data/preferences.ui.h:73
+#: data/preferences.ui:1019
 msgid ""
 "If two's complement representation shall be used for negative hexadecimal "
 "numbers."
 msgstr "若要对负十六进制数应用二的补码表示法。"
 
-#: ../data/preferences.ui.h:76
+#: data/preferences.ui:1059
 msgid ""
 "Enables two's complement representation for input of negative binary "
 "numbers. All binary numbers starting with 1 are negative, unless binary bits "
 "is set."
 msgstr ""
 
-#: ../data/preferences.ui.h:77
+#: data/preferences.ui:1075
 msgid ""
 "Enables two's complement representation for input of negative hexadecimal "
 "numbers. All hexadecimal numbers starting with 8 or higher are negative, "
 "unless binary bits is set."
 msgstr ""
 
-#: ../data/preferences.ui.h:78
+#: data/preferences.ui:1090
 #, fuzzy
 msgid "Binary bits"
 msgstr "二进制"
 
-#: ../data/preferences.ui.h:79
+#: data/preferences.ui:1103
 msgid "Automatic"
 msgstr ""
 
-#: ../data/preferences.ui.h:80
+#: data/preferences.ui:1130
 msgid "Use lower case letters in non-decimal numbers"
 msgstr "非十进制数使用小写"
 
-#: ../data/preferences.ui.h:81
+#: data/preferences.ui:1134
 msgid "If lower case letters should be used in numbers with non-decimal base"
 msgstr "若要在非十进制数字中使用小写字母"
 
-#: ../data/preferences.ui.h:82
+#: data/preferences.ui:1147
 msgid "Use special duodecimal symbols"
 msgstr ""
 
-#: ../data/preferences.ui.h:83
+#: data/preferences.ui:1151
 msgid ""
 "If ↊ and ↋ (or X and E) shall be used instead of A and B for digits 10 and "
 "11 in numbers with base 12"
 msgstr ""
 
-#: ../data/preferences.ui.h:84
+#: data/preferences.ui:1164
 msgid "Alternative base prefixes"
 msgstr "可选进制前缀"
 
-#: ../data/preferences.ui.h:85
+#: data/preferences.ui:1168
 msgid ""
 "If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
 "with \"0b00\" as prefixes"
 msgstr "若要十六进制数以“0x0”为前缀，二进制数以“0b00”为前缀"
 
-#: ../data/preferences.ui.h:86
+#: data/preferences.ui:1181
 msgid "Spell out logical operators"
 msgstr "拼出逻辑运算符"
 
-#: ../data/preferences.ui.h:87
+#: data/preferences.ui:1185
 msgid "If logical and/or shall be displayed as \"&&\"/\"||\" or \"and\"/\"or\""
 msgstr "若要逻辑与/或显示为“&&/||”或“and/or”"
 
-#: ../data/preferences.ui.h:88
+#: data/preferences.ui:1210
 msgid "Use E-notation instead of 10<sup><i>n</i></sup>"
 msgstr "使用E符号代替10<sup><i>n</i></sup>"
 
-#: ../data/preferences.ui.h:89
+#: data/preferences.ui:1224
 msgid "Use lower case \"e\" (as in 1e10)"
 msgstr "使用小写e(如1e10)"
 
-#: ../data/preferences.ui.h:90
+#: data/preferences.ui:1228
 msgid "If \"e\" shall be used instead of \"E\" in numbers"
 msgstr "若要在数字中以e代替E"
 
-#: ../data/preferences.ui.h:91
+#: data/preferences.ui:1241
 msgid "Use comma as decimal separator"
 msgstr "将逗号作为小数分隔符"
 
-#: ../data/preferences.ui.h:92
+#: data/preferences.ui:1258
 msgid "Ignore comma in numbers"
 msgstr "忽略数字中的逗号"
 
-#: ../data/preferences.ui.h:93
+#: data/preferences.ui:1262
 msgid ""
 "Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
 msgstr "允许将逗号“,”作为千位分隔符而非函数参数分隔符"
 
-#: ../data/preferences.ui.h:94
+#: data/preferences.ui:1275
 msgid "Ignore dots in numbers"
 msgstr "忽略数字中的点"
 
-#: ../data/preferences.ui.h:95
+#: data/preferences.ui:1279
 msgid ""
 "Allow dots, '.', to be used as thousands separator instead of as an "
 "alternative decimal sign"
 msgstr "允许使用点“.”作为千位分隔符而非小数点符号。"
 
-#: ../data/preferences.ui.h:96
+#: data/preferences.ui:1292
 msgid "Use 'j' as imaginary unit"
 msgstr "用 j 作虚数单位"
 
-#: ../data/preferences.ui.h:97
+#: data/preferences.ui:1296
 msgid ""
 "Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
 "it in front of the imaginary part."
 msgstr "将j(而非i)作为虚部默认符号并放在虚部前面。"
 
-#: ../data/preferences.ui.h:98
+#: data/preferences.ui:1310
 msgid "Copy result as unformatted ASCII by default"
 msgstr ""
 
-#: ../data/preferences.ui.h:99
+#: data/preferences.ui:1328
 #, fuzzy
 msgid "Use overline for repeating decimals"
 msgstr "指示循环小数"
 
-#: ../data/preferences.ui.h:100
+#: data/preferences.ui:1332
 msgid ""
 "Use overline (vinculum), instead of ellipsis, for repeating decimals when "
 "indicate repeating decimals is enabled."
 msgstr ""
 
-#: ../data/preferences.ui.h:101
+#: data/preferences.ui:1359
 msgid "Digit grouping"
 msgstr "数字分节"
 
-#: ../data/preferences.ui.h:103
+#: data/preferences.ui:1373
 msgid "Standard"
 msgstr "标准"
 
-#: ../data/preferences.ui.h:104
+#: data/preferences.ui:1374
 msgid "Local"
 msgstr "本地"
 
-#: ../data/preferences.ui.h:105
+#: data/preferences.ui:1375
 msgid "Custom"
 msgstr "定制"
 
-#: ../data/preferences.ui.h:106
+#: data/preferences.ui:1432
 msgid "Multiplication sign"
 msgstr "乘号"
 
-#: ../data/preferences.ui.h:107
+#: data/preferences.ui:1590
 msgid "Division sign"
 msgstr "除号"
 
-#: ../data/preferences.ui.h:108
+#: data/preferences.ui:1615
 msgid "Numbers & Operators"
 msgstr "数字和运算符"
 
-#: ../data/preferences.ui.h:109
+#: data/preferences.ui:1632
 msgid "Use binary prefixes for information units"
 msgstr "信息单位使用二进制前缀"
 
-#: ../data/preferences.ui.h:110
+#: data/preferences.ui:1636
 msgid ""
 "Use binary, instead of decimal, prefixes by default for information units "
 "(e.g. bytes)."
 msgstr "对于信息单位(例如字节)，默认情况下使用二进制而非十进制前缀。"
 
-#: ../data/preferences.ui.h:111
+#: data/preferences.ui:1649
 #, fuzzy
 msgid "Copy unformatted ASCII without units"
 msgstr "复制未格式化的 ASCII"
 
-#: ../data/preferences.ui.h:112
+#: data/preferences.ui:1666
 msgid "Conversion to local currency"
 msgstr "换算为本地货币"
 
-#: ../data/preferences.ui.h:113
+#: data/preferences.ui:1670
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
 msgstr "激活最优单位换算时，自动换算为本地货币。"
 
-#: ../data/preferences.ui.h:114
+#: data/preferences.ui:1694
 msgid "Local currency"
 msgstr "本地货币"
 
-#: ../data/preferences.ui.h:115
+#: data/preferences.ui:1732
 msgid "Exchange rates updates"
 msgstr "汇率更新"
 
-#: ../data/preferences.ui.h:116
+#: data/preferences.ui:1769
 msgid "Temperature calculation mode:"
 msgstr "温度计算模式:"
 
-#: ../data/preferences.ui.h:117 ../src/mainwindow.cc:823
+#: data/preferences.ui:1785 src/mainwindow.cc:823
 msgid "Absolute"
 msgstr "绝对"
 
-#: ../data/preferences.ui.h:119 ../src/mainwindow.cc:837
+#: data/preferences.ui:1829 src/mainwindow.cc:837
 msgid "Hybrid"
 msgstr "混合"
 
-#: ../data/preferences.ui.h:120
+#: data/preferences.ui:1867
 msgid "Units & Currencies"
 msgstr "单位和货币"
 
-#: ../data/preferences.ui.h:121
+#: data/preferences.ui:1886
 msgid "Show expression completion suggestions"
 msgstr "显示表达式补全建议"
 
-#: ../data/preferences.ui.h:122
+#: data/preferences.ui:1902
 msgid "Search titles and countries"
 msgstr "搜索标题和国家/地区"
 
-#: ../data/preferences.ui.h:123
+#: data/preferences.ui:1936 data/preferences.ui:1948
 msgid "Minimum characters"
 msgstr "最少字符"
 
-#: ../data/preferences.ui.h:124
+#: data/preferences.ui:1974
 msgid "Popup delay (ms)"
 msgstr "弹出延迟(ms)"
 
-#: ../data/preferences.ui.h:125
+#: data/preferences.ui:2005
 msgid "Completion"
 msgstr "补全"
 
-#: ../data/preferences.ui.h:126
+#: data/preferences.ui:2024
 msgid "Custom status font"
 msgstr "自定义状态字体"
 
-#: ../data/preferences.ui.h:127
+#: data/preferences.ui:2028
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
 msgstr "若要在表达式框下方的状态显示中使用默认字体以外的字体"
 
-#: ../data/preferences.ui.h:128
+#: data/preferences.ui:2076
 msgid "Custom expression font"
 msgstr "自定义表达式字体"
 
-#: ../data/preferences.ui.h:129
+#: data/preferences.ui:2080
 msgid ""
 "If you want to use a font other than the default in the expression entry"
 msgstr "若要在表达式框中使用默认字体以外的字体"
 
-#: ../data/preferences.ui.h:130
+#: data/preferences.ui:2094
 msgid "Custom result font"
 msgstr "自定义结果字体"
 
-#: ../data/preferences.ui.h:131
+#: data/preferences.ui:2098
 msgid "If you want to use a font other than the default in the result display"
 msgstr "若要在结果显示中使用默认字体以外的字体"
 
-#: ../data/preferences.ui.h:132
+#: data/preferences.ui:2128
 msgid "Custom keypad font"
 msgstr "自定义键盘字体"
 
-#: ../data/preferences.ui.h:133
+#: data/preferences.ui:2132
 msgid "If you want to use a font other than the default in the keypad"
 msgstr "若要在键盘中使用默认字体以外的字体"
 
-#: ../data/preferences.ui.h:134
+#: data/preferences.ui:2166
 msgid "Status warning color"
 msgstr "警告状态颜色"
 
-#: ../data/preferences.ui.h:135
+#: data/preferences.ui:2178
 msgid "Status error color"
 msgstr "错误状态颜色"
 
-#: ../data/preferences.ui.h:136
+#: data/preferences.ui:2190
 msgid "Text color"
 msgstr "文字颜色"
 
-#: ../data/preferences.ui.h:137
+#: data/preferences.ui:2238
 #, fuzzy
 msgid "Highlight parenthesis background"
 msgstr "右括号"
 
-#: ../data/preferences.ui.h:138
+#: data/preferences.ui:2291
 msgid "Custom application font"
 msgstr "自定义应用程序字体"
 
-#: ../data/preferences.ui.h:139
+#: data/preferences.ui:2295
 msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr "若要整个应用程序使用默认字体以外的字体"
 
-#: ../data/preferences.ui.h:140
+#: data/preferences.ui:2309
 #, fuzzy
 msgid "Custom history font"
 msgstr "自定义状态字体"
 
-#: ../data/preferences.ui.h:141
+#: data/preferences.ui:2313
 #, fuzzy
 msgid "If you want to use a font other than the default in the history list"
 msgstr "若要整个应用程序使用默认字体以外的字体"
 
-#: ../data/preferences.ui.h:142
+#: data/preferences.ui:2336
 msgid "Fonts & Colors"
 msgstr "字体与颜色"
 
-#: ../data/setbase.ui.h:11
+#: data/setbase.ui:220 data/setbase.ui:425
 msgid "Other:"
 msgstr "其他:"
 
-#: ../data/setbase.ui.h:12 ../src/setbasedialog.cc:50
-#: ../src/setbasedialog.cc:57 ../src/setbasedialog.cc:133
-#: ../src/setbasedialog.cc:194 ../src/setbasedialog.cc:231
-#: ../src/setbasedialog.cc:240 ../src/setbasedialog.cc:350
-#: ../src/setbasedialog.cc:432 ../src/setbasedialog.cc:585
-#: ../src/setbasedialog.cc:737
+#: data/setbase.ui:253 data/setbase.ui:458 src/setbasedialog.cc:50
+#: src/setbasedialog.cc:57 src/setbasedialog.cc:133 src/setbasedialog.cc:194
+#: src/setbasedialog.cc:231 src/setbasedialog.cc:240 src/setbasedialog.cc:350
+#: src/setbasedialog.cc:432 src/setbasedialog.cc:585 src/setbasedialog.cc:737
 msgid "Bijective base-26"
 msgstr "双射基-26"
 
-#: ../data/setbase.ui.h:13
+#: data/setbase.ui:282
 msgid "<b>Result Base</b>"
 msgstr "<b>结果进制</b>"
 
-#: ../data/setbase.ui.h:14
+#: data/setbase.ui:482
 msgid "<b>Expression Base</b>"
 msgstr "<b>表达式进制</b>"
 
-#: ../data/shortcuts.ui.h:6
+#: data/shortcuts.ui:159
 msgid "New Keyboard Shortcut"
 msgstr "新建键盘快捷键"
 
-#: ../data/shortcuts.ui.h:8 ../src/shortcutsdialog.cc:196
-#: ../src/shortcutsdialog.cc:293 ../src/shortcutsdialog.cc:447
-#: ../src/shortcutsdialog.cc:541
+#: data/shortcuts.ui:190 src/shortcutsdialog.cc:196 src/shortcutsdialog.cc:293
+#: src/shortcutsdialog.cc:447 src/shortcutsdialog.cc:541
 msgid "Add Action"
 msgstr "添加动作"
 
-#: ../data/unitedit.ui.h:1 ../src/uniteditdialog.cc:191
+#: data/unitedit.ui:29 src/uniteditdialog.cc:191
 msgid "Edit Unit"
 msgstr "编辑单位"
 
-#: ../data/unitedit.ui.h:8
+#: data/unitedit.ui:149
 msgid "System"
 msgstr "系统"
 
-#: ../data/unitedit.ui.h:10
+#: data/unitedit.ui:193
 msgid "Hide unit"
 msgstr "隐藏单位"
 
-#: ../data/unitedit.ui.h:11
+#: data/unitedit.ui:196
 msgid "If this unit shall be hidden in menus"
 msgstr "若要该单位在菜单中隐藏"
 
-#: ../data/unitedit.ui.h:12
+#: data/unitedit.ui:216
 msgid "Imperial"
 msgstr "英制"
 
-#: ../data/unitedit.ui.h:13
+#: data/unitedit.ui:217
 msgid "US Survey"
 msgstr "美制"
 
-#: ../data/unitedit.ui.h:14
+#: data/unitedit.ui:236
 msgid "Title displayed in menus and in unit manager"
 msgstr "菜单和单位管理器中显示的标题"
 
-#: ../data/unitedit.ui.h:15
+#: data/unitedit.ui:267
 msgid "Singular form of this unit's name"
 msgstr "该单位名称的单数形式"
 
-#: ../data/unitedit.ui.h:17
+#: data/unitedit.ui:313
 msgid "Class"
 msgstr "类"
 
-#: ../data/unitedit.ui.h:18
+#: data/unitedit.ui:324
 msgid ""
 "The class that this unit belongs to. Named derived units are defined in "
 "relation to a single other unit, with an optional exponent, while (unnamed) "
@@ -3333,71 +3366,71 @@ msgstr ""
 "此单位所属的类。命名派生单位是相对于一个单一的其他单位而定义的，可以带有指"
 "数，而(未命名)派生单位是由含一个或多个单位的单位表达式定义的。"
 
-#: ../data/unitedit.ui.h:19
+#: data/unitedit.ui:329
 msgid "Base unit"
 msgstr "基本单位"
 
-#: ../data/unitedit.ui.h:20
+#: data/unitedit.ui:330
 msgid "Named derived unit"
 msgstr "命名派生单位"
 
-#: ../data/unitedit.ui.h:21
+#: data/unitedit.ui:331
 msgid "Derived unit"
 msgstr "派生单位"
 
-#: ../data/unitedit.ui.h:22
+#: data/unitedit.ui:346
 msgid "Base unit(s)"
 msgstr "基本单位"
 
-#: ../data/unitedit.ui.h:23
+#: data/unitedit.ui:358
 msgid "Exponent"
 msgstr "指数"
 
-#: ../data/unitedit.ui.h:24
+#: data/unitedit.ui:370 data/unitedit.ui:556
 msgid "Relation"
 msgstr "关系"
 
-#: ../data/unitedit.ui.h:25
+#: data/unitedit.ui:382
 msgid "Inverse relation"
 msgstr "逆关系"
 
-#: ../data/unitedit.ui.h:26
+#: data/unitedit.ui:391
 msgid "Mix with base unit"
 msgstr "与基本单位混合"
 
-#: ../data/unitedit.ui.h:27
+#: data/unitedit.ui:411
 msgid "Priority"
 msgstr "优先级"
 
-#: ../data/unitedit.ui.h:28
+#: data/unitedit.ui:423
 msgid "Minimum base unit number"
 msgstr "最小基本单位数"
 
-#: ../data/unitedit.ui.h:29
+#: data/unitedit.ui:434
 msgid ""
 "Example: priority of the unit \"hand\" is set to 2, while priority of ft "
 "(foot) and in (inch) is set to 1, which results in \"17 in = 1 ft + 5 in\", "
 "instead of \"17 in = 1 ft + 1 hand + 1 in\"."
 msgstr ""
 
-#: ../data/unitedit.ui.h:30
+#: data/unitedit.ui:451
 msgid ""
 "Example: minimum base unit number of yd (yard) is set to 12, which results "
 "in \"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
 msgstr ""
 
-#: ../data/unitedit.ui.h:31
+#: data/unitedit.ui:468
 msgid "Exponent of the base unit"
 msgstr "基本单位的指数"
 
-#: ../data/unitedit.ui.h:32
+#: data/unitedit.ui:486
 msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit is defined in relation to"
 msgstr ""
 "该单位定义所关联的单位(对于命名派生单位)或单位表达式(对于未命名派生单位)"
 
-#: ../data/unitedit.ui.h:33
+#: data/unitedit.ui:501
 msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
@@ -3410,403 +3443,389 @@ msgstr ""
 "对于非线性关系，以\\x表示因子，\\y表示指数(例如，“\\x + 273.15”表示摄氏度和开"
 "尔文之间的关系)。"
 
-#: ../data/unitedit.ui.h:36
+#: data/unitedit.ui:519
 msgid "Specify for non-linear relation, for conversion back to the base unit."
 msgstr "指定非线性关系，以便换算回基本单位。"
 
-#: ../data/unitedit.ui.h:37
+#: data/unitedit.ui:532
 msgid "Use with prefixes by default"
 msgstr "默认使用前缀"
 
-#: ../data/units.ui.h:3
+#: data/units.ui:66
 msgid "Convert between units"
 msgstr "在单位间换算"
 
-#: ../data/units.ui.h:4
+#: data/units.ui:86
 msgid "="
 msgstr "="
 
-#: ../data/units.ui.h:5
+#: data/units.ui:98
 msgid "Conver_sion"
 msgstr "换算(_s)"
 
-#: ../data/units.ui.h:6
+#: data/units.ui:123
 msgid "Converted value"
 msgstr "换算后的值"
 
-#: ../data/units.ui.h:7
+#: data/units.ui:141
 msgid "Value to convert from"
 msgstr "换算前的值"
 
-#: ../data/units.ui.h:9
+#: data/units.ui:306
 msgid "_Unit"
 msgstr "单位(_U)"
 
-#: ../data/units.ui.h:12
+#: data/units.ui:457
 msgid "Create a new unit"
 msgstr "创建新单位"
 
-#: ../data/units.ui.h:14
+#: data/units.ui:474
 msgid "Edit the selected unit"
 msgstr "编辑所选单位"
 
-#: ../data/units.ui.h:16
+#: data/units.ui:491
 msgid "Delete the selected unit"
 msgstr "删除所选单位"
 
-#: ../data/units.ui.h:17
+#: data/units.ui:510
 msgid "(De)activate the selected unit"
 msgstr "(取消)激活所选单位"
 
-#: ../data/units.ui.h:20
+#: data/units.ui:534
 msgid "Insert the selected unit into the expression entry"
 msgstr "将所选单位插入表达式框"
 
-#: ../data/units.ui.h:21
+#: data/units.ui:546
 msgid "C_onvert"
 msgstr "换算(_o)"
 
-#: ../data/units.ui.h:22
+#: data/units.ui:551
 msgid "Convert the result to the selected unit"
 msgstr "将结果换算到所选单位"
 
-#: ../data/units.ui.h:23
+#: data/units.ui:640
 msgid "Type anywhere"
 msgstr "在任何地方输入"
 
-#: ../data/unknownedit.ui.h:1 ../src/unknowneditdialog.cc:118
+#: data/unknownedit.ui:8 src/unknowneditdialog.cc:118
 msgid "Edit Unknown Variable"
 msgstr "编辑未知变量"
 
-#: ../data/unknownedit.ui.h:6
+#: data/unknownedit.ui:97
 msgid "Use custom assumptions"
 msgstr "使用自定义假设"
 
-#: ../data/unknownedit.ui.h:8
+#: data/unknownedit.ui:131
 msgid "Sign"
 msgstr "符号"
 
-#: ../data/unknownedit.ui.h:10
+#: data/unknownedit.ui:145
 msgid "Real Number"
 msgstr "实数"
 
-#: ../data/unknownedit.ui.h:11
+#: data/unknownedit.ui:146
 msgid "Rational Number"
 msgstr "有理数"
 
-#: ../data/unknownedit.ui.h:20
+#: data/unknownedit.ui:183
 msgid "Name used to reference this unknown variable in expressions"
 msgstr "用于在表达式中引用此未知变量的名称"
 
-#: ../data/variableedit.ui.h:1 ../src/variableeditdialog.cc:171
+#: data/variableedit.ui:8 src/variableeditdialog.cc:171
 msgid "Edit Variable"
 msgstr "编辑变量"
 
-#: ../data/variables.ui.h:4
+#: data/variables.ui:130
 msgid "_Variable"
 msgstr "变量(_V)"
 
-#: ../data/variables.ui.h:7
+#: data/variables.ui:266
 msgid "Create a new variable"
 msgstr "创建新变量"
 
-#: ../data/variables.ui.h:9
+#: data/variables.ui:283
 msgid "Edit the selected variable"
 msgstr "编辑所选变量"
 
-#: ../data/variables.ui.h:11
+#: data/variables.ui:300
 msgid "Delete the selected variable"
 msgstr "删除所选变量"
 
-#: ../data/variables.ui.h:12
+#: data/variables.ui:319
 msgid "(De)activate the selected variable"
 msgstr "(取消)激活所选变量"
 
-#: ../data/variables.ui.h:15
+#: data/variables.ui:343
 msgid "Insert the selected variable into the expression entry"
 msgstr "将所选变量插入表达式项"
 
-#: ../data/variables.ui.h:16
+#: data/variables.ui:355
 msgid "E_xport"
 msgstr "导出(_x)"
 
-#: ../src/buttonseditdialog.cc:220 ../src/shortcutsdialog.cc:217
-#: ../src/shortcutsdialog.cc:465
+#: src/buttonseditdialog.cc:220 src/shortcutsdialog.cc:217
+#: src/shortcutsdialog.cc:465
 msgid "Empty value."
 msgstr "值为空。"
 
-#: ../src/buttonseditdialog.cc:230 ../src/shortcutsdialog.cc:226
-#: ../src/shortcutsdialog.cc:474
+#: src/buttonseditdialog.cc:230 src/shortcutsdialog.cc:226
+#: src/shortcutsdialog.cc:474
 msgid "Function not found."
 msgstr "未找到函数。"
 
-#: ../src/buttonseditdialog.cc:238 ../src/shortcutsdialog.cc:234
-#: ../src/shortcutsdialog.cc:482
+#: src/buttonseditdialog.cc:238 src/shortcutsdialog.cc:234
+#: src/shortcutsdialog.cc:482
 msgid "Variable not found."
 msgstr "未找到变量。"
 
-#: ../src/buttonseditdialog.cc:250 ../src/shortcutsdialog.cc:246
-#: ../src/shortcutsdialog.cc:494
+#: src/buttonseditdialog.cc:250 src/shortcutsdialog.cc:246
+#: src/shortcutsdialog.cc:494
 msgid "Unit not found."
 msgstr "未找到单位。"
 
-#: ../src/buttonseditdialog.cc:259 ../src/mainwindow.cc:7254
-#: ../src/shortcutsdialog.cc:255 ../src/shortcutsdialog.cc:503
+#: src/buttonseditdialog.cc:259 src/mainwindow.cc:7265
+#: src/shortcutsdialog.cc:255 src/shortcutsdialog.cc:503
 msgid "Mode not found."
 msgstr "未找到模式。"
 
-#: ../src/buttonseditdialog.cc:271 ../src/setbasedialog.cc:78
-#: ../src/setbasedialog.cc:154 ../src/setbasedialog.cc:210
-#: ../src/setbasedialog.cc:256 ../src/shortcutsdialog.cc:267
-#: ../src/shortcutsdialog.cc:515
+#: src/buttonseditdialog.cc:271 src/setbasedialog.cc:78
+#: src/setbasedialog.cc:154 src/setbasedialog.cc:210 src/setbasedialog.cc:256
+#: src/shortcutsdialog.cc:267 src/shortcutsdialog.cc:515
 msgid "Unsupported base."
 msgstr "不支持该进制。"
 
-#: ../src/buttonseditdialog.cc:283 ../src/shortcutsdialog.cc:279
-#: ../src/shortcutsdialog.cc:527
+#: src/buttonseditdialog.cc:283 src/shortcutsdialog.cc:279
+#: src/shortcutsdialog.cc:527
 #, fuzzy
 msgid "Unsupported value."
 msgstr "不支持该进制。"
 
-#: ../src/buttonseditdialog.cc:347 ../src/keypad.cc:447
+#: src/buttonseditdialog.cc:347 src/keypad.cc:447
 msgid "Cycle through previous expression"
 msgstr "在前面的表达式中循环"
 
-#: ../src/buttonseditdialog.cc:348 ../src/keypad.cc:454
+#: src/buttonseditdialog.cc:348 src/keypad.cc:454
 msgid "Move cursor left or right"
 msgstr "向左或向右移动光标"
 
-#: ../src/buttonseditdialog.cc:348 ../src/keypad.cc:454
+#: src/buttonseditdialog.cc:348 src/keypad.cc:454
 msgid "Move cursor to beginning or end"
 msgstr "将光标移动到开头或末尾"
 
-#: ../src/buttonseditdialog.cc:350 ../src/keypad.cc:458
+#: src/buttonseditdialog.cc:350 src/keypad.cc:458
 msgid "Uncertainty/interval"
 msgstr "不确定度/区间"
 
-#: ../src/buttonseditdialog.cc:350 ../src/keypad.cc:458
+#: src/buttonseditdialog.cc:350 src/keypad.cc:458
 msgid "Relative error"
 msgstr "相对误差"
 
-#: ../src/buttonseditdialog.cc:351 ../src/keypad.cc:459
+#: src/buttonseditdialog.cc:351 src/keypad.cc:459
 msgid "Argument separator"
 msgstr "参数分隔符"
 
-#: ../src/buttonseditdialog.cc:351 ../src/buttonseditdialog.cc:365
-#: ../src/keypad.cc:459 ../src/keypad.cc:474
+#: src/buttonseditdialog.cc:351 src/buttonseditdialog.cc:365 src/keypad.cc:459
+#: src/keypad.cc:474
 msgid "Blank space"
 msgstr "空白处"
 
-#: ../src/buttonseditdialog.cc:351 ../src/buttonseditdialog.cc:365
-#: ../src/keypad.cc:459 ../src/keypad.cc:474
+#: src/buttonseditdialog.cc:351 src/buttonseditdialog.cc:365 src/keypad.cc:459
+#: src/keypad.cc:474
 msgid "New line"
 msgstr "新建行"
 
-#: ../src/buttonseditdialog.cc:352 ../src/keypad.cc:460 ../src/keypad.cc:3551
-#: ../src/keypad.cc:3588 ../src/keypad.cc:3591
+#: src/buttonseditdialog.cc:352 src/keypad.cc:460 src/keypad.cc:3551
+#: src/keypad.cc:3588 src/keypad.cc:3591
 msgid "Smart parentheses"
 msgstr "智能括号"
 
-#: ../src/buttonseditdialog.cc:352 ../src/keypad.cc:460
+#: src/buttonseditdialog.cc:352 src/keypad.cc:460
 msgid "Vector brackets"
 msgstr "向量括号"
 
-#: ../src/buttonseditdialog.cc:353 ../src/keypad.cc:462
+#: src/buttonseditdialog.cc:353 src/keypad.cc:462
 msgid "Left parenthesis"
 msgstr "左括号"
 
-#: ../src/buttonseditdialog.cc:353 ../src/keypad.cc:462
+#: src/buttonseditdialog.cc:353 src/keypad.cc:462
 msgid "Left vector bracket"
 msgstr "左向量括号"
 
-#: ../src/buttonseditdialog.cc:354 ../src/keypad.cc:463
+#: src/buttonseditdialog.cc:354 src/keypad.cc:463
 msgid "Right parenthesis"
 msgstr "右括号"
 
-#: ../src/buttonseditdialog.cc:354 ../src/keypad.cc:463
+#: src/buttonseditdialog.cc:354 src/keypad.cc:463
 msgid "Right vector bracket"
 msgstr "右向量括号"
 
-#: ../src/buttonseditdialog.cc:365 ../src/keypad.cc:474
+#: src/buttonseditdialog.cc:365 src/keypad.cc:474
 msgid "Decimal point"
 msgstr "小数点"
 
-#: ../src/buttonseditdialog.cc:369
+#: src/buttonseditdialog.cc:369
 msgid "Raise"
 msgstr "幂"
 
-#. Fixes missing support for context in ui file translations
-#. Mathematical operation
-#: ../src/buttonseditdialog.cc:372 ../src/keypad.cc:517
-#: ../src/numberbasesdialog.cc:866
-msgctxt "Keypad"
-msgid "Add"
-msgstr "加"
-
-#: ../src/buttonseditdialog.cc:372 ../src/expressionstatus.cc:703
-#: ../src/keypad.cc:517 ../src/keypad.cc:2757 ../src/util.cc:945
+#: src/buttonseditdialog.cc:372 src/expressionstatus.cc:706 src/keypad.cc:517
+#: src/keypad.cc:2757 src/util.cc:945
 msgid "M+ (memory plus)"
 msgstr "M+(存值加上)"
 
-#: ../src/buttonseditdialog.cc:376 ../src/expressionstatus.cc:693
-#: ../src/keypad.cc:522 ../src/keypad.cc:2754 ../src/util.cc:942
+#: src/buttonseditdialog.cc:376 src/expressionstatus.cc:696 src/keypad.cc:522
+#: src/keypad.cc:2754 src/util.cc:942
 msgid "MC (memory clear)"
 msgstr "MC(存值清除)"
 
-#: ../src/buttonseditdialog.cc:377 ../src/keypad.cc:523
+#: src/buttonseditdialog.cc:377 src/keypad.cc:523
 msgid "Backspace"
 msgstr "退格键"
 
-#: ../src/buttonseditdialog.cc:377 ../src/expressionstatus.cc:708
-#: ../src/keypad.cc:523 ../src/keypad.cc:2758 ../src/util.cc:946
+#: src/buttonseditdialog.cc:377 src/expressionstatus.cc:711 src/keypad.cc:523
+#: src/keypad.cc:2758 src/util.cc:946
 msgid "M− (memory minus)"
 msgstr "M−(存值减去)"
 
-#: ../src/buttonseditdialog.cc:378 ../src/keypad.cc:524
+#: src/buttonseditdialog.cc:378 src/keypad.cc:524
 msgid "Previous result (static)"
 msgstr "前一个结果(静态)"
 
-#: ../src/buttonseditdialog.cc:379 ../src/expressionedit.cc:819
-#: ../src/keypad.cc:532 ../src/keypad.cc:3535
+#: src/buttonseditdialog.cc:379 src/expressionedit.cc:819 src/keypad.cc:532
+#: src/keypad.cc:3535
 msgid "Calculate expression"
 msgstr "计算表达式"
 
-#: ../src/buttonseditdialog.cc:379 ../src/keypad.cc:532 ../src/keypad.cc:2755
-#: ../src/util.cc:943
+#: src/buttonseditdialog.cc:379 src/keypad.cc:532 src/keypad.cc:2755
+#: src/util.cc:943
 msgid "MR (memory recall)"
 msgstr "MR(存值读取)"
 
-#: ../src/buttonseditdialog.cc:379 ../src/expressionstatus.cc:698
-#: ../src/keypad.cc:532 ../src/keypad.cc:2756 ../src/util.cc:944
+#: src/buttonseditdialog.cc:379 src/expressionstatus.cc:701 src/keypad.cc:532
+#: src/keypad.cc:2756 src/util.cc:944
 msgid "MS (memory store)"
 msgstr "MS(存值存入)"
 
-#: ../src/buttonseditdialog.cc:455 ../src/shortcutsdialog.cc:574
-#: ../src/shortcutsdialog.cc:601
+#: src/buttonseditdialog.cc:455 src/shortcutsdialog.cc:574
+#: src/shortcutsdialog.cc:601
 msgid "Action"
 msgstr "动作"
 
-#: ../src/calendarconversiondialog.cc:53
+#: src/calendarconversiondialog.cc:53
 msgid "The selected Chinese year does not exist."
 msgstr "所选的农历年份不存在。"
 
-#: ../src/calendarconversiondialog.cc:65
+#: src/calendarconversiondialog.cc:65
 msgid "Conversion to Gregorian calendar failed."
 msgstr "换算为公历失败。"
 
-#: ../src/calendarconversiondialog.cc:90
+#: src/calendarconversiondialog.cc:90
 #, c-format
 msgid "Calendar conversion failed for: %s."
 msgstr "日历换算失败: %s。"
 
-#: ../src/calendarconversiondialog.cc:105
+#: src/calendarconversiondialog.cc:105
 msgid "Gregorian"
 msgstr "格里高利历(公历/阳历)"
 
-#: ../src/calendarconversiondialog.cc:106
+#: src/calendarconversiondialog.cc:106
 msgid "Revised Julian (Milanković)"
 msgstr "修订儒略历(Milanković)"
 
-#: ../src/calendarconversiondialog.cc:107
+#: src/calendarconversiondialog.cc:107
 msgid "Julian"
 msgstr "儒略历"
 
-#: ../src/calendarconversiondialog.cc:108
+#: src/calendarconversiondialog.cc:108
 msgid "Islamic (Hijri)"
 msgstr "伊斯兰历(回历/Hijri)"
 
-#: ../src/calendarconversiondialog.cc:109
+#: src/calendarconversiondialog.cc:109
 msgid "Hebrew"
 msgstr "希伯来历(犹太历)"
 
-#: ../src/calendarconversiondialog.cc:110
+#: src/calendarconversiondialog.cc:110
 msgid "Chinese"
 msgstr "中国历(农历/阴历)"
 
-#: ../src/calendarconversiondialog.cc:111
+#: src/calendarconversiondialog.cc:111
 msgid "Persian (Solar Hijri)"
 msgstr "波斯历(Solar Hijri)"
 
-#: ../src/calendarconversiondialog.cc:112
+#: src/calendarconversiondialog.cc:112
 msgid "Coptic"
 msgstr "科普特历(Coptic)"
 
-#: ../src/calendarconversiondialog.cc:113
+#: src/calendarconversiondialog.cc:113
 msgid "Ethiopian"
 msgstr "埃塞俄比亚历(Ethiopian)"
 
-#: ../src/calendarconversiondialog.cc:114
+#: src/calendarconversiondialog.cc:114
 msgid "Indian (National)"
 msgstr "印度历(国立)"
 
 #. if no category has been selected (previously selected has been renamed/deleted), select "All"
-#: ../src/conversionview.cc:83 ../src/conversionview.cc:139
-#: ../src/conversionview.cc:177 ../src/functionsdialog.cc:90
-#: ../src/functionsdialog.cc:160 ../src/functionsdialog.cc:194
-#: ../src/functionsdialog.cc:564 ../src/unitsdialog.cc:113
-#: ../src/unitsdialog.cc:182 ../src/unitsdialog.cc:231
-#: ../src/unitsdialog.cc:978 ../src/variablesdialog.cc:91
-#: ../src/variablesdialog.cc:168 ../src/variablesdialog.cc:209
-#: ../src/variablesdialog.cc:514
+#: src/conversionview.cc:83 src/conversionview.cc:139 src/conversionview.cc:177
+#: src/functionsdialog.cc:90 src/functionsdialog.cc:160
+#: src/functionsdialog.cc:194 src/functionsdialog.cc:564 src/unitsdialog.cc:113
+#: src/unitsdialog.cc:182 src/unitsdialog.cc:231 src/unitsdialog.cc:978
+#: src/variablesdialog.cc:91 src/variablesdialog.cc:168
+#: src/variablesdialog.cc:209 src/variablesdialog.cc:514
 msgid "All"
 msgstr "全部"
 
-#: ../src/conversionview.cc:130 ../src/conversionview.cc:131
-#: ../src/conversionview.cc:132 ../src/conversionview.cc:179
-#: ../src/conversionview.cc:460 ../src/functionsdialog.cc:144
-#: ../src/functionsdialog.cc:145 ../src/functionsdialog.cc:196
-#: ../src/mainwindow.cc:7563 ../src/mainwindow.cc:7595
-#: ../src/mainwindow.cc:7619 ../src/unitsdialog.cc:166
-#: ../src/unitsdialog.cc:167 ../src/unitsdialog.cc:233
-#: ../src/variablesdialog.cc:152 ../src/variablesdialog.cc:153
-#: ../src/variablesdialog.cc:211
+#: src/conversionview.cc:130 src/conversionview.cc:131
+#: src/conversionview.cc:132 src/conversionview.cc:179
+#: src/conversionview.cc:460 src/functionsdialog.cc:144
+#: src/functionsdialog.cc:145 src/functionsdialog.cc:196 src/mainwindow.cc:7574
+#: src/mainwindow.cc:7606 src/mainwindow.cc:7630 src/unitsdialog.cc:166
+#: src/unitsdialog.cc:167 src/unitsdialog.cc:233 src/variablesdialog.cc:152
+#: src/variablesdialog.cc:153 src/variablesdialog.cc:211
 msgid "Uncategorized"
 msgstr "未分类"
 
-#: ../src/conversionview.cc:505 ../src/unitsdialog.cc:1005
+#: src/conversionview.cc:505 src/unitsdialog.cc:1005
 msgid "Flag"
 msgstr "标志"
 
-#: ../src/dataseteditdialog.cc:89
+#: src/dataseteditdialog.cc:89
 msgid "text"
 msgstr "文本"
 
-#: ../src/dataseteditdialog.cc:94 ../src/dataseteditdialog.cc:102
+#: src/dataseteditdialog.cc:94 src/dataseteditdialog.cc:102
 msgid "approximate"
 msgstr "近似"
 
-#: ../src/dataseteditdialog.cc:97 ../src/expressioncompletion.cc:1848
-#: ../src/variablesdialog.cc:330
+#: src/dataseteditdialog.cc:97 src/expressioncompletion.cc:1848
+#: src/variablesdialog.cc:330
 msgid "number"
 msgstr "数"
 
-#: ../src/dataseteditdialog.cc:105 ../src/historyview.cc:170
+#: src/dataseteditdialog.cc:105 src/historyview.cc:170
 msgid "expression"
 msgstr "expression"
 
 #. indicating that the property is a data set key
-#: ../src/dataseteditdialog.cc:111 ../src/datasetsdialog.cc:181
-#: ../src/functionsdialog.cc:412
+#: src/dataseteditdialog.cc:111 src/datasetsdialog.cc:181
+#: src/functionsdialog.cc:412
 msgid "key"
 msgstr "键"
 
-#: ../src/dataseteditdialog.cc:306 ../src/dataseteditdialog.cc:442
-#: ../src/functioneditdialog.cc:938 ../src/importcsvdialog.cc:149
-#: ../src/matrixeditdialog.cc:553 ../src/menubar.cc:1243
-#: ../src/uniteditdialog.cc:331 ../src/unknowneditdialog.cc:191
-#: ../src/variableeditdialog.cc:279
+#: src/dataseteditdialog.cc:306 src/dataseteditdialog.cc:442
+#: src/functioneditdialog.cc:938 src/importcsvdialog.cc:149
+#: src/matrixeditdialog.cc:553 src/menubar.cc:1243 src/uniteditdialog.cc:331
+#: src/unknowneditdialog.cc:191 src/variableeditdialog.cc:279
 msgid "Empty name field."
 msgstr "名称字段为空。"
 
-#: ../src/dataseteditdialog.cc:366
+#: src/dataseteditdialog.cc:366
 msgid "Edit Data Set (global)"
 msgstr "编辑数据集(全局)"
 
-#: ../src/dataseteditdialog.cc:368
+#: src/dataseteditdialog.cc:368
 msgid "New Data Set"
 msgstr "新建数据集"
 
-#: ../src/dataseteditdialog.cc:454 ../src/functioneditdialog.cc:969
+#: src/dataseteditdialog.cc:454 src/functioneditdialog.cc:973
 msgid ""
 "A function with the same name already exists.\n"
 "Do you want to overwrite the function?"
@@ -3814,93 +3833,91 @@ msgstr ""
 "已存在同名函数。 \n"
 "是否要覆盖函数？ "
 
-#: ../src/dataseteditdialog.cc:485
+#: src/dataseteditdialog.cc:485
 msgid "Property"
 msgstr "属性"
 
-#: ../src/datasetsdialog.cc:197
+#: src/datasetsdialog.cc:197
 msgid "Data Retrieval Function"
 msgstr "数据检索函数"
 
-#: ../src/datasetsdialog.cc:227 ../src/expressionstatus.cc:568
-#: ../src/functionsdialog.cc:271
+#: src/datasetsdialog.cc:227 src/expressionstatus.cc:571
+#: src/functionsdialog.cc:271
 msgid "argument"
 msgstr "参数"
 
-#: ../src/datasetsdialog.cc:479
+#: src/datasetsdialog.cc:479
 msgid "New Data Object"
 msgstr "新建数据对象"
 
-#: ../src/drawstructure.cc:644 ../src/drawstructure.cc:2770
-#: ../src/expressionedit.cc:597 ../src/expressionstatus.cc:1177
-#: ../src/expressionstatus.cc:1213 ../src/historyview.cc:710
-#: ../src/historyview.cc:1295 ../src/historyview.cc:1349
-#: ../src/historyview.cc:1602 ../src/historyview.cc:1662
-#: ../src/historyview.cc:2185 ../src/insertfunctiondialog.cc:298
-#: ../src/keypad.cc:3109 ../src/mainwindow.cc:2776 ../src/searchprovider.cc:152
-#: ../src/searchprovider.cc:200 ../src/searchprovider.cc:201
-#: ../src/variablesdialog.cc:303
+#: src/drawstructure.cc:644 src/drawstructure.cc:2770 src/expressionedit.cc:597
+#: src/expressionstatus.cc:1185 src/expressionstatus.cc:1221
+#: src/historyview.cc:710 src/historyview.cc:1295 src/historyview.cc:1349
+#: src/historyview.cc:1602 src/historyview.cc:1662 src/historyview.cc:2185
+#: src/insertfunctiondialog.cc:298 src/keypad.cc:3109 src/mainwindow.cc:2787
+#: src/searchprovider.cc:152 src/searchprovider.cc:200
+#: src/searchprovider.cc:201 src/variablesdialog.cc:303
 msgid "approx."
 msgstr "约"
 
-#: ../src/drawstructure.cc:1843
+#: src/drawstructure.cc:1843
 msgid "and"
 msgstr "且"
 
-#: ../src/drawstructure.cc:1846 ../src/historyview.cc:933
-#: ../src/historyview.cc:968 ../src/historyview.cc:969
+#: src/drawstructure.cc:1846 src/historyview.cc:933 src/historyview.cc:968
+#: src/historyview.cc:969
 msgid "or"
 msgstr "或"
 
-#: ../src/drawstructure.cc:2686
+#: src/drawstructure.cc:2686
 msgid "undefined"
 msgstr "未定义"
 
-#: ../src/exchangerates.cc:77
+#: src/exchangerates.cc:77
 msgid "Fetching exchange rates."
 msgstr "获取汇率。"
 
-#: ../src/exchangerates.cc:109
+#: src/exchangerates.cc:109
 msgid "Do you wish to update the exchange rates now?"
 msgstr "您想现在更新汇率吗？"
 
-#: ../src/exchangerates.cc:111
+#: src/exchangerates.cc:111
 #, c-format
 msgid "It has been %s day since the exchange rates last were updated."
 msgid_plural "It has been %s days since the exchange rates last were updated."
 msgstr[0] "距上次更新汇率已过了%s天。"
 
-#: ../src/exchangerates.cc:112
+#: src/exchangerates.cc:112
 msgid "Do not ask again"
 msgstr "不再询问"
 
-#: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
+#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47
 msgid "Select file to export to"
 msgstr "选择导出到文件"
 
-#: ../src/exportcsvdialog.cc:45 ../src/exportcsvdialog.cc:47
-#: ../src/importcsvdialog.cc:49 ../src/importcsvdialog.cc:51
-#: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
+#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47
+#: src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
+#: src/insertfunctiondialog.cc:108 src/insertfunctiondialog.cc:110
 msgid "_Open"
 msgstr "打开(_O)"
 
-#: ../src/exportcsvdialog.cc:133 ../src/importcsvdialog.cc:141
+#: src/exportcsvdialog.cc:133 src/importcsvdialog.cc:141
 msgid "No file name entered."
 msgstr "未输入文件名。"
 
-#: ../src/exportcsvdialog.cc:162 ../src/importcsvdialog.cc:186
+#: src/exportcsvdialog.cc:162 src/importcsvdialog.cc:186
 msgid "No delimiter selected."
 msgstr "未选择分隔符。"
 
-#: ../src/exportcsvdialog.cc:175
+#: src/exportcsvdialog.cc:175
 msgid "No variable name entered."
 msgstr "未输入变量名。"
 
-#: ../src/exportcsvdialog.cc:187
+#: src/exportcsvdialog.cc:187
 msgid "No known variable with entered name found."
 msgstr "未找到所输入名称的已知变量。"
 
-#: ../src/exportcsvdialog.cc:194
+#: src/exportcsvdialog.cc:194
 #, c-format
 msgid ""
 "Could not export to file \n"
@@ -3909,659 +3926,628 @@ msgstr ""
 "无法导出到文件 \n"
 "%s "
 
-#: ../src/expressioncompletion.cc:1798
+#: src/expressioncompletion.cc:1798
 msgid "a previous result"
 msgstr "一个先前的结果"
 
-#: ../src/expressioncompletion.cc:1811
+#: src/expressioncompletion.cc:1811
 msgid "matrix"
 msgstr "矩阵"
 
-#: ../src/expressioncompletion.cc:1813
+#: src/expressioncompletion.cc:1813
 msgid "vector"
 msgstr "向量"
 
-#: ../src/expressioncompletion.cc:1834 ../src/variablesdialog.cc:315
+#: src/expressioncompletion.cc:1834 src/variablesdialog.cc:315
 msgid "positive"
 msgstr "正数"
 
-#: ../src/expressioncompletion.cc:1835 ../src/variablesdialog.cc:316
+#: src/expressioncompletion.cc:1835 src/variablesdialog.cc:316
 msgid "non-positive"
 msgstr "非正数"
 
-#: ../src/expressioncompletion.cc:1836 ../src/variablesdialog.cc:317
+#: src/expressioncompletion.cc:1836 src/variablesdialog.cc:317
 msgid "negative"
 msgstr "负数"
 
-#: ../src/expressioncompletion.cc:1837 ../src/variablesdialog.cc:318
+#: src/expressioncompletion.cc:1837 src/variablesdialog.cc:318
 msgid "non-negative"
 msgstr "非负数"
 
-#: ../src/expressioncompletion.cc:1838 ../src/variablesdialog.cc:319
+#: src/expressioncompletion.cc:1838 src/variablesdialog.cc:319
 msgid "non-zero"
 msgstr "非零"
 
-#: ../src/expressioncompletion.cc:1843 ../src/variablesdialog.cc:326
+#: src/expressioncompletion.cc:1843 src/variablesdialog.cc:326
 msgid "boolean"
 msgstr "布尔值"
 
-#: ../src/expressioncompletion.cc:1844 ../src/variablesdialog.cc:325
+#: src/expressioncompletion.cc:1844 src/variablesdialog.cc:325
 msgid "integer"
 msgstr "整数"
 
-#: ../src/expressioncompletion.cc:1845 ../src/variablesdialog.cc:327
+#: src/expressioncompletion.cc:1845 src/variablesdialog.cc:327
 msgid "rational"
 msgstr "有理数"
 
-#: ../src/expressioncompletion.cc:1846 ../src/variablesdialog.cc:328
+#: src/expressioncompletion.cc:1846 src/variablesdialog.cc:328
 msgid "real"
 msgstr "实数"
 
-#: ../src/expressioncompletion.cc:1847 ../src/variablesdialog.cc:329
+#: src/expressioncompletion.cc:1847 src/variablesdialog.cc:329
 msgid "complex"
 msgstr "复数"
 
-#: ../src/expressioncompletion.cc:1849
+#: src/expressioncompletion.cc:1849
 msgid "(not matrix)"
 msgstr "(非矩阵)"
 
-#: ../src/expressioncompletion.cc:1852 ../src/variablesdialog.cc:334
+#: src/expressioncompletion.cc:1852 src/variablesdialog.cc:334
 msgid "unknown"
 msgstr "未知"
 
-#: ../src/expressioncompletion.cc:1854
+#: src/expressioncompletion.cc:1854
 msgid "default assumptions"
 msgstr "默认假设"
 
-#: ../src/expressioncompletion.cc:2005
+#: src/expressioncompletion.cc:2005
 msgid "Prefix"
 msgstr "前缀"
 
-#: ../src/expressioncompletion.cc:2035
+#: src/expressioncompletion.cc:2035
 msgid "Base Units"
 msgstr "基本单位"
 
-#: ../src/expressioncompletion.cc:2038
+#: src/expressioncompletion.cc:2038
 #, fuzzy
 msgid "Binary-Coded Decimal"
 msgstr "最小小数"
 
-#: ../src/expressioncompletion.cc:2040
+#: src/expressioncompletion.cc:2040
 msgid "Bijective Base-26"
 msgstr "双射基-26"
 
-#: ../src/expressioncompletion.cc:2042
+#: src/expressioncompletion.cc:2042
 msgid "Binary Number"
 msgstr "二进制数"
 
-#: ../src/expressioncompletion.cc:2044
+#: src/expressioncompletion.cc:2044
 msgid "Calendars"
 msgstr "日历"
 
-#: ../src/expressioncompletion.cc:2046
+#: src/expressioncompletion.cc:2046
 msgid "Complex cis Form"
 msgstr "复纯虚数指数形式"
 
-#: ../src/expressioncompletion.cc:2050
+#: src/expressioncompletion.cc:2050
 msgid "Decimal Number"
 msgstr "十进制数"
 
-#: ../src/expressioncompletion.cc:2052
+#: src/expressioncompletion.cc:2052
 msgid "Duodecimal Number"
 msgstr "十二进制数"
 
-#: ../src/expressioncompletion.cc:2054
+#: src/expressioncompletion.cc:2054
 msgid "Engineering Notation"
 msgstr "工程记数"
 
-#: ../src/expressioncompletion.cc:2058
+#: src/expressioncompletion.cc:2058
 msgid "Factors"
 msgstr "因子"
 
-#: ../src/expressioncompletion.cc:2060
+#: src/expressioncompletion.cc:2060
 msgid "16-bit Floating Point Binary Format"
 msgstr "16位浮点二进制格式"
 
-#: ../src/expressioncompletion.cc:2062
+#: src/expressioncompletion.cc:2062
 msgid "32-bit Floating Point Binary Format"
 msgstr "32位浮点二进制格式"
 
-#: ../src/expressioncompletion.cc:2064
+#: src/expressioncompletion.cc:2064
 msgid "64-bit Floating Point Binary Format"
 msgstr "64位浮点二进制格式"
 
-#: ../src/expressioncompletion.cc:2066
+#: src/expressioncompletion.cc:2066
 msgid "80-bit (x86) Floating Point Binary Format"
 msgstr "80位(x86)浮点二进制格式"
 
-#: ../src/expressioncompletion.cc:2068
+#: src/expressioncompletion.cc:2068
 msgid "128-bit Floating Point Binary Format"
 msgstr "128位浮点二进制格式"
 
-#: ../src/expressioncompletion.cc:2074
+#: src/expressioncompletion.cc:2074
 msgid "Hexadecimal Number"
 msgstr "十六进制数"
 
-#: ../src/expressioncompletion.cc:2076
+#: src/expressioncompletion.cc:2076
 msgid "Latitude"
 msgstr "纬度"
 
-#: ../src/expressioncompletion.cc:2078
+#: src/expressioncompletion.cc:2078
 msgid "Longitude"
 msgstr "经度"
 
-#: ../src/expressioncompletion.cc:2080
+#: src/expressioncompletion.cc:2080
 msgid "Mixed Units"
 msgstr "混合单位"
 
-#: ../src/expressioncompletion.cc:2082
+#: src/expressioncompletion.cc:2082
 msgid "Octal Number"
 msgstr "八进制数"
 
-#: ../src/expressioncompletion.cc:2084
+#: src/expressioncompletion.cc:2084
 msgid "Optimal Units"
 msgstr "最优单位"
 
-#: ../src/expressioncompletion.cc:2086
+#: src/expressioncompletion.cc:2086
 msgid "Expanded Partial Fractions"
 msgstr "展开部分分式"
 
-#: ../src/expressioncompletion.cc:2090 ../src/menubar.cc:1746
+#: src/expressioncompletion.cc:2090 src/menubar.cc:1746
 msgid "Optimal Prefix"
 msgstr "最优前缀"
 
-#: ../src/expressioncompletion.cc:2096
+#: src/expressioncompletion.cc:2096
 msgid "Scientific Notation"
 msgstr "科学记数"
 
-#: ../src/expressioncompletion.cc:2098
+#: src/expressioncompletion.cc:2098
 msgid "Sexagesimal Number"
 msgstr "六十进制数"
 
-#: ../src/expressioncompletion.cc:2100
+#: src/expressioncompletion.cc:2100
 msgid "Simple Notation"
 msgstr "简单记数"
 
-#: ../src/expressioncompletion.cc:2104 ../src/expressionstatus.cc:927
+#: src/expressioncompletion.cc:2104 src/expressionstatus.cc:935
 msgid "Unicode"
 msgstr "Unicode"
 
-#: ../src/expressioncompletion.cc:2106
+#: src/expressioncompletion.cc:2106
 msgid "UTC Time Zone"
 msgstr "UTC时区"
 
-#: ../src/expressionedit.cc:801
+#: src/expressionedit.cc:801
 msgid "Stop process"
 msgstr "停止进程"
 
-#: ../src/expressionedit.cc:819 ../src/expressionedit.cc:1843
-#: ../src/keypad.cc:3531
+#: src/expressionedit.cc:819 src/expressionedit.cc:1843 src/keypad.cc:3531
 msgid "Calculate expression and add to stack"
 msgstr "计算表达式并添加到栈"
 
-#: ../src/expressionedit.cc:1327 ../src/historyview.cc:2826
-#: ../src/insertfunctiondialog.cc:65
+#: src/expressionedit.cc:1327 src/historyview.cc:2826
+#: src/insertfunctiondialog.cc:65
 msgid "Select date"
 msgstr "选择日期"
 
-#: ../src/expressionedit.cc:1426
+#: src/expressionedit.cc:1426
 msgid "Clear History"
 msgstr "清除历史记录"
 
-#: ../src/expressionedit.cc:1430
+#: src/expressionedit.cc:1430
 msgid "Abort"
 msgstr "中止"
 
-#: ../src/expressionedit.cc:1433
+#: src/expressionedit.cc:1433
 msgid "Undo"
 msgstr "撤消"
 
-#: ../src/expressionedit.cc:1436
+#: src/expressionedit.cc:1436
 msgid "Redo"
 msgstr "重做"
 
-#: ../src/expressionedit.cc:1441
+#: src/expressionedit.cc:1441
 msgid "Completion Mode"
 msgstr "补全模式"
 
-#: ../src/expressionedit.cc:1454
+#: src/expressionedit.cc:1454
 msgid "Limited strict completion"
 msgstr "有限严格补全"
 
-#: ../src/expressionedit.cc:1455
+#: src/expressionedit.cc:1455
 msgid "Strict completion"
 msgstr "严格补全"
 
-#: ../src/expressionedit.cc:1456
+#: src/expressionedit.cc:1456
 msgid "Limited full completion"
 msgstr "有限全面补全"
 
-#: ../src/expressionedit.cc:1457
+#: src/expressionedit.cc:1457
 msgid "Full completion"
 msgstr "全面补全"
 
-#: ../src/expressionedit.cc:1458
+#: src/expressionedit.cc:1458
 msgid "No completion"
 msgstr "无补全"
 
-#: ../src/expressionedit.cc:1467
+#: src/expressionedit.cc:1467
 msgid "Delayed completion"
 msgstr "延迟补全"
 
-#: ../src/expressionedit.cc:1469
+#: src/expressionedit.cc:1469
 msgid "Customize completion…"
 msgstr "自定义补全…"
 
-#: ../src/expressionstatus.cc:368
+#: src/expressionstatus.cc:371
 msgid "EXACT"
 msgstr "EXACT"
 
-#: ../src/expressionstatus.cc:371
+#: src/expressionstatus.cc:374
 msgid "APPROX"
 msgstr "APPROX"
 
-#: ../src/expressionstatus.cc:375
+#: src/expressionstatus.cc:378
 msgid "RPN"
 msgstr "RPN"
 
 #. Chain mode
-#: ../src/expressionstatus.cc:380
+#: src/expressionstatus.cc:383
 msgid "CHN"
 msgstr "CHN"
 
-#: ../src/expressionstatus.cc:408
+#: src/expressionstatus.cc:411
 msgid "ROMAN"
 msgstr "ROMAN"
 
-#: ../src/expressionstatus.cc:465
+#: src/expressionstatus.cc:468
 msgid "DEG"
 msgstr "DEG"
 
-#: ../src/expressionstatus.cc:470
+#: src/expressionstatus.cc:473
 msgid "RAD"
 msgstr "RAD"
 
-#: ../src/expressionstatus.cc:475
+#: src/expressionstatus.cc:478
 msgid "GRA"
 msgstr "GRA"
 
-#: ../src/expressionstatus.cc:482
+#: src/expressionstatus.cc:485
 msgid "PREC"
 msgstr "PREC"
 
-#: ../src/expressionstatus.cc:487
+#: src/expressionstatus.cc:490
 msgid "FUNC"
 msgstr "FUNC"
 
-#: ../src/expressionstatus.cc:493
+#: src/expressionstatus.cc:496
 msgid "UNIT"
 msgstr "UNIT"
 
-#: ../src/expressionstatus.cc:499
+#: src/expressionstatus.cc:502
 msgid "VAR"
 msgstr "VAR"
 
-#: ../src/expressionstatus.cc:505
+#: src/expressionstatus.cc:508
 msgid "INF"
 msgstr "INF"
 
-#: ../src/expressionstatus.cc:511
+#: src/expressionstatus.cc:514
 msgid "CPLX"
 msgstr "CPLX"
 
-#: ../src/expressionstatus.cc:539
+#: src/expressionstatus.cc:542
 #, c-format
 msgid "Too many arguments for %s()."
 msgstr "%s()的参数太多。"
 
-#: ../src/expressionstatus.cc:720 ../src/expressionstatus.cc:722
-#: ../src/mainwindow.cc:1544 ../src/mainwindow.cc:5087
-#: ../src/searchprovider.cc:116
+#: src/expressionstatus.cc:723 src/expressionstatus.cc:725
+#: src/mainwindow.cc:1544 src/mainwindow.cc:5098 src/searchprovider.cc:116
 msgid "factorize"
 msgstr "分解"
 
-#: ../src/expressionstatus.cc:723 ../src/expressionstatus.cc:725
-#: ../src/mainwindow.cc:1547 ../src/mainwindow.cc:5090
-#: ../src/searchprovider.cc:116
+#: src/expressionstatus.cc:726 src/expressionstatus.cc:728
+#: src/mainwindow.cc:1547 src/mainwindow.cc:5101 src/searchprovider.cc:116
 msgid "expand"
 msgstr "展开"
 
-#: ../src/expressionstatus.cc:890 ../src/mainwindow.cc:1320
-#: ../src/mainwindow.cc:4752
+#: src/expressionstatus.cc:898 src/mainwindow.cc:1320 src/mainwindow.cc:4763
 msgid "hexadecimal"
 msgstr "十六进制"
 
-#: ../src/expressionstatus.cc:891 ../src/expressionstatus.cc:1011
+#: src/expressionstatus.cc:899 src/expressionstatus.cc:1019
 msgid "hexadecimal number"
 msgstr "十六进制数"
 
-#: ../src/expressionstatus.cc:892 ../src/mainwindow.cc:1323
-#: ../src/mainwindow.cc:4755
+#: src/expressionstatus.cc:900 src/mainwindow.cc:1323 src/mainwindow.cc:4766
 msgid "octal"
 msgstr "八进制"
 
-#: ../src/expressionstatus.cc:893
+#: src/expressionstatus.cc:901
 msgid "octal number"
 msgstr "八进制数"
 
-#: ../src/expressionstatus.cc:894 ../src/mainwindow.cc:1326
-#: ../src/mainwindow.cc:4758
+#: src/expressionstatus.cc:902 src/mainwindow.cc:1326 src/mainwindow.cc:4769
 msgid "decimal"
 msgstr "十进制"
 
-#: ../src/expressionstatus.cc:895
+#: src/expressionstatus.cc:903
 msgid "decimal number"
 msgstr "十进制数"
 
-#: ../src/expressionstatus.cc:896 ../src/mainwindow.cc:1330
-#: ../src/mainwindow.cc:4762
+#: src/expressionstatus.cc:904 src/mainwindow.cc:1330 src/mainwindow.cc:4773
 msgid "duodecimal"
 msgstr "十二进制"
 
-#: ../src/expressionstatus.cc:897 ../src/expressionstatus.cc:899
+#: src/expressionstatus.cc:905 src/expressionstatus.cc:907
 msgid "duodecimal number"
 msgstr "十二进制数"
 
-#: ../src/expressionstatus.cc:900 ../src/mainwindow.cc:1338
-#: ../src/mainwindow.cc:4770
+#: src/expressionstatus.cc:908 src/mainwindow.cc:1338 src/mainwindow.cc:4781
 msgid "binary"
 msgstr "二进制"
 
-#: ../src/expressionstatus.cc:901 ../src/expressionstatus.cc:1005
+#: src/expressionstatus.cc:909 src/expressionstatus.cc:1013
 msgid "binary number"
 msgstr "二进制数"
 
-#: ../src/expressionstatus.cc:902 ../src/mainwindow.cc:1341
-#: ../src/mainwindow.cc:4773
+#: src/expressionstatus.cc:910 src/mainwindow.cc:1341 src/mainwindow.cc:4784
 msgid "roman"
 msgstr "罗马"
 
-#: ../src/expressionstatus.cc:903
+#: src/expressionstatus.cc:911
 msgid "roman numerals"
 msgstr "罗马数字"
 
-#: ../src/expressionstatus.cc:904 ../src/mainwindow.cc:1344
-#: ../src/mainwindow.cc:4776
+#: src/expressionstatus.cc:912 src/mainwindow.cc:1344 src/mainwindow.cc:4787
 msgid "bijective"
 msgstr "双射"
 
-#: ../src/expressionstatus.cc:905
+#: src/expressionstatus.cc:913
 msgid "bijective base-26"
 msgstr "双射基-26"
 
-#: ../src/expressionstatus.cc:907
+#: src/expressionstatus.cc:915
 #, fuzzy
 msgid "binary-coded decimal"
 msgstr "最小小数"
 
-#: ../src/expressionstatus.cc:908 ../src/mainwindow.cc:1350
-#: ../src/mainwindow.cc:1353 ../src/mainwindow.cc:1356
-#: ../src/mainwindow.cc:4782 ../src/mainwindow.cc:4785
-#: ../src/mainwindow.cc:4788
+#: src/expressionstatus.cc:916 src/mainwindow.cc:1350 src/mainwindow.cc:1353
+#: src/mainwindow.cc:1356 src/mainwindow.cc:4793 src/mainwindow.cc:4796
+#: src/mainwindow.cc:4799
 msgid "sexagesimal"
 msgstr "六十进制"
 
-#: ../src/expressionstatus.cc:909
+#: src/expressionstatus.cc:917
 msgid "sexagesimal number"
 msgstr "六进制数"
 
-#: ../src/expressionstatus.cc:910 ../src/expressionstatus.cc:911
-#: ../src/mainwindow.cc:1359 ../src/mainwindow.cc:1362
-#: ../src/mainwindow.cc:4791 ../src/mainwindow.cc:4794
+#: src/expressionstatus.cc:918 src/expressionstatus.cc:919
+#: src/mainwindow.cc:1359 src/mainwindow.cc:1362 src/mainwindow.cc:4802
+#: src/mainwindow.cc:4805
 msgid "latitude"
 msgstr "纬度"
 
-#: ../src/expressionstatus.cc:912 ../src/expressionstatus.cc:913
-#: ../src/mainwindow.cc:1365 ../src/mainwindow.cc:1368
-#: ../src/mainwindow.cc:4797 ../src/mainwindow.cc:4800
+#: src/expressionstatus.cc:920 src/expressionstatus.cc:921
+#: src/mainwindow.cc:1365 src/mainwindow.cc:1368 src/mainwindow.cc:4808
+#: src/mainwindow.cc:4811
 msgid "longitude"
 msgstr "经度"
 
-#: ../src/expressionstatus.cc:915
+#: src/expressionstatus.cc:923
 msgid "32-bit floating point"
 msgstr "32位浮点"
 
-#: ../src/expressionstatus.cc:917
+#: src/expressionstatus.cc:925
 msgid "64-bit floating point"
 msgstr "64位浮点"
 
-#: ../src/expressionstatus.cc:919
+#: src/expressionstatus.cc:927
 msgid "16-bit floating point"
 msgstr "16位浮点"
 
-#: ../src/expressionstatus.cc:921
+#: src/expressionstatus.cc:929
 msgid "80-bit (x86) floating point"
 msgstr "80位(x86)浮点"
 
-#: ../src/expressionstatus.cc:923
+#: src/expressionstatus.cc:931
 msgid "128-bit floating point"
 msgstr "128位浮点"
 
-#: ../src/expressionstatus.cc:924 ../src/mainwindow.cc:1386
-#: ../src/mainwindow.cc:4818
+#: src/expressionstatus.cc:932 src/mainwindow.cc:1386 src/mainwindow.cc:4829
 msgid "time"
 msgstr "时间"
 
-#: ../src/expressionstatus.cc:925
+#: src/expressionstatus.cc:933
 msgid "time format"
 msgstr "时间格式"
 
-#: ../src/expressionstatus.cc:928 ../src/mainwindow.cc:1392
-#: ../src/mainwindow.cc:4824
+#: src/expressionstatus.cc:936 src/mainwindow.cc:1392 src/mainwindow.cc:4835
 msgid "scientific"
 msgstr "科学"
 
-#: ../src/expressionstatus.cc:929
+#: src/expressionstatus.cc:937
 msgid "scientific notation"
 msgstr "科学记数"
 
-#: ../src/expressionstatus.cc:930 ../src/mainwindow.cc:1395
-#: ../src/mainwindow.cc:4827
+#: src/expressionstatus.cc:938 src/mainwindow.cc:1395 src/mainwindow.cc:4838
 msgid "engineering"
 msgstr "工程"
 
-#: ../src/expressionstatus.cc:931
+#: src/expressionstatus.cc:939
 msgid "engineering notation"
 msgstr "工程记数"
 
-#: ../src/expressionstatus.cc:932 ../src/mainwindow.cc:1398
-#: ../src/mainwindow.cc:4830
+#: src/expressionstatus.cc:940 src/mainwindow.cc:1398 src/mainwindow.cc:4841
 msgid "simple"
 msgstr "简单"
 
-#: ../src/expressionstatus.cc:933
+#: src/expressionstatus.cc:941
 msgid "simple notation"
 msgstr "简单记数"
 
-#: ../src/expressionstatus.cc:934 ../src/mainwindow.cc:1446
-#: ../src/mainwindow.cc:4880
+#: src/expressionstatus.cc:942 src/mainwindow.cc:1446 src/mainwindow.cc:4891
 msgid "bases"
 msgstr "进制"
 
-#: ../src/expressionstatus.cc:935
+#: src/expressionstatus.cc:943
 msgid "number bases"
 msgstr "数字进制"
 
-#: ../src/expressionstatus.cc:936 ../src/expressionstatus.cc:937
-#: ../src/mainwindow.cc:1448 ../src/mainwindow.cc:4890
+#: src/expressionstatus.cc:944 src/expressionstatus.cc:945
+#: src/mainwindow.cc:1448 src/mainwindow.cc:4901
 msgid "calendars"
 msgstr "日历"
 
-#: ../src/expressionstatus.cc:938 ../src/mainwindow.cc:1470
-#: ../src/mainwindow.cc:4965
+#: src/expressionstatus.cc:946 src/mainwindow.cc:1470 src/mainwindow.cc:4976
 msgid "optimal"
 msgstr "最优"
 
-#: ../src/expressionstatus.cc:939
+#: src/expressionstatus.cc:947
 msgid "optimal unit"
 msgstr "最优单位"
 
-#: ../src/expressionstatus.cc:940 ../src/mainwindow.cc:1475
-#: ../src/mainwindow.cc:4977
+#: src/expressionstatus.cc:948 src/mainwindow.cc:1475 src/mainwindow.cc:4988
 msgid "prefix"
 msgstr "前缀"
 
-#: ../src/expressionstatus.cc:941
+#: src/expressionstatus.cc:949
 msgid "optimal prefix"
 msgstr "最优前缀"
 
 #. base units
-#: ../src/expressionstatus.cc:942 ../src/mainwindow.cc:1480
-#: ../src/mainwindow.cc:4981
+#: src/expressionstatus.cc:950 src/mainwindow.cc:1480 src/mainwindow.cc:4992
 msgctxt "Units"
 msgid "base"
 msgstr "基本"
 
-#: ../src/expressionstatus.cc:943
+#: src/expressionstatus.cc:951
 msgid "base units"
 msgstr "基本单位"
 
-#: ../src/expressionstatus.cc:944 ../src/mainwindow.cc:1485
-#: ../src/mainwindow.cc:4993
+#: src/expressionstatus.cc:952 src/mainwindow.cc:1485 src/mainwindow.cc:5004
 msgid "mixed"
 msgstr "混合"
 
-#: ../src/expressionstatus.cc:945
+#: src/expressionstatus.cc:953
 msgid "mixed units"
 msgstr "混合单位"
 
-#: ../src/expressionstatus.cc:946 ../src/expressionstatus.cc:947
-#: ../src/mainwindow.cc:1490 ../src/mainwindow.cc:5005
+#: src/expressionstatus.cc:954 src/expressionstatus.cc:955
+#: src/mainwindow.cc:1490 src/mainwindow.cc:5016
 msgid "factors"
 msgstr "因子"
 
-#: ../src/expressionstatus.cc:948 ../src/mainwindow.cc:1493
-#: ../src/mainwindow.cc:5015
+#: src/expressionstatus.cc:956 src/mainwindow.cc:1493 src/mainwindow.cc:5026
 msgid "partial fraction"
 msgstr "部分分式"
 
-#: ../src/expressionstatus.cc:949
+#: src/expressionstatus.cc:957
 msgid "expanded partial fractions"
 msgstr "已展开部分分式"
 
-#: ../src/expressionstatus.cc:950 ../src/mainwindow.cc:1450
-#: ../src/mainwindow.cc:4900
+#: src/expressionstatus.cc:958 src/mainwindow.cc:1450 src/mainwindow.cc:4911
 msgid "rectangular"
 msgstr "矩形"
 
-#: ../src/expressionstatus.cc:950 ../src/mainwindow.cc:1450
-#: ../src/mainwindow.cc:4900
+#: src/expressionstatus.cc:958 src/mainwindow.cc:1450 src/mainwindow.cc:4911
 msgid "cartesian"
 msgstr "笛卡尔"
 
-#: ../src/expressionstatus.cc:951
+#: src/expressionstatus.cc:959
 msgid "complex rectangular form"
 msgstr "复矩形形式"
 
-#: ../src/expressionstatus.cc:952 ../src/mainwindow.cc:1454
-#: ../src/mainwindow.cc:4913
+#: src/expressionstatus.cc:960 src/mainwindow.cc:1454 src/mainwindow.cc:4924
 msgid "exponential"
 msgstr "指数型"
 
-#: ../src/expressionstatus.cc:953
+#: src/expressionstatus.cc:961
 msgid "complex exponential form"
 msgstr "复指数形式"
 
-#: ../src/expressionstatus.cc:954 ../src/mainwindow.cc:1458
-#: ../src/mainwindow.cc:4926
+#: src/expressionstatus.cc:962 src/mainwindow.cc:1458 src/mainwindow.cc:4937
 msgid "polar"
 msgstr "极坐标"
 
-#: ../src/expressionstatus.cc:955
+#: src/expressionstatus.cc:963
 msgid "complex polar form"
 msgstr "复极坐标形式"
 
-#: ../src/expressionstatus.cc:957
+#: src/expressionstatus.cc:965
 msgid "complex cis form"
 msgstr "复纯虚数指数(cis)形式"
 
-#: ../src/expressionstatus.cc:958 ../src/mainwindow.cc:1466
-#: ../src/mainwindow.cc:4952
+#: src/expressionstatus.cc:966 src/mainwindow.cc:1466 src/mainwindow.cc:4963
 msgid "angle"
 msgstr "角度"
 
-#: ../src/expressionstatus.cc:959
+#: src/expressionstatus.cc:967
 msgid "complex angle notation"
 msgstr "复角记号"
 
-#: ../src/expressionstatus.cc:960 ../src/mainwindow.cc:1466
-#: ../src/mainwindow.cc:4952
+#: src/expressionstatus.cc:968 src/mainwindow.cc:1466 src/mainwindow.cc:4963
 msgid "phasor"
 msgstr "相量"
 
-#: ../src/expressionstatus.cc:961
+#: src/expressionstatus.cc:969
 msgid "complex phasor notation"
 msgstr "复相量记号"
 
-#: ../src/expressionstatus.cc:963
+#: src/expressionstatus.cc:971
 msgid "UTC time zone"
 msgstr "UTC时区"
 
 #. number base #
-#: ../src/expressionstatus.cc:1015 ../src/mainwindow.cc:1497
-#: ../src/mainwindow.cc:5025
+#: src/expressionstatus.cc:1023 src/mainwindow.cc:1497 src/mainwindow.cc:5036
 msgctxt "Number base"
 msgid "base"
 msgstr "进制"
 
-#: ../src/expressionstatus.cc:1016
+#: src/expressionstatus.cc:1024
 #, c-format
 msgid "number base %s"
 msgstr "数字进制 %s"
 
-#: ../src/expressionstatus.cc:1020 ../src/mainwindow.cc:1501
-#: ../src/mainwindow.cc:5029
+#: src/expressionstatus.cc:1028 src/mainwindow.cc:1501 src/mainwindow.cc:5040
 #, fuzzy
 msgid "decimals"
 msgstr "十进制"
 
-#: ../src/expressionstatus.cc:1021
+#: src/expressionstatus.cc:1029
 #, fuzzy
 msgid "decimal fraction"
 msgstr "十进分数"
 
-#: ../src/expressionstatus.cc:1026 ../src/expressionstatus.cc:1032
-#: ../src/util.cc:661
+#: src/expressionstatus.cc:1034 src/expressionstatus.cc:1040 src/util.cc:661
 msgid "fraction"
 msgstr "分数"
 
-#: ../src/functioneditdialog.cc:480 ../src/nameseditdialog.cc:174
+#: src/functioneditdialog.cc:480 src/nameseditdialog.cc:174
 msgid "Reference"
 msgstr "参考"
 
-#: ../src/functioneditdialog.cc:865
+#: src/functioneditdialog.cc:865
 msgid "Edit Function (global)"
 msgstr "编辑函数(全局)"
 
-#: ../src/functioneditdialog.cc:867
+#: src/functioneditdialog.cc:867
 msgid "New Function"
 msgstr "新建函数"
 
-#: ../src/functioneditdialog.cc:953
+#: src/functioneditdialog.cc:957
 msgid "Empty expression field."
 msgstr "表达式字段为空。"
 
-#: ../src/functioneditdialog.cc:959
+#: src/functioneditdialog.cc:963
 msgid "Conversion (using \"to\") is not supported in functions."
 msgstr ""
 
-#: ../src/functionsdialog.cc:135 ../src/functionsdialog.cc:136
-#: ../src/functionsdialog.cc:200 ../src/mainwindow.cc:7561
-#: ../src/menubar.cc:1599 ../src/util.cc:1291 ../src/util.cc:1292
+#: src/functionsdialog.cc:135 src/functionsdialog.cc:136
+#: src/functionsdialog.cc:200 src/mainwindow.cc:7572 src/menubar.cc:1599
+#: src/util.cc:1291 src/util.cc:1292
 msgid "User functions"
 msgstr "用户功能"
 
-#: ../src/functionsdialog.cc:153 ../src/functionsdialog.cc:154
-#: ../src/functionsdialog.cc:198 ../src/mainwindow.cc:7559
-#: ../src/mainwindow.cc:7591 ../src/mainwindow.cc:7615
-#: ../src/unitsdialog.cc:174 ../src/unitsdialog.cc:175
-#: ../src/unitsdialog.cc:235 ../src/util.cc:1293 ../src/util.cc:1294
-#: ../src/variablesdialog.cc:161 ../src/variablesdialog.cc:162
-#: ../src/variablesdialog.cc:213
+#: src/functionsdialog.cc:153 src/functionsdialog.cc:154
+#: src/functionsdialog.cc:198 src/mainwindow.cc:7570 src/mainwindow.cc:7602
+#: src/mainwindow.cc:7626 src/unitsdialog.cc:174 src/unitsdialog.cc:175
+#: src/unitsdialog.cc:235 src/util.cc:1293 src/util.cc:1294
+#: src/variablesdialog.cc:161 src/variablesdialog.cc:162
+#: src/variablesdialog.cc:213
 msgid "Inactive"
 msgstr "不常用"
 
-#: ../src/functionsdialog.cc:300
+#: src/functionsdialog.cc:300
 #, c-format
 msgid ""
 "Retrieves data from the %s data set for a given object and property. If "
@@ -4571,89 +4557,88 @@ msgstr ""
 "从 %s 数据集中检索与所给对象和属性相关的数据。若将“info”键入为属性，则会弹出"
 "一个包含该对象的所有属性的对话框窗口。"
 
-#: ../src/functionsdialog.cc:312 ../src/insertfunctiondialog.cc:794
+#: src/functionsdialog.cc:312 src/insertfunctiondialog.cc:794
 msgid "Example:"
 msgstr "示例:"
 
 #. optional argument
-#: ../src/functionsdialog.cc:358 ../src/insertfunctiondialog.cc:655
-#: ../src/insertfunctiondialog.cc:666
+#: src/functionsdialog.cc:358 src/insertfunctiondialog.cc:655
+#: src/insertfunctiondialog.cc:666
 msgid "optional"
 msgstr "可选"
 
 #. argument default, in description
-#: ../src/functionsdialog.cc:362
+#: src/functionsdialog.cc:362
 msgid "default: "
 msgstr "默认值:"
 
-#: ../src/functionsdialog.cc:376
+#: src/functionsdialog.cc:376
 msgid "Requirement"
 msgstr "要求"
 
-#: ../src/functionsdialog.cc:433 ../src/unitsdialog.cc:390 ../src/util.cc:1345
-#: ../src/variablesdialog.cc:353
+#: src/functionsdialog.cc:433 src/unitsdialog.cc:390 src/util.cc:1345
+#: src/variablesdialog.cc:353
 #, fuzzy
 msgid "Ac_tivate"
 msgstr "激活(_v)"
 
-#: ../src/historyview.cc:111
+#: src/historyview.cc:111
 msgid "History Answer Value"
 msgstr "历史答案"
 
-#: ../src/historyview.cc:112 ../src/mainwindow.cc:8650
+#: src/historyview.cc:112 src/mainwindow.cc:8661
 msgid "answer"
 msgstr "答案"
 
-#: ../src/historyview.cc:115 ../src/historyview.cc:173
+#: src/historyview.cc:115 src/historyview.cc:173
 msgid "History Index(es)"
 msgstr "历史索引"
 
-#: ../src/historyview.cc:126 ../src/historyview.cc:184
+#: src/historyview.cc:126 src/historyview.cc:184
 #, c-format
 msgid "History index %s does not exist."
 msgstr "历史索引 %s 不存在。"
 
-#: ../src/historyview.cc:169
+#: src/historyview.cc:169
 msgid "History Parsed Expression"
 msgstr "已解析表达式"
 
-#: ../src/historyview.cc:824 ../src/plotdialog.cc:464 ../src/plotdialog.cc:475
-#: ../src/plotdialog.cc:486
+#: src/historyview.cc:824 src/plotdialog.cc:464 src/plotdialog.cc:475
+#: src/plotdialog.cc:486
 msgid "It took too long to generate the plot data."
 msgstr "生成绘图数据的时间太长。"
 
-#: ../src/historyview.cc:824
+#: src/historyview.cc:824
 msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
 msgstr "生成绘图数据的时间太长。 请降低采样率或增加首选项中的时间限制。"
 
-#: ../src/historyview.cc:2154 ../src/mainwindow.cc:2526
+#: src/historyview.cc:2154 src/mainwindow.cc:2537
 msgid "RPN Register Moved"
 msgstr "RPN寄存器已移动"
 
-#: ../src/historyview.cc:2160 ../src/mainwindow.cc:2527
-#: ../src/mainwindow.cc:5319
+#: src/historyview.cc:2160 src/mainwindow.cc:2538 src/mainwindow.cc:5330
 msgid "RPN Operation"
 msgstr "RPN操作"
 
-#: ../src/historyview.cc:2791
+#: src/historyview.cc:2791
 msgid "Search"
 msgstr "搜索"
 
-#: ../src/historyview.cc:2791
+#: src/historyview.cc:2791
 msgid "_Search"
 msgstr "搜索(_S)"
 
-#: ../src/historyview.cc:2869 ../src/historyview.cc:3217
+#: src/historyview.cc:2869 src/historyview.cc:3217
 msgid "Remove Bookmark"
 msgstr "删除书签"
 
-#: ../src/historyview.cc:2924
+#: src/historyview.cc:2924
 msgid "Add Bookmark"
 msgstr "添加书签"
 
-#: ../src/historyview.cc:2952
+#: src/historyview.cc:2952
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -4661,30 +4646,30 @@ msgstr ""
 "已存在同名的书签。 \n"
 "是否要覆盖它？ "
 
-#: ../src/historyview.cc:2967 ../src/historyview.cc:3210
+#: src/historyview.cc:2967 src/historyview.cc:3210
 msgid "Edit Comment…"
 msgstr ""
 
-#: ../src/historyview.cc:2969
+#: src/historyview.cc:2969
 #, fuzzy
 msgid "Comment"
 msgstr "逗号"
 
-#: ../src/historyview.cc:3255
+#: src/historyview.cc:3255
 msgid "No items found"
 msgstr "未找到条目"
 
-#: ../src/historyview.cc:3689 ../src/stackview.cc:794
+#: src/historyview.cc:3689 src/stackview.cc:794
 msgid "Index"
 msgstr "索引"
 
-#: ../src/importcsvdialog.cc:49 ../src/importcsvdialog.cc:51
+#: src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
 msgid "Select file to import"
 msgstr "选择要导入的文件"
 
-#: ../src/importcsvdialog.cc:155 ../src/matrixeditdialog.cc:560
-#: ../src/uniteditdialog.cc:338 ../src/unknowneditdialog.cc:198
-#: ../src/variableeditdialog.cc:292
+#: src/importcsvdialog.cc:155 src/matrixeditdialog.cc:560
+#: src/uniteditdialog.cc:338 src/unknowneditdialog.cc:198
+#: src/variableeditdialog.cc:292
 msgid ""
 "A unit or variable with the same name already exists.\n"
 "Do you want to overwrite it?"
@@ -4692,7 +4677,7 @@ msgstr ""
 "已存在同名的单位或变量。 \n"
 "是否要覆盖它？ "
 
-#: ../src/importcsvdialog.cc:191
+#: src/importcsvdialog.cc:191
 #, c-format
 msgid ""
 "Could not import from file \n"
@@ -4701,163 +4686,148 @@ msgstr ""
 "无法从文件导入 \n"
 "%s "
 
-#: ../src/insertfunctiondialog.cc:108 ../src/insertfunctiondialog.cc:110
+#: src/insertfunctiondialog.cc:108 src/insertfunctiondialog.cc:110
 msgid "Select file"
 msgstr "选择文件"
 
-#: ../src/insertfunctiondialog.cc:334 ../src/insertfunctiondialog.cc:455
+#: src/insertfunctiondialog.cc:334 src/insertfunctiondialog.cc:455
 msgid "Apply to Stack"
 msgstr "应用于栈"
 
-#: ../src/insertfunctiondialog.cc:443
+#: src/insertfunctiondialog.cc:443
 msgid "Keep open"
 msgstr "保持打开状态"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/insertfunctiondialog.cc:452
+#: src/insertfunctiondialog.cc:452
 msgid "Enter"
 msgstr "开始"
 
-#: ../src/insertfunctiondialog.cc:514
+#: src/insertfunctiondialog.cc:514
 msgid "Argument"
 msgstr "参数"
 
-#: ../src/insertfunctiondialog.cc:569
+#: src/insertfunctiondialog.cc:569
 msgid "True"
 msgstr "真"
 
-#: ../src/insertfunctiondialog.cc:571
+#: src/insertfunctiondialog.cc:571
 msgid "False"
 msgstr "假"
 
-#: ../src/insertfunctiondialog.cc:610
+#: src/insertfunctiondialog.cc:610
 msgid "Info"
 msgstr "信息"
 
-#: ../src/keypad.cc:368
+#: src/keypad.cc:368
 #, c-format
 msgid "Right-click/long press: %s"
 msgstr "右键/长按: %s"
 
-#: ../src/keypad.cc:369
+#: src/keypad.cc:369
 #, c-format
 msgid "Right-click: %s"
 msgstr "右键: %s"
 
-#: ../src/keypad.cc:375
+#: src/keypad.cc:375
 #, c-format
 msgid "Middle-click: %s"
 msgstr "中键: %s"
 
-#: ../src/keypad.cc:489
+#: src/keypad.cc:489
 msgid "Raise (Ctrl+*)"
 msgstr "幂(Ctrl+*)"
 
-#: ../src/keypad.cc:810 ../src/util.cc:904
+#: src/keypad.cc:810 src/util.cc:904
 msgid "Set unknowns"
 msgstr "设置未知数"
 
 #. Show further items in a submenu
-#: ../src/keypad.cc:858 ../src/keypad.cc:946 ../src/keypad.cc:949
-#: ../src/keypad.cc:2469 ../src/menubar.cc:1396 ../src/menubar.cc:1491
-#: ../src/resultview.cc:896
+#: src/keypad.cc:858 src/keypad.cc:946 src/keypad.cc:949 src/keypad.cc:2469
+#: src/menubar.cc:1396 src/menubar.cc:1491 src/resultview.cc:896
 msgid "more"
 msgstr "更多"
 
-#: ../src/keypad.cc:1008
+#: src/keypad.cc:1008
 msgid "Logical AND"
 msgstr "逻辑与"
 
-#: ../src/keypad.cc:1009
+#: src/keypad.cc:1009
 msgid "Logical OR"
 msgstr "逻辑或"
 
-#: ../src/keypad.cc:1010
+#: src/keypad.cc:1010
 msgid "Logical NOT"
 msgstr "逻辑非"
 
-#: ../src/keypad.cc:1012 ../src/keypad.cc:1013 ../src/keypad.cc:1014
-#: ../src/keypad.cc:1015
+#: src/keypad.cc:1012 src/keypad.cc:1013 src/keypad.cc:1014 src/keypad.cc:1015
 msgid "Toggle Result Base"
 msgstr "切换结果进制"
 
-#: ../src/keypad.cc:1017
+#: src/keypad.cc:1017
 msgid "Open menu with stored variables"
 msgstr "打开存储变量的菜单"
 
-#: ../src/keypad.cc:2012
+#: src/keypad.cc:2012
 msgid "log10 function not found."
 msgstr "未找到函数log10。"
 
-#: ../src/keypad.cc:2594
+#: src/keypad.cc:2594
 msgid "All functions"
 msgstr "所有函数"
 
-#: ../src/keypad.cc:2647
+#: src/keypad.cc:2647
 msgid "All variables"
 msgstr "所有变量"
 
-#: ../src/keypad.cc:2685 ../src/mainwindow.cc:7639
-#: ../src/variablesdialog.cc:258 ../src/variablesdialog.cc:417
-#: ../src/variablesdialog.cc:432 ../src/variablesdialog.cc:448
-#: ../src/variablesdialog.cc:468
+#: src/keypad.cc:2685 src/mainwindow.cc:7650 src/variablesdialog.cc:258
+#: src/variablesdialog.cc:417 src/variablesdialog.cc:432
+#: src/variablesdialog.cc:448 src/variablesdialog.cc:468
 msgid "Variable does not exist anymore."
 msgstr "变量不再存在。"
 
 #. RPN Enter (calculate and add to stack)
-#: ../src/keypad.cc:3530
+#: src/keypad.cc:3530
 msgid "ENTER"
 msgstr "ENTER"
 
-#. Fixes missing support for context in ui file translations
-#: ../src/keypad.cc:3609
-msgctxt "Manage units button"
-msgid "u"
-msgstr "u"
-
-#: ../src/keypad.cc:3610
-msgctxt "Button for convert to operator"
-msgid "to"
-msgstr "to"
-
-#: ../src/main.cc:59
+#: src/main.cc:59
 msgid "Execute expressions and commands from a file"
 msgstr "执行文件中的表达式和命令"
 
-#: ../src/main.cc:59
+#: src/main.cc:59
 msgid "FILE"
 msgstr "文件"
 
-#: ../src/main.cc:60
+#: src/main.cc:60
 msgid "Start a new instance of the application"
 msgstr "启动一个新的程序实例"
 
-#: ../src/main.cc:61
+#: src/main.cc:61
 msgid "Display the application version"
 msgstr "显示应用程序版本"
 
-#: ../src/main.cc:62
+#: src/main.cc:62
 msgid "Specify the window title"
 msgstr "指定窗口标题"
 
-#: ../src/main.cc:62
+#: src/main.cc:62
 msgid "TITLE"
 msgstr "TITLE"
 
-#: ../src/main.cc:63
+#: src/main.cc:63
 msgid "Expression to calculate"
 msgstr "要计算的表达式"
 
-#: ../src/main.cc:63
+#: src/main.cc:63
 msgid "[EXPRESSION]"
 msgstr "[EXPRESSION]"
 
-#: ../src/main.cc:151 ../src/searchprovider.cc:656
-#, c-format
+#: src/main.cc:151 src/searchprovider.cc:656
 msgid "Failed to load global definitions!\n"
 msgstr "加载全局定义失败！ \n"
 
-#: ../src/main.cc:326
+#: src/main.cc:326
 #, c-format
 msgid ""
 "By default, only one instance (one main window) of %s is allowed.\n"
@@ -4876,23 +4846,23 @@ msgstr ""
 "\n"
 "尽管这样，你是否想改变默认的行为，允许同时打开多个实例？"
 
-#: ../src/mainwindow.cc:252
+#: src/mainwindow.cc:252
 msgid "Set Window Title"
 msgstr "设置窗口标题"
 
-#: ../src/mainwindow.cc:527
+#: src/mainwindow.cc:527
 #, fuzzy
 msgid "Exchange rate source:"
 msgid_plural "Exchange rate sources:"
 msgstr[0] "汇率更新"
 
-#: ../src/mainwindow.cc:529
+#: src/mainwindow.cc:529
 #, fuzzy, c-format
 msgid "updated %s"
 msgid_plural "updated %s"
 msgstr[0] "更新"
 
-#: ../src/mainwindow.cc:549
+#: src/mainwindow.cc:549
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -4902,15 +4872,15 @@ msgstr ""
 "当计算过程中产生错误、警告和其他信息时，表达式框右上角的图标会发生变化以反"
 "映。此时可以长按鼠标或点击图标来显示信息。"
 
-#: ../src/mainwindow.cc:609
+#: src/mainwindow.cc:609
 msgid "Path of executable not found."
 msgstr "未找到可执行文件的路径。"
 
-#: ../src/mainwindow.cc:619
+#: src/mainwindow.cc:619
 msgid "curl not found."
 msgstr "未找到 curl。"
 
-#: ../src/mainwindow.cc:684
+#: src/mainwindow.cc:684
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -4919,20 +4889,20 @@ msgstr ""
 "运行更新脚本失败。\n"
 "%s"
 
-#: ../src/mainwindow.cc:708
+#: src/mainwindow.cc:708
 msgid "Failed to check for updates."
 msgstr "无法检查更新。"
 
-#: ../src/mainwindow.cc:708
+#: src/mainwindow.cc:708
 msgid "No updates found."
 msgstr "无更新。"
 
-#: ../src/mainwindow.cc:722
+#: src/mainwindow.cc:722
 #, fuzzy
 msgid "_Download"
 msgstr "向下"
 
-#: ../src/mainwindow.cc:734
+#: src/mainwindow.cc:734
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
@@ -4943,7 +4913,7 @@ msgstr ""
 "\n"
 "是否要更新到版本 %s？"
 
-#: ../src/mainwindow.cc:736
+#: src/mainwindow.cc:736
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -4954,11 +4924,11 @@ msgstr ""
 "\n"
 "您可以在 %s 获取。"
 
-#: ../src/mainwindow.cc:810
+#: src/mainwindow.cc:810
 msgid "Temperature Calculation Mode"
 msgstr "温度计算模式"
 
-#: ../src/mainwindow.cc:820
+#: src/mainwindow.cc:820
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
@@ -4968,39 +4938,39 @@ msgstr ""
 "请选择温度计算模式\n"
 "(以后可以在偏好设置中更改)。"
 
-#: ../src/mainwindow.cc:873
+#: src/mainwindow.cc:873
 msgid "Unknown variables (e.g. x, y, z) are by default assumed real."
 msgstr ""
 
-#: ../src/mainwindow.cc:881
+#: src/mainwindow.cc:881
 #, fuzzy
 msgid "Sinc Function"
 msgstr "编辑函数"
 
-#: ../src/mainwindow.cc:891
+#: src/mainwindow.cc:891
 msgid "Please select desired variant of the sinc function."
 msgstr ""
 
-#: ../src/mainwindow.cc:894
+#: src/mainwindow.cc:894
 #, fuzzy
 msgid "Unnormalized"
 msgstr "未分类"
 
-#: ../src/mainwindow.cc:901
+#: src/mainwindow.cc:901
 #, fuzzy
 msgid "Normalized"
 msgstr "常规"
 
-#: ../src/mainwindow.cc:936
+#: src/mainwindow.cc:936
 #, fuzzy
 msgid "Interpretation of comma"
 msgstr "点号解释"
 
-#: ../src/mainwindow.cc:936
+#: src/mainwindow.cc:936
 msgid "Interpretation of dots"
 msgstr "点号解释"
 
-#: ../src/mainwindow.cc:946
+#: src/mainwindow.cc:946
 #, fuzzy
 msgid ""
 "Please select interpretation of comma (\",\")\n"
@@ -5009,7 +4979,7 @@ msgstr ""
 "请选择对点号(”.“)的解释\n"
 "(以后可以在偏好设置中更改)。"
 
-#: ../src/mainwindow.cc:946
+#: src/mainwindow.cc:946
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
@@ -5017,30 +4987,30 @@ msgstr ""
 "请选择对点号(”.“)的解释\n"
 "(以后可以在偏好设置中更改)。"
 
-#: ../src/mainwindow.cc:949
+#: src/mainwindow.cc:949
 msgid "Both dot and comma as decimal separators"
 msgstr "将点号和逗号均作为小数分隔符"
 
-#: ../src/mainwindow.cc:956
+#: src/mainwindow.cc:956
 #, fuzzy
 msgid "Comma as thousands separator"
 msgstr "将点号作为千位分隔符"
 
-#: ../src/mainwindow.cc:956
+#: src/mainwindow.cc:956
 msgid "Dot as thousands separator"
 msgstr "将点号作为千位分隔符"
 
-#: ../src/mainwindow.cc:963
+#: src/mainwindow.cc:963
 msgid ""
 "Comma as separator for function arguments\n"
 "and matrix/vector elements"
 msgstr ""
 
-#: ../src/mainwindow.cc:963
+#: src/mainwindow.cc:963
 msgid "Only dot as decimal separator"
 msgstr "仅将逗号作为小数分隔符"
 
-#: ../src/mainwindow.cc:1027
+#: src/mainwindow.cc:1027
 #, fuzzy
 msgid ""
 "The expression is ambiguous.\n"
@@ -5051,67 +5021,67 @@ msgstr ""
 "请选择温度计算模式\n"
 "(以后可以在偏好设置中更改)。"
 
-#: ../src/mainwindow.cc:1030
+#: src/mainwindow.cc:1030
 msgid "Implicit multiplication first"
 msgstr "隐式优先"
 
-#: ../src/mainwindow.cc:1038
+#: src/mainwindow.cc:1038
 msgid "Conventional"
 msgstr "常规"
 
-#: ../src/mainwindow.cc:1073
+#: src/mainwindow.cc:1073
 #, fuzzy
 msgid "Percentage Interpretation"
 msgstr "百分比计算"
 
-#: ../src/mainwindow.cc:1083
+#: src/mainwindow.cc:1083
 #, fuzzy
 msgid "Please select interpretation of percentage addition."
 msgstr ""
 "请选择对点号(”.“)的解释\n"
 "(以后可以在偏好设置中更改)。"
 
-#: ../src/mainwindow.cc:1086
+#: src/mainwindow.cc:1086
 msgid "Add percentage of original value"
 msgstr ""
 
-#: ../src/mainwindow.cc:1094
+#: src/mainwindow.cc:1094
 msgid "Add percentage multiplied by 1/100"
 msgstr ""
 
-#: ../src/mainwindow.cc:2068
+#: src/mainwindow.cc:2079
 msgid "My Variables"
 msgstr "我的变量"
 
-#: ../src/mainwindow.cc:2705
+#: src/mainwindow.cc:2716
 msgid "Processing…"
 msgstr "处理中…"
 
-#: ../src/mainwindow.cc:2976
+#: src/mainwindow.cc:2987
 msgid "Factorizing…"
 msgstr "分解中…"
 
-#: ../src/mainwindow.cc:2980
+#: src/mainwindow.cc:2991
 msgid "Expanding partial fractions…"
 msgstr "展开部分分式…"
 
-#: ../src/mainwindow.cc:2984
+#: src/mainwindow.cc:2995
 msgid "Expanding…"
 msgstr "展开中…"
 
-#: ../src/mainwindow.cc:2989 ../src/mainwindow.cc:5259
+#: src/mainwindow.cc:3000 src/mainwindow.cc:5270
 msgid "Calculating…"
 msgstr "计算中…"
 
-#: ../src/mainwindow.cc:2993
+#: src/mainwindow.cc:3004
 msgid "Converting…"
 msgstr "换算中…"
 
-#: ../src/mainwindow.cc:4871
+#: src/mainwindow.cc:4882
 msgid "Time zone parsing failed."
 msgstr "时区分析失败。"
 
-#: ../src/mainwindow.cc:5484 ../src/mainwindow.cc:7089 ../src/openhelp.cc:361
+#: src/mainwindow.cc:5495 src/mainwindow.cc:7100 src/openhelp.cc:361
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -5120,29 +5090,26 @@ msgstr ""
 "无法打开 %s 。\n"
 "%s"
 
-#: ../src/mainwindow.cc:5638
+#: src/mainwindow.cc:5649
 msgid "Couldn't write definitions"
 msgstr "无法写入定义"
 
-#: ../src/mainwindow.cc:5640 ../src/mainwindow.cc:5642
-#: ../src/mainwindow.cc:6421 ../src/mainwindow.cc:6423
-#: ../src/mainwindow.cc:6466 ../src/mainwindow.cc:6468
+#: src/mainwindow.cc:5651 src/mainwindow.cc:5653 src/mainwindow.cc:6432
+#: src/mainwindow.cc:6434 src/mainwindow.cc:6477 src/mainwindow.cc:6479
 msgid "Ignore"
 msgstr ""
 
-#: ../src/mainwindow.cc:5640 ../src/mainwindow.cc:6421
-#: ../src/mainwindow.cc:6466
+#: src/mainwindow.cc:5651 src/mainwindow.cc:6432 src/mainwindow.cc:6477
 #, fuzzy
 msgid "Cancel"
 msgstr "取消(_C)"
 
-#: ../src/mainwindow.cc:5640 ../src/mainwindow.cc:5642
-#: ../src/mainwindow.cc:6421 ../src/mainwindow.cc:6423
-#: ../src/mainwindow.cc:6466 ../src/mainwindow.cc:6468
+#: src/mainwindow.cc:5651 src/mainwindow.cc:5653 src/mainwindow.cc:6432
+#: src/mainwindow.cc:6434 src/mainwindow.cc:6477 src/mainwindow.cc:6479
 msgid "Retry"
 msgstr ""
 
-#: ../src/mainwindow.cc:6419
+#: src/mainwindow.cc:6430
 #, fuzzy, c-format
 msgid ""
 "Couldn't write history to\n"
@@ -5151,7 +5118,7 @@ msgstr ""
 "无法将首选项写入 \n"
 "%s "
 
-#: ../src/mainwindow.cc:6464
+#: src/mainwindow.cc:6475
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5160,231 +5127,227 @@ msgstr ""
 "无法将首选项写入 \n"
 "%s "
 
-#: ../src/mainwindow.cc:6766 ../src/mainwindow.cc:6768
+#: src/mainwindow.cc:6777 src/mainwindow.cc:6779
 msgid "Select definitions file"
 msgstr "选择定义文件"
 
-#: ../src/mainwindow.cc:6766 ../src/mainwindow.cc:6768
+#: src/mainwindow.cc:6777 src/mainwindow.cc:6779
 msgid "_Import"
 msgstr "导入(_I)"
 
-#: ../src/mainwindow.cc:6772
+#: src/mainwindow.cc:6783
 #, fuzzy
 msgid "XML Files"
 msgstr "所有文件"
 
-#: ../src/mainwindow.cc:6792
+#: src/mainwindow.cc:6803
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "无法将%s复制到%s。"
 
-#: ../src/mainwindow.cc:6800
+#: src/mainwindow.cc:6811
 #, c-format
 msgid "Could not read %s."
 msgstr "无法读取 %s 。"
 
-#: ../src/mainwindow.cc:6808
+#: src/mainwindow.cc:6819
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "无法将文件复制到 %s 。"
 
-#: ../src/mainwindow.cc:7063
+#: src/mainwindow.cc:7074
 msgid "translator-credits"
 msgstr "tuberry <orzun@foxmail.com>"
 
-#: ../src/mainwindow.cc:7593 ../src/menubar.cc:1687 ../src/util.cc:1287
-#: ../src/util.cc:1288 ../src/variablesdialog.cc:143
-#: ../src/variablesdialog.cc:144 ../src/variablesdialog.cc:215
+#: src/mainwindow.cc:7604 src/menubar.cc:1687 src/util.cc:1287 src/util.cc:1288
+#: src/variablesdialog.cc:143 src/variablesdialog.cc:144
+#: src/variablesdialog.cc:215
 msgid "User variables"
 msgstr "用户变量"
 
-#: ../src/mainwindow.cc:7617 ../src/menubar.cc:1427 ../src/menubar.cc:1522
-#: ../src/unitsdialog.cc:158 ../src/unitsdialog.cc:159
-#: ../src/unitsdialog.cc:237 ../src/util.cc:1289 ../src/util.cc:1290
+#: src/mainwindow.cc:7628 src/menubar.cc:1427 src/menubar.cc:1522
+#: src/unitsdialog.cc:158 src/unitsdialog.cc:159 src/unitsdialog.cc:237
+#: src/util.cc:1289 src/util.cc:1290
 msgid "User units"
 msgstr "用户单位"
 
-#: ../src/mainwindow.cc:7726
+#: src/mainwindow.cc:7737
 msgid "No unknowns in result."
 msgstr "结果中没有未知数。"
 
-#: ../src/mainwindow.cc:7732
+#: src/mainwindow.cc:7743
 msgid "Set Unknowns"
 msgstr "设置未知数"
 
-#: ../src/mainwindow.cc:7732
+#: src/mainwindow.cc:7743
 msgid "_Apply"
 msgstr "应用(_A)"
 
-#: ../src/mainwindow.cc:8445 ../src/mainwindow.cc:8452
-msgid "Qalculate!"
-msgstr "Qalculate!"
-
-#: ../src/mainwindow.cc:8647
+#: src/mainwindow.cc:8658
 msgid "ans"
 msgstr "ans"
 
-#: ../src/mainwindow.cc:8648
+#: src/mainwindow.cc:8659
 msgid "Last Answer"
 msgstr "上一答案"
 
-#: ../src/mainwindow.cc:8649
+#: src/mainwindow.cc:8660
 msgid ""
 "Contains the result of the most recent calculation. Multiple results of an "
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
 
-#: ../src/mainwindow.cc:8652
+#: src/mainwindow.cc:8663
 msgid "Answer 2"
 msgstr "答案二"
 
-#: ../src/mainwindow.cc:8653
+#: src/mainwindow.cc:8664
 msgid "Answer 3"
 msgstr "答案三"
 
-#: ../src/mainwindow.cc:8654
+#: src/mainwindow.cc:8665
 msgid "Answer 4"
 msgstr "答案四"
 
-#: ../src/mainwindow.cc:8655
+#: src/mainwindow.cc:8666
 msgid "Answer 5"
 msgstr "答案五"
 
-#: ../src/mainwindow.cc:8665
+#: src/mainwindow.cc:8676
 msgid "Memory"
 msgstr "存值"
 
-#: ../src/matrixdialog.cc:73 ../src/matrixeditdialog.cc:94
+#: src/matrixdialog.cc:73 src/matrixeditdialog.cc:94
 msgid "none"
 msgstr "无"
 
-#: ../src/matrixdialog.cc:282 ../src/matrixdialog.cc:290
+#: src/matrixdialog.cc:282 src/matrixdialog.cc:290
 msgid "Elements (in horizontal order)"
 msgstr "元素(按水平顺序)"
 
-#: ../src/matrixdialog.cc:384
+#: src/matrixdialog.cc:384
 msgid "Vector Result"
 msgstr "向量结果"
 
-#: ../src/matrixdialog.cc:386
+#: src/matrixdialog.cc:386
 msgid "Matrix Result"
 msgstr "矩阵结果"
 
-#: ../src/matrixeditdialog.cc:395
+#: src/matrixeditdialog.cc:395
 msgid "Edit Vector"
 msgstr "编辑向量"
 
-#: ../src/matrixeditdialog.cc:397
+#: src/matrixeditdialog.cc:397
 msgid "Edit Vector (global)"
 msgstr "编辑向量(全局)"
 
-#: ../src/matrixeditdialog.cc:399
+#: src/matrixeditdialog.cc:399
 msgid "New Vector"
 msgstr "新建向量"
 
-#: ../src/matrixeditdialog.cc:406
+#: src/matrixeditdialog.cc:406
 msgid "Edit Matrix (global)"
 msgstr "编辑矩阵(全局)"
 
-#: ../src/matrixeditdialog.cc:408
+#: src/matrixeditdialog.cc:408
 msgid "New Matrix"
 msgstr "新建矩阵"
 
-#: ../src/menubar.cc:122
+#: src/menubar.cc:122
 msgid "Unit does not exist"
 msgstr "单位不存在"
 
-#: ../src/menubar.cc:451
+#: src/menubar.cc:451
 msgid ""
 "Deactivation of interval arithmetic might result in inaccurate output. Do "
 "you want to deactivate it anyway?"
 msgstr ""
 
-#: ../src/menubar.cc:1217
+#: src/menubar.cc:1217
 msgid "Save Mode"
 msgstr "保存模式"
 
-#: ../src/menubar.cc:1247
+#: src/menubar.cc:1247
 msgid "Preset mode cannot be overwritten."
 msgstr "无法覆盖预设模式。"
 
-#: ../src/menubar.cc:1258
+#: src/menubar.cc:1258
 msgid "Delete Mode"
 msgstr "删除模式"
 
-#: ../src/menubar.cc:1435
+#: src/menubar.cc:1435
 msgid "Prefixes"
 msgstr "前缀"
 
-#: ../src/menubar.cc:1745
+#: src/menubar.cc:1745
 msgid "No Prefix"
 msgstr "无前缀"
 
-#: ../src/menubar.cc:2703
+#: src/menubar.cc:2703
 msgid "Open Settings Folder"
 msgid_plural "Open Settings Folders"
 msgstr[0] ""
 
-#: ../src/modes.cc:46 ../src/modes.cc:56
+#: src/modes.cc:46 src/modes.cc:56
 msgid "Preset"
 msgstr "预置"
 
-#: ../src/modes.cc:132
+#: src/modes.cc:132
 msgid "Default mode loaded at first startup for new users"
 msgstr ""
 
-#: ../src/modes.cc:133
+#: src/modes.cc:133
 msgid "Mode loaded at each startup and, by default, saved at exit"
 msgstr ""
 
-#: ../src/nameseditdialog.cc:101
+#: src/nameseditdialog.cc:101
 msgid "Illegal name"
 msgstr "非法名称"
 
-#: ../src/nameseditdialog.cc:104 ../src/nameseditdialog.cc:252
-#: ../src/nameseditdialog.cc:271 ../src/nameseditdialog.cc:280
+#: src/nameseditdialog.cc:104 src/nameseditdialog.cc:252
+#: src/nameseditdialog.cc:271 src/nameseditdialog.cc:280
 #, fuzzy
 msgid ""
 "A conflicting object with the same name exists. If you proceed and save "
 "changes, the conflicting object will be overwritten or deactivated."
 msgstr "存在同名的冲突对象。 若继续并保存更改，冲突对象将被覆盖或停用。"
 
-#: ../src/nameseditdialog.cc:164
+#: src/nameseditdialog.cc:164
 msgid "Abbreviation"
 msgstr "缩写"
 
-#: ../src/nameseditdialog.cc:170
+#: src/nameseditdialog.cc:170
 msgid "Plural"
 msgstr "复数"
 
-#: ../src/nameseditdialog.cc:180
+#: src/nameseditdialog.cc:180
 msgid "Avoid input"
 msgstr "避免输入"
 
-#: ../src/nameseditdialog.cc:186
+#: src/nameseditdialog.cc:186
 msgid "Suffix"
 msgstr "后缀"
 
-#: ../src/nameseditdialog.cc:192
+#: src/nameseditdialog.cc:192
 msgid "Case sensitive"
 msgstr "区分大小写"
 
-#: ../src/nameseditdialog.cc:198
+#: src/nameseditdialog.cc:198
 msgid "Completion only"
 msgstr "仅补全"
 
-#: ../src/numberbasesdialog.cc:140 ../src/numberbasesdialog.cc:148
-#: ../src/numberbasesdialog.cc:156 ../src/numberbasesdialog.cc:164
-#: ../src/numberbasesdialog.cc:187
+#: src/numberbasesdialog.cc:140 src/numberbasesdialog.cc:148
+#: src/numberbasesdialog.cc:156 src/numberbasesdialog.cc:164
+#: src/numberbasesdialog.cc:187
 msgid "result is too long"
 msgstr "结果过长"
 
-#: ../src/openhelp.cc:379
+#: src/openhelp.cc:379
 msgid "Could not display help for Qalculate!."
 msgstr "无法显示 Qalculate! 的帮助。"
 
-#: ../src/openhelp.cc:477
+#: src/openhelp.cc:477
 #, c-format
 msgid ""
 "Could not display help for Qalculate!.\n"
@@ -5393,112 +5356,112 @@ msgstr ""
 "无法显示 Qalculate! 的帮助。\n"
 "%s"
 
-#: ../src/periodictabledialog.cc:89
+#: src/periodictabledialog.cc:89
 msgid "Element Data"
 msgstr "元素数据"
 
-#: ../src/periodictabledialog.cc:127
+#: src/periodictabledialog.cc:127
 msgid "Classification"
 msgstr "类别"
 
-#: ../src/periodictabledialog.cc:132
+#: src/periodictabledialog.cc:132
 msgid "Alkali Metal"
 msgstr "碱金属"
 
-#: ../src/periodictabledialog.cc:133
+#: src/periodictabledialog.cc:133
 msgid "Alkaline-Earth Metal"
 msgstr "碱土金属"
 
-#: ../src/periodictabledialog.cc:134
+#: src/periodictabledialog.cc:134
 msgid "Lanthanide"
 msgstr "镧系"
 
-#: ../src/periodictabledialog.cc:135
+#: src/periodictabledialog.cc:135
 msgid "Actinide"
 msgstr "锕系"
 
-#: ../src/periodictabledialog.cc:136
+#: src/periodictabledialog.cc:136
 msgid "Transition Metal"
 msgstr "过渡金属"
 
-#: ../src/periodictabledialog.cc:137
+#: src/periodictabledialog.cc:137
 msgid "Metal"
 msgstr "金属"
 
-#: ../src/periodictabledialog.cc:138
+#: src/periodictabledialog.cc:138
 msgid "Metalloid"
 msgstr "类金属"
 
-#: ../src/periodictabledialog.cc:139
+#: src/periodictabledialog.cc:139
 msgid "Polyatomic Non-Metal"
 msgstr "多原子非金属"
 
-#: ../src/periodictabledialog.cc:140
+#: src/periodictabledialog.cc:140
 msgid "Diatomic Non-Metal"
 msgstr "双原子非金属"
 
-#: ../src/periodictabledialog.cc:141
+#: src/periodictabledialog.cc:141
 msgid "Noble Gas"
 msgstr "惰性气体"
 
-#: ../src/periodictabledialog.cc:142
+#: src/periodictabledialog.cc:142
 msgid "Unknown chemical properties"
 msgstr "未知化学性质"
 
-#: ../src/plotdialog.cc:378 ../src/plotdialog.cc:380
+#: src/plotdialog.cc:378 src/plotdialog.cc:380
 msgid "Select file to export"
 msgstr "选择要导出的文件"
 
-#: ../src/plotdialog.cc:385 ../src/resultview.cc:555
+#: src/plotdialog.cc:385 src/resultview.cc:555
 msgid "Allowed File Types"
 msgstr "允许的文件类型"
 
-#: ../src/plotdialog.cc:396 ../src/resultview.cc:560
+#: src/plotdialog.cc:396 src/resultview.cc:560
 msgid "All Files"
 msgstr "所有文件"
 
-#: ../src/plotdialog.cc:509 ../src/plotdialog.cc:592
+#: src/plotdialog.cc:509 src/plotdialog.cc:592
 msgid "Empty expression."
 msgstr "表达式为空。"
 
-#: ../src/plotdialog.cc:523 ../src/plotdialog.cc:606
+#: src/plotdialog.cc:523 src/plotdialog.cc:606
 msgid "Empty x variable."
 msgstr "x变量为空。"
 
-#: ../src/plotdialog.cc:807
+#: src/plotdialog.cc:807
 msgid "Gnuplot was not found."
 msgstr "未找到gnuplot。"
 
-#: ../src/plotdialog.cc:809
+#: src/plotdialog.cc:809
 #, c-format
 msgid ""
 "%s (%s) needs to be installed separately, and found in the executable search "
 "path, for plotting to work."
 msgstr "%s (%s) 需要单独安装，并在可执行的搜索路径中找到，才能进行绘图。"
 
-#: ../src/preferencesdialog.cc:113 ../src/preferencesdialog.cc:126
+#: src/preferencesdialog.cc:113 src/preferencesdialog.cc:126
 msgid "never"
 msgstr "从不"
 
-#: ../src/preferencesdialog.cc:114 ../src/preferencesdialog.cc:128
+#: src/preferencesdialog.cc:114 src/preferencesdialog.cc:128
 msgid "ask"
 msgstr "询问"
 
-#: ../src/preferencesdialog.cc:122
+#: src/preferencesdialog.cc:122
 #, c-format
 msgid "%i day"
 msgid_plural "%i days"
 msgstr[0] "%i天"
 
-#: ../src/preferencesdialog.cc:289
+#: src/preferencesdialog.cc:289
 msgid "Please restart the program for the language change to take effect."
 msgstr ""
 
-#: ../src/resultview.cc:221 ../src/resultview.cc:458
+#: src/resultview.cc:221 src/resultview.cc:458
 msgid "result processing was aborted"
 msgstr "结果处理已中止"
 
-#: ../src/resultview.cc:221 ../src/resultview.cc:520
+#: src/resultview.cc:221 src/resultview.cc:520
 msgid ""
 "result is too long\n"
 "see history"
@@ -5506,11 +5469,11 @@ msgstr ""
 "结果太长 \n"
 "查看历史记录 "
 
-#: ../src/resultview.cc:242 ../src/resultview.cc:522
+#: src/resultview.cc:242 src/resultview.cc:522
 msgid "calculation was aborted"
 msgstr "计算已中止"
 
-#: ../src/resultview.cc:342
+#: src/resultview.cc:342
 msgid ""
 "Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
 "and press the enter key."
@@ -5518,25 +5481,25 @@ msgstr ""
 "<span font=\"10\">在上面键入一个数学表达式，例如“5+2/3”，\n"
 "然后按Enter键。</span> "
 
-#: ../src/resultview.cc:548 ../src/resultview.cc:550
+#: src/resultview.cc:548 src/resultview.cc:550
 msgid "Select file to save PNG image to"
 msgstr "将PNG图像保存为"
 
 #. Result was copied
-#: ../src/resultview.cc:1203
+#: src/resultview.cc:1203
 msgid "Copied"
 msgstr "已复制"
 
-#: ../src/searchprovider.cc:210
+#: src/searchprovider.cc:210
 msgid "Copy result to clipboard"
 msgstr "将结果复制到剪贴板"
 
-#: ../src/shortcutsdialog.cc:154
+#: src/shortcutsdialog.cc:154
 msgid "Set key combination"
 msgstr "设置组合键"
 
 #. Make the line reasonably long, but not to short (at least around 40 characters)
-#: ../src/shortcutsdialog.cc:158
+#: src/shortcutsdialog.cc:158
 msgid ""
 "Press the key combination you wish to use for the action\n"
 "(press Escape to cancel)."
@@ -5544,11 +5507,11 @@ msgstr ""
 "按要用于操作的组合键 \n"
 "(按Escape取消)。 "
 
-#: ../src/shortcutsdialog.cc:168
+#: src/shortcutsdialog.cc:168
 msgid "No keys"
 msgstr "未按键"
 
-#: ../src/shortcutsdialog.cc:307 ../src/shortcutsdialog.cc:375
+#: src/shortcutsdialog.cc:307 src/shortcutsdialog.cc:375
 msgid ""
 "The key combination is already in use.\n"
 "Do you wish to replace the current action?"
@@ -5556,381 +5519,375 @@ msgstr ""
 "组合键已被占用。 \n"
 "是否要替换当前操作？ "
 
-#: ../src/shortcutsdialog.cc:583
+#: src/shortcutsdialog.cc:583
 msgid "Key combination"
 msgstr "组合键"
 
-#. Fixes missing support for context in ui file translations
-#: ../src/stackview.cc:845
-msgctxt "Keypad"
-msgid "Add the two top values together"
-msgstr "将顶部两个值相加"
-
-#: ../src/uniteditdialog.cc:193
+#: src/uniteditdialog.cc:193
 msgid "Edit Unit (global)"
 msgstr "编辑单位(全局)"
 
-#: ../src/uniteditdialog.cc:195
+#: src/uniteditdialog.cc:195
 msgid "New Unit"
 msgstr "新建单位"
 
-#: ../src/uniteditdialog.cc:365 ../src/uniteditdialog.cc:417
+#: src/uniteditdialog.cc:365 src/uniteditdialog.cc:417
 msgid "Base unit does not exist."
 msgstr "基本单位不存在。"
 
 #. do not delete units that are used by other units
-#: ../src/unitsdialog.cc:756
+#: src/unitsdialog.cc:756
 msgid "Cannot delete unit as it is needed by other units."
 msgstr "无法删除单位，因为它被其他单位依赖。"
 
-#: ../src/unknowneditdialog.cc:120
+#: src/unknowneditdialog.cc:120
 msgid "Edit Unknown Variable (global)"
 msgstr "编辑未知变量(全局)"
 
-#: ../src/unknowneditdialog.cc:122
+#: src/unknowneditdialog.cc:122
 msgid "New Unknown Variable"
 msgstr "新建未知变量"
 
-#: ../src/util.cc:886
+#: src/util.cc:886
 msgid "Insert function"
 msgstr "插入函数"
 
-#: ../src/util.cc:887
+#: src/util.cc:887
 msgid "Insert function (dialog)"
 msgstr "插入函数(对话框)"
 
-#: ../src/util.cc:888
+#: src/util.cc:888
 msgid "Insert variable"
 msgstr "插入变量"
 
-#: ../src/util.cc:889
+#: src/util.cc:889
 msgid "Insert unit"
 msgstr "插入单位"
 
-#: ../src/util.cc:890
+#: src/util.cc:890
 msgid "Insert text"
 msgstr "插入文本"
 
-#: ../src/util.cc:891
+#: src/util.cc:891
 msgid "Insert date"
 msgstr "插入日期"
 
-#: ../src/util.cc:892
+#: src/util.cc:892
 msgid "Insert vector"
 msgstr "插入向量"
 
-#: ../src/util.cc:893
+#: src/util.cc:893
 msgid "Insert matrix"
 msgstr "插入矩阵"
 
-#: ../src/util.cc:894
+#: src/util.cc:894
 msgid "Insert smart parentheses"
 msgstr "插入智能括号"
 
-#: ../src/util.cc:895
+#: src/util.cc:895
 msgid "Convert to unit"
 msgstr "换算为单位"
 
-#: ../src/util.cc:896
+#: src/util.cc:896
 msgid "Convert to unit (entry)"
 msgstr "换算为单位(输入框)"
 
-#: ../src/util.cc:897
+#: src/util.cc:897
 msgid "Convert to optimal unit"
 msgstr "换算为最优单位"
 
-#: ../src/util.cc:898
+#: src/util.cc:898
 msgid "Convert to base units"
 msgstr "换算为基本单位"
 
-#: ../src/util.cc:899
+#: src/util.cc:899
 msgid "Convert to optimal prefix"
 msgstr "换算为最优前缀"
 
-#: ../src/util.cc:900
+#: src/util.cc:900
 msgid "Convert to number base"
 msgstr "换算为数字进制"
 
-#: ../src/util.cc:901
+#: src/util.cc:901
 msgid "Factorize result"
 msgstr "分解结果"
 
-#: ../src/util.cc:902
+#: src/util.cc:902
 msgid "Expand result"
 msgstr "展开结果"
 
-#: ../src/util.cc:903
+#: src/util.cc:903
 msgid "Expand partial fractions"
 msgstr "展开部分分式"
 
-#: ../src/util.cc:905
+#: src/util.cc:905
 msgid "RPN: down"
 msgstr "RPN: 向下"
 
-#: ../src/util.cc:906
+#: src/util.cc:906
 msgid "RPN: up"
 msgstr "RPN: 向上"
 
-#: ../src/util.cc:907
+#: src/util.cc:907
 msgid "RPN: swap"
 msgstr "RPN: 交换"
 
-#: ../src/util.cc:908
+#: src/util.cc:908
 msgid "RPN: copy"
 msgstr "RPN: 复制"
 
-#: ../src/util.cc:909
+#: src/util.cc:909
 msgid "RPN: lastx"
 msgstr "RPN: lastx"
 
-#: ../src/util.cc:910
+#: src/util.cc:910
 msgid "RPN: delete register"
 msgstr "RPN: 删除寄存器"
 
-#: ../src/util.cc:911
+#: src/util.cc:911
 msgid "RPN: clear stack"
 msgstr "RPN: 清空栈"
 
-#: ../src/util.cc:912
+#: src/util.cc:912
 msgid "Load meta mode"
 msgstr "加载元模式"
 
-#: ../src/util.cc:913
+#: src/util.cc:913
 msgid "Set expression base"
 msgstr "设置表达式进制"
 
-#: ../src/util.cc:914
+#: src/util.cc:914
 msgid "Set result base"
 msgstr "设置结果进制"
 
-#: ../src/util.cc:915
+#: src/util.cc:915
 msgid "Toggle exact mode"
 msgstr "切换精确模式"
 
-#: ../src/util.cc:916
+#: src/util.cc:916
 msgid "Set angle unit to degrees"
 msgstr "将角度单位设为度"
 
-#: ../src/util.cc:917
+#: src/util.cc:917
 msgid "Set angle unit to radians"
 msgstr "将角度单位设为弧度"
 
-#: ../src/util.cc:918
+#: src/util.cc:918
 msgid "Set angle unit to gradians"
 msgstr "将角度单位设为梯度"
 
-#: ../src/util.cc:919
+#: src/util.cc:919
 msgid "Toggle simple fractions"
 msgstr "切换简单分数"
 
-#: ../src/util.cc:920
+#: src/util.cc:920
 msgid "Toggle mixed fractions"
 msgstr "切换混合分数"
 
-#: ../src/util.cc:921
+#: src/util.cc:921
 msgid "Toggle scientific notation"
 msgstr "切换科学记数"
 
-#: ../src/util.cc:922
+#: src/util.cc:922
 msgid "Toggle simple notation"
 msgstr "切换简单记数"
 
-#: ../src/util.cc:923
+#: src/util.cc:923
 #, fuzzy
 msgid "Toggle precision"
 msgstr "读取精度"
 
-#: ../src/util.cc:924
+#: src/util.cc:924
 #, fuzzy
 msgid "Toggle max decimals"
 msgstr "最大小数"
 
-#: ../src/util.cc:925
+#: src/util.cc:925
 #, fuzzy
 msgid "Toggle min decimals"
 msgstr "最小小数"
 
-#: ../src/util.cc:926
+#: src/util.cc:926
 #, fuzzy
 msgid "Toggle max/min decimals"
 msgstr "切换链式模式"
 
-#: ../src/util.cc:927
+#: src/util.cc:927
 msgid "Toggle RPN mode"
 msgstr "切换RPN模式"
 
-#: ../src/util.cc:928
+#: src/util.cc:928
 msgid "Toggle calculate as you type"
 msgstr "切换键入时计算"
 
-#: ../src/util.cc:929
+#: src/util.cc:929
 msgid "Toggle programming keypad"
 msgstr "切换编程键盘"
 
-#: ../src/util.cc:930
+#: src/util.cc:930
 msgid "Show keypad"
 msgstr "显示键盘"
 
-#: ../src/util.cc:931
+#: src/util.cc:931
 msgid "Show history"
 msgstr "显示历史记录"
 
-#: ../src/util.cc:932
+#: src/util.cc:932
 msgid "Search history"
 msgstr "搜索历史记录"
 
-#: ../src/util.cc:933
+#: src/util.cc:933
 msgid "Clear history"
 msgstr "清除历史记录"
 
-#: ../src/util.cc:934
+#: src/util.cc:934
 msgid "Show conversion"
 msgstr "显示换算"
 
-#: ../src/util.cc:935
+#: src/util.cc:935
 msgid "Show RPN stack"
 msgstr "显示RPN栈"
 
-#: ../src/util.cc:937
+#: src/util.cc:937
 msgid "Manage variables"
 msgstr "管理变量"
 
-#: ../src/util.cc:938
+#: src/util.cc:938
 msgid "Manage functions"
 msgstr "管理函数"
 
-#: ../src/util.cc:940
+#: src/util.cc:940
 msgid "Manage data sets"
 msgstr "管理数据集"
 
-#: ../src/util.cc:947
+#: src/util.cc:947
 msgid "New variable"
 msgstr "新建变量"
 
-#: ../src/util.cc:948
+#: src/util.cc:948
 msgid "New function"
 msgstr "新建函数"
 
-#: ../src/util.cc:949
+#: src/util.cc:949
 msgid "Open plot functions/data"
 msgstr "打开函数/数据作图"
 
-#: ../src/util.cc:950
+#: src/util.cc:950
 msgid "Open convert number bases"
 msgstr "打开进制换算"
 
-#: ../src/util.cc:951
+#: src/util.cc:951
 msgid "Open floating point conversion"
 msgstr "打开浮点换算"
 
-#: ../src/util.cc:952
+#: src/util.cc:952
 msgid "Open calendar conversion"
 msgstr "打开日历换算"
 
-#: ../src/util.cc:953
+#: src/util.cc:953
 msgid "Open percentage calculation tool"
 msgstr "打开百分比计算"
 
-#: ../src/util.cc:954
+#: src/util.cc:954
 msgid "Open periodic table"
 msgstr "打开元素周期表"
 
-#: ../src/util.cc:955
+#: src/util.cc:955
 msgid "Update exchange rates"
 msgstr "更新汇率"
 
-#: ../src/util.cc:956
+#: src/util.cc:956
 msgid "Copy result"
 msgstr "复制结果"
 
-#: ../src/util.cc:957
+#: src/util.cc:957
 msgid "Insert result"
 msgstr "插入结果"
 
-#: ../src/util.cc:958
+#: src/util.cc:958
 msgid "Save result image"
 msgstr "保存结果图像"
 
-#: ../src/util.cc:959
+#: src/util.cc:959
 msgid "Help"
 msgstr "帮助"
 
-#: ../src/util.cc:960
+#: src/util.cc:960
 msgid "Quit"
 msgstr "退出"
 
-#: ../src/util.cc:961
+#: src/util.cc:961
 msgid "Toggle chain mode"
 msgstr "切换链式模式"
 
-#: ../src/util.cc:962
+#: src/util.cc:962
 msgid "Toggle keep above"
 msgstr "切换窗口置顶"
 
-#: ../src/util.cc:963
+#: src/util.cc:963
 msgid "Show/hide completion"
 msgstr "显示/隐藏补全"
 
-#: ../src/util.cc:964
+#: src/util.cc:964
 msgid "Perform completion (activate first item)"
 msgstr "执行补全(激活首项)"
 
-#: ../src/util.cc:1032
+#: src/util.cc:1032
 #, fuzzy
 msgid "Formatted result"
 msgstr "存储结果"
 
-#: ../src/util.cc:1033
+#: src/util.cc:1033
 #, fuzzy
 msgid "Unformatted ASCII result"
 msgstr "复制未格式化的 ASCII"
 
-#: ../src/util.cc:1034
+#: src/util.cc:1034
 #, fuzzy
 msgid "Unformatted ASCII result without units"
 msgstr "复制未格式化的 ASCII"
 
-#: ../src/util.cc:1035
+#: src/util.cc:1035
 #, fuzzy
 msgid "Formatted expression"
 msgstr "表达式为空。"
 
-#: ../src/util.cc:1036
+#: src/util.cc:1036
 #, fuzzy
 msgid "Unformatted ASCII expression"
 msgstr "复制未格式化的 ASCII"
 
-#: ../src/util.cc:1037
+#: src/util.cc:1037
 #, fuzzy
 msgid "Formatted expression + result"
 msgstr "表达式字段为空。"
 
-#: ../src/util.cc:1038
+#: src/util.cc:1038
 #, fuzzy
 msgid "Unformatted ASCII expression + result"
 msgstr "复制未格式化的 ASCII"
 
-#: ../src/variableeditdialog.cc:173
+#: src/variableeditdialog.cc:173
 msgid "Edit Variable (global)"
 msgstr "编辑变量(全局)"
 
-#: ../src/variableeditdialog.cc:175
+#: src/variableeditdialog.cc:175
 msgid "New Variable"
 msgstr "新建变量"
 
-#: ../src/variableeditdialog.cc:286
+#: src/variableeditdialog.cc:286
 msgid "Empty value field."
 msgstr "值字段为空。"
 
-#: ../src/variablesdialog.cc:285
+#: src/variablesdialog.cc:285
 msgid "a matrix"
 msgstr "一个矩阵"
 
-#: ../src/variablesdialog.cc:287
+#: src/variablesdialog.cc:287
 msgid "a vector"
 msgstr "一个向量"
 
-#: ../src/variablesdialog.cc:331
+#: src/variablesdialog.cc:331
 msgid "not matrix"
 msgstr "非矩阵"
 

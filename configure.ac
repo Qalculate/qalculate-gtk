@@ -22,7 +22,6 @@ AC_PROG_CXX
 AC_PROG_LN_S
 AC_PROG_EGREP
 
-IT_PROG_INTLTOOL
 LT_INIT
 
 dnl  ------------------------------------
@@ -141,13 +140,14 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The package name for gettext])
 
 dnl Please keep this in alphabetical order
-ALL_LINGUAS="ca de es fr hu nl pl pt_BR pt_PT ru sl sv zh_CN zh_TW"
 AM_GNU_GETTEXT(external)
-AM_GNU_GETTEXT_VERSION([0.21])
+AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.7])
 
 if test "$USE_NLS" = yes; then
 	AC_DEFINE([ENABLE_NLS], [1], [Define to 1 if translation of program messages to the user's native language is requested.])
 fi
+
+AM_CONDITIONAL([ENABLE_NLS], [test "$USE_NLS" = yes])
 
 dnl AM_GLIB_GNU_GETTEXT sets $DATADIRNAME
 AC_MSG_CHECKING(locale directory)
