@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://github.com/Qalculate/qalculate-gtk/issues\n"
 "POT-Creation-Date: 2025-11-29 06:36+0100\n"
-"PO-Revision-Date: 2025-10-22 21:50+0800\n"
+"PO-Revision-Date: 2025-11-29 22:13+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_TW\n"
@@ -63,11 +63,11 @@ msgstr ""
 
 #: data/qalculate-gtk.noinst.appdata.xml:26
 msgid "The main window with history visible"
-msgstr ""
+msgstr "歷史記錄可見的主視窗"
 
 #: data/qalculate-gtk.noinst.appdata.xml:30
 msgid "The main window with keypad visible"
-msgstr ""
+msgstr "鍵盤可見的主視窗"
 
 #: data/argumentrules.ui:22 data/functionedit.ui:618
 msgid "Argument Rules"
@@ -544,7 +544,7 @@ msgstr "預設屬性"
 
 #: data/datasetedit.ui:703
 msgid "Name used to invoke the function in expressions"
-msgstr "在表達式中用來呼叫函數的名稱"
+msgstr "在表達式中用來調用函數的名稱"
 
 #: data/datasets.ui:8 src/datasetsdialog.cc:477
 msgid "Edit Data Object"
@@ -692,7 +692,7 @@ msgstr "幫助(_H)"
 
 #: data/functionedit.ui:104
 msgid "Name used to invoke this function in expressions"
-msgstr "在表達式中用來呼叫此函數的名稱"
+msgstr "在表達式中用來調用此函數的名稱"
 
 #: data/functionedit.ui:128
 msgid ""
@@ -1281,7 +1281,7 @@ msgstr "區間"
 
 #: data/main.ui:1858
 msgid "Plus/Minus"
-msgstr "加/減"
+msgstr "正/負"
 
 #: data/main.ui:1867 data/preferences.ui:1824 src/mainwindow.cc:831
 msgid "Relative"
@@ -1314,15 +1314,15 @@ msgstr "為主要的SI和CGS單位顯示前綴。"
 
 #: data/main.ui:1947 data/main.ui:9115
 msgid "Use prefixes for selected units"
-msgstr "為選擇的單位使用前綴"
+msgstr "前綴用於選擇的單位"
 
 #: data/main.ui:1956 data/main.ui:9124
 msgid "Use prefixes also for currencies"
-msgstr "對貨幣也使用前綴"
+msgstr "前綴也用於貨幣"
 
 #: data/main.ui:1965 data/main.ui:9133
 msgid "Use prefixes for all units"
-msgstr "對所有單位使用前綴"
+msgstr "前綴用於所有單位"
 
 #: data/main.ui:1980
 msgid ""
@@ -1404,7 +1404,7 @@ msgstr "未知數"
 
 #: data/main.ui:2152
 msgid "Units in Physical Constants"
-msgstr "單位在物理常數中"
+msgstr "在物理常數中的單位"
 
 #: data/main.ui:2161
 msgid "If not enabled, treats all variables as unknown"
@@ -1669,7 +1669,7 @@ msgstr "RPN堆疊"
 
 #: data/main.ui:3568
 msgid "Insert the selected value"
-msgstr "插入選擇的數值"
+msgstr "插入選擇的值"
 
 #: data/main.ui:3591
 msgid "Insert the selected text"
@@ -1681,27 +1681,27 @@ msgstr "複製選擇的文字"
 
 #: data/main.ui:3652
 msgid "Add the selected value(s)"
-msgstr "加上選擇的數值"
+msgstr "加上選擇的值"
 
 #: data/main.ui:3674
 msgid "Subtract the selected value(s)"
-msgstr "減去選擇的數值"
+msgstr "減去選擇的值"
 
 #: data/main.ui:3696
 msgid "Multiply the selected value(s)"
-msgstr "乘以選擇的數值"
+msgstr "乘以選擇的值"
 
 #: data/main.ui:3718
 msgid "Divide the the selected value(s)"
-msgstr "除以選擇的數值"
+msgstr "除以選擇的值"
 
 #: data/main.ui:3740
 msgid "Raise to the power of the selected value"
-msgstr "選擇數值為次方"
+msgstr "選擇的值為次方"
 
 #: data/main.ui:3763
 msgid "Calculate the square root of the selected value"
-msgstr "計算選擇數值的平方根"
+msgstr "計算選擇的值的平方根"
 
 #: data/main.ui:3802 src/historyview.cc:3699
 msgid "History"
@@ -1727,7 +1727,7 @@ msgstr "第二個值除以頂部值"
 
 #: data/main.ui:3924
 msgid "Raise the second value to the power of the top value"
-msgstr "第二個值的頂部數值次方"
+msgstr "第二個值的頂部值次方"
 
 #: data/main.ui:3964
 msgid "Negate the top value (Ctrl+-)"
@@ -1743,7 +1743,7 @@ msgstr "計算頂部值的平方根"
 
 #: data/main.ui:4045
 msgid "Calculate the sum of all values"
-msgstr "計算所有數值的總和"
+msgstr "計算所有值的總和"
 
 #: data/main.ui:4113 src/stackview.cc:687 src/stackview.cc:747
 msgid "Rotate the stack or move selected register up"
@@ -1756,7 +1756,7 @@ msgstr "向下旋轉堆疊或移動選擇的暫存器"
 #: data/main.ui:4158 src/stackview.cc:703 src/stackview.cc:749
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
-msgstr "交換兩個頂部值或將選擇的數值移到堆疊頂部"
+msgstr "交換兩個頂部值或將選擇的值移到堆疊頂部"
 
 #: data/main.ui:4196 src/stackview.cc:711 src/stackview.cc:750
 msgid "Copy the selected or top value to the top of the stack"
@@ -1768,11 +1768,11 @@ msgstr "輸入上次數字運算之前的頂部值"
 
 #: data/main.ui:4240 src/stackview.cc:727 src/stackview.cc:752
 msgid "Delete the top or selected value"
-msgstr "刪除頂部值或選擇的數值"
+msgstr "刪除頂部值或選擇的值"
 
 #: data/main.ui:4272
 msgid "Edit the selected value"
-msgstr "編輯選擇的數值"
+msgstr "編輯選擇的值"
 
 #: data/main.ui:4294 src/stackview.cc:735 src/stackview.cc:753
 msgid "Clear the RPN stack"
@@ -2019,7 +2019,7 @@ msgstr "更新"
 
 #: data/main.ui:8432
 msgid "Insert Value"
-msgstr "插入數值"
+msgstr "插入值"
 
 #: data/main.ui:8440 data/main.ui:9243
 msgid "Insert Text"
@@ -2305,7 +2305,7 @@ msgstr "在表達式中用來參考此變數的名稱"
 
 #: data/matrixedit.ui:333 data/unknownedit.ui:199 data/variableedit.ui:155
 msgid "Temporary"
-msgstr "暫時"
+msgstr "臨時"
 
 #: data/matrixedit.ui:403 data/variableedit.ui:295
 msgid "Hide variable"
@@ -2750,7 +2750,7 @@ msgstr "將鍵盤運算子鍵用於RPN運算(+-*/^)。"
 
 #: data/preferences.ui:313
 msgid "Use caret for bitwise XOR"
-msgstr "使用插入記號作為按位元XOR"
+msgstr "插入記號用於按位元XOR"
 
 #: data/preferences.ui:317
 msgid ""
@@ -2802,7 +2802,7 @@ msgstr "將即時計算的結果加入到歷史記錄"
 
 #: data/preferences.ui:430
 msgid "Delay:"
-msgstr "延時:"
+msgstr "延遲:"
 
 #: data/preferences.ui:470
 msgid "Time limit for plot:"
@@ -2933,10 +2933,8 @@ msgid "Number of expression lines"
 msgstr "表達式列數"
 
 #: data/preferences.ui:898
-#, fuzzy
-#| msgid "Show Parsed Expression"
 msgid "Show result above expression"
-msgstr "顯示剖析表達式"
+msgstr "在表達式上面顯示結果"
 
 #: data/preferences.ui:915
 msgid "Display expression status"
@@ -3137,8 +3135,8 @@ msgstr "對資訊單位使用二進制前綴"
 
 #: data/preferences.ui:1653
 msgid ""
-"Use binary, instead of decimal, prefixes by default for information units "
-"(e.g. bytes)."
+"Use binary, instead of decimal, prefixes by default for information units (e."
+"g. bytes)."
 msgstr "對資訊單位(例如位元組)預設使用二進制而不是十進制前綴。"
 
 #: data/preferences.ui:1666
@@ -3193,7 +3191,7 @@ msgstr "最少字元"
 
 #: data/preferences.ui:1991
 msgid "Popup delay (ms)"
-msgstr "彈出延時(ms)"
+msgstr "彈出延遲(ms)"
 
 #: data/preferences.ui:2022
 msgid "Completion"
@@ -3247,9 +3245,8 @@ msgid "Text color"
 msgstr "文字顏色"
 
 #: data/preferences.ui:2255
-#, fuzzy
 msgid "Highlight parenthesis background"
-msgstr "右括號"
+msgstr "凸顯括號背景"
 
 #: data/preferences.ui:2308
 msgid "Custom application font"
@@ -3391,7 +3388,7 @@ msgid ""
 "(foot) and in (inch) is set to 1, which results in \"17 in = 1 ft + 5 in\", "
 "instead of \"17 in = 1 ft + 1 hand + 1 in\"."
 msgstr ""
-"範例: 單位“hand”的優先權設定為2，而ft(foot)和in(inch)的優先權設定為1，導致"
+"範例: 單位\"hand\"的優先權設定為2，而ft(foot)和in(inch)的優先權設定為1，導致"
 "\"17 in = 1 ft + 5 in\"，而不是\"17 in = 1 ft + 1 hand + 1 in\"。"
 
 #: data/unitedit.ui:451
@@ -3419,8 +3416,8 @@ msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
 "\n"
-"For non-linear relations use \\x for the factor and \\y for the exponent "
-"(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
+"For non-linear relations use \\x for the factor and \\y for the exponent (e."
+"g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
 "與基本單位的關係。對於線性關係，這應該只是一個數字。\n"
 "\n"
@@ -3576,12 +3573,12 @@ msgstr "找不到模式。"
 #: src/setbasedialog.cc:154 src/setbasedialog.cc:210 src/setbasedialog.cc:256
 #: src/shortcutsdialog.cc:267 src/shortcutsdialog.cc:515
 msgid "Unsupported base."
-msgstr "不支持的底數。"
+msgstr "不支援的底數。"
 
 #: src/buttonseditdialog.cc:283 src/shortcutsdialog.cc:279
 #: src/shortcutsdialog.cc:527
 msgid "Unsupported value."
-msgstr "不支持的數值。"
+msgstr "不支援的值。"
 
 #: src/buttonseditdialog.cc:347 src/keypad.cc:447
 msgid "Cycle through previous expression"
@@ -3653,7 +3650,7 @@ msgstr "次方"
 #: src/buttonseditdialog.cc:372 src/expressionstatus.cc:706 src/keypad.cc:517
 #: src/keypad.cc:2757 src/util.cc:945
 msgid "M+ (memory plus)"
-msgstr "M+(記憶加法)"
+msgstr "M+(記憶加上)"
 
 #: src/buttonseditdialog.cc:376 src/expressionstatus.cc:696 src/keypad.cc:522
 #: src/keypad.cc:2754 src/util.cc:942
@@ -3667,7 +3664,7 @@ msgstr "退格鍵"
 #: src/buttonseditdialog.cc:377 src/expressionstatus.cc:711 src/keypad.cc:523
 #: src/keypad.cc:2758 src/util.cc:946
 msgid "M− (memory minus)"
-msgstr "M−(記憶減法)"
+msgstr "M−(記憶減去)"
 
 #: src/buttonseditdialog.cc:378 src/keypad.cc:524
 msgid "Previous result (static)"
@@ -4064,7 +4061,7 @@ msgstr "最佳單位"
 
 #: src/expressioncompletion.cc:2086
 msgid "Expanded Partial Fractions"
-msgstr "展開部分分式"
+msgstr "已展開部分分式"
 
 #: src/expressioncompletion.cc:2090 src/menubar.cc:1746
 msgid "Optimal Prefix"
@@ -4141,11 +4138,11 @@ msgstr "完全補全"
 
 #: src/expressionedit.cc:1458
 msgid "No completion"
-msgstr "無補全"
+msgstr "沒有補全"
 
 #: src/expressionedit.cc:1467
 msgid "Delayed completion"
-msgstr "延時補全"
+msgstr "延遲補全"
 
 #: src/expressionedit.cc:1469
 msgid "Customize completion…"
@@ -4415,7 +4412,7 @@ msgstr "部分分式"
 
 #: src/expressionstatus.cc:957
 msgid "expanded partial fractions"
-msgstr "展開部分分式"
+msgstr "已展開部分分式"
 
 #: src/expressionstatus.cc:958 src/mainwindow.cc:1451 src/mainwindow.cc:4912
 msgid "rectangular"
@@ -4510,7 +4507,7 @@ msgstr "表達式欄位為空。"
 
 #: src/functioneditdialog.cc:963
 msgid "Conversion (using \"to\") is not supported in functions."
-msgstr "在函數中不支援轉換(使用“to“)。"
+msgstr "在函數中不支援轉換(使用\"to\")。"
 
 #: src/functionsdialog.cc:135 src/functionsdialog.cc:136
 #: src/functionsdialog.cc:200 src/mainwindow.cc:7577 src/menubar.cc:1599
@@ -4534,8 +4531,8 @@ msgid ""
 "\"info\" is typed as property, a dialog window will pop up with all "
 "properties of the object."
 msgstr ""
-"為給定的物件和屬性從%s資料集中檢索資料。如果將“info”鍵入為屬性，則將彈出一個"
-"具有物件所有屬性的對話框。"
+"為給定的物件和屬性從%s資料集中檢索資料。如果將\"info\"鍵入為屬性，則將彈出一"
+"個具有物件所有屬性的對話視窗。"
 
 #: src/functionsdialog.cc:312 src/insertfunctiondialog.cc:794
 msgid "Example:"
@@ -5011,7 +5008,7 @@ msgstr "請選擇百分比加法的判讀。"
 
 #: src/mainwindow.cc:1087
 msgid "Add percentage of original value"
-msgstr "加上原始數值的百分比"
+msgstr "加上原始值的百分比"
 
 #: src/mainwindow.cc:1095
 msgid "Add percentage multiplied by 1/100"
@@ -5250,7 +5247,7 @@ msgstr "前綴"
 
 #: src/menubar.cc:1745
 msgid "No Prefix"
-msgstr "無前綴"
+msgstr "沒有前綴"
 
 #: src/menubar.cc:2703
 msgid "Open Settings Folder"
@@ -5837,7 +5834,7 @@ msgstr "新變數"
 
 #: src/variableeditdialog.cc:286
 msgid "Empty value field."
-msgstr "數值欄位為空。"
+msgstr "值欄位為空。"
 
 #: src/variablesdialog.cc:285
 msgid "a matrix"
@@ -5851,8 +5848,8 @@ msgstr "一個向量"
 msgid "not matrix"
 msgstr "非矩陣"
 
-#~ msgid "Use  for all units"
-#~ msgstr "對所有單位使用前綴"
+#~ msgid "Use prefixs for all units"
+#~ msgstr "前綴用於所有單位"
 
 #~ msgid "off"
 #~ msgstr "off"
