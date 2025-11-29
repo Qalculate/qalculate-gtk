@@ -96,6 +96,8 @@ void set_parsed_in_result(bool b);
 void show_parsed(bool);
 void show_parsed_in_result(MathStructure &mparse, const PrintOptions &po);
 void clear_parsed_in_result();
+void set_expression_pos(int);
+int get_expression_pos();
 
 void set_autocalculate(bool b);
 void add_autocalculated_result_to_history();

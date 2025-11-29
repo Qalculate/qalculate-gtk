@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qalculate!\n"
 "Report-Msgid-Bugs-To: https://github.com/Qalculate/qalculate-gtk/issues\n"
-"POT-Creation-Date: 2025-11-22 08:52+0100\n"
+"POT-Creation-Date: 2025-11-29 06:36+0100\n"
 "PO-Revision-Date: 2024-11-25 09:09+0100\n"
 "Last-Translator: Polakrity\n"
 "Language-Team: none\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.5\n"
 
-#: data/qalculate-gtk.desktop.in:3 src/mainwindow.cc:8456
-#: src/mainwindow.cc:8463
+#: data/qalculate-gtk.desktop.in:3 src/mainwindow.cc:8461
+#: src/mainwindow.cc:8468
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
@@ -27,7 +27,7 @@ msgid "Calculator"
 msgstr "Calculatrice"
 
 #: data/qalculate-gtk.desktop.in:5 data/qalculate-gtk.noinst.appdata.xml:8
-#: src/mainwindow.cc:7075
+#: src/mainwindow.cc:7080
 msgid "Powerful and easy to use calculator"
 msgstr "Une calculatrice puissante et facile d'utilisation"
 
@@ -87,8 +87,8 @@ msgstr "Règles d'argument"
 #: src/historyview.cc:2969 src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
 #: src/insertfunctiondialog.cc:65 src/insertfunctiondialog.cc:108
 #: src/insertfunctiondialog.cc:110 src/insertfunctiondialog.cc:973
-#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:717
-#: src/mainwindow.cc:6777 src/mainwindow.cc:6779 src/mainwindow.cc:7743
+#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:718
+#: src/mainwindow.cc:6782 src/mainwindow.cc:6784 src/mainwindow.cc:7748
 #: src/matrixdialog.cc:389 src/menubar.cc:1217 src/menubar.cc:1258
 #: src/plotdialog.cc:378 src/plotdialog.cc:380 src/resultview.cc:548
 #: src/resultview.cc:550
@@ -102,9 +102,9 @@ msgstr "_Fermer"
 #: data/unknownedit.ui:53 data/variableedit.ui:53 src/expressionedit.cc:1327
 #: src/historyview.cc:2826 src/historyview.cc:2924 src/historyview.cc:2969
 #: src/insertfunctiondialog.cc:65 src/insertfunctiondialog.cc:973
-#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:717 src/mainwindow.cc:810
-#: src/mainwindow.cc:881 src/mainwindow.cc:936 src/mainwindow.cc:1017
-#: src/mainwindow.cc:1073 src/mainwindow.cc:7743
+#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:718 src/mainwindow.cc:811
+#: src/mainwindow.cc:882 src/mainwindow.cc:937 src/mainwindow.cc:1018
+#: src/mainwindow.cc:1074 src/mainwindow.cc:7748
 msgid "_OK"
 msgstr "_OK"
 
@@ -279,7 +279,7 @@ msgstr "Personnaliser les boutons du clavier"
 #: data/precision.ui:31 data/preferences.ui:98 data/setbase.ui:38
 #: data/shortcuts.ui:25 data/units.ui:26 data/variables.ui:24
 #: src/historyview.cc:2791 src/insertfunctiondialog.cc:448
-#: src/mainwindow.cc:721 src/mainwindow.cc:722 src/mainwindow.cc:724
+#: src/mainwindow.cc:722 src/mainwindow.cc:723 src/mainwindow.cc:725
 #: src/matrixdialog.cc:381 src/periodictabledialog.cc:86
 msgid "_Close"
 msgstr "_Fermer"
@@ -1068,7 +1068,7 @@ msgid "Select Result and Expression Base…"
 msgstr "Sélectionner le résultat et la base d'expression…"
 
 #: data/main.ui:1226 data/main.ui:4717 data/nbases.ui:77
-#: data/preferences.ui:999 data/preferences.ui:1055 data/setbase.ui:84
+#: data/preferences.ui:1016 data/preferences.ui:1072 data/setbase.ui:84
 #: data/setbase.ui:323 src/expressionedit.cc:1484 src/keypad.cc:1012
 #: src/numberbasesdialog.cc:209 src/numberbasesdialog.cc:251
 msgid "Binary"
@@ -1093,7 +1093,7 @@ msgid "Duodecimal"
 msgstr "Duodécimal"
 
 #: data/main.ui:1265 data/main.ui:4721 data/nbases.ui:210
-#: data/preferences.ui:1015 data/preferences.ui:1071 data/setbase.ui:152
+#: data/preferences.ui:1032 data/preferences.ui:1088 data/setbase.ui:152
 #: data/setbase.ui:391 src/expressionedit.cc:1488 src/keypad.cc:1015
 #: src/numberbasesdialog.cc:213 src/numberbasesdialog.cc:255
 msgid "Hexadecimal"
@@ -1282,7 +1282,7 @@ msgstr "Mixte"
 msgid "Interval Display"
 msgstr "Affichage d'intervalle"
 
-#: data/main.ui:1832 src/mainwindow.cc:1046
+#: data/main.ui:1832 src/mainwindow.cc:1047
 msgid "Adaptive"
 msgstr "Adaptif"
 
@@ -1298,7 +1298,7 @@ msgstr "Intervalle"
 msgid "Plus/Minus"
 msgstr "Plus/Moins"
 
-#: data/main.ui:1867 data/preferences.ui:1807 src/mainwindow.cc:830
+#: data/main.ui:1867 data/preferences.ui:1824 src/mainwindow.cc:831
 msgid "Relative"
 msgstr "Relatif"
 
@@ -1334,8 +1334,8 @@ msgstr "Utiliser des préfixes pour les unités sélectionnées"
 msgid "Use prefixes also for currencies"
 msgstr "Utiliserz également des préfixes pour les devises"
 
-#: data/main.ui:1965
-msgid "Use prefixs for all units"
+#: data/main.ui:1965 data/main.ui:9133
+msgid "Use prefixes for all units"
 msgstr "Utiliser des préfixes pour toutes les unités"
 
 #: data/main.ui:1980
@@ -1493,7 +1493,7 @@ msgid "Angle Unit"
 msgstr "Unité d'angle"
 
 #: data/main.ui:2364 data/plot.ui:423 data/plot.ui:1329
-#: data/preferences.ui:1372 src/buttonseditdialog.cc:462
+#: data/preferences.ui:1389 src/buttonseditdialog.cc:462
 msgid "None"
 msgstr "Aucune"
 
@@ -1522,7 +1522,7 @@ msgstr ""
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "Avertir des dénominateurs supposés non nuls"
 
-#: data/main.ui:2601 src/expressionedit.cc:1471 src/mainwindow.cc:1017
+#: data/main.ui:2601 src/expressionedit.cc:1471 src/mainwindow.cc:1018
 msgid "Parsing Mode"
 msgstr "Mode d'analyse"
 
@@ -1965,11 +1965,11 @@ msgstr "OCT"
 msgid "DEC"
 msgstr "DÉC"
 
-#: data/main.ui:6204 data/preferences.ui:1046
+#: data/main.ui:6204 data/preferences.ui:1063
 msgid "Two's complement input"
 msgstr "Entrée du complément à deux"
 
-#: data/main.ui:6225 data/preferences.ui:1034
+#: data/main.ui:6225 data/preferences.ui:1051
 msgid "Two's complement output"
 msgstr "Sortie du complément à deux"
 
@@ -2212,10 +2212,6 @@ msgstr "Convertir vers UTC"
 #: data/main.ui:9090
 msgid "Convert to Calendars"
 msgstr "Convertir vers calendriers"
-
-#: data/main.ui:9133
-msgid "Use prefixes for all units"
-msgstr "Utiliser des préfixes pour toutes les unités"
 
 #: data/main.ui:9148
 msgid "Enable All SI Prefi_xes"
@@ -2982,10 +2978,16 @@ msgid "Number of expression lines"
 msgstr "Nombre de lignes d'expression"
 
 #: data/preferences.ui:898
+#, fuzzy
+#| msgid "Show Parsed Expression"
+msgid "Show result above expression"
+msgstr "Afficher l'expression analysée"
+
+#: data/preferences.ui:915
 msgid "Display expression status"
 msgstr "Afficher l'état de l'expression"
 
-#: data/preferences.ui:902
+#: data/preferences.ui:919
 msgid ""
 "If as-you-type expression status shall be displayed below the expression "
 "entry"
@@ -2993,11 +2995,11 @@ msgstr ""
 "Si l'état de l'expression au fur et à mesure doit être affiché sous l'entrée "
 "de l'expression"
 
-#: data/preferences.ui:916
+#: data/preferences.ui:933
 msgid "Show parsed expression in result field"
 msgstr "Afficher l'expression analysée dans le champ de résultat"
 
-#: data/preferences.ui:920
+#: data/preferences.ui:937
 msgid ""
 "If as-you-type expression interpretation shall be displayed in the result "
 "field"
@@ -3005,26 +3007,26 @@ msgstr ""
 "Si l'interprétation de l'expression au fur et à mesure de la frappe doit "
 "être affichée dans le champ de résultat"
 
-#: data/preferences.ui:934
+#: data/preferences.ui:951
 msgid "Persistent keypad"
 msgstr "Clavier permanent"
 
-#: data/preferences.ui:950
+#: data/preferences.ui:967
 msgid "Disable cursor blinking"
 msgstr ""
 
-#: data/preferences.ui:975
+#: data/preferences.ui:992
 msgid "Look & Feel"
 msgstr "Apparence et présentation"
 
-#: data/preferences.ui:1003
+#: data/preferences.ui:1020
 msgid ""
 "If two's complement representation shall be used for negative binary numbers."
 msgstr ""
 "Si la représentation en complément à deux doit être utilisée pour les "
 "nombres binaires négatifs."
 
-#: data/preferences.ui:1019
+#: data/preferences.ui:1036
 msgid ""
 "If two's complement representation shall be used for negative hexadecimal "
 "numbers."
@@ -3032,7 +3034,7 @@ msgstr ""
 "Si la représentation en complément à deux doit être utilisée pour les "
 "nombres hexadécimaux négatifs."
 
-#: data/preferences.ui:1059
+#: data/preferences.ui:1076
 msgid ""
 "Enables two's complement representation for input of negative binary "
 "numbers. All binary numbers starting with 1 are negative, unless binary bits "
@@ -3042,7 +3044,7 @@ msgstr ""
 "binaires négatifs. Tous les nombres binaires commençant par 1 sont négatifs, "
 "sauf si des bits binaires sont définis."
 
-#: data/preferences.ui:1075
+#: data/preferences.ui:1092
 msgid ""
 "Enables two's complement representation for input of negative hexadecimal "
 "numbers. All hexadecimal numbers starting with 8 or higher are negative, "
@@ -3052,29 +3054,29 @@ msgstr ""
 "hexadécimaux négatifs. Tous les nombres hexadécimaux commençant par 8 ou "
 "plus sont négatifs, sauf si des bits binaires sont définis."
 
-#: data/preferences.ui:1090
+#: data/preferences.ui:1107
 msgid "Binary bits"
 msgstr "Bits binaires"
 
-#: data/preferences.ui:1103
+#: data/preferences.ui:1120
 msgid "Automatic"
 msgstr "Automatique"
 
-#: data/preferences.ui:1130
+#: data/preferences.ui:1147
 msgid "Use lower case letters in non-decimal numbers"
 msgstr "Utiliser les lettres minuscules pour les nombres non décimaux"
 
-#: data/preferences.ui:1134
+#: data/preferences.ui:1151
 msgid "If lower case letters should be used in numbers with non-decimal base"
 msgstr ""
 "Si des lettres minuscules doivent être utilisées dans des nombres avec une "
 "base non décimale"
 
-#: data/preferences.ui:1147
+#: data/preferences.ui:1164
 msgid "Use special duodecimal symbols"
 msgstr "Utilisez des symboles duodécimaux spéciaux"
 
-#: data/preferences.ui:1151
+#: data/preferences.ui:1168
 msgid ""
 "If ↊ and ↋ (or X and E) shall be used instead of A and B for digits 10 and "
 "11 in numbers with base 12"
@@ -3082,11 +3084,11 @@ msgstr ""
 "Si ↊ et ↋ (ou X et E)doivent être utilisés à la place de A et B pour les "
 "chiffres 10 et 11 dans les nombres en base 12"
 
-#: data/preferences.ui:1164
+#: data/preferences.ui:1181
 msgid "Alternative base prefixes"
 msgstr "Préfixes de base alternatifs"
 
-#: data/preferences.ui:1168
+#: data/preferences.ui:1185
 msgid ""
 "If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
 "with \"0b00\" as prefixes"
@@ -3094,36 +3096,36 @@ msgstr ""
 "Si les nombres hexadécimaux doivent être affichés avec \"0x0\" et les "
 "nombres binaires avec \"0b00\" comme préfixes"
 
-#: data/preferences.ui:1181
+#: data/preferences.ui:1198
 msgid "Spell out logical operators"
 msgstr "Épelez les opérateurs logiques"
 
-#: data/preferences.ui:1185
+#: data/preferences.ui:1202
 msgid "If logical and/or shall be displayed as \"&&\"/\"||\" or \"and\"/\"or\""
 msgstr ""
 "Si logique et/ou doit être affiché comme \"&&\"/\"||\" ou \"et\"/\"ou\""
 
-#: data/preferences.ui:1210
+#: data/preferences.ui:1227
 msgid "Use E-notation instead of 10<sup><i>n</i></sup>"
 msgstr "Utilisez la notation E au lieu de 10<sup><i>n</i></sup>"
 
-#: data/preferences.ui:1224
+#: data/preferences.ui:1241
 msgid "Use lower case \"e\" (as in 1e10)"
 msgstr "Utilisez un \"e\" minuscule (comme dans 1e10)"
 
-#: data/preferences.ui:1228
+#: data/preferences.ui:1245
 msgid "If \"e\" shall be used instead of \"E\" in numbers"
 msgstr "Si \"e\" doit être utilisé à la place de \"E\" dans les chiffres"
 
-#: data/preferences.ui:1241
+#: data/preferences.ui:1258
 msgid "Use comma as decimal separator"
 msgstr "Utiliser la virgule comme séparateur décimal"
 
-#: data/preferences.ui:1258
+#: data/preferences.ui:1275
 msgid "Ignore comma in numbers"
 msgstr "Ignorer la virgule dans les nombres"
 
-#: data/preferences.ui:1262
+#: data/preferences.ui:1279
 msgid ""
 "Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
@@ -3131,11 +3133,11 @@ msgstr ""
 "Autoriser l'utilisation des virgules, ',', comme séparateur de milliers au "
 "lieu de séparateur d'argument de fonction"
 
-#: data/preferences.ui:1275
+#: data/preferences.ui:1292
 msgid "Ignore dots in numbers"
 msgstr "Ignorer les points dans les nombres"
 
-#: data/preferences.ui:1279
+#: data/preferences.ui:1296
 msgid ""
 "Allow dots, '.', to be used as thousands separator instead of as an "
 "alternative decimal sign"
@@ -3143,11 +3145,11 @@ msgstr ""
 "Autoriser l'utilisation des points, '.', comme séparateur de milliers plutôt "
 "que comme signe décimal alternatif"
 
-#: data/preferences.ui:1292
+#: data/preferences.ui:1309
 msgid "Use 'j' as imaginary unit"
 msgstr "Utilisez 'j' comme unité imaginaire"
 
-#: data/preferences.ui:1296
+#: data/preferences.ui:1313
 msgid ""
 "Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
 "it in front of the imaginary part."
@@ -3155,54 +3157,54 @@ msgstr ""
 "Utilisez 'j' (au lieu de 'i') comme symbole par défaut pour l'unité "
 "imaginaire et placez-le devant la partie imaginaire."
 
-#: data/preferences.ui:1310
+#: data/preferences.ui:1327
 msgid "Copy result as unformatted ASCII by default"
 msgstr "Copier le résultat au format ASCII non formaté par défaut"
 
-#: data/preferences.ui:1328
+#: data/preferences.ui:1345
 #, fuzzy
 msgid "Use overline for repeating decimals"
 msgstr "Indiquer les décimales répétitives"
 
-#: data/preferences.ui:1332
+#: data/preferences.ui:1349
 msgid ""
 "Use overline (vinculum), instead of ellipsis, for repeating decimals when "
 "indicate repeating decimals is enabled."
 msgstr ""
 
-#: data/preferences.ui:1359
+#: data/preferences.ui:1376
 msgid "Digit grouping"
 msgstr "Regroupement de chiffres"
 
-#: data/preferences.ui:1373
+#: data/preferences.ui:1390
 msgid "Standard"
 msgstr "Standard"
 
-#: data/preferences.ui:1374
+#: data/preferences.ui:1391
 msgid "Local"
 msgstr "Local"
 
-#: data/preferences.ui:1375
+#: data/preferences.ui:1392
 msgid "Custom"
 msgstr "Personnalisée"
 
-#: data/preferences.ui:1432
+#: data/preferences.ui:1449
 msgid "Multiplication sign"
 msgstr "Signe de multiplication"
 
-#: data/preferences.ui:1590
+#: data/preferences.ui:1607
 msgid "Division sign"
 msgstr "Signe de division"
 
-#: data/preferences.ui:1615
+#: data/preferences.ui:1632
 msgid "Numbers & Operators"
 msgstr "Nombres et opérateurs"
 
-#: data/preferences.ui:1632
+#: data/preferences.ui:1649
 msgid "Use binary prefixes for information units"
 msgstr "Utiliser des préfixes binaires pour les unités d'information"
 
-#: data/preferences.ui:1636
+#: data/preferences.ui:1653
 msgid ""
 "Use binary, instead of decimal, prefixes by default for information units "
 "(e.g. bytes)."
@@ -3210,15 +3212,15 @@ msgstr ""
 "Utiliser les préfixes binaires, à la place des décimales, pour les "
 "informations (ex : bytes)."
 
-#: data/preferences.ui:1649
+#: data/preferences.ui:1666
 msgid "Copy unformatted ASCII without units"
 msgstr "Copier l'ASCII non formaté sans unités"
 
-#: data/preferences.ui:1666
+#: data/preferences.ui:1683
 msgid "Conversion to local currency"
 msgstr "Conversion vers devise locale"
 
-#: data/preferences.ui:1670
+#: data/preferences.ui:1687
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
@@ -3226,55 +3228,55 @@ msgstr ""
 "Conversion automatique vers la devise locale lorsque la conversion d'unités "
 "optimale est activée."
 
-#: data/preferences.ui:1694
+#: data/preferences.ui:1711
 msgid "Local currency"
 msgstr "Devise locale"
 
-#: data/preferences.ui:1732
+#: data/preferences.ui:1749
 msgid "Exchange rates updates"
 msgstr "Mises à jour des taux de change"
 
-#: data/preferences.ui:1769
+#: data/preferences.ui:1786
 msgid "Temperature calculation mode:"
 msgstr "Mode calcul de la température:"
 
-#: data/preferences.ui:1785 src/mainwindow.cc:823
+#: data/preferences.ui:1802 src/mainwindow.cc:824
 msgid "Absolute"
 msgstr "Absolu"
 
-#: data/preferences.ui:1829 src/mainwindow.cc:837
+#: data/preferences.ui:1846 src/mainwindow.cc:838
 msgid "Hybrid"
 msgstr "Hybride"
 
-#: data/preferences.ui:1867
+#: data/preferences.ui:1884
 msgid "Units & Currencies"
 msgstr "Unités et devises"
 
-#: data/preferences.ui:1886
+#: data/preferences.ui:1903
 msgid "Show expression completion suggestions"
 msgstr "Afficher les suggestions de complétion d'expression"
 
-#: data/preferences.ui:1902
+#: data/preferences.ui:1919
 msgid "Search titles and countries"
 msgstr "Rechercher les titres et pays"
 
-#: data/preferences.ui:1936 data/preferences.ui:1948
+#: data/preferences.ui:1953 data/preferences.ui:1965
 msgid "Minimum characters"
 msgstr "Caractères minimum"
 
-#: data/preferences.ui:1974
+#: data/preferences.ui:1991
 msgid "Popup delay (ms)"
 msgstr "Délai d'apparition (ms)"
 
-#: data/preferences.ui:2005
+#: data/preferences.ui:2022
 msgid "Completion"
 msgstr "Complétion"
 
-#: data/preferences.ui:2024
+#: data/preferences.ui:2041
 msgid "Custom status font"
 msgstr "Police du status personnalisée"
 
-#: data/preferences.ui:2028
+#: data/preferences.ui:2045
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
@@ -3282,76 +3284,76 @@ msgstr ""
 "Si vous voulez utiliser une autre police que celle par défaut pour "
 "l'affichage du status en dessous de l'expression entrée"
 
-#: data/preferences.ui:2076
+#: data/preferences.ui:2093
 msgid "Custom expression font"
 msgstr "Police d'expression personnalisée"
 
-#: data/preferences.ui:2080
+#: data/preferences.ui:2097
 msgid ""
 "If you want to use a font other than the default in the expression entry"
 msgstr ""
 "Si vous voulez utiliser une autre police que celle utilisé par défaut dans "
 "l'expression entrée"
 
-#: data/preferences.ui:2094
+#: data/preferences.ui:2111
 msgid "Custom result font"
 msgstr "Police personnalisée des résultats"
 
-#: data/preferences.ui:2098
+#: data/preferences.ui:2115
 msgid "If you want to use a font other than the default in the result display"
 msgstr ""
 "Si vous voulez utiliser une autre police que celle par défaut pour "
 "l'affichage des résultats"
 
-#: data/preferences.ui:2128
+#: data/preferences.ui:2145
 msgid "Custom keypad font"
 msgstr "Police personnalisée du clavier"
 
-#: data/preferences.ui:2132
+#: data/preferences.ui:2149
 msgid "If you want to use a font other than the default in the keypad"
 msgstr ""
 "Si vous voulez utiliser une autre police que celle par défaut pour le clavier"
 
-#: data/preferences.ui:2166
+#: data/preferences.ui:2183
 msgid "Status warning color"
 msgstr "Couleur avertisseur du status"
 
-#: data/preferences.ui:2178
+#: data/preferences.ui:2195
 msgid "Status error color"
 msgstr "Couleur erreur du status"
 
-#: data/preferences.ui:2190
+#: data/preferences.ui:2207
 msgid "Text color"
 msgstr "Couleur de texte"
 
-#: data/preferences.ui:2238
+#: data/preferences.ui:2255
 #, fuzzy
 msgid "Highlight parenthesis background"
 msgstr "Parenthèse droite"
 
-#: data/preferences.ui:2291
+#: data/preferences.ui:2308
 msgid "Custom application font"
 msgstr "Police de l'application personnalisée"
 
-#: data/preferences.ui:2295
+#: data/preferences.ui:2312
 msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr ""
 "Si vous voulez utiliser une police différence que celle utilisée par défaut "
 "pour toute l'application"
 
-#: data/preferences.ui:2309
+#: data/preferences.ui:2326
 msgid "Custom history font"
 msgstr "Police de l'historique personnalisée"
 
-#: data/preferences.ui:2313
+#: data/preferences.ui:2330
 #, fuzzy
 msgid "If you want to use a font other than the default in the history list"
 msgstr ""
 "Si vous voulez utiliser une police différence que celle utilisée par défaut "
 "pour toute l'application"
 
-#: data/preferences.ui:2336
+#: data/preferences.ui:2353
 msgid "Fonts & Colors"
 msgstr "Polices et couleurs"
 
@@ -3653,7 +3655,7 @@ msgstr "La variable n'a pas été trouvée."
 msgid "Unit not found."
 msgstr "L'unité n'a pas été trouvée."
 
-#: src/buttonseditdialog.cc:259 src/mainwindow.cc:7265
+#: src/buttonseditdialog.cc:259 src/mainwindow.cc:7270
 #: src/shortcutsdialog.cc:255 src/shortcutsdialog.cc:503
 msgid "Mode not found."
 msgstr "Le mode n'a pas été trouvé."
@@ -3845,8 +3847,8 @@ msgstr "Tout"
 #: src/conversionview.cc:130 src/conversionview.cc:131
 #: src/conversionview.cc:132 src/conversionview.cc:179
 #: src/conversionview.cc:460 src/functionsdialog.cc:144
-#: src/functionsdialog.cc:145 src/functionsdialog.cc:196 src/mainwindow.cc:7574
-#: src/mainwindow.cc:7606 src/mainwindow.cc:7630 src/unitsdialog.cc:166
+#: src/functionsdialog.cc:145 src/functionsdialog.cc:196 src/mainwindow.cc:7579
+#: src/mainwindow.cc:7611 src/mainwindow.cc:7635 src/unitsdialog.cc:166
 #: src/unitsdialog.cc:167 src/unitsdialog.cc:233 src/variablesdialog.cc:152
 #: src/variablesdialog.cc:153 src/variablesdialog.cc:211
 msgid "Uncategorized"
@@ -3923,7 +3925,7 @@ msgstr "Nouveau objet de données"
 #: src/expressionstatus.cc:1185 src/expressionstatus.cc:1221
 #: src/historyview.cc:710 src/historyview.cc:1295 src/historyview.cc:1349
 #: src/historyview.cc:1602 src/historyview.cc:1662 src/historyview.cc:2185
-#: src/insertfunctiondialog.cc:298 src/keypad.cc:3109 src/mainwindow.cc:2787
+#: src/insertfunctiondialog.cc:298 src/keypad.cc:3109 src/mainwindow.cc:2788
 #: src/searchprovider.cc:152 src/searchprovider.cc:200
 #: src/searchprovider.cc:201 src/variablesdialog.cc:303
 msgid "approx."
@@ -4304,16 +4306,16 @@ msgid "Too many arguments for %s()."
 msgstr "Trop d'arguments pour %s()."
 
 #: src/expressionstatus.cc:723 src/expressionstatus.cc:725
-#: src/mainwindow.cc:1544 src/mainwindow.cc:5098 src/searchprovider.cc:116
+#: src/mainwindow.cc:1545 src/mainwindow.cc:5099 src/searchprovider.cc:116
 msgid "factorize"
 msgstr "factoriser"
 
 #: src/expressionstatus.cc:726 src/expressionstatus.cc:728
-#: src/mainwindow.cc:1547 src/mainwindow.cc:5101 src/searchprovider.cc:116
+#: src/mainwindow.cc:1548 src/mainwindow.cc:5102 src/searchprovider.cc:116
 msgid "expand"
 msgstr "développer"
 
-#: src/expressionstatus.cc:898 src/mainwindow.cc:1320 src/mainwindow.cc:4763
+#: src/expressionstatus.cc:898 src/mainwindow.cc:1321 src/mainwindow.cc:4764
 msgid "hexadecimal"
 msgstr "hexadécimal"
 
@@ -4321,7 +4323,7 @@ msgstr "hexadécimal"
 msgid "hexadecimal number"
 msgstr "nombre hexadécimal"
 
-#: src/expressionstatus.cc:900 src/mainwindow.cc:1323 src/mainwindow.cc:4766
+#: src/expressionstatus.cc:900 src/mainwindow.cc:1324 src/mainwindow.cc:4767
 msgid "octal"
 msgstr "octal"
 
@@ -4329,7 +4331,7 @@ msgstr "octal"
 msgid "octal number"
 msgstr "nombre octal"
 
-#: src/expressionstatus.cc:902 src/mainwindow.cc:1326 src/mainwindow.cc:4769
+#: src/expressionstatus.cc:902 src/mainwindow.cc:1327 src/mainwindow.cc:4770
 msgid "decimal"
 msgstr "décimal"
 
@@ -4337,7 +4339,7 @@ msgstr "décimal"
 msgid "decimal number"
 msgstr "nombre décimal"
 
-#: src/expressionstatus.cc:904 src/mainwindow.cc:1330 src/mainwindow.cc:4773
+#: src/expressionstatus.cc:904 src/mainwindow.cc:1331 src/mainwindow.cc:4774
 msgid "duodecimal"
 msgstr "duodécimal"
 
@@ -4345,7 +4347,7 @@ msgstr "duodécimal"
 msgid "duodecimal number"
 msgstr "nombre duodécimal"
 
-#: src/expressionstatus.cc:908 src/mainwindow.cc:1338 src/mainwindow.cc:4781
+#: src/expressionstatus.cc:908 src/mainwindow.cc:1339 src/mainwindow.cc:4782
 msgid "binary"
 msgstr "binaire"
 
@@ -4353,7 +4355,7 @@ msgstr "binaire"
 msgid "binary number"
 msgstr "nombre binaire"
 
-#: src/expressionstatus.cc:910 src/mainwindow.cc:1341 src/mainwindow.cc:4784
+#: src/expressionstatus.cc:910 src/mainwindow.cc:1342 src/mainwindow.cc:4785
 msgid "roman"
 msgstr "romain"
 
@@ -4361,7 +4363,7 @@ msgstr "romain"
 msgid "roman numerals"
 msgstr "chiffres romains"
 
-#: src/expressionstatus.cc:912 src/mainwindow.cc:1344 src/mainwindow.cc:4787
+#: src/expressionstatus.cc:912 src/mainwindow.cc:1345 src/mainwindow.cc:4788
 msgid "bijective"
 msgstr "bijectif"
 
@@ -4373,9 +4375,9 @@ msgstr "bijectif base-26"
 msgid "binary-coded decimal"
 msgstr "décimal codé en binaire"
 
-#: src/expressionstatus.cc:916 src/mainwindow.cc:1350 src/mainwindow.cc:1353
-#: src/mainwindow.cc:1356 src/mainwindow.cc:4793 src/mainwindow.cc:4796
-#: src/mainwindow.cc:4799
+#: src/expressionstatus.cc:916 src/mainwindow.cc:1351 src/mainwindow.cc:1354
+#: src/mainwindow.cc:1357 src/mainwindow.cc:4794 src/mainwindow.cc:4797
+#: src/mainwindow.cc:4800
 msgid "sexagesimal"
 msgstr "sexagésimal"
 
@@ -4384,14 +4386,14 @@ msgid "sexagesimal number"
 msgstr "nombre sexagésimal"
 
 #: src/expressionstatus.cc:918 src/expressionstatus.cc:919
-#: src/mainwindow.cc:1359 src/mainwindow.cc:1362 src/mainwindow.cc:4802
-#: src/mainwindow.cc:4805
+#: src/mainwindow.cc:1360 src/mainwindow.cc:1363 src/mainwindow.cc:4803
+#: src/mainwindow.cc:4806
 msgid "latitude"
 msgstr "latitude"
 
 #: src/expressionstatus.cc:920 src/expressionstatus.cc:921
-#: src/mainwindow.cc:1365 src/mainwindow.cc:1368 src/mainwindow.cc:4808
-#: src/mainwindow.cc:4811
+#: src/mainwindow.cc:1366 src/mainwindow.cc:1369 src/mainwindow.cc:4809
+#: src/mainwindow.cc:4812
 msgid "longitude"
 msgstr "longitude"
 
@@ -4415,7 +4417,7 @@ msgstr "Virgule flottante 80-bits (x86)"
 msgid "128-bit floating point"
 msgstr "Virgule flottante 128-bits"
 
-#: src/expressionstatus.cc:932 src/mainwindow.cc:1386 src/mainwindow.cc:4829
+#: src/expressionstatus.cc:932 src/mainwindow.cc:1387 src/mainwindow.cc:4830
 msgid "time"
 msgstr "temps"
 
@@ -4423,7 +4425,7 @@ msgstr "temps"
 msgid "time format"
 msgstr "fuseau horaire"
 
-#: src/expressionstatus.cc:936 src/mainwindow.cc:1392 src/mainwindow.cc:4835
+#: src/expressionstatus.cc:936 src/mainwindow.cc:1393 src/mainwindow.cc:4836
 msgid "scientific"
 msgstr "scientifique"
 
@@ -4431,7 +4433,7 @@ msgstr "scientifique"
 msgid "scientific notation"
 msgstr "notation scientifique"
 
-#: src/expressionstatus.cc:938 src/mainwindow.cc:1395 src/mainwindow.cc:4838
+#: src/expressionstatus.cc:938 src/mainwindow.cc:1396 src/mainwindow.cc:4839
 msgid "engineering"
 msgstr "ingénieur"
 
@@ -4439,7 +4441,7 @@ msgstr "ingénieur"
 msgid "engineering notation"
 msgstr "notation ingénieur"
 
-#: src/expressionstatus.cc:940 src/mainwindow.cc:1398 src/mainwindow.cc:4841
+#: src/expressionstatus.cc:940 src/mainwindow.cc:1399 src/mainwindow.cc:4842
 msgid "simple"
 msgstr "simple"
 
@@ -4447,7 +4449,7 @@ msgstr "simple"
 msgid "simple notation"
 msgstr "notation simple"
 
-#: src/expressionstatus.cc:942 src/mainwindow.cc:1446 src/mainwindow.cc:4891
+#: src/expressionstatus.cc:942 src/mainwindow.cc:1447 src/mainwindow.cc:4892
 msgid "bases"
 msgstr "bases"
 
@@ -4456,11 +4458,11 @@ msgid "number bases"
 msgstr "bases numériques"
 
 #: src/expressionstatus.cc:944 src/expressionstatus.cc:945
-#: src/mainwindow.cc:1448 src/mainwindow.cc:4901
+#: src/mainwindow.cc:1449 src/mainwindow.cc:4902
 msgid "calendars"
 msgstr "calendriers"
 
-#: src/expressionstatus.cc:946 src/mainwindow.cc:1470 src/mainwindow.cc:4976
+#: src/expressionstatus.cc:946 src/mainwindow.cc:1471 src/mainwindow.cc:4977
 msgid "optimal"
 msgstr "optimal"
 
@@ -4468,7 +4470,7 @@ msgstr "optimal"
 msgid "optimal unit"
 msgstr "unité optimale"
 
-#: src/expressionstatus.cc:948 src/mainwindow.cc:1475 src/mainwindow.cc:4988
+#: src/expressionstatus.cc:948 src/mainwindow.cc:1476 src/mainwindow.cc:4989
 msgid "prefix"
 msgstr "préfixe"
 
@@ -4477,7 +4479,7 @@ msgid "optimal prefix"
 msgstr "préfixe optimal"
 
 #. base units
-#: src/expressionstatus.cc:950 src/mainwindow.cc:1480 src/mainwindow.cc:4992
+#: src/expressionstatus.cc:950 src/mainwindow.cc:1481 src/mainwindow.cc:4993
 #, fuzzy
 msgctxt "Units"
 msgid "base"
@@ -4487,7 +4489,7 @@ msgstr "base"
 msgid "base units"
 msgstr "unités de base"
 
-#: src/expressionstatus.cc:952 src/mainwindow.cc:1485 src/mainwindow.cc:5004
+#: src/expressionstatus.cc:952 src/mainwindow.cc:1486 src/mainwindow.cc:5005
 msgid "mixed"
 msgstr "mixte"
 
@@ -4496,11 +4498,11 @@ msgid "mixed units"
 msgstr "unités mixtes"
 
 #: src/expressionstatus.cc:954 src/expressionstatus.cc:955
-#: src/mainwindow.cc:1490 src/mainwindow.cc:5016
+#: src/mainwindow.cc:1491 src/mainwindow.cc:5017
 msgid "factors"
 msgstr "facteurs"
 
-#: src/expressionstatus.cc:956 src/mainwindow.cc:1493 src/mainwindow.cc:5026
+#: src/expressionstatus.cc:956 src/mainwindow.cc:1494 src/mainwindow.cc:5027
 msgid "partial fraction"
 msgstr "fraction partielle"
 
@@ -4508,11 +4510,11 @@ msgstr "fraction partielle"
 msgid "expanded partial fractions"
 msgstr "fractions partielles développées"
 
-#: src/expressionstatus.cc:958 src/mainwindow.cc:1450 src/mainwindow.cc:4911
+#: src/expressionstatus.cc:958 src/mainwindow.cc:1451 src/mainwindow.cc:4912
 msgid "rectangular"
 msgstr "algébrique"
 
-#: src/expressionstatus.cc:958 src/mainwindow.cc:1450 src/mainwindow.cc:4911
+#: src/expressionstatus.cc:958 src/mainwindow.cc:1451 src/mainwindow.cc:4912
 msgid "cartesian"
 msgstr "cartésien"
 
@@ -4520,7 +4522,7 @@ msgstr "cartésien"
 msgid "complex rectangular form"
 msgstr "form algébrique complexe"
 
-#: src/expressionstatus.cc:960 src/mainwindow.cc:1454 src/mainwindow.cc:4924
+#: src/expressionstatus.cc:960 src/mainwindow.cc:1455 src/mainwindow.cc:4925
 msgid "exponential"
 msgstr "exponentielle"
 
@@ -4528,7 +4530,7 @@ msgstr "exponentielle"
 msgid "complex exponential form"
 msgstr "forme exponentielle complexe"
 
-#: src/expressionstatus.cc:962 src/mainwindow.cc:1458 src/mainwindow.cc:4937
+#: src/expressionstatus.cc:962 src/mainwindow.cc:1459 src/mainwindow.cc:4938
 msgid "polar"
 msgstr "polaire"
 
@@ -4540,7 +4542,7 @@ msgstr "forme polaire complexe"
 msgid "complex cis form"
 msgstr "forme cis complexe"
 
-#: src/expressionstatus.cc:966 src/mainwindow.cc:1466 src/mainwindow.cc:4963
+#: src/expressionstatus.cc:966 src/mainwindow.cc:1467 src/mainwindow.cc:4964
 msgid "angle"
 msgstr "angle"
 
@@ -4548,7 +4550,7 @@ msgstr "angle"
 msgid "complex angle notation"
 msgstr "notation complexe angle"
 
-#: src/expressionstatus.cc:968 src/mainwindow.cc:1466 src/mainwindow.cc:4963
+#: src/expressionstatus.cc:968 src/mainwindow.cc:1467 src/mainwindow.cc:4964
 msgid "phasor"
 msgstr "phaseur"
 
@@ -4561,7 +4563,7 @@ msgid "UTC time zone"
 msgstr "fuseau horaire UTC"
 
 #. number base #
-#: src/expressionstatus.cc:1023 src/mainwindow.cc:1497 src/mainwindow.cc:5036
+#: src/expressionstatus.cc:1023 src/mainwindow.cc:1498 src/mainwindow.cc:5037
 #, fuzzy
 msgctxt "Number base"
 msgid "base"
@@ -4572,7 +4574,7 @@ msgstr "base"
 msgid "number base %s"
 msgstr "base numérique %s"
 
-#: src/expressionstatus.cc:1028 src/mainwindow.cc:1501 src/mainwindow.cc:5040
+#: src/expressionstatus.cc:1028 src/mainwindow.cc:1502 src/mainwindow.cc:5041
 msgid "decimals"
 msgstr "décimales"
 
@@ -4605,14 +4607,14 @@ msgid "Conversion (using \"to\") is not supported in functions."
 msgstr ""
 
 #: src/functionsdialog.cc:135 src/functionsdialog.cc:136
-#: src/functionsdialog.cc:200 src/mainwindow.cc:7572 src/menubar.cc:1599
+#: src/functionsdialog.cc:200 src/mainwindow.cc:7577 src/menubar.cc:1599
 #: src/util.cc:1291 src/util.cc:1292
 msgid "User functions"
 msgstr "Fonctions utilisateur"
 
 #: src/functionsdialog.cc:153 src/functionsdialog.cc:154
-#: src/functionsdialog.cc:198 src/mainwindow.cc:7570 src/mainwindow.cc:7602
-#: src/mainwindow.cc:7626 src/unitsdialog.cc:174 src/unitsdialog.cc:175
+#: src/functionsdialog.cc:198 src/mainwindow.cc:7575 src/mainwindow.cc:7607
+#: src/mainwindow.cc:7631 src/unitsdialog.cc:174 src/unitsdialog.cc:175
 #: src/unitsdialog.cc:235 src/util.cc:1293 src/util.cc:1294
 #: src/variablesdialog.cc:161 src/variablesdialog.cc:162
 #: src/variablesdialog.cc:213
@@ -4658,7 +4660,7 @@ msgstr "Ac_tiver"
 msgid "History Answer Value"
 msgstr "Valeur de réponse de l'historique"
 
-#: src/historyview.cc:112 src/mainwindow.cc:8661
+#: src/historyview.cc:112 src/mainwindow.cc:8666
 msgid "answer"
 msgstr "résultat"
 
@@ -4689,11 +4691,11 @@ msgstr ""
 "le taux d'échantillonnage ou augmenter la limite de temps dans les "
 "préférences."
 
-#: src/historyview.cc:2154 src/mainwindow.cc:2537
+#: src/historyview.cc:2154 src/mainwindow.cc:2538
 msgid "RPN Register Moved"
 msgstr "Registre NPI déplacé"
 
-#: src/historyview.cc:2160 src/mainwindow.cc:2538 src/mainwindow.cc:5330
+#: src/historyview.cc:2160 src/mainwindow.cc:2539 src/mainwindow.cc:5331
 msgid "RPN Operation"
 msgstr "Opération NPI"
 
@@ -4854,7 +4856,7 @@ msgstr "Toutes les fonctions"
 msgid "All variables"
 msgstr "Toutes les variables"
 
-#: src/keypad.cc:2685 src/mainwindow.cc:7650 src/variablesdialog.cc:258
+#: src/keypad.cc:2685 src/mainwindow.cc:7655 src/variablesdialog.cc:258
 #: src/variablesdialog.cc:417 src/variablesdialog.cc:432
 #: src/variablesdialog.cc:448 src/variablesdialog.cc:468
 msgid "Variable does not exist anymore."
@@ -4923,24 +4925,24 @@ msgstr ""
 "Voulez-vous, malgré cela, changer le comportement par défaut et autoriser "
 "plusieurs instances simultanées ?"
 
-#: src/mainwindow.cc:252
+#: src/mainwindow.cc:253
 msgid "Set Window Title"
 msgstr "Définir le titre de la fenêtre"
 
-#: src/mainwindow.cc:527
+#: src/mainwindow.cc:528
 msgid "Exchange rate source:"
 msgid_plural "Exchange rate sources:"
 msgstr[0] "Source du taux de change:"
 msgstr[1] "Sources de taux de change:"
 
-#: src/mainwindow.cc:529
+#: src/mainwindow.cc:530
 #, c-format
 msgid "updated %s"
 msgid_plural "updated %s"
 msgstr[0] "%s mis à jour"
 msgstr[1] "%s mis à jour"
 
-#: src/mainwindow.cc:549
+#: src/mainwindow.cc:550
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -4952,15 +4954,15 @@ msgstr ""
 "d'expression change pour refléter cela. Si vous maintenez le pointeur sur "
 "l'icône ou cliquez sur l'icône, le message s'affichera."
 
-#: src/mainwindow.cc:609
+#: src/mainwindow.cc:610
 msgid "Path of executable not found."
 msgstr "Impossible de trouver le chemin de l'exécutable."
 
-#: src/mainwindow.cc:619
+#: src/mainwindow.cc:620
 msgid "curl not found."
 msgstr "impossible de trouver curl."
 
-#: src/mainwindow.cc:684
+#: src/mainwindow.cc:685
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -4969,19 +4971,19 @@ msgstr ""
 "Impossible d'exécuter le script de mise à jour.\n"
 "%s"
 
-#: src/mainwindow.cc:708
+#: src/mainwindow.cc:709
 msgid "Failed to check for updates."
 msgstr "Échec de la vérification des mises à jour."
 
-#: src/mainwindow.cc:708
+#: src/mainwindow.cc:709
 msgid "No updates found."
 msgstr "Aucune mise à jour trouvée."
 
-#: src/mainwindow.cc:722
+#: src/mainwindow.cc:723
 msgid "_Download"
 msgstr "_Télécharger"
 
-#: src/mainwindow.cc:734
+#: src/mainwindow.cc:735
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
@@ -4992,7 +4994,7 @@ msgstr ""
 "\n"
 "Souhaitez-vous le mettre à jour vers la version %s ?"
 
-#: src/mainwindow.cc:736
+#: src/mainwindow.cc:737
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -5003,11 +5005,11 @@ msgstr ""
 "\n"
 "Vous pouvez télécharger la version %s de %s."
 
-#: src/mainwindow.cc:810
+#: src/mainwindow.cc:811
 msgid "Temperature Calculation Mode"
 msgstr "Mode de calcul de température"
 
-#: src/mainwindow.cc:820
+#: src/mainwindow.cc:821
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
@@ -5017,36 +5019,36 @@ msgstr ""
 "Veuillez sélectionner le mode de calcul de la température\n"
 "(le mode pourra être modifié ultérieurement dans les préférences)."
 
-#: src/mainwindow.cc:873
+#: src/mainwindow.cc:874
 msgid "Unknown variables (e.g. x, y, z) are by default assumed real."
 msgstr ""
 
-#: src/mainwindow.cc:881
+#: src/mainwindow.cc:882
 msgid "Sinc Function"
 msgstr "Fonction Sinc"
 
-#: src/mainwindow.cc:891
+#: src/mainwindow.cc:892
 msgid "Please select desired variant of the sinc function."
 msgstr "Veuillez sélectionner la variante souhaitée de la fonction sinc."
 
-#: src/mainwindow.cc:894
+#: src/mainwindow.cc:895
 msgid "Unnormalized"
 msgstr "Non normalisé"
 
-#: src/mainwindow.cc:901
+#: src/mainwindow.cc:902
 msgid "Normalized"
 msgstr "Normalisé"
 
-#: src/mainwindow.cc:936
+#: src/mainwindow.cc:937
 #, fuzzy
 msgid "Interpretation of comma"
 msgstr "Interprétation des points"
 
-#: src/mainwindow.cc:936
+#: src/mainwindow.cc:937
 msgid "Interpretation of dots"
 msgstr "Interprétation des points"
 
-#: src/mainwindow.cc:946
+#: src/mainwindow.cc:947
 #, fuzzy
 msgid ""
 "Please select interpretation of comma (\",\")\n"
@@ -5055,7 +5057,7 @@ msgstr ""
 "Veuillez sélectionner l'interprétation des points (\".\")\n"
 "(cela peut être modifié ultérieurement dans les préférences)."
 
-#: src/mainwindow.cc:946
+#: src/mainwindow.cc:947
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
@@ -5063,30 +5065,30 @@ msgstr ""
 "Veuillez sélectionner l'interprétation des points (\".\")\n"
 "(cela peut être modifié ultérieurement dans les préférences)."
 
-#: src/mainwindow.cc:949
+#: src/mainwindow.cc:950
 msgid "Both dot and comma as decimal separators"
 msgstr "Le point et la virgule comme séparateurs décimaux"
 
-#: src/mainwindow.cc:956
+#: src/mainwindow.cc:957
 #, fuzzy
 msgid "Comma as thousands separator"
 msgstr "Point comme séparateur de milliers"
 
-#: src/mainwindow.cc:956
+#: src/mainwindow.cc:957
 msgid "Dot as thousands separator"
 msgstr "Point comme séparateur de milliers"
 
-#: src/mainwindow.cc:963
+#: src/mainwindow.cc:964
 msgid ""
 "Comma as separator for function arguments\n"
 "and matrix/vector elements"
 msgstr ""
 
-#: src/mainwindow.cc:963
+#: src/mainwindow.cc:964
 msgid "Only dot as decimal separator"
 msgstr "Seul un point comme séparateur décimal"
 
-#: src/mainwindow.cc:1027
+#: src/mainwindow.cc:1028
 msgid ""
 "The expression is ambiguous.\n"
 "Please select interpretation of expressions with implicit multiplication\n"
@@ -5097,63 +5099,63 @@ msgstr ""
 "implicite\n"
 "(cela peut être modifié ultérieurement dans les préférences)."
 
-#: src/mainwindow.cc:1030
+#: src/mainwindow.cc:1031
 msgid "Implicit multiplication first"
 msgstr "Multiplication implicite en premier"
 
-#: src/mainwindow.cc:1038
+#: src/mainwindow.cc:1039
 msgid "Conventional"
 msgstr "Conventionnelle"
 
-#: src/mainwindow.cc:1073
+#: src/mainwindow.cc:1074
 msgid "Percentage Interpretation"
 msgstr "Interprétation du pourcentage"
 
-#: src/mainwindow.cc:1083
+#: src/mainwindow.cc:1084
 msgid "Please select interpretation of percentage addition."
 msgstr "Veuillez sélectionner l'interprétation de l'addition en pourcentage."
 
-#: src/mainwindow.cc:1086
+#: src/mainwindow.cc:1087
 msgid "Add percentage of original value"
 msgstr "Ajouter un pourcentage de la valeur d'origine"
 
-#: src/mainwindow.cc:1094
+#: src/mainwindow.cc:1095
 msgid "Add percentage multiplied by 1/100"
 msgstr "Ajouter un pourcentage multiplié par 1/100"
 
-#: src/mainwindow.cc:2079
+#: src/mainwindow.cc:2080
 msgid "My Variables"
 msgstr "Mes variables"
 
-#: src/mainwindow.cc:2716
+#: src/mainwindow.cc:2717
 msgid "Processing…"
 msgstr "Traitement en cours…"
 
-#: src/mainwindow.cc:2987
+#: src/mainwindow.cc:2988
 msgid "Factorizing…"
 msgstr "Factorisation en cours…"
 
-#: src/mainwindow.cc:2991
+#: src/mainwindow.cc:2992
 msgid "Expanding partial fractions…"
 msgstr "Développement des fractions partielles…"
 
-#: src/mainwindow.cc:2995
+#: src/mainwindow.cc:2996
 msgid "Expanding…"
 msgstr "Développement en cours…"
 
-#: src/mainwindow.cc:3000 src/mainwindow.cc:5270
+#: src/mainwindow.cc:3001 src/mainwindow.cc:5271
 msgid "Calculating…"
 msgstr "Calcul en cours…"
 
-#: src/mainwindow.cc:3004
+#: src/mainwindow.cc:3005
 msgid "Converting…"
 msgstr "Conversion en cours…"
 
-#: src/mainwindow.cc:4882
+#: src/mainwindow.cc:4883
 msgid "Time zone parsing failed."
 msgstr "L'analyse du fuseau horaire a échoué."
 
-#: src/mainwindow.cc:5495 src/mainwindow.cc:7100 src/openhelp.cc:361
+#: src/mainwindow.cc:5496 src/mainwindow.cc:7105 src/openhelp.cc:361
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -5162,25 +5164,25 @@ msgstr ""
 "Impossible d'ouvrir %s.\n"
 "%s"
 
-#: src/mainwindow.cc:5649
+#: src/mainwindow.cc:5650
 msgid "Couldn't write definitions"
 msgstr "Ne peut pas écrire de définitions"
 
-#: src/mainwindow.cc:5651 src/mainwindow.cc:5653 src/mainwindow.cc:6432
-#: src/mainwindow.cc:6434 src/mainwindow.cc:6477 src/mainwindow.cc:6479
+#: src/mainwindow.cc:5652 src/mainwindow.cc:5654 src/mainwindow.cc:6436
+#: src/mainwindow.cc:6438 src/mainwindow.cc:6481 src/mainwindow.cc:6483
 msgid "Ignore"
 msgstr "Ignorer"
 
-#: src/mainwindow.cc:5651 src/mainwindow.cc:6432 src/mainwindow.cc:6477
+#: src/mainwindow.cc:5652 src/mainwindow.cc:6436 src/mainwindow.cc:6481
 msgid "Cancel"
 msgstr "Annuler"
 
-#: src/mainwindow.cc:5651 src/mainwindow.cc:5653 src/mainwindow.cc:6432
-#: src/mainwindow.cc:6434 src/mainwindow.cc:6477 src/mainwindow.cc:6479
+#: src/mainwindow.cc:5652 src/mainwindow.cc:5654 src/mainwindow.cc:6436
+#: src/mainwindow.cc:6438 src/mainwindow.cc:6481 src/mainwindow.cc:6483
 msgid "Retry"
 msgstr "Réessayer"
 
-#: src/mainwindow.cc:6430
+#: src/mainwindow.cc:6434
 #, c-format
 msgid ""
 "Couldn't write history to\n"
@@ -5189,7 +5191,7 @@ msgstr ""
 "L'historique n'a pas pu être écrite pour\n"
 "%s"
 
-#: src/mainwindow.cc:6475
+#: src/mainwindow.cc:6479
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5198,93 +5200,93 @@ msgstr ""
 "Impossible d'écrire les préférences dans\n"
 "%s"
 
-#: src/mainwindow.cc:6777 src/mainwindow.cc:6779
+#: src/mainwindow.cc:6782 src/mainwindow.cc:6784
 msgid "Select definitions file"
 msgstr "Sélectionner le fichier de définitions"
 
-#: src/mainwindow.cc:6777 src/mainwindow.cc:6779
+#: src/mainwindow.cc:6782 src/mainwindow.cc:6784
 msgid "_Import"
 msgstr "_Importer"
 
-#: src/mainwindow.cc:6783
+#: src/mainwindow.cc:6788
 msgid "XML Files"
 msgstr "Fichiers XML"
 
-#: src/mainwindow.cc:6803
+#: src/mainwindow.cc:6808
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "Ne peut pas copier %s vers %s."
 
-#: src/mainwindow.cc:6811
+#: src/mainwindow.cc:6816
 #, c-format
 msgid "Could not read %s."
 msgstr "Ne peut pas lire %s."
 
-#: src/mainwindow.cc:6819
+#: src/mainwindow.cc:6824
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "Ne peut pas copier le fichier vers %s."
 
-#: src/mainwindow.cc:7074
+#: src/mainwindow.cc:7079
 msgid "translator-credits"
 msgstr "crédits-traducteur"
 
-#: src/mainwindow.cc:7604 src/menubar.cc:1687 src/util.cc:1287 src/util.cc:1288
+#: src/mainwindow.cc:7609 src/menubar.cc:1687 src/util.cc:1287 src/util.cc:1288
 #: src/variablesdialog.cc:143 src/variablesdialog.cc:144
 #: src/variablesdialog.cc:215
 msgid "User variables"
 msgstr "Variables utilisateur"
 
-#: src/mainwindow.cc:7628 src/menubar.cc:1427 src/menubar.cc:1522
+#: src/mainwindow.cc:7633 src/menubar.cc:1427 src/menubar.cc:1522
 #: src/unitsdialog.cc:158 src/unitsdialog.cc:159 src/unitsdialog.cc:237
 #: src/util.cc:1289 src/util.cc:1290
 msgid "User units"
 msgstr "Unités utilisateur"
 
-#: src/mainwindow.cc:7737
+#: src/mainwindow.cc:7742
 msgid "No unknowns in result."
 msgstr "Aucune inconnue dans le résultat."
 
-#: src/mainwindow.cc:7743
+#: src/mainwindow.cc:7748
 msgid "Set Unknowns"
 msgstr "Définir les inconnues"
 
-#: src/mainwindow.cc:7743
+#: src/mainwindow.cc:7748
 msgid "_Apply"
 msgstr "_Appliquer"
 
-#: src/mainwindow.cc:8658
+#: src/mainwindow.cc:8663
 msgid "ans"
 msgstr "résultat"
 
-#: src/mainwindow.cc:8659
+#: src/mainwindow.cc:8664
 msgid "Last Answer"
 msgstr "Dernier résultat"
 
-#: src/mainwindow.cc:8660
+#: src/mainwindow.cc:8665
 msgid ""
 "Contains the result of the most recent calculation. Multiple results of an "
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
 
-#: src/mainwindow.cc:8663
+#: src/mainwindow.cc:8668
 msgid "Answer 2"
 msgstr "Résultat 2"
 
-#: src/mainwindow.cc:8664
+#: src/mainwindow.cc:8669
 msgid "Answer 3"
 msgstr "Résultat 3"
 
-#: src/mainwindow.cc:8665
+#: src/mainwindow.cc:8670
 msgid "Answer 4"
 msgstr "Résultat 4"
 
-#: src/mainwindow.cc:8666
+#: src/mainwindow.cc:8671
 msgid "Answer 5"
 msgstr "Résultat 5"
 
-#: src/mainwindow.cc:8676
+#: src/mainwindow.cc:8681
 msgid "Memory"
 msgstr "Mémoire"
 
@@ -5958,6 +5960,9 @@ msgstr "un vecteur"
 #: src/variablesdialog.cc:331
 msgid "not matrix"
 msgstr "pas de matrice"
+
+#~ msgid "Use  for all units"
+#~ msgstr "Utiliser des préfixes pour toutes les unités"
 
 #~ msgid "off"
 #~ msgstr "désactivé"

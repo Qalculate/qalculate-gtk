@@ -72,6 +72,7 @@ extern int allow_multiple_instances;
 int b_decimal_comma;
 bool first_error;
 bool display_expression_status;
+int expression_pos = -1;
 MathStructure *mstruct = NULL, *matrix_mstruct = NULL, *parsed_mstruct = NULL, *parsed_tostruct = NULL;
 MathStructure mbak_convert;
 string result_text, parsed_text;
@@ -5947,6 +5948,7 @@ void load_preferences() {
 	minimal_mode = false;
 	load_global_defs = true;
 	display_expression_status = true;
+	expression_pos = -1;
 	parsed_in_result = false;
 	first_time = false;
 	first_error = true;
@@ -6070,6 +6072,8 @@ void load_preferences() {
 						minimal_mode = v;
 					} else if(svar == "display_expression_status") {
 						display_expression_status = v;
+					} else if(svar == "expression_pos") {
+						if(v >= 0 && v <= 1) expression_pos = v;
 					} else if(svar == "parsed_expression_in_resultview") {
 						parsed_in_result = v;
 					} else if(svar == "calculate_as_you_type_history_delay") {
@@ -6606,6 +6610,7 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	fprintf(file, "persistent_keypad=%i\n", persistent_keypad);
 	fprintf(file, "minimal_mode=%i\n", minimal_mode);
 	fprintf(file, "rpn_keys=%i\n", rpn_keys);
+	if(expression_pos >= 0) fprintf(file, "expression_pos=%i\n", expression_pos);
 	fprintf(file, "display_expression_status=%i\n", display_expression_status);
 	fprintf(file, "parsed_expression_in_resultview=%i\n", parsed_in_result);
 	fprintf(file, "calculate_as_you_type_history_delay=%i\n", autocalc_history_delay);
@@ -8727,6 +8732,16 @@ bool qalculate_quit() {
 	return TRUE;
 }
 
+int get_expression_pos() {
+	return expression_pos;
+}
+void set_expression_pos(int i) {
+	expression_pos = i;
+	gtk_box_reorder_child(GTK_BOX(gtk_builder_get_object(main_builder, "topframebox")), GTK_WIDGET(gtk_builder_get_object(main_builder, "statusframe")), expression_pos == 1 ? -1 : 0);
+	gtk_box_reorder_child(GTK_BOX(gtk_builder_get_object(main_builder, "topframebox")), GTK_WIDGET(gtk_builder_get_object(main_builder, "expressionbox")), expression_pos == 1 ? -1 : 0);
+
+}
+
 void create_main_window() {
 
 	mstruct = new MathStructure();
@@ -8897,6 +8912,8 @@ void create_main_window() {
 	create_expression_edit();
 	create_expression_status();
 	create_menubar();
+
+	if(expression_pos == 1) set_expression_pos(1);
 
 	if(minimal_mode) {
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(main_builder, "box_tabs")));

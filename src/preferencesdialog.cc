@@ -514,6 +514,9 @@ void preferences_update_dot(bool initial) {
 void on_preferences_checkbutton_load_defs_toggled(GtkToggleButton *w, gpointer) {
 	load_global_defs = gtk_toggle_button_get_active(w);
 }
+void on_preferences_checkbutton_expression_pos_toggled(GtkToggleButton *w, gpointer) {
+	set_expression_pos(gtk_toggle_button_get_active(w) ? 1 : 0);
+}
 void on_preferences_checkbutton_display_expression_status_toggled(GtkToggleButton *w, gpointer) {
 	if(gtk_toggle_button_get_active(w)) {
 		display_expression_status = true;
@@ -941,6 +944,7 @@ GtkWidget* get_preferences_dialog() {
 
 		g_assert(gtk_builder_get_object(preferences_builder, "preferences_dialog") != NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_display_expression_status")), display_expression_status);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_expression_pos")), get_expression_pos() == 1);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), parsed_in_result && !rpn_mode);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), display_expression_status && !rpn_mode);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_expression_lines_spin_button")), (double) (expression_lines < 1 ? 3 : expression_lines));
@@ -1165,7 +1169,7 @@ GtkWidget* get_preferences_dialog() {
 		G_CALLBACK(on_preferences_checkbutton_use_systray_icon_toggled), "on_preferences_checkbutton_hide_on_startup_toggled", G_CALLBACK(on_preferences_checkbutton_hide_on_startup_toggled), "on_preferences_checkbutton_remember_position_toggled", G_CALLBACK(on_preferences_checkbutton_remember_position_toggled), "on_preferences_checkbutton_keep_above_toggled",
 		G_CALLBACK(on_preferences_checkbutton_keep_above_toggled), "on_preferences_horizontal_padding_combo_changed", G_CALLBACK(on_preferences_horizontal_padding_combo_changed), "on_preferences_vertical_padding_combo_changed", G_CALLBACK(on_preferences_vertical_padding_combo_changed), "on_preferences_combo_title_changed", G_CALLBACK(on_preferences_combo_title_changed),
 		"on_preferences_combo_theme_changed", G_CALLBACK(on_preferences_combo_theme_changed), "on_preferences_combo_language_changed", G_CALLBACK(on_preferences_combo_language_changed), "on_preferences_combo_tooltips_changed", G_CALLBACK(on_preferences_combo_tooltips_changed), "on_preferences_expression_lines_spin_button_value_changed",
-		G_CALLBACK(on_preferences_expression_lines_spin_button_value_changed), "on_preferences_checkbutton_display_expression_status_toggled", G_CALLBACK(on_preferences_checkbutton_display_expression_status_toggled), "on_preferences_checkbutton_parsed_in_result_toggled", G_CALLBACK(on_preferences_checkbutton_parsed_in_result_toggled),
+		G_CALLBACK(on_preferences_expression_lines_spin_button_value_changed), "on_preferences_checkbutton_display_expression_status_toggled", G_CALLBACK(on_preferences_checkbutton_display_expression_status_toggled), "on_preferences_checkbutton_expression_pos_toggled", G_CALLBACK(on_preferences_checkbutton_expression_pos_toggled), "on_preferences_checkbutton_parsed_in_result_toggled", G_CALLBACK(on_preferences_checkbutton_parsed_in_result_toggled),
 		"on_preferences_checkbutton_persistent_keypad_toggled", G_CALLBACK(on_preferences_checkbutton_persistent_keypad_toggled), "on_preferences_checkbutton_twos_complement_toggled", G_CALLBACK(on_preferences_checkbutton_twos_complement_toggled), "on_preferences_checkbutton_hexadecimal_twos_complement_toggled",
 		G_CALLBACK(on_preferences_checkbutton_hexadecimal_twos_complement_toggled), "on_preferences_checkbutton_twos_complement_input_toggled", G_CALLBACK(on_preferences_checkbutton_twos_complement_input_toggled), "on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled",
 		G_CALLBACK(on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled), "on_preferences_combobox_bits_changed", G_CALLBACK(on_preferences_combobox_bits_changed),
