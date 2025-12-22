@@ -39,6 +39,8 @@ void clear_status_text();
 void set_status_selection_text(const std::string &str, bool had_errors = false, bool had_warnings = false);
 void clear_status_selection_text();
 
+bool parse_status_error();
+
 void block_status();
 void unblock_status();
 bool status_blocked();

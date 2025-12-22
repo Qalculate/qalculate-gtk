@@ -1219,7 +1219,8 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		bool origstr = str.empty();
 		if(origstr) str = get_expression_text();
 		if(origstr) CALCULATOR->parseComments(str, evalops.parse_options);
-		if(str.empty() || (origstr && (str == "MC" || str == "MS" || str == "M+" || str == "M-" || str == "M−" || contains_plot_or_save(CALCULATOR->unlocalizeExpression(str, evalops.parse_options))))) {
+		if(str.empty() || (origstr && (str == "MC" || str == "MS" || str == "M+" || str == "M-" || str == "M−" || (!display_expression_status && contains_plot_or_save(CALCULATOR->unlocalizeExpression(str,
+ evalops.parse_options)))))) {
 			result_autocalculated = false;
 			result_text = "";
 			if(parsed_in_result) display_parse_status();
@@ -1568,7 +1569,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		}
 
 		block_error();
-		
+
 		CALCULATOR->resetExchangeRatesUsed();
 
 		CALCULATOR->beginTemporaryStopMessages();
@@ -1585,11 +1586,56 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 				}
 			}
 		}
+		bool error_current_object = false;
+		if(origstr && !had_to_expression && !function_in_progress && (!current_parsed_function() || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index()) || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index())->suggestsQuotes()) && !CALCULATOR->hasWhereExpression(str, evalops) && str.find("0x") == string::npos && str.find("0d") == string::npos) {
+			string str_object = current_completion_object();
+			if(!str_object.empty()) {
+				MathStructure m;
+				CALCULATOR->beginTemporaryStopMessages();
+				CALCULATOR->parse(&m, str_object, evalops.parse_options);
+				if(CALCULATOR->endTemporaryStopMessages()) {
+					CALCULATOR->beginTemporaryStopMessages();
+					CALCULATOR->parse(&m, str, evalops.parse_options);
+					if(CALCULATOR->endTemporaryStopMessages(NULL, NULL, MESSAGE_ERROR)) {
+						error_current_object = true;
+					}
+				} else {
+					MathStructure *mfunc = NULL;
+					if(m.isFunction() && m.size() > 0) mfunc = &m;
+					else if(m.isMultiplication() && m.size() > 0 && m.last().isFunction() && m.last().size() > 0) mfunc = &m.last();
+					if(mfunc) {
+						if((*mfunc)[0].isMultiplication()) {
+							for(size_t i = 0; i < (*mfunc)[0].size(); i++) {
+								if(!(*mfunc)[0][i].isVariable() || ((*mfunc)[0][i].variable() != CALCULATOR->getVariableById(VARIABLE_ID_X) && (*mfunc)[0][i].variable() != CALCULATOR->getVariableById(VARIABLE_ID_Y) && (*mfunc)[0][i].variable() != CALCULATOR->getVariableById(VARIABLE_ID_Z))) {
+									error_current_object = true;
+									break;
+								}
+
+							}
+						} else if(!(*mfunc)[0].isVariable() || ((*mfunc)[0].variable() != CALCULATOR->getVariableById(VARIABLE_ID_X) && (*mfunc)[0].variable() != CALCULATOR->getVariableById(VARIABLE_ID_Y) && (*mfunc)[0].variable() != CALCULATOR->getVariableById(VARIABLE_ID_Z))) {
+							error_current_object = true;
+						}
+					}
+					if(error_current_object) CALCULATOR->parse(&m, str, evalops.parse_options);
+				}
+			}
+		}
+		if(function_in_progress || error_current_object || !test_autocalculatable(current_parsed_expression())) {
+			if(!function_in_progress) CALCULATOR->endTemporaryStopMessages(true);
+			if((!error_current_object && function_in_progress) || !display_errors(NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
+			mauto.setAborted();
+			if(!function_in_progress) CALCULATOR->beginTemporaryStopMessages();
 #ifdef _WIN32
-		if(function_in_progress || !CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 20, evalops, parsed_mstruct, parsed_tostruct) || contains_extreme_number(mauto)) {
+		} else if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 20, evalops, parsed_mstruct, parsed_tostruct)) {
 #else
-		if(function_in_progress || !CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 50, evalops, parsed_mstruct, parsed_tostruct) || contains_extreme_number(mauto)) {
+		} else if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 50, evalops, parsed_mstruct, parsed_tostruct) || mauto.isAborted()) {
 #endif
+			mauto.setAborted();
+			update_expression_icons(EXPRESSION_CLEAR);
+		} else if(contains_extreme_number(mauto)) {
+			CALCULATOR->endTemporaryStopMessages(true);
+			if(!display_errors(NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
+			CALCULATOR->beginTemporaryStopMessages();
 			mauto.setAborted();
 		} else if(do_factors || do_pfe || do_expand) {
 			CALCULATOR->startControl(100);
@@ -1605,8 +1651,6 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			}
 			if(CALCULATOR->aborted()) mauto.setAborted();
 			CALCULATOR->stopControl();
-		} else if(mauto.isZero() && parsed_mstruct && parsed_mstruct->isFunction() && parsed_mstruct->function()->subtype() == SUBTYPE_DATA_SET && parsed_mstruct->size() >= 2 && parsed_mstruct->getChild(2)->isSymbolic() && equalsIgnoreCase(parsed_mstruct->getChild(2)->symbol(), "info")) {
-			mauto.setAborted();
 		// Always perform conversion to optimal (SI) unit when the expression is a number multiplied by a unit and input equals output
 		} else if((!parsed_tostruct || parsed_tostruct->isUndefined()) && origstr && !had_to_expression && (evalops.approximation == APPROXIMATION_EXACT || evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) && parsed_mstruct) {
 			convert_unchanged_quantity_with_unit(*parsed_mstruct, mauto, evalops);
@@ -1825,7 +1869,11 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		display_parse_status();
 	} else {
 		auto_calculate = false;
-		clearresult();
+		minimal_mode_show_resultview(false);
+		result_autocalculated = false;
+		result_view_clear();
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
+		if(visible_keypad & PROGRAMMING_KEYPAD) clear_result_bases();
 		result_text = "";
 		auto_calculate = true;
 		if(title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) update_window_title("", true);

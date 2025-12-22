@@ -653,10 +653,10 @@ void set_expression_modified(bool b, bool handle, bool autocalc) {
 	current_object_has_changed = true;
 	expression_has_changed_pos = true;
 	highlight_parentheses();
-	add_completion_timeout();
 	showhide_expression_button();
 	if(!dont_change_index) expression_history_index = -1;
 	handle_expression_modified(autocalc);
+	add_completion_timeout();
 }
 
 void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {

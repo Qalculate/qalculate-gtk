@@ -655,6 +655,10 @@ void replace_control_characters_gtk(string &str) {
 	}
 }
 
+bool parse_status_error() {
+	return display_expression_status && parsed_had_errors;
+}
+
 void display_parse_status() {
 	current_function = NULL;
 	if(auto_calculate && !rpn_mode && expression_output_updated()) current_status_struct.setAborted();
@@ -795,7 +799,7 @@ void display_parse_status() {
 			CALCULATOR->separateWhereExpression(str_e, str_w, evalops);
 			if(!str_e.empty()) CALCULATOR->parse(&mparse, str_e, evalops.parse_options);
 			if(b_to && !str_e.empty()) {
-				if(!current_from_struct && !mparse.containsFunctionId(FUNCTION_ID_SAVE) && !mparse.containsFunctionId(FUNCTION_ID_PLOT) && !mparse.containsFunctionId(FUNCTION_ID_EXPORT) && !mparse.containsFunctionId(FUNCTION_ID_LOAD) && !mparse.containsFunctionId(FUNCTION_ID_COMMAND)) {
+				if(!current_from_struct && test_autocalculatable(mparse)) {
 					current_from_struct = new MathStructure;
 					EvaluationOptions eo = evalops;
 					eo.structuring = STRUCTURING_NONE;

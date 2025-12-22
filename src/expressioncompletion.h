@@ -33,6 +33,8 @@ void completion_down_pressed();
 
 void update_completion();
 
+std::string current_completion_object();
+
 void create_expression_completion();
 
 void completion_font_modified();

@@ -541,6 +541,30 @@ void set_tooltips_enabled(GtkWidget *w, bool b) {
 	}
 }
 
+bool hide_tooltips(GtkWidget *w) {
+	if(!w) return false;
+	if(gtk_widget_get_has_tooltip(w)) {
+		gtk_widget_set_has_tooltip(w, FALSE);
+		gtk_widget_trigger_tooltip_query(w);
+		gtk_widget_set_has_tooltip(w, TRUE);
+	}
+	if(GTK_IS_BIN(w)) {
+		return hide_tooltips(gtk_bin_get_child(GTK_BIN(w)));
+	} else if(GTK_IS_CONTAINER(w)) {
+		GList *list = gtk_container_get_children(GTK_CONTAINER(w));
+		for(GList *l = list; l != NULL; l = l->next) {
+			if(GTK_IS_WIDGET(l->data)) {
+				if(hide_tooltips(GTK_WIDGET(l->data))) {
+					g_list_free(list);
+					return true;
+				}
+			}
+		}
+		g_list_free(list);
+	}
+	return false;
+}
+
 void update_window_properties(GtkWidget *d, bool ignore_tooltips_setting) {
 	if(!ignore_tooltips_setting && (!enable_tooltips || toe_changed)) set_tooltips_enabled(d, enable_tooltips);
 	if(always_on_top || aot_changed) gtk_window_set_keep_above(GTK_WINDOW(d), always_on_top);
@@ -1202,12 +1226,11 @@ Unit *find_exact_matching_unit(const MathStructure &m) {
 void remove_non_units(MathStructure &m) {
 	if(m.isPower() && m[0].isUnit()) return;
 	if(m.size() > 0) {
-		for(size_t i = 0; i < m.size();) {
-			if(m[i].isFunction() || m[i].containsType(STRUCT_UNIT, true) <= 0) {
-				m.delChild(i + 1);
+		for(size_t i = m.size(); i > 0; i--) {
+			if(m[i - 1].isFunction() || m[i - 1].containsType(STRUCT_UNIT, true) <= 0) {
+				m.delChild(i);
 			} else {
-				remove_non_units(m[i]);
-				i++;
+				remove_non_units(m[i - 1]);
 			}
 		}
 		if(m.size() == 0) m.clear();
@@ -1227,19 +1250,21 @@ void find_matching_units(const MathStructure &m, const MathStructure *mparse, ve
 		}
 		return;
 	}
-	if(top) {
-		if(mparse && !m.containsType(STRUCT_UNIT, true) && (mparse->containsFunctionId(FUNCTION_ID_ASIN) || mparse->containsFunctionId(FUNCTION_ID_ACOS) || mparse->containsFunctionId(FUNCTION_ID_ATAN))) {
-			v.push_back(CALCULATOR->getRadUnit());
-			return;
-		}
+	if(top && mparse && !m.containsType(STRUCT_UNIT, true) && (mparse->containsFunctionId(FUNCTION_ID_ASIN) || mparse->containsFunctionId(FUNCTION_ID_ACOS) || mparse->containsFunctionId(FUNCTION_ID_ATAN))) {
+		v.push_back(CALCULATOR->getRadUnit());
+		return;
+	}
+	if(top && m.containsType(STRUCT_UNIT, true) > 0 && m.size() < 100) {
 		MathStructure m2(m);
 		remove_non_units(m2);
 		CALCULATOR->beginTemporaryStopMessages();
-		m2 = CALCULATOR->convertToOptimalUnit(m2, evalops, evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL_SI);
+		CALCULATOR->startControl(50);
+		m2 = CALCULATOR->convertToOptimalUnit(m2);
+		CALCULATOR->stopControl();
 		CALCULATOR->endTemporaryStopMessages();
 		find_matching_units(m2, mparse, v, false);
 	} else {
-		for(size_t i = 0; i < m.size(); i++) {
+		for(size_t i = 0; i < m.size() && i < 100; i++) {
 			if(!m.isFunction() || !m.function()->getArgumentDefinition(i + 1) || m.function()->getArgumentDefinition(i + 1)->type() != ARGUMENT_TYPE_ANGLE) {
 				find_matching_units(m[i], mparse, v, false);
 			}
@@ -1387,4 +1412,24 @@ unsigned int combo_get_bits(GtkComboBox *w, bool has_auto) {
 		case 8: {bits = 1024; break;}
 	}
 	return bits;
+}
+
+bool test_autocalculatable(const MathStructure &m, bool top) {
+	if(m.isFunction()) {
+		if(m.size() < (size_t) m.function()->minargs() && (m.size() != 1 || m[0].representsScalar())) {
+			MathStructure mfunc(m);
+			mfunc.calculateFunctions(evalops, false);
+			return false;
+		}
+		if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND) return false;
+		if(m.size() > 0 && (m.function()->id() == FUNCTION_ID_FACTORIAL || m.function()->id() == FUNCTION_ID_DOUBLE_FACTORIAL || m.function()->id() == FUNCTION_ID_MULTI_FACTORIAL) && m[0].isInteger() && m[0].number().integerLength() > 17) {
+			return false;
+		}
+		if(m.function()->id() == FUNCTION_ID_LOGN && m.size() == 2 && m[0].isUndefined() && m[1].isNumber()) return false;
+		if(top && m.function()->subtype() == SUBTYPE_DATA_SET && m.size() >= 2 && m[1].isSymbolic() && equalsIgnoreCase(m[1].symbol(), "info")) return false;
+	}
+	for(size_t i = 0; i < m.size(); i++) {
+		if(!test_autocalculatable(m[i], false)) return false;
+	}
+	return true;
 }

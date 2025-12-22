@@ -145,6 +145,7 @@ void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2);
 
 void set_tooltips_enabled(GtkWidget *w, bool b);
 void update_tooltips_enabled();
+bool hide_tooltips(GtkWidget *w);
 
 gchar *font_name_to_css(const char *font_name, const char *w = "*");
 
@@ -159,6 +160,8 @@ const char *sub_sign();
 const char *times_sign(bool unit_expression = false);
 const char *divide_sign();
 bool result_is_autocalculated();
+
+bool test_autocalculatable(const MathStructure &m, bool top = true);
 
 std::string print_with_evalops(const Number &nr);
 

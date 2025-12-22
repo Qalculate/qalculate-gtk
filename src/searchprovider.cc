@@ -88,6 +88,76 @@ static gboolean qalculate_search_provider_activate_result(ShellSearchProvider2*,
 	g_dbus_method_invocation_return_value(invocation, NULL);
 	return TRUE;
 }
+
+bool use_with_prefix(Unit *u, Prefix *prefix) {
+	if(!prefix) return true;
+	if(!u->useWithPrefixesByDefault()) return false;
+	if((prefix->type() != PREFIX_DECIMAL || u->minPreferredPrefix() > ((DecimalPrefix*) prefix)->exponent() || u->maxPreferredPrefix() < ((DecimalPrefix*) prefix)->exponent()) && (prefix->type() != PREFIX_BINARY || u->baseUnit()->referenceName() != "bit" || u->minPreferredPrefix() > ((BinaryPrefix*) prefix)->exponent() || u->maxPreferredPrefix() < ((BinaryPrefix*) prefix)->exponent())) {
+		return false;
+	}
+	return true;
+}
+bool test_autocalculatable_search(const MathStructure &m, bool top = true) {
+	if(m.isFunction()) {
+		if(m.size() < (size_t) m.function()->minargs() && (m.size() != 1 || m[0].representsScalar())) {
+			return false;
+		}
+		if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND) return false;
+		if(m.size() > 0 && (m.function()->id() == FUNCTION_ID_FACTORIAL || m.function()->id() == FUNCTION_ID_DOUBLE_FACTORIAL || m.function()->id() == FUNCTION_ID_MULTI_FACTORIAL) && m[0].isInteger() && m[0].number().integerLength() > 17) {
+			return false;
+		}
+		if(m.function()->id() == FUNCTION_ID_LOGN && m.size() == 2 && m[0].isUndefined() && m[1].isNumber()) return false;
+		if(top && m.function()->subtype() == SUBTYPE_DATA_SET && m.size() >= 2 && m[1].isSymbolic() && equalsIgnoreCase(m[1].symbol(), "info")) return false;
+
+	} else if(m.isUnit() && !use_with_prefix(m.unit(), m.prefix())) {
+		return false;
+	}
+	for(size_t i = 0; i < m.size(); i++) {
+		if(!test_autocalculatable_search(m[i], false)) return false;
+	}
+	return true;
+}
+
+bool contains_fraction_search(const MathStructure &m) {
+	if(m.isNumber()) return !m.number().isInteger();
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_fraction_search(m[i])) return true;
+	}
+	return false;
+}
+
+bool test_search_result(const MathStructure &m, bool top = true) {
+	if(m.isNumber()) {
+		if(m.number().isFloatingPoint() && (mpfr_get_exp(m.number().internalUpperFloat()) > 10000000L || mpfr_get_exp(m.number().internalLowerFloat()) < -10000000L)) {
+			return false;
+		} else if(m.number().isInteger() && ::abs(m.number().integerLength()) > 10000000L) {
+			return false;
+		}
+	} else if(m.isFunction() && !m.containsUnknowns()) {
+		return false;
+	} else if(m.isPower() && ((m[0].isUnit() && !m[1].isInteger()) || m[1].containsType(STRUCT_UNIT, false, false, true) > 0)) {
+		return false;
+	} else if(!top && m.isVector()) {
+		return false;
+	} else if(m.isAddition() && m.size() >= 2) {
+		if(m[m.size() - 1].isUnitCompatible(m[m.size() - 2]) == 0) {
+			const MathStructure *u1 = NULL, *u2 = NULL;
+			if(m[m.size() - 1].isUnit_exp()) u1 = m.getChild(m.size());
+			else if(m[m.size() - 1].isMultiplication() && m[m.size() - 1].last().isUnit_exp()) u1 = m[m.size() - 1].getChild(m[m.size() - 1].size());
+			if(m[m.size() - 2].isUnit()) u2 = m.getChild(m.size() - 1);
+			else if(m[m.size() - 2].isMultiplication() && m[m.size() - 2].last().isUnit_exp()) u2 = m[m.size() - 2].getChild(m[m.size() - 2].size());
+			if(u1 && u1->isPower()) u1 = u1->base();
+			if(u2 && u2->isPower()) u2 = u2->base();
+			if(!u1 || !u2 || u1->unit() == u2->unit() || u1->unit()->baseUnit() != u2->unit()->baseUnit()) return false;
+		}
+	}
+	for(size_t i = 0; i < m.size(); i++) {
+		if(!test_search_result(m[i], top && m.isVector())) return false;
+	}
+	return true;
+}
+
+
 void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 	string expression = joined_terms;
 	g_variant_builder_init(&builder, G_VARIANT_TYPE("as"));
@@ -100,36 +170,252 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		it = results.find(it->second);
 		if(it != results.end() && !it->second.empty()) g_variant_builder_add(&builder, "s", (string("copy-to-clipboard") + it->second).c_str());
 	} else {
-		bool b_valid = false;
+		bool b_valid = true;
 		expressions[expression] = "";
-		if(!b_valid) b_valid = (expression.find_first_of(OPERATORS NUMBERS PARENTHESISS) != string::npos);
-		if(!b_valid) b_valid = CALCULATOR->hasToExpression(expression, false, search_eo);
-		if(!b_valid) {
-			string str = expression;
-			CALCULATOR->parseSigns(str);
-			b_valid = (str.find_first_of(OPERATORS NUMBERS PARENTHESISS) != string::npos);
-			if(!b_valid) {
-				size_t i = str.find_first_of(SPACES);
-				MathStructure m;
-				if(i != string::npos) {
-					str = str.substr(0, i);
-					b_valid = (str == "factor" || equalsIgnoreCase(str, "factorize") || equalsIgnoreCase(str, _("factorize")) || equalsIgnoreCase(str, "expand") || equalsIgnoreCase(str, _("expand")));
+		if(CALCULATOR->busy()) CALCULATOR->abort();
+		string str = CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options);
+		string str_to, str_where;
+		remove_blank_ends(str);
+		if(!CALCULATOR->parseComments(str, search_eo.parse_options).empty() || str.empty()) return;
+		bool b_to = CALCULATOR->separateToExpression(str, str_to, search_eo);
+		CALCULATOR->separateWhereExpression(str, str_where, search_eo);
+		if(str.empty()) return;
+		size_t i = str.find_first_of(SPACES);
+		bool do_factors = false, do_pfe = false, do_calendars = false, do_bases = false, do_expand = false;
+		if(i != string::npos) {
+			string str1 = str.substr(0, i);
+			if(str1 == "factor" || equalsIgnoreCase(str1, "factorize") || equalsIgnoreCase(str1, _("factorize"))) {
+				str = str.substr(i + 1);
+				b_to = true;
+				do_factors = true;
+			} else if(equalsIgnoreCase(str1, "expand") || equalsIgnoreCase(str_to, _("expand"))) {
+				str = str.substr(i + 1);
+				b_to = true;
+				do_expand = true;
+			}
+		}
+		MathStructure m;
+		CALCULATOR->startControl(100);
+		if(!str_where.empty()) {
+			MathStructure m_where;
+			CALCULATOR->parseExpressionAndWhere(&m, &m_where, str, str_where, search_eo.parse_options);
+			if(has_error() || !test_autocalculatable_search(m_where)  || (!m_where.isComparison() && !m_where.isLogicalAnd() && !m_where.isLogicalOr())) {
+				b_valid = false;
+			} else {
+				CALCULATOR->parseSigns(str_where);
+				if(is_in(OPERATORS "\\" LEFT_PARENTHESIS LEFT_VECTOR_WRAP, str_where[str_where.length() - 1]) && str_where[str_where.length() - 1] != '!') {
+					b_valid = false;
 				}
-				if(!b_valid) {
-					CALCULATOR->parse(&m, str, search_eo.parse_options);
-					if(!has_error() && (m.isUnit() || m.isFunction() || (m.isVariable() && (i != string::npos || m.variable()->isKnown())))) b_valid = true;
+			}
+		} else {
+			CALCULATOR->parse(&m, str, search_eo.parse_options);
+		}
+		if(!b_valid) {CALCULATOR->stopControl(); return;}
+		if(has_error() || !test_autocalculatable_search(m)) b_valid = false;
+		else if(str.length() > 3 && str.find(" to", str.length() - 3) != std::string::npos) b_valid = false;
+		else if(str.length() > 6 && str.find(" where", str.length() - 6) != std::string::npos) b_valid = false;
+		else {
+			string str2 = str;
+			CALCULATOR->parseSigns(str2);
+			if(is_in(OPERATORS "\\" LEFT_PARENTHESIS LEFT_VECTOR_WRAP, str2[str2.length() - 1]) && str2[str2.length() - 1] != '!') {
+				b_valid = false;
+			} else if(!b_to && m.isNumber() && expression.find_first_not_of(NUMBERS) == string::npos) {
+				b_valid = false;
+			} else if(str_where.empty() && m.isVariable() && !m.variable()->isKnown()) {
+				b_valid = false;
+			} else if(m.isMultiplication() && str2.find_first_of(OPERATORS PARENTHESISS) == string::npos) {
+				bool first_digit = str2[0] > '0' && str2[0] <= '9';
+				for(size_t i2 = 1; i2 < m.size(); i2++) {
+					if((!first_digit && !m[i2].isUnit() && str_to.empty() && str_where.empty()) || m[i2].isNumber()) {
+						b_valid = false;
+						break;
+					}
+				}
+			} else if(m.isFunction() && m.size() > 0 && str2.find_first_of(NOT_IN_NAMES) == string::npos) {
+				b_valid = false;
+			}
+		}
+		if(!b_valid) {CALCULATOR->stopControl(); return;}
+		if(!str_where.empty()) {str += "/."; str += str_where;}
+		EvaluationOptions eo = search_eo; PrintOptions po = search_po;
+		po.number_fraction_format = FRACTION_DECIMAL;
+		eo.approximation = APPROXIMATION_TRY_EXACT;
+		Number custom_base;
+		bool complex_angle_form = false;
+		int binary_prefixes = -1;
+		if(!str_to.empty()) {
+			bool do_factors2 = false;
+			str_to = CALCULATOR->parseToExpression(str_to, eo, po, &custom_base, &binary_prefixes, &complex_angle_form, &do_factors2, &do_pfe, &do_calendars, &do_bases);
+			if(!str_to.empty()) {str += "->"; str += str_to;}
+			if(do_factors2) do_factors = true;
+			if(do_calendars || do_bases) return;
+			remove_blank_ends(str_to);
+		}
+		if(!str_to.empty() && str_to.find_first_not_of(NUMBER_ELEMENTS SPACE) != string::npos) {
+			if(str_to[0] == '0' || str_to[0] == '?' || str_to[0] == '+' || str_to[0] == '-') {
+				str_to = str_to.substr(1, str_to.length() - 1);
+				remove_blank_ends(str_to);
+			} else if(str_to.length() > 1 && str_to[1] == '?' && (str_to[0] == 'b' || str_to[0] == 'a' || str_to[0] == 'd')) {
+				str_to = str_to.substr(2, str_to.length() - 2);
+				remove_blank_ends(str_to);
+			}
+			MathStructure mparse_to;
+			Unit *u = CALCULATOR->getActiveUnit(str_to);
+			if(!u) u = CALCULATOR->getCompositeUnit(str_to);
+			Variable *v = NULL;
+			if(!u) v = CALCULATOR->getActiveVariable(str_to);
+			if(v && !v->isKnown()) v = NULL;
+			Prefix *p = NULL;
+			if(!u && !v && CALCULATOR->unitNameIsValid(str_to)) p = CALCULATOR->getPrefix(str_to);
+			if(!u && !v && !p) {
+				CALCULATOR->beginTemporaryStopMessages();
+				CompositeUnit cu("", search_eo.parse_options.limit_implicit_multiplication ? "01" : "00", "", str_to);
+				if(CALCULATOR->endTemporaryStopMessages()) b_valid = false;
+			}
+		}
+		if(!b_valid || CALCULATOR->aborted()) {CALCULATOR->stopControl(); return;}
+		bool result_is_comparison = false;
+		string parsed;
+		int max_length = 100 - unicode_length(str);
+		if(max_length < 50) max_length = 50;
+
+		MathStructure mparse;
+		m = CALCULATOR->calculate(str, eo, &mparse);
+		if(CALCULATOR->aborted()) m.setAborted();
+		if(m.size() > 50 || m.countTotalChildren(false) > 500 || (m.isMatrix() && m.rows() * m.columns() > 50) || !test_search_result(m)) {CALCULATOR->stopControl(); return;}
+
+		if(!b_to && ((eo.approximation == APPROXIMATION_EXACT && eo.auto_post_conversion != POST_CONVERSION_NONE) || eo.auto_post_conversion == POST_CONVERSION_OPTIMAL)) {
+			convert_unchanged_quantity_with_unit(mparse, m, eo);
+		}
+
+		MathStructure mexact;
+		mexact.setUndefined();
+		if(!CALCULATOR->aborted() && po.base == BASE_DECIMAL) {
+			bool b = true;
+			if(b) {
+				calculate_dual_exact(mexact, &m, str, &mparse, eo, AUTOMATIC_APPROXIMATION_AUTO, 0, max_length);
+				if(CALCULATOR->aborted()) {
+					mexact.setUndefined();
+					CALCULATOR->stopControl();
+					CALCULATOR->startControl(20);
 				}
 			}
 		}
-		if(!b_valid) return;
-		if(CALCULATOR->busy()) CALCULATOR->abort();
-		bool result_is_comparison = false;
-		string parsed;
-		string str = CALCULATOR->unlocalizeExpression(expression, search_eo.parse_options);
-		int max_length = 100 - unicode_length(str);
-		if(max_length < 50) max_length = 50;
-		string result = CALCULATOR->calculateAndPrint(str, 100, search_eo, search_po, AUTOMATIC_FRACTION_AUTO, AUTOMATIC_APPROXIMATION_AUTO, &parsed, max_length, &result_is_comparison);
-		search_po.number_fraction_format = FRACTION_DECIMAL;
+
+		if(do_factors) {
+			if((m.isNumber() || m.isVector()) && po.number_fraction_format == FRACTION_DECIMAL) {
+				po.restrict_fraction_length = false;
+				po.number_fraction_format = FRACTION_FRACTIONAL;
+			}
+			m.integerFactorize();
+			mexact.integerFactorize();
+		} else if(do_expand) {
+			m.expand(eo, false);
+		}
+
+		if(do_pfe) {
+			m.expandPartialFractions(eo);
+			mexact.expandPartialFractions(eo);
+		}
+		if(po.number_fraction_format == FRACTION_COMBINED_FIXED_DENOMINATOR && !contains_fraction_search(m)) po.number_fraction_format = FRACTION_FRACTIONAL_FIXED_DENOMINATOR;
+
+		po.allow_factorization = po.allow_factorization || eo.structuring == STRUCTURING_FACTORIZE || do_factors;
+
+		bool exact_comparison = false;
+		vector<string> alt_results;
+		string result;
+		if(!m.isAborted()) {
+			Number base_save;
+			if(!custom_base.isZero()) {
+				base_save = CALCULATOR->customOutputBase();
+				CALCULATOR->setCustomOutputBase(custom_base);
+			}
+			print_dual(m, str, mparse, mexact, result, alt_results, po, eo, po.number_fraction_format == FRACTION_DECIMAL ? AUTOMATIC_FRACTION_AUTO : AUTOMATIC_FRACTION_OFF, AUTOMATIC_APPROXIMATION_AUTO, complex_angle_form, &exact_comparison, true, false, false, TAG_TYPE_HTML, max_length, b_to);
+			if(!alt_results.empty()) {
+				bool use_par = m.isComparison() || m.isLogicalAnd() || m.isLogicalOr();
+				str = result; result = "";
+				size_t equals_length = 3;
+				if(!po.use_unicode_signs && (m.isApproximate() || *po.is_approximate)) equals_length += 1 + strlen(_("approx."));
+				size_t l = 0;
+				if(max_length > 0) l += unicode_length(str);
+				for(size_t i = 0; i < alt_results.size();) {
+					if(max_length > 0) l += unicode_length(alt_results[i]) + equals_length;
+					if((max_length > 0 && l > (size_t) max_length) || alt_results[i] == CALCULATOR->timedOutString()) {
+						alt_results.erase(alt_results.begin() + i);
+					} else {
+						if(i > 0) result += " = ";
+						if(use_par) result += LEFT_PARENTHESIS;
+						result += alt_results[i];
+						if(use_par) result += RIGHT_PARENTHESIS;
+						i++;
+					}
+				}
+				if(alt_results.empty()) {
+					result += str;
+				} else {
+					if(m.isApproximate() || *po.is_approximate) {
+						if(po.use_unicode_signs) {
+							result += " " SIGN_ALMOST_EQUAL " ";
+						} else {
+							result += " = ";
+							result += _("approx.");
+							result += " ";
+						}
+					} else {
+						result += " = ";
+					}
+					if(use_par) result += LEFT_PARENTHESIS;
+					result += str;
+					if(use_par) result += RIGHT_PARENTHESIS;
+				}
+			} else if((m.isComparison() || m.isLogicalOr() || m.isLogicalAnd()) && (!CALCULATOR->aborted() || result != CALCULATOR->timedOutString())) {
+				result_is_comparison = true;
+			}
+			if(!custom_base.isZero()) CALCULATOR->setCustomOutputBase(base_save);
+		}
+		if(CALCULATOR->aborted()) {
+			CALCULATOR->stopControl();
+			CALCULATOR->startControl(20);
+		}
+		PrintOptions po_parsed;
+		po_parsed.preserve_format = true;
+		po_parsed.show_ending_zeroes = false;
+		po_parsed.lower_case_e = po.lower_case_e;
+		po_parsed.lower_case_numbers = po.lower_case_numbers;
+		po_parsed.base_display = po.base_display;
+		po_parsed.twos_complement = po.twos_complement;
+		po_parsed.hexadecimal_twos_complement = po.hexadecimal_twos_complement;
+		po_parsed.base = eo.parse_options.base;
+		Number nr_base;
+		if(po_parsed.base == BASE_CUSTOM && (CALCULATOR->usesIntervalArithmetic() || CALCULATOR->customInputBase().isRational()) && (CALCULATOR->customInputBase().isInteger() || !CALCULATOR->customInputBase().isNegative()) && (CALCULATOR->customInputBase() > 1 || CALCULATOR->customInputBase() < -1)) {
+			nr_base = CALCULATOR->customOutputBase();
+			CALCULATOR->setCustomOutputBase(CALCULATOR->customInputBase());
+		} else if(po_parsed.base == BASE_CUSTOM || (po_parsed.base < BASE_CUSTOM && !CALCULATOR->usesIntervalArithmetic() && po_parsed.base != BASE_UNICODE)) {
+			po_parsed.base = 10;
+			po_parsed.min_exp = 6;
+			po_parsed.use_max_decimals = true;
+			po_parsed.max_decimals = 5;
+			po_parsed.preserve_format = false;
+		}
+		po_parsed.abbreviate_names = false;
+		po_parsed.digit_grouping = po.digit_grouping;
+		po_parsed.use_unicode_signs = po.use_unicode_signs;
+		po_parsed.multiplication_sign = po.multiplication_sign;
+		po_parsed.division_sign = po.division_sign;
+		po_parsed.short_multiplication = false;
+		po_parsed.excessive_parenthesis = true;
+		po_parsed.improve_division_multipliers = false;
+		po_parsed.restrict_to_parent_precision = false;
+		po_parsed.spell_out_logical_operators = po.spell_out_logical_operators;
+		po_parsed.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
+		if(po_parsed.base == BASE_CUSTOM) {
+			CALCULATOR->setCustomOutputBase(nr_base);
+		}
+		mparse.format(po_parsed);
+		parsed = mparse.print(po_parsed);
+		CALCULATOR->stopControl();
+		if(po.is_approximate && (exact_comparison || !alt_results.empty())) *po.is_approximate = false;
+		else if(po.is_approximate && m.isApproximate()) *po.is_approximate = true;
 		if(has_error() || result.empty() || parsed.find(CALCULATOR->abortedMessage()) != string::npos || parsed.find(CALCULATOR->timedOutString()) != string::npos) {
 			return;
 		}
@@ -139,10 +425,10 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		}
 		expressions[expression] = parsed;
 		g_variant_builder_add(&builder, "s", expression.c_str());
-		if(parsed.empty() || result == parsed) {
+		if(parsed.empty() || (result == parsed && !m.isNumber())) {
 			results[result] = "";
 		} else {
-			if(!result.empty()) {
+			if(!result.empty() && result != parsed) {
 				if(*search_po.is_approximate) {
 					if(result_is_comparison) {result.insert(0, LEFT_PARENTHESIS); result += RIGHT_PARENTHESIS;}
 					if(search_po.use_unicode_signs) {
@@ -421,6 +707,7 @@ void load_preferences_search() {
 					}
 				} else if(svar == "min_exp") {
 					search_po.min_exp = v;
+					if(search_po.min_exp == 0) search_po.min_exp = 100;
 				} else if(svar == "negative_exponents") {
 					search_po.negative_exponents = v;
 				} else if(svar == "sort_minus_last") {

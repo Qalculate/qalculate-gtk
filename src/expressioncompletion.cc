@@ -31,6 +31,7 @@
 #include "mainwindow.h"
 #include "resultview.h"
 #include "expressionedit.h"
+#include "expressionstatus.h"
 #include "expressioncompletion.h"
 
 using std::string;
@@ -55,7 +56,7 @@ guint completion_timeout_id = 0;
 int completion_delay = 0;
 bool fix_supsub_completion = false;
 
-bool editing_to_expression = false, editing_to_expression1 = false;
+bool editing_to_expression = false, editing_to_expression1 = false, current_object_in_quotes = false;
 gint current_object_start = -1, current_object_end = -1;
 bool current_object_has_changed = false;
 extern MathStructure *current_from_struct;
@@ -294,6 +295,7 @@ void set_current_object() {
 	gint pos, pos2;
 	g_object_get(expression_edit_buffer(), "cursor-position", &pos, NULL);
 	pos2 = pos;
+	current_object_in_quotes = false;
 	if(pos == 0) {
 		current_object_start = -1;
 		current_object_end = -1;
@@ -305,6 +307,14 @@ void set_current_object() {
 	gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &ipos, FALSE);
 	gchar *p = gstr + strlen(gstr);
 	size_t l_to = strlen(gstr);
+	editing_to_expression = CALCULATOR->hasToExpression(gstr, !auto_calculate || rpn_mode || parsed_in_result, evalops);
+	if(!editing_to_expression && ((evalops.parse_options.base > 10 && evalops.parse_options.base <= 36) || evalops.parse_options.base == BASE_UNICODE || evalops.parse_options.base == BASE_BIJECTIVE_26 || (evalops.parse_options.base == BASE_CUSTOM && (CALCULATOR->customInputBase() > 10 || CALCULATOR->customInputBase() < -10)))) {
+		g_free(gstr);
+		current_object_start = -1;
+		current_object_end = -1;
+		editing_to_expression = false;
+		return;
+	}
 	if(l_to > 0) {
 		if(gstr[0] == '/') {
 			g_free(gstr);
@@ -313,8 +323,13 @@ void set_current_object() {
 			editing_to_expression = false;
 			return;
 		}
+		bool cit1 = false, cit2 = false;
 		for(size_t i = 0; i < l_to; i++) {
-			if(gstr[i] == '#') {
+			if(!cit1 && gstr[i] == '\"') {
+				cit2 = !cit2;
+			} else if(!cit2 && gstr[i] == '\'') {
+				cit1 = !cit1;
+			} else if(!cit1 && !cit2 && gstr[i] == '#') {
 				g_free(gstr);
 				current_object_start = -1;
 				current_object_end = -1;
@@ -322,8 +337,8 @@ void set_current_object() {
 				return;
 			}
 		}
+		current_object_in_quotes = !editing_to_expression && (cit1 || cit2);
 	}
-	editing_to_expression = CALCULATOR->hasToExpression(gstr, !auto_calculate || rpn_mode || parsed_in_result, evalops);
 	if(editing_to_expression) {
 		string str = gstr, str_to;
 		bool b_space = is_in(SPACES, str[str.length() - 1]);
@@ -350,7 +365,11 @@ void set_current_object() {
 		l_to--;
 		p = g_utf8_prev_char(p);
 		if(!CALCULATOR->utf8_pos_is_valid_in_name(p)) {
-			pos2++;
+			if(p[0] == '\\' || (current_object_in_quotes && (p[0] == '\"' || p[0] == '\''))) {
+				pos = pos + 1;
+			} else {
+				pos2++;
+			}
 			break;
 		} else if(is_in(NUMBERS, p[0])) {
 			if(non_number_before) {
@@ -816,7 +835,7 @@ void completion_resize_popup(int matches) {
 	are_coords_global = !is_wayland(display);
 
 	items = matches;
-	if(items > 20) items = 20;
+	if(items > (are_coords_global ? 20 : 15)) items = (are_coords_global ? 20 : 15);
 	if(items > 0) {
 		path = gtk_tree_path_new_from_indices(items - 1, -1);
 		gtk_tree_view_get_cell_area(GTK_TREE_VIEW(completion_view), path, column, &rect);
@@ -894,6 +913,18 @@ const Number *from_struct_get_number(const MathStructure &m) {
 		else if(!nr) nr = from_struct_get_number(m[i]);
 	}
 	return nr;
+}
+
+string current_completion_object() {
+	set_current_object();
+	if(current_object_start < 0 || current_object_in_quotes) return "";
+	GtkTextIter object_start, object_end;
+	gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &object_start, current_object_start);
+	gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &object_end, current_object_end);
+	gchar *gstr2 = gtk_text_buffer_get_text(expression_edit_buffer(), &object_start, &object_end, FALSE);
+	string str = gstr2;
+	g_free(gstr2);
+	return str;
 }
 
 void do_completion(bool to_menu) {
@@ -1479,6 +1510,7 @@ void do_completion(bool to_menu) {
 		completion_resize_popup(matches);
 		if(cos_bak != current_object_start || current_object_end != coe_bak) return;
 		if(!gtk_widget_is_visible(completion_window)) {
+			if(completion_delay > 0 && is_wayland(gtk_widget_get_display(GTK_WIDGET(expression_edit_widget())))) hide_tooltips(GTK_WIDGET(main_window()));
 			gtk_window_set_transient_for(GTK_WINDOW(completion_window), main_window());
 			gtk_window_group_add_window(gtk_window_get_group(main_window()), GTK_WINDOW(completion_window));
 			gtk_window_set_screen(GTK_WINDOW(completion_window), gtk_widget_get_screen(expression_edit_widget()));
