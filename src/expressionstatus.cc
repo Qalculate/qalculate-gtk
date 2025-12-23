@@ -55,8 +55,7 @@ string parsed_expression, parsed_expression_tooltip;
 bool parsed_had_errors = false, parsed_had_warnings = false;
 MathStructure *current_from_struct = NULL;
 vector<Unit*> current_from_units;
-MathStructure current_status_struct;
-MathStructure mwhere;
+MathStructure current_status_struct, mwhere, mfunc;
 vector<MathStructure> displayed_parsed_to;
 size_t current_function_index = 0, current_function_index_true = 0;
 MathFunction *current_function = NULL;
@@ -105,6 +104,9 @@ void write_expression_status_settings(FILE *file) {
 
 MathStructure &current_parsed_expression() {
 	return current_status_struct;
+}
+MathStructure &current_parsed_function_struct() {
+	return mfunc;
 }
 void clear_parsed_expression() {
 	current_status_struct.setAborted();
@@ -661,7 +663,8 @@ bool parse_status_error() {
 
 void display_parse_status() {
 	current_function = NULL;
-	if(auto_calculate && !rpn_mode && expression_output_updated()) current_status_struct.setAborted();
+	mfunc.clear();
+	if(expression_output_updated()) current_status_struct.setAborted();
 	if(!display_expression_status) return;
 	if(block_display_parse) return;
 	GtkTextIter istart, iend, ipos;
@@ -737,7 +740,7 @@ void display_parse_status() {
 	GtkTextMark *mark = gtk_text_buffer_get_insert(expression_edit_buffer());
 	if(mark) gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mark);
 	else ipos = iend;
-	MathStructure mparse, mfunc;
+	MathStructure mparse;
 	bool full_parsed = false;
 	string str_e, str_u, str_w;
 	bool had_errors = false, had_warnings = false;
@@ -816,7 +819,7 @@ void display_parse_status() {
 				current_from_units.clear();
 			}
 		}
-		if(auto_calculate && !rpn_mode) current_status_struct = mparse;
+		current_status_struct = mparse;
 		PrintOptions po;
 		po.preserve_format = true;
 		po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetic() && evalops.parse_options.base > BASE_CUSTOM;

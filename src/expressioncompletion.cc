@@ -323,19 +323,41 @@ void set_current_object() {
 			editing_to_expression = false;
 			return;
 		}
-		bool cit1 = false, cit2 = false;
+		bool cit1 = false, cit2 = false, hex = false, duo = false;
 		for(size_t i = 0; i < l_to; i++) {
 			if(!cit1 && gstr[i] == '\"') {
 				cit2 = !cit2;
+				hex = false;
+				duo = false;
 			} else if(!cit2 && gstr[i] == '\'') {
 				cit1 = !cit1;
+				hex = false;
+				duo = false;
+			} else if(!hex && !cit1 && !cit2 && i + 2 < l_to && gstr[i] == '0' && gstr[i + 1] == 'x' && gstr[i + 2] != ' ') {
+				hex = true;
+				duo = false;
+				i++;
+			} else if(!hex && !duo && !cit1 && !cit2 && i + 3 < l_to && gstr[i] == '0' && gstr[i + 1] == 'd' && gstr[i + 2] != ' ' && gstr[i + 2] != ' ') {
+				duo = true;
+				i++;
 			} else if(!cit1 && !cit2 && gstr[i] == '#') {
 				g_free(gstr);
 				current_object_start = -1;
 				current_object_end = -1;
 				editing_to_expression = false;
 				return;
+			} else if(hex && gstr[i] != ' ' && (gstr[i] < '0' || gstr[i] > '9') && (gstr[i] < 'a' || gstr[i] > 'f') && (gstr[i] < 'A' || gstr[i] > 'F')) {
+				hex = false;
+			} else if(duo && gstr[i] != ' ' && (gstr[i] < '0' || gstr[i] > '9') && (gstr[i] < 'a' || gstr[i] > 'b') && (gstr[i] < 'A' || gstr[i] > 'B')) {
+				duo = false;
 			}
+		}
+		if(hex || duo) {
+			g_free(gstr);
+			current_object_start = -1;
+			current_object_end = -1;
+			editing_to_expression = false;
+			return;
 		}
 		current_object_in_quotes = !editing_to_expression && (cit1 || cit2);
 	}
@@ -985,6 +1007,10 @@ void do_completion(bool to_menu) {
 		str = gstr2;
 		g_free(gstr2);
 		if(unicode_length(str) < (size_t) completion_min) {gtk_widget_hide(completion_window); return;}
+	}
+	if(!str.empty() && current_function && current_function_index > 0 && current_function->getArgumentDefinition(current_function_index) && current_function->getArgumentDefinition(current_function_index)->type() == ARGUMENT_TYPE_TEXT && current_function_index <= current_parsed_function_struct().size() && current_parsed_function_struct()[current_function_index - 1].isSymbolic() && current_parsed_function_struct()[current_function_index - 1].symbol() == str) {
+		gtk_widget_hide(completion_window);
+		return;
 	}
 	GtkTreeIter iter;
 	int matches = 0;

@@ -6800,7 +6800,6 @@ void set_autocalculate(bool b) {
 	if(auto_calculate == b) return;
 	auto_calculate = b;
 	if(auto_calculate && !rpn_mode) {
-		clear_parsed_expression();
 		prev_autocalc_str = "";
 		do_auto_calc();
 	} else if(!auto_calculate && result_autocalculated) {

@@ -46,6 +46,7 @@ void unblock_status();
 bool status_blocked();
 
 MathStructure &current_parsed_expression();
+MathStructure &current_parsed_function_struct();
 MathStructure &current_parsed_where();
 std::vector<MathStructure> &current_parsed_to();
 void clear_parsed_expression();
