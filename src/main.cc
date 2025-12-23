@@ -48,6 +48,7 @@ int allow_multiple_instances = -1;
 bool check_version = false;
 extern int unformatted_history;
 string custom_title;
+bool exrates = false;
 
 extern GtkBuilder *main_builder;
 
@@ -60,6 +61,7 @@ static GOptionEntry options[] = {
 	{"new-instance", 'n', 0, G_OPTION_ARG_NONE, NULL, N_("Start a new instance of the application"), NULL},
 	{"version", 'v', 0, G_OPTION_ARG_NONE, NULL, N_("Display the application version"), NULL},
 	{"title", 0, 0, G_OPTION_ARG_STRING, NULL, N_("Specify the window title"), N_("TITLE")},
+	{"update-exchange-rates", 0, 0, G_OPTION_ARG_NONE, NULL, N_("Update exchange rates"), NULL},
 	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_STRING_ARRAY, NULL, N_("Expression to calculate"), N_("[EXPRESSION]")},
 	{NULL}
 };
@@ -294,6 +296,7 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 		file_arg = str;
 		g_free(str);
 	}
+	g_variant_dict_lookup(options_dict, "update-exchange-rates", "b", &exrates);
 	gchar **remaining = NULL;
 	g_variant_dict_lookup(options_dict, G_OPTION_REMAINING, "^as", &remaining);
 	calc_arg = "";
@@ -328,6 +331,10 @@ static gint qalculate_command_line(GtkApplication *app, GApplicationCommandLine 
 			save_preferences(false);
 			gtk_widget_destroy(edialog);
 		}
+		if(exrates) update_exchange_rates();
+	} else if(exrates) {
+		new Calculator();
+		return !CALCULATOR->fetchExchangeRates();
 	} else {
 		create_application(app);
 	}
