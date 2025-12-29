@@ -61,8 +61,6 @@ gint current_object_start = -1, current_object_end = -1;
 bool current_object_has_changed = false;
 extern MathStructure *current_from_struct;
 extern vector<Unit*> current_from_units;
-extern size_t current_function_index;
-extern MathFunction *current_function;
 
 int completion_blocked = 0;
 
@@ -796,9 +794,6 @@ gboolean on_completionwindow_button_press_event(GtkWidget*, GdkEventButton*, gpo
 	return TRUE;
 }
 
-gboolean is_wayland(GdkDisplay* display) {
-	return strncmp(gdk_display_get_name(display), "wayland", strlen("wayland")) == 0;
-}
 void completion_resize_popup(int matches) {
 
 	gint x, y;
@@ -854,7 +849,7 @@ void completion_resize_popup(int matches) {
 	GdkScreen *screen = gdk_display_get_default_screen(display);
 	gdk_screen_get_monitor_workarea(screen, gdk_screen_get_monitor_at_window(screen, window), &area);
 #endif
-	are_coords_global = !is_wayland(display);
+	are_coords_global = !on_wayland();
 
 	items = matches;
 	if(items > (are_coords_global ? 20 : 15)) items = (are_coords_global ? 20 : 15);
@@ -949,7 +944,24 @@ string current_completion_object() {
 	return str;
 }
 
-void do_completion(bool to_menu) {
+extern bool function_differentiable(MathFunction*);
+bool test_x_count_sub(const MathStructure &m, int &x, int &y, int &z) {
+	if(m.isVariable() && !m.variable()->isKnown()) {
+		if(x > 0 && m.variable()->referenceName() == "x") x--;
+		else if(y > 0 && m.variable()->referenceName() == "y") y--;
+		else if(z > 0 && m.variable()->referenceName() == "z") z--;
+	}
+	if(m.isFunction() && !function_differentiable(m.function())) return false;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(test_x_count_sub(m[i], x, y, z)) return true;
+	}
+	return x == 0 || y == 0 || z == 0;
+}
+bool test_x_count(const MathStructure &m, int x = -1, int y = -1, int z = -1) {
+	return test_x_count_sub(m, x, y, z);
+}
+
+void do_completion(bool to_menu, bool force) {
 	if(!enable_completion && !to_menu) {gtk_widget_hide(completion_window); return;}
 	Unit *exact_unit = NULL;
 	if(to_menu) {
@@ -972,7 +984,6 @@ void do_completion(bool to_menu) {
 		} else {
 			find_matching_units(*current_result(), current_parsed_result(), current_from_units);
 		}
-		current_function = NULL;
 		current_object_start = -1;
 		current_object_has_changed = true;
 		completion_to_menu = true;
@@ -989,8 +1000,8 @@ void do_completion(bool to_menu) {
 			to_type = 4;
 		} else if(editing_to_expression && editing_to_expression1 && current_from_struct) {
 			to_type = 2;
-		} else if(current_function && current_function->subtype() == SUBTYPE_DATA_SET && current_function_index > 1) {
-			Argument *arg = current_function->getArgumentDefinition(current_function_index);
+		} else if(!editing_to_expression1 && current_parsed_function() && current_parsed_function()->subtype() == SUBTYPE_DATA_SET && current_parsed_function_index() > 1) {
+			Argument *arg = current_parsed_function()->getArgumentDefinition(current_parsed_function_index());
 			if(!arg || arg->type() != ARGUMENT_TYPE_DATA_PROPERTY) {
 				gtk_widget_hide(completion_window);
 				return;
@@ -1008,7 +1019,11 @@ void do_completion(bool to_menu) {
 		g_free(gstr2);
 		if(unicode_length(str) < (size_t) completion_min) {gtk_widget_hide(completion_window); return;}
 	}
-	if(!str.empty() && current_function && current_function_index > 0 && current_function->getArgumentDefinition(current_function_index) && current_function->getArgumentDefinition(current_function_index)->type() == ARGUMENT_TYPE_TEXT && current_function_index <= current_parsed_function_struct().size() && current_parsed_function_struct()[current_function_index - 1].isSymbolic() && current_parsed_function_struct()[current_function_index - 1].symbol() == str) {
+	if(!force && !str.empty() && !editing_to_expression && current_parsed_function() && current_parsed_function_index() > 0 && current_parsed_function()->getArgumentDefinition(current_parsed_function_index()) && current_parsed_function()->getArgumentDefinition(current_parsed_function_index())->type() == ARGUMENT_TYPE_TEXT && current_parsed_function_index() <= current_parsed_function_struct().size() && current_parsed_function_struct()[current_parsed_function_index() - 1].isSymbolic() && current_parsed_function_struct()[current_parsed_function_index() - 1].symbol() == str) {
+		gtk_widget_hide(completion_window);
+		return;
+	}
+	if(!force && !editing_to_expression && ((str.length() == 1 && (str[0] == 'x' || str[0] == 'y' || str[0] == 'z')) || (str.length() == 2 && ((str[0] == 'x' && str[1] == 'y') || (str[0] == 'x' && str[1] == 'z') || (str[0] == 'y' && str[1] == 'z'))) || (str.length() == 3 && str[0] == 'x' && str[1] == 'y' && str[2] == 'z')) && (test_x_count(current_parsed_expression(), str.find("x") != string::npos ? 2 : 1, str.find("y") != string::npos ? 2 : 1, str.find("z") != string::npos ? 2 : 1) || (current_parsed_function() && current_parsed_function_index() > 0 && test_x_count(current_parsed_function_struct()[current_parsed_function_index() - 1], str.find("x") != string::npos ? 2 : 1, str.find("y") != string::npos ? 2 : 1, str.find("z") != string::npos ? 2 : 1)))) {
 		gtk_widget_hide(completion_window);
 		return;
 	}
@@ -1037,15 +1052,15 @@ void do_completion(bool to_menu) {
 	}
 	unordered_map<const ExpressionName*, string>::iterator cap_it;
 	bool show_separator1 = false, show_separator2 = false;
-	if(((str.length() > 0 && is_not_in(NUMBERS NOT_IN_NAMES "%", str[0])) || (str.empty() && current_function && current_function->subtype() == SUBTYPE_DATA_SET) || to_type >= 2) && gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
+	if(((str.length() > 0 && is_not_in(NUMBERS NOT_IN_NAMES "%", str[0])) || (str.empty() && !editing_to_expression1 && current_parsed_function() && current_parsed_function()->subtype() == SUBTYPE_DATA_SET) || to_type >= 2) && gtk_tree_model_get_iter_first(GTK_TREE_MODEL(completion_store), &iter)) {
 		Argument *arg = NULL;
-		if(current_function && current_function->subtype() == SUBTYPE_DATA_SET) {
-			arg = current_function->getArgumentDefinition(current_function_index);
+		if(!editing_to_expression1 && current_parsed_function() && current_parsed_function()->subtype() == SUBTYPE_DATA_SET) {
+			arg = current_parsed_function()->getArgumentDefinition(current_parsed_function_index());
 			if(arg && (arg->type() == ARGUMENT_TYPE_DATA_OBJECT || arg->type() == ARGUMENT_TYPE_DATA_PROPERTY)) {
 				if(arg->type() == ARGUMENT_TYPE_DATA_OBJECT && (str.empty() || unicode_length(str) < (size_t) completion_min)) {gtk_widget_hide(completion_window); return;}
-				if(current_function_index == 1) {
-					for(size_t i = 1; i <= current_function->countNames(); i++) {
-						if(str.find(current_function->getName(i).name) != string::npos) {
+				if(current_parsed_function_index() == 1) {
+					for(size_t i = 1; i <= current_parsed_function()->countNames(); i++) {
+						if(str.find(current_parsed_function()->getName(i).name) != string::npos) {
 							arg = NULL;
 							break;
 						}
@@ -1536,7 +1551,7 @@ void do_completion(bool to_menu) {
 		completion_resize_popup(matches);
 		if(cos_bak != current_object_start || current_object_end != coe_bak) return;
 		if(!gtk_widget_is_visible(completion_window)) {
-			if(completion_delay > 0 && is_wayland(gtk_widget_get_display(GTK_WIDGET(expression_edit_widget())))) hide_tooltips(GTK_WIDGET(main_window()));
+			if(completion_delay > 0 && on_wayland()) hide_tooltips(GTK_WIDGET(main_window()));
 			gtk_window_set_transient_for(GTK_WINDOW(completion_window), main_window());
 			gtk_window_group_add_window(gtk_window_get_group(main_window()), GTK_WINDOW(completion_window));
 			gtk_window_set_screen(GTK_WINDOW(completion_window), gtk_widget_get_screen(expression_edit_widget()));
@@ -1579,7 +1594,7 @@ void toggle_completion_visible() {
 		bool ec_bak = enable_completion;
 		completion_min = 1;
 		enable_completion = true;
-		do_completion();
+		do_completion(false, true);
 		completion_min = cm_bak;
 		enable_completion = ec_bak;
 	}
@@ -1609,7 +1624,7 @@ bool activate_first_completion() {
 	enable_completion = true;
 	int cm_bak = completion_min;
 	completion_min = 1;
-	do_completion();
+	do_completion(false, true);
 	completion_min = cm_bak;
 	enable_completion = ec_bak;
 	return gtk_widget_get_visible(completion_window);

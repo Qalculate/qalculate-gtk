@@ -40,6 +40,7 @@ void set_status_selection_text(const std::string &str, bool had_errors = false, 
 void clear_status_selection_text();
 
 bool parse_status_error();
+int parsed_autocalculable();
 
 void block_status();
 void unblock_status();

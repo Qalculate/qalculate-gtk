@@ -66,6 +66,7 @@ void history_search();
 void history_clear();
 void history_input_base_changed();
 void history_operator(std::string str_sign);
+size_t history_count();
 
 GtkWidget *history_view_widget();
 

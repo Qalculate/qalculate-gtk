@@ -1427,6 +1427,8 @@ bool test_autocalculatable(const MathStructure &m, bool top) {
 		}
 		if(m.function()->id() == FUNCTION_ID_LOGN && m.size() == 2 && m[0].isUndefined() && m[1].isNumber()) return false;
 		if(top && m.function()->subtype() == SUBTYPE_DATA_SET && m.size() >= 2 && m[1].isSymbolic() && equalsIgnoreCase(m[1].symbol(), "info")) return false;
+	} else if(m.isSymbolic() && contains_plot_or_save(m.symbol())) {
+		return false;
 	}
 	for(size_t i = 0; i < m.size(); i++) {
 		if(!test_autocalculatable(m[i], false)) return false;

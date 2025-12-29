@@ -51,7 +51,7 @@ string custom_status_font;
 string sdot_s, saltdot_s, sdiv_s, sslash_s, stimes_s, sminus_s;
 bool fix_supsub_status = false;
 bool expression_has_changed2 = false;
-string parsed_expression, parsed_expression_tooltip;
+string parsed_expression, last_expression_error, parsed_expression_tooltip;
 bool parsed_had_errors = false, parsed_had_warnings = false;
 MathStructure *current_from_struct = NULL;
 vector<Unit*> current_from_units;
@@ -661,6 +661,9 @@ bool parse_status_error() {
 	return display_expression_status && parsed_had_errors;
 }
 
+int auto_calculable = 1;
+int parsed_autocalculable() {return auto_calculable;}
+
 void display_parse_status() {
 	current_function = NULL;
 	mfunc.clear();
@@ -686,9 +689,11 @@ void display_parse_status() {
 	if(text.empty()) {
 		set_status_text("", true, false, false);
 		parsed_expression = "";
+		last_expression_error = "";
 		parsed_expression_tooltip = "";
 		set_expression_output_updated(false);
 		clear_parsed_in_result();
+		auto_calculable = 0;
 		return;
 	}
 	if(text[0] == '/' && text.length() > 1) {
@@ -697,27 +702,32 @@ void display_parse_status() {
 			set_status_text("qalc command", true, false, false);
 			status_text_source = STATUS_TEXT_OTHER;
 			clear_parsed_in_result();
+			auto_calculable = 0;
 			return;
 		}
 	} else if(text == "MC") {
 		set_status_text(_("MC (memory clear)"), true, false, false);
 		status_text_source = STATUS_TEXT_OTHER;
 		clear_parsed_in_result();
+		auto_calculable = 0;
 		return;
 	} else if(text == "MS") {
 		set_status_text(_("MS (memory store)"), true, false, false);
 		status_text_source = STATUS_TEXT_OTHER;
 		clear_parsed_in_result();
+		auto_calculable = 0;
 		return;
 	} else if(text == "M+") {
 		set_status_text(_("M+ (memory plus)"), true, false, false);
 		status_text_source = STATUS_TEXT_OTHER;
 		clear_parsed_in_result();
+		auto_calculable = 0;
 		return;
 	} else if(text == "M-" || text == "M−") {
 		set_status_text(_("M− (memory minus)"), true, false, false);
 		status_text_source = STATUS_TEXT_OTHER;
 		clear_parsed_in_result();
+		auto_calculable = 0;
 		return;
 	}
 	gsub(ID_WRAP_LEFT, LEFT_PARENTHESIS, text);
@@ -792,8 +802,10 @@ void display_parse_status() {
 		}
 	}
 	if(expression_output_updated()) {
+		auto_calculable = 1;
 		bool last_is_space = false;
 		parsed_expression_tooltip = "";
+		last_expression_error = "";
 		if(!full_parsed) {
 			str_e = CALCULATOR->unlocalizeExpression(text, evalops.parse_options);
 			transform_expression_for_equals_save(str_e, evalops.parse_options);
@@ -820,6 +832,7 @@ void display_parse_status() {
 			}
 		}
 		current_status_struct = mparse;
+		if(auto_calculable && !test_autocalculatable(mparse)) auto_calculable = 0;
 		PrintOptions po;
 		po.preserve_format = true;
 		po.show_ending_zeroes = evalops.parse_options.read_precision != DONT_READ_PRECISION && !CALCULATOR->usesIntervalArithmetic() && evalops.parse_options.base > BASE_CUSTOM;
@@ -860,6 +873,7 @@ void display_parse_status() {
 		if(!str_w.empty()) {
 			CALCULATOR->beginTemporaryStopMessages();
 			CALCULATOR->parseExpressionAndWhere(&mparse, &mwhere, str_e, str_w, evalops.parse_options);
+			if(auto_calculable && !test_autocalculatable(mwhere)) auto_calculable = 0;
 			mparse.format(po);
 			parsed_expression = mparse.print(po, true, false, TAG_TYPE_HTML);
 			parse_l = parsed_expression.length();
@@ -1108,6 +1122,7 @@ void display_parse_status() {
 								ParseOptions pa = evalops.parse_options;
 								pa.units_enabled = true;
 								CALCULATOR->parse(&mparse_to, str_u, pa);
+								if(auto_calculable && !test_autocalculatable(mparse_to)) auto_calculable = 0;
 							} else {
 								if(i_warn > 0) had_warnings = true;
 								mparse_to = cu.generateMathStructure(true);
@@ -1147,6 +1162,7 @@ void display_parse_status() {
 			for(size_t i = 0; i < autocalc_messages.size(); i++) {
 				MessageType mtype = autocalc_messages[i].type();
 				if((mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) && (!implicit_question_asked || autocalc_messages[i].category() != MESSAGE_CATEGORY_IMPLICIT_MULTIPLICATION)) {
+					if(last_expression_error.empty() || (!had_errors && mtype == MESSAGE_ERROR)) last_expression_error = autocalc_messages[i].message();
 					if(mtype == MESSAGE_ERROR) had_errors = true;
 					else had_warnings = true;
 					if(message_n > 0) {
@@ -1161,6 +1177,7 @@ void display_parse_status() {
 			while(CALCULATOR->message()) {
 				MessageType mtype = CALCULATOR->message()->type();
 				if((mtype == MESSAGE_ERROR || mtype == MESSAGE_WARNING) && (!implicit_question_asked || CALCULATOR->message()->category() != MESSAGE_CATEGORY_IMPLICIT_MULTIPLICATION)) {
+					if(last_expression_error.empty() || (!had_errors && mtype == MESSAGE_ERROR)) last_expression_error = CALCULATOR->message()->message();
 					if(mtype == MESSAGE_ERROR) had_errors = true;
 					else had_warnings = true;
 					if(message_n > 0) {
@@ -1180,32 +1197,33 @@ void display_parse_status() {
 		gsub("&nbsp;", " ", parsed_expression);
 		FIX_SUPSUB_PRE(parse_status_widget(), fix_supsub_status)
 		FIX_SUPSUB(parsed_expression)
+		if(had_errors) auto_calculable = 0;
 		if(show_parsed_instead_of_result || parsed_expression_is_displayed_instead_of_result()) {
 			show_parsed_in_result(parse_l == 0 ? m_undefined : mparse, po);
-			if((result_is_autocalculated() || show_parsed_instead_of_result) && !current_result_text().empty()) {
-				string equalsstr;
-				if(current_result_text_is_approximate()) {
-					if(printops.use_unicode_signs && (!printops.can_display_unicode_string_function || (*printops.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, (void*) parse_status_widget()))) {
-						equalsstr = SIGN_ALMOST_EQUAL " ";
+			if(!b_func) {
+				if((result_is_autocalculated() || show_parsed_instead_of_result) && !current_result_text().empty()) {
+					string equalsstr;
+					if(current_result_text_is_approximate()) {
+						if(printops.use_unicode_signs && (!printops.can_display_unicode_string_function || (*printops.can_display_unicode_string_function) (SIGN_ALMOST_EQUAL, (void*) parse_status_widget()))) {
+							equalsstr = SIGN_ALMOST_EQUAL " ";
+						} else {
+							equalsstr = "= ";
+							equalsstr += _("approx.");
+						}
 					} else {
 						equalsstr = "= ";
-						equalsstr += _("approx.");
 					}
+					string str_autocalc = equalsstr;
+					str_autocalc += current_result_text();
+					FIX_SUPSUB(str_autocalc)
+					set_status_text(str_autocalc, false);
+					status_text_source = STATUS_TEXT_AUTOCALC;
+				} else if((!autocalculation_stopped_at_operator() || !result_is_autocalculated()) && message_n >= 1 && !b_func && !last_is_operator(str_e)) {
+					set_status_text(last_expression_error, false, had_errors, had_warnings, parsed_expression_tooltip != last_expression_error ? parsed_expression_tooltip : "");
+					status_text_source = STATUS_TEXT_ERROR;
 				} else {
-					equalsstr = "= ";
+					set_status_text("");
 				}
-				string str_autocalc = equalsstr;
-				str_autocalc += current_result_text();
-				FIX_SUPSUB(str_autocalc)
-				set_status_text(str_autocalc, false);
-				status_text_source = STATUS_TEXT_AUTOCALC;
-			} else if((!autocalculation_stopped_at_operator() || !result_is_autocalculated()) && message_n >= 1 && !b_func && !last_is_operator(str_e)) {
-				size_t i = parsed_expression_tooltip.rfind("\n• ");
-				if(i == string::npos) set_status_text(parsed_expression_tooltip, false, had_errors, had_warnings);
-				else set_status_text(parsed_expression_tooltip.substr(i + strlen("\n• ")), false, had_errors, had_warnings, parsed_expression_tooltip);
-				status_text_source = STATUS_TEXT_ERROR;
-			} else if(!b_func) {
-				set_status_text("");
 			}
 		} else {
 			if(!b_func) {
@@ -1237,9 +1255,7 @@ void display_parse_status() {
 				set_status_text(str_autocalc, false);
 				status_text_source = STATUS_TEXT_AUTOCALC;
 			} else if((!autocalculation_stopped_at_operator() || !result_is_autocalculated()) && !parsed_expression_tooltip.empty()) {
-				size_t i = parsed_expression_tooltip.rfind("\n• ");
-				if(i == string::npos) set_status_text(parsed_expression_tooltip, false, parsed_had_errors, parsed_had_warnings);
-				else set_status_text(parsed_expression_tooltip.substr(i + strlen("\n• ")), false, parsed_had_errors, parsed_had_warnings, parsed_expression_tooltip);
+				set_status_text(last_expression_error, false, parsed_had_errors, parsed_had_warnings, parsed_expression_tooltip != last_expression_error ? parsed_expression_tooltip : "");
 				status_text_source = STATUS_TEXT_ERROR;
 			} else {
 				set_status_text("");

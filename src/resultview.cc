@@ -65,6 +65,7 @@ int scale_n = 0;
 int scale_n_bak = 0;
 int binary_x_diff = 0;
 int binary_y_diff = 0;
+int custom_result_height = -1;
 
 #define RESULT_SCALE_FACTOR gtk_widget_get_scale_factor(expression_edit_widget())
 
@@ -82,6 +83,8 @@ bool read_result_view_settings_line(string &svar, string &svalue, int &v) {
 	} else if(svar == "custom_result_font") {
 		custom_result_font = svalue;
 		save_custom_result_font = true;
+	} else if(svar == "custom_result_height") {
+		custom_result_height = v;
 	} else {
 		return false;
 	}
@@ -90,6 +93,7 @@ bool read_result_view_settings_line(string &svar, string &svalue, int &v) {
 void write_result_view_settings(FILE *file) {
 	fprintf(file, "use_custom_result_font=%i\n", use_custom_result_font);
 	if(use_custom_result_font || save_custom_result_font) fprintf(file, "custom_result_font=%s\n", custom_result_font.c_str());
+	if(custom_result_height > 0) fprintf(file, "custom_result_height=%i\n", custom_result_height);
 }
 
 void replace_interval_with_function(MathStructure &m) {
@@ -1268,35 +1272,56 @@ void result_font_modified() {
 	result_font_updated = true;
 	result_display_updated();
 }
+int get_custom_result_height() {return custom_result_height;}
+void set_custom_result_height(int i) {
+	gint h_old = 0, h_new = 0;
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_old);
+	custom_result_height = i;
+	set_result_size_request();
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h_new);
+	gint winh, winw;
+	gtk_window_get_size(main_window(), &winw, &winh);
+	winh += (h_new - h_old);
+	gtk_window_resize(main_window(), winw, winh);
+}
+int get_current_result_height() {
+	gint h = 0;
+	gtk_widget_get_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), NULL, &h);
+	return h;
+}
 void set_result_size_request() {
-	MathStructure mtest;
-	MathStructure m1("Ü");
-	MathStructure mden("y"); mden ^= m1;
-	mtest = m1; mtest ^= m1; mtest.transform(STRUCT_DIVISION, mden);
-	mtest.transform(CALCULATOR->f_sqrt);
-	mtest.transform(CALCULATOR->f_abs);
-	PrintOptions po;
-	po.can_display_unicode_string_function = &can_display_unicode_string_function;
-	po.can_display_unicode_string_arg = (void*) result_view_widget();
-	cairo_surface_t *tmp_surface2 = draw_structure(mtest, po, false, top_ips, NULL, 3);
-	if(tmp_surface2) {
-		cairo_surface_flush(tmp_surface2);
-		gint h = cairo_image_surface_get_height(tmp_surface2) / RESULT_SCALE_FACTOR;
-		gint sbh = 0;
-		gtk_widget_get_preferred_height(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbh);
-		h += sbh;
-		h += 3;
-		cairo_surface_destroy(tmp_surface2);
-		mtest.set(9);
-		mtest.transform(STRUCT_DIVISION, 9);
-		tmp_surface2 = draw_structure(mtest, po);
+	if(custom_result_height > 0) {
+		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), -1, custom_result_height);
+	} else {
+		MathStructure mtest;
+		MathStructure m1("Ü");
+		MathStructure mden("y"); mden ^= m1;
+		mtest = m1; mtest ^= m1; mtest.transform(STRUCT_DIVISION, mden);
+		mtest.transform(CALCULATOR->f_sqrt);
+		mtest.transform(CALCULATOR->f_abs);
+		PrintOptions po;
+		po.can_display_unicode_string_function = &can_display_unicode_string_function;
+		po.can_display_unicode_string_arg = (void*) result_view_widget();
+		cairo_surface_t *tmp_surface2 = draw_structure(mtest, po, false, top_ips, NULL, 3);
 		if(tmp_surface2) {
 			cairo_surface_flush(tmp_surface2);
-			gint h2 = cairo_image_surface_get_height(tmp_surface2) / RESULT_SCALE_FACTOR + 3;
-			if(h2 > h) h = h2;
+			gint h = cairo_image_surface_get_height(tmp_surface2) / RESULT_SCALE_FACTOR;
+			gint sbh = 0;
+			gtk_widget_get_preferred_height(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(gtk_builder_get_object(main_builder, "scrolled_result"))), NULL, &sbh);
+			h += sbh;
+			h += 3;
 			cairo_surface_destroy(tmp_surface2);
+			mtest.set(9);
+			mtest.transform(STRUCT_DIVISION, 9);
+			tmp_surface2 = draw_structure(mtest, po);
+			if(tmp_surface2) {
+				cairo_surface_flush(tmp_surface2);
+				gint h2 = cairo_image_surface_get_height(tmp_surface2) / RESULT_SCALE_FACTOR + 3;
+				if(h2 > h) h = h2;
+				cairo_surface_destroy(tmp_surface2);
+			}
+			gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), -1, h);
 		}
-		gtk_widget_set_size_request(GTK_WIDGET(gtk_builder_get_object(main_builder, "scrolled_result")), -1, h);
 	}
 	calculate_par_width();
 }

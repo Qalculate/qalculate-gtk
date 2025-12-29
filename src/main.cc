@@ -200,6 +200,8 @@ void create_application(GtkApplication *app) {
 	g_source_unref(source);
 #endif
 
+	//start_test();
+
 }
 
 static void qalculate_activate(GtkApplication *app) {

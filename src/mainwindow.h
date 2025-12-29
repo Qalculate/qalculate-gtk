@@ -26,6 +26,7 @@ void restore_window(GtkWindow *win = NULL);
 void create_main_window(void);
 
 GtkWindow *main_window();
+bool on_wayland();
 
 void update_accels(int type = -1);
 void set_app_font(const char *str);
@@ -205,6 +206,9 @@ void save_mode();
 void load_preferences();
 bool save_preferences(bool mode = false, bool allow_cancel = false);
 bool save_history(bool allow_cancel = false);
+
+void start_test();
+void stop_test();
 
 #endif
 

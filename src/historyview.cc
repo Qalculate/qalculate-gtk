@@ -2242,6 +2242,7 @@ void history_clear() {
 	set_expression_modified(true, true, false);
 	reload_history();
 }
+size_t history_count() {return inhistory.size();}
 void on_popup_menu_item_history_movetotop_activate(GtkMenuItem*, gpointer) {
 	if(calculator_busy()) return;
 	GtkTreeModel *model;

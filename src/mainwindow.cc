@@ -1587,7 +1587,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			}
 		}
 		bool error_current_object = false;
-		if(origstr && !had_to_expression && !function_in_progress && (!current_parsed_function() || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index()) || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index())->suggestsQuotes()) && !CALCULATOR->hasWhereExpression(str, evalops) && str.find("0x") == string::npos && str.find("0d") == string::npos) {
+		if(parsed_autocalculable() && origstr && !had_to_expression && !function_in_progress && (!current_parsed_function() || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index()) || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index())->suggestsQuotes()) && !CALCULATOR->hasWhereExpression(str, evalops) && str.find("0x") == string::npos && str.find("0d") == string::npos) {
 			string str_object = current_completion_object();
 			if(!str_object.empty()) {
 				MathStructure m;
@@ -1620,22 +1620,17 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 				}
 			}
 		}
-		if(function_in_progress || error_current_object || !test_autocalculatable(current_parsed_expression())) {
-			if(!function_in_progress) CALCULATOR->endTemporaryStopMessages(true);
-			if((!error_current_object && function_in_progress) || !display_errors(NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
+		if(function_in_progress || error_current_object || !parsed_autocalculable()) {
+			if(function_in_progress) CALCULATOR->clearMessages();
 			mauto.setAborted();
-			if(!function_in_progress) CALCULATOR->beginTemporaryStopMessages();
 #ifdef _WIN32
 		} else if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 20, evalops, parsed_mstruct, parsed_tostruct)) {
 #else
 		} else if(!CALCULATOR->calculate(&mauto, CALCULATOR->unlocalizeExpression(str, evalops.parse_options), current_displayed_result() ? 100 : 50, evalops, parsed_mstruct, parsed_tostruct) || mauto.isAborted()) {
 #endif
 			mauto.setAborted();
-			update_expression_icons(EXPRESSION_CLEAR);
-		} else if(contains_extreme_number(mauto)) {
-			CALCULATOR->endTemporaryStopMessages(true);
-			if(!display_errors(NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
-			CALCULATOR->beginTemporaryStopMessages();
+			CALCULATOR->clearMessages();
+		} else if(contains_extreme_number(mauto) || mauto.countTotalChildren() > 1000) {
 			mauto.setAborted();
 		} else if(do_factors || do_pfe || do_expand) {
 			CALCULATOR->startControl(100);
@@ -1655,16 +1650,16 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		} else if((!parsed_tostruct || parsed_tostruct->isUndefined()) && origstr && !had_to_expression && (evalops.approximation == APPROXIMATION_EXACT || evalops.auto_post_conversion == POST_CONVERSION_OPTIMAL || evalops.auto_post_conversion == POST_CONVERSION_NONE) && parsed_mstruct) {
 			convert_unchanged_quantity_with_unit(*parsed_mstruct, mauto, evalops);
 		}
-		if(delay_complex) {
+		if(delay_complex && !mauto.isAborted()) {
 			CALCULATOR->startControl(100);
 			evalops.complex_number_form = cnf;
-			if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_CIS) mstruct->complexToCisForm(evalops);
-			else if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_POLAR) mstruct->complexToPolarForm(evalops);
+			if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_CIS) mauto.complexToCisForm(evalops);
+			else if(evalops.complex_number_form == COMPLEX_NUMBER_FORM_POLAR) mauto.complexToPolarForm(evalops);
 			CALCULATOR->stopControl();
 		}
 		if(!parsed_tostruct->isUndefined() && origstr && str_conv.empty() && !mauto.containsType(STRUCT_UNIT, true)) parsed_tostruct->setUndefined();
 		if(!simplified_percentage) evalops.parse_options.parsing_mode = (ParsingMode) (evalops.parse_options.parsing_mode & ~PARSE_PERCENT_AS_ORDINARY_CONSTANT);
-		CALCULATOR->endTemporaryStopMessages(!mauto.isAborted(), &autocalc_messages);
+		CALCULATOR->endTemporaryStopMessages(true, &autocalc_messages);
 		if(!mauto.isAborted()) {
 			mstruct->set(mauto);
 			if(autocalc_history_delay >= 0 && auto_calculate && !parsed_in_result) {
@@ -1672,12 +1667,15 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			}
 		} else {
 			result_autocalculated = false;
-			if(parsed_in_result) display_parse_status();
+			if(parsed_in_result && !function_in_progress) display_parse_status();
 		}
 	} else {
 		block_error();
 	}
+	bool was_aborted = true;
 	if(!recalculate || !mauto.isAborted()) {
+
+		was_aborted = false;
 
 		CALCULATOR->beginTemporaryStopMessages();
 
@@ -1805,8 +1803,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			result_text_long = "";
 			if(CALCULATOR->aborted()) {
 				CALCULATOR->endTemporaryStopMessages();
-				result_text = "";
-				result_autocalculated = false;
+				was_aborted = true;
 			} else {
 				CALCULATOR->endTemporaryStopMessages(true);
 				if(complex_angle_form) replace_result_cis_gtk(result_text);
@@ -1816,9 +1813,9 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					set_result_bases(*displayed_mstruct_pre);
 					update_result_bases();
 				}
+				display_parse_status();
 			}
 			displayed_mstruct_pre->unref();
-			display_parse_status();
 		} else {
 			bool b = true;
 			if(autocalc_history_timeout_id == 0 || ((printops.base == BASE_BINARY || (printops.base <= BASE_FP16 && printops.base >= BASE_FP80)) && displayed_mstruct_pre->isInteger()) || title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT || displayed_mstruct_pre->countTotalChildren() > 10) {
@@ -1836,7 +1833,6 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			}
 			if(unformatted_length(result_text) > 900 || CALCULATOR->aborted()) {
 				CALCULATOR->endTemporaryStopMessages();
-				CALCULATOR->clearMessages();
 				b = false;
 				displayed_mstruct_pre->unref();
 			}
@@ -1855,28 +1851,30 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					update_result_bases();
 				}
 			} else {
-				auto_calculate = false;
-				clearresult();
-				result_text = "";
-				auto_calculate = true;
+				was_aborted = true;
 			}
 			if(title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) update_window_title(unhtmlize(result_text).c_str(), true);
 		}
 		CALCULATOR->stopControl();
-	} else if(parsed_in_result) {
-		result_text = "";
-		result_autocalculated = false;
-		display_parse_status();
-	} else {
-		auto_calculate = false;
-		minimal_mode_show_resultview(false);
-		result_autocalculated = false;
-		result_view_clear();
-		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
-		if(visible_keypad & PROGRAMMING_KEYPAD) clear_result_bases();
-		result_text = "";
-		auto_calculate = true;
-		if(title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) update_window_title("", true);
+	}
+	if(was_aborted) {
+		if(parsed_in_result) {
+			result_text = "";
+			result_autocalculated = false;
+			CALCULATOR->clearMessages();
+			display_parse_status();
+		} else {
+			if(!display_errors(NULL, 1)) update_expression_icons(EXPRESSION_CLEAR);
+			auto_calculate = false;
+			minimal_mode_show_resultview(false);
+			result_autocalculated = false;
+			result_view_clear();
+			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "menu_item_save_image")), FALSE);
+			if(visible_keypad & PROGRAMMING_KEYPAD) clear_result_bases();
+			result_text = "";
+			auto_calculate = true;
+			if(title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) update_window_title("", true);
+		}
 	}
 
 	if(do_to) {
@@ -5534,6 +5532,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		if(!do_bases) numberbases_dialog_result_has_changed(mstruct);
 		floatingpoint_dialog_result_has_changed(mstruct);
 	}
+	CALCULATOR->clearMessages();
 	unblock_error();
 
 }
@@ -8701,6 +8700,9 @@ GtkWindow *main_window() {
 	if(!mainwindow) mainwindow = GTK_WINDOW(gtk_builder_get_object(main_builder, "main_window"));
 	return mainwindow;
 }
+bool on_wayland() {
+	return strncmp(gdk_display_get_name(gtk_widget_get_display(GTK_WIDGET(main_window()))), "wayland", strlen("wayland")) == 0;
+}
 
 void initialize_variables_and_functions() {
 	if(!default_currency.empty()) {
@@ -9049,3 +9051,128 @@ void create_main_window() {
 	command_thread = new CommandThread;
 
 }
+
+int prev_test_type = 0;
+long int qalculate_test_count = 0;
+gboolean test_timeout(gpointer p) {
+	hide_completion();
+	/*if(QDateTime::currentMSecsSinceEpoch() > prev_test_time + (prev_test_type == 10 ? 500 : 200)) {
+		std::cout << "SLOW: " << expressionEdit->toPlainText().toStdString() << std::endl;
+		prev_test_type = 10;
+	}*/
+	if(prev_test_type == 10) {std::cerr << "CLEAR" << endl; clear_expression_text();}
+	int type = (prev_test_type == 1 ? rand() % 16 + 8 : rand() % 25);
+	string s;
+	if(prev_test_type == 9 && type < 9) {
+		s = CALCULATOR->units[rand() % CALCULATOR->units.size()]->referenceName();
+		prev_test_type = 8;
+	} else if(type < 10) {
+		s = i2s(rand() % 10000 - 200);
+		if(rand() % 3 == 0) {s += "."; s += i2s(rand() % 10000);}
+		prev_test_type = 1;
+	} else if(type < 12) {
+		std::string operator_s = OPERATORS VECTOR_WRAPS;
+		s = operator_s[rand() % operator_s.length()];
+		prev_test_type = 2;
+	} else if(type == 12) {
+		s = ",";
+		prev_test_type = 3;
+	} else if(type < 15) {
+		s = ";";
+		prev_test_type = 4;
+	} else if(type == 15) {
+		if(rand() % 5 == 0) {
+			while(true) {
+				s = "";
+				int n = rand() % 3 + 2;
+				if(n == 2) s += (char) 0xC0 + (rand() % 16);
+				else if(n == 3) s += (char) 0xD0 + (rand() % 16);
+				else if(n == 4) s += (char) 0xE0 + (rand() % 16);
+				for(int i = 1; i < n; i++) s += (char) 0x80 + (rand() % 64);
+				if(g_utf8_validate(s.c_str(), -1, NULL)) break;
+			}
+		} else {
+			s = ((char) (rand() % (126 - 32) + 32));
+		}
+		prev_test_type = 5;
+	} else if(type == 16) {
+		MathFunction *f = CALCULATOR->functions[rand() % CALCULATOR->functions.size()];
+		s = f->referenceName() + "(";
+		size_t n = f->minargs();
+		if(f->maxargs() > f->minargs()) n += rand() % (f->maxargs() - f->minargs() + 1);
+		if(f->maxargs() < 0) n += rand() % 3;
+		if(rand() % 5 == 0) n++;
+		for(size_t i = 0; i < n; i++) {
+			if(i > 0) s += ";";
+			s += i2s(rand() % 10000 - 200);
+			if(rand() % 3 == 0) {s += "."; s += i2s(rand() % 10000);}
+		}
+		s += ")";
+		prev_test_type = 6;
+	} else if(type == 17) {
+		MathFunction *f = CALCULATOR->functions[rand() % CALCULATOR->functions.size()];
+		s = f->referenceName() + "(";
+		prev_test_type = 6;
+	} else if(type == 18) {
+		s = CALCULATOR->variables[rand() % CALCULATOR->variables.size()]->referenceName();
+		prev_test_type = 7;
+	} else if(type == 19) {
+		s = CALCULATOR->units[rand() % CALCULATOR->units.size()]->referenceName();
+		prev_test_type = 8;
+	} else if(type == 20) {
+		s = "(";
+		prev_test_type = 2;
+	} else if(type == 21) {
+		s = ")";
+		prev_test_type = 2;
+	} else if(type == 22) {
+		s = "->";
+		prev_test_type = 9;
+	}
+	//int t = 1;
+	if(type >= 23) {
+		std::cerr << "CLEAR" << endl; clear_expression_text();
+		prev_test_type = 10;
+	} /*else if(type == 24 && rand() % 3 == 0) {
+		//toAction_t->animateClick();
+		t = 200;
+		prev_test_type = 9;
+	}*/ else if(type >= 23) {
+		if(get_expression_text()[0] != '/') {
+			std::cerr << "CALCULATE: " << get_expression_text() << std::endl;
+			execute_expression();
+			/*if(QDateTime::currentMSecsSinceEpoch() > prev_test_time + 5000) {
+				std::cout << "ABORTED? " << get_expression_text << std::endl;
+				qalculate_quit();
+				return FALSE;
+			}*/
+			if(history_count() > 100) history_clear();
+			//toAction_t->animateClick();
+			//t = 200;
+		}
+		prev_test_type = 10;
+	} else {
+		if(expression_is_empty() && s == "/") {
+			return test_timeout(p);
+		}
+		std::cerr << get_expression_text() << std::endl;
+		gtk_text_buffer_insert_at_cursor(expression_edit_buffer(), s.c_str(), -1);
+	}
+	//prev_test_time = QDateTime::currentMSecsSinceEpoch() + t;
+	qalculate_test_count++;
+	std::cerr << qalculate_test_count << endl;
+	return TRUE;
+}
+
+gint test_timeout_id = 0;
+void start_test() {
+	prev_test_type = 0;
+	test_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 1, test_timeout, NULL, NULL);
+}
+void stop_test() {
+	if(test_timeout_id) {
+		g_source_remove(test_timeout_id);
+		test_timeout_id = 0;
+	}
+}
+

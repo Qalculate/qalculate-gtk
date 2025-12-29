@@ -99,6 +99,13 @@ void on_preferences_expression_lines_spin_button_value_changed(GtkSpinButton *sp
 	winh += (h_new - h_old);
 	gtk_window_resize(main_window(), winw, winh);
 }
+void on_preferences_checkbutton_custom_result_height_toggled(GtkToggleButton *w, gpointer) {
+	set_custom_result_height(gtk_toggle_button_get_active(w) ? gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_result_height_spin_button"))) : -1);
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_result_height_spin_button")), get_custom_result_height() > 0);
+}
+void on_preferences_result_height_spin_button_value_changed(GtkSpinButton *spin, gpointer) {
+	set_custom_result_height(gtk_spin_button_get_value_as_int(spin));
+}
 void on_preferences_vertical_padding_combo_changed(GtkComboBox *w, gpointer) {
 	set_vertical_button_padding(gtk_combo_box_get_active(w) - 1);
 }
@@ -948,6 +955,9 @@ GtkWidget* get_preferences_dialog() {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), parsed_in_result && !rpn_mode);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_parsed_in_result")), display_expression_status && !rpn_mode);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_expression_lines_spin_button")), (double) (expression_lines < 1 ? 3 : expression_lines));
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_custom_result_height")), get_custom_result_height() > 0);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_result_height_spin_button")), get_current_result_height());
+		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_result_height_spin_button")), get_custom_result_height() > 0);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_vertical_padding_combo")), vertical_button_padding() > 9 ? 9 : vertical_button_padding() + 1);
 		if(horizontal_button_padding() > 4) gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding() > 12 ? 9 : (horizontal_button_padding() - 4) / 2 + 4 + 1);
 		else gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_horizontal_padding_combo")), horizontal_button_padding() + 1);
@@ -961,6 +971,11 @@ GtkWidget* get_preferences_dialog() {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_check_version")), check_version);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_remember_position")), remember_position);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above")), always_on_top);
+		if(on_wayland()) {
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_remember_position")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_keep_above")));
+		}
+
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_persistent_keypad")), persistent_keypad);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_tooltips")), enable_tooltips == 0 ? 2 : (enable_tooltips == 1 ? 0 : 1));
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(preferences_builder, "preferences_combo_title")), title_type);
@@ -1168,8 +1183,9 @@ GtkWidget* get_preferences_dialog() {
 		G_CALLBACK(on_preferences_scale_plot_time_value_changed), "on_preferences_checkbutton_unicode_signs_toggled", G_CALLBACK(on_preferences_checkbutton_unicode_signs_toggled), "on_preferences_checkbutton_ignore_locale_toggled", G_CALLBACK(on_preferences_checkbutton_ignore_locale_toggled), "on_preferences_checkbutton_use_systray_icon_toggled",
 		G_CALLBACK(on_preferences_checkbutton_use_systray_icon_toggled), "on_preferences_checkbutton_hide_on_startup_toggled", G_CALLBACK(on_preferences_checkbutton_hide_on_startup_toggled), "on_preferences_checkbutton_remember_position_toggled", G_CALLBACK(on_preferences_checkbutton_remember_position_toggled), "on_preferences_checkbutton_keep_above_toggled",
 		G_CALLBACK(on_preferences_checkbutton_keep_above_toggled), "on_preferences_horizontal_padding_combo_changed", G_CALLBACK(on_preferences_horizontal_padding_combo_changed), "on_preferences_vertical_padding_combo_changed", G_CALLBACK(on_preferences_vertical_padding_combo_changed), "on_preferences_combo_title_changed", G_CALLBACK(on_preferences_combo_title_changed),
-		"on_preferences_combo_theme_changed", G_CALLBACK(on_preferences_combo_theme_changed), "on_preferences_combo_language_changed", G_CALLBACK(on_preferences_combo_language_changed), "on_preferences_combo_tooltips_changed", G_CALLBACK(on_preferences_combo_tooltips_changed), "on_preferences_expression_lines_spin_button_value_changed",
-		G_CALLBACK(on_preferences_expression_lines_spin_button_value_changed), "on_preferences_checkbutton_display_expression_status_toggled", G_CALLBACK(on_preferences_checkbutton_display_expression_status_toggled), "on_preferences_checkbutton_expression_pos_toggled", G_CALLBACK(on_preferences_checkbutton_expression_pos_toggled), "on_preferences_checkbutton_parsed_in_result_toggled", G_CALLBACK(on_preferences_checkbutton_parsed_in_result_toggled),
+		"on_preferences_combo_theme_changed", G_CALLBACK(on_preferences_combo_theme_changed), "on_preferences_combo_language_changed", G_CALLBACK(on_preferences_combo_language_changed), "on_preferences_combo_tooltips_changed", G_CALLBACK(on_preferences_combo_tooltips_changed), "on_preferences_expression_lines_spin_button_value_changed", G_CALLBACK(on_preferences_expression_lines_spin_button_value_changed),
+		"on_preferences_result_height_spin_button_value_changed", G_CALLBACK(on_preferences_result_height_spin_button_value_changed), "on_preferences_checkbutton_custom_result_height_toggled", G_CALLBACK(on_preferences_checkbutton_custom_result_height_toggled),
+		"on_preferences_checkbutton_display_expression_status_toggled", G_CALLBACK(on_preferences_checkbutton_display_expression_status_toggled), "on_preferences_checkbutton_expression_pos_toggled", G_CALLBACK(on_preferences_checkbutton_expression_pos_toggled), "on_preferences_checkbutton_parsed_in_result_toggled", G_CALLBACK(on_preferences_checkbutton_parsed_in_result_toggled),
 		"on_preferences_checkbutton_persistent_keypad_toggled", G_CALLBACK(on_preferences_checkbutton_persistent_keypad_toggled), "on_preferences_checkbutton_twos_complement_toggled", G_CALLBACK(on_preferences_checkbutton_twos_complement_toggled), "on_preferences_checkbutton_hexadecimal_twos_complement_toggled",
 		G_CALLBACK(on_preferences_checkbutton_hexadecimal_twos_complement_toggled), "on_preferences_checkbutton_twos_complement_input_toggled", G_CALLBACK(on_preferences_checkbutton_twos_complement_input_toggled), "on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled",
 		G_CALLBACK(on_preferences_checkbutton_hexadecimal_twos_complement_input_toggled), "on_preferences_combobox_bits_changed", G_CALLBACK(on_preferences_combobox_bits_changed),

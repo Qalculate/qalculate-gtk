@@ -47,7 +47,7 @@ void set_expression_completion_settings(int enable1 = -1, int enable2 = -1, int 
 bool read_expression_completion_settings_line(std::string &svar, std::string &svalue, int &v);
 void write_expression_completion_settings(FILE *file);
 
-void do_completion(bool to_menu = false);
+void do_completion(bool to_menu = false, bool force = false);
 void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewColumn*, gpointer);
 
 #endif /* EXPRESSION_COMPLETION_H */
