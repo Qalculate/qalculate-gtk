@@ -379,6 +379,7 @@ void set_clipboard(string str, int ascii, bool html, bool is_result, int copy_wi
 		}
 #endif
 	}
+	gtk_clipboard_set_can_store(gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", FALSE)), NULL, 0);
 }
 
 void replace_result_cis_gtk(string &resstr) {
