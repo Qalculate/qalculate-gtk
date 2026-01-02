@@ -530,7 +530,7 @@ void update_status_text() {
 
 }
 bool display_function_hint(MathFunction *f, int arg_index = 1) {
-	if(!f) return false;
+	if(!f || gtk_text_buffer_get_has_selection(expression_edit_buffer())) return false;
 	int iargs = f->maxargs();
 	Argument *arg;
 	Argument default_arg;
@@ -665,11 +665,11 @@ int auto_calculable = 1;
 int parsed_autocalculable() {return auto_calculable;}
 
 void display_parse_status() {
+	if(block_display_parse) return;
+	if(expression_output_updated()) current_status_struct.setAborted();
 	current_function = NULL;
 	mfunc.clear();
-	if(expression_output_updated()) current_status_struct.setAborted();
 	if(!display_expression_status) return;
-	if(block_display_parse) return;
 	GtkTextIter istart, iend, ipos;
 	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
 	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);

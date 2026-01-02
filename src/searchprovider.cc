@@ -97,25 +97,48 @@ bool use_with_prefix(Unit *u, Prefix *prefix) {
 	}
 	return true;
 }
-bool test_autocalculatable_search(const MathStructure &m, bool top = true) {
+bool contains_plot_or_save_search(const string &str) {
+	if(expression_contains_save_function(str, search_eo.parse_options, false)) return true;
+	for(size_t f_i = 0; f_i < 4; f_i++) {
+		int id = 0;
+		if(f_i == 0) id = FUNCTION_ID_PLOT;
+		else if(f_i == 1) id = FUNCTION_ID_EXPORT;
+		else if(f_i == 2) id = FUNCTION_ID_LOAD;
+		else if(f_i == 3) id = FUNCTION_ID_COMMAND;
+		MathFunction *f = CALCULATOR->getFunctionById(id);
+		for(size_t i = 1; f && i <= f->countNames(); i++) {
+			if(str.find(f->getName(i).name) != string::npos) {
+				MathStructure mtest;
+				CALCULATOR->beginTemporaryStopMessages();
+				CALCULATOR->parse(&mtest, str, search_eo.parse_options);
+				CALCULATOR->endTemporaryStopMessages();
+				if(mtest.containsFunctionId(FUNCTION_ID_PLOT) || mtest.containsFunctionId(FUNCTION_ID_EXPORT) || mtest.containsFunctionId(FUNCTION_ID_LOAD) || mtest.containsFunctionId(FUNCTION_ID_COMMAND)) return true;
+				return false;
+			}
+		}
+	}
+	return false;
+}
+int test_autocalculatable_search(const MathStructure &m, bool top = true) {
+	int ret = 1;
 	if(m.isFunction()) {
-		if(m.size() < (size_t) m.function()->minargs() && (m.size() != 1 || m[0].representsScalar())) {
-			return false;
-		}
-		if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND) return false;
-		if(m.size() > 0 && (m.function()->id() == FUNCTION_ID_FACTORIAL || m.function()->id() == FUNCTION_ID_DOUBLE_FACTORIAL || m.function()->id() == FUNCTION_ID_MULTI_FACTORIAL) && m[0].isInteger() && m[0].number().integerLength() > 17) {
-			return false;
-		}
-		if(m.function()->id() == FUNCTION_ID_LOGN && m.size() == 2 && m[0].isUndefined() && m[1].isNumber()) return false;
-		if(top && m.function()->subtype() == SUBTYPE_DATA_SET && m.size() >= 2 && m[1].isSymbolic() && equalsIgnoreCase(m[1].symbol(), "info")) return false;
+		if(m.size() < (size_t) m.function()->minargs() && (m.size() != 1 || m[0].representsScalar())) return 0;
+		else if(m.function()->id() == FUNCTION_ID_LOGN && m.size() == 2 && m[0].isUndefined() && m[1].isNumber()) return 0;
+		else if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND) ret = -1;
+		else if(m.size() > 0 && (m.function()->id() == FUNCTION_ID_FACTORIAL || m.function()->id() == FUNCTION_ID_DOUBLE_FACTORIAL || m.function()->id() == FUNCTION_ID_MULTI_FACTORIAL) && m[0].isInteger() && m[0].number().integerLength() > 17) ret = -1;
+		else if(top && m.function()->subtype() == SUBTYPE_DATA_SET && m.size() >= 2 && m[1].isSymbolic() && equalsIgnoreCase(m[1].symbol(), "info")) ret = -1;
 
 	} else if(m.isUnit() && !use_with_prefix(m.unit(), m.prefix())) {
-		return false;
+		return 0;
+	} else if(m.isSymbolic() && contains_plot_or_save_search(m.symbol())) {
+		ret = -1;
 	}
 	for(size_t i = 0; i < m.size(); i++) {
-		if(!test_autocalculatable_search(m[i], false)) return false;
+		int ret_i = test_autocalculatable_search(m[i], false);
+		if(ret_i == 0) return 0;
+		else if(ret_i == -1) ret = -1;
 	}
-	return true;
+	return ret;
 }
 
 bool contains_fraction_search(const MathStructure &m) {
@@ -196,9 +219,11 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		}
 		MathStructure m;
 		CALCULATOR->startControl(100);
+		ParseOptions pa = search_eo.parse_options;
+		pa.preserve_format = true;
 		if(!str_where.empty()) {
 			MathStructure m_where;
-			CALCULATOR->parseExpressionAndWhere(&m, &m_where, str, str_where, search_eo.parse_options);
+			CALCULATOR->parseExpressionAndWhere(&m, &m_where, str, str_where, pa);
 			if(has_error() || !test_autocalculatable_search(m_where)  || (!m_where.isComparison() && !m_where.isLogicalAnd() && !m_where.isLogicalOr())) {
 				b_valid = false;
 			} else {
@@ -208,10 +233,11 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 				}
 			}
 		} else {
-			CALCULATOR->parse(&m, str, search_eo.parse_options);
+			CALCULATOR->parse(&m, str, pa);
 		}
 		if(!b_valid) {CALCULATOR->stopControl(); return;}
-		if(has_error() || !test_autocalculatable_search(m)) b_valid = false;
+		int auto_calculable = test_autocalculatable_search(m);
+		if(has_error() || auto_calculable == 0) b_valid = false;
 		else if(str.length() > 3 && str.find(" to", str.length() - 3) != std::string::npos) b_valid = false;
 		else if(str.length() > 6 && str.find(" where", str.length() - 6) != std::string::npos) b_valid = false;
 		else {
@@ -231,7 +257,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 						break;
 					}
 				}
-			} else if(m.isFunction() && m.size() > 0 && str2.find_first_of(NOT_IN_NAMES) == string::npos) {
+			} else if(m.isFunction() && m.size() > 0 && str2.find_first_of(NOT_IN_NAMES NUMBERS) == string::npos) {
 				b_valid = false;
 			}
 		}
@@ -280,7 +306,8 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		if(max_length < 50) max_length = 50;
 
 		MathStructure mparse;
-		m = CALCULATOR->calculate(str, eo, &mparse);
+		if(auto_calculable < 0) {mparse = m; m.setAborted();}
+		else m = CALCULATOR->calculate(str, eo, &mparse);
 		if(CALCULATOR->aborted()) m.setAborted();
 		if(m.size() > 50 || m.countTotalChildren(false) > 500 || (m.isMatrix() && m.rows() * m.columns() > 50) || !test_search_result(m)) {CALCULATOR->stopControl(); return;}
 
@@ -290,7 +317,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 
 		MathStructure mexact;
 		mexact.setUndefined();
-		if(!CALCULATOR->aborted() && po.base == BASE_DECIMAL) {
+		if(!CALCULATOR->aborted() && !m.isAborted() && po.base == BASE_DECIMAL) {
 			bool b = true;
 			if(b) {
 				calculate_dual_exact(mexact, &m, str, &mparse, eo, AUTOMATIC_APPROXIMATION_AUTO, 0, max_length);
@@ -416,7 +443,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		CALCULATOR->stopControl();
 		if(po.is_approximate && (exact_comparison || !alt_results.empty())) *po.is_approximate = false;
 		else if(po.is_approximate && m.isApproximate()) *po.is_approximate = true;
-		if(has_error() || result.empty() || parsed.find(CALCULATOR->abortedMessage()) != string::npos || parsed.find(CALCULATOR->timedOutString()) != string::npos) {
+		if(has_error() || parsed.find(CALCULATOR->abortedMessage()) != string::npos || parsed.find(CALCULATOR->timedOutString()) != string::npos) {
 			return;
 		}
 		if(result.find(CALCULATOR->abortedMessage()) != string::npos || result.find(CALCULATOR->timedOutString()) != string::npos) {

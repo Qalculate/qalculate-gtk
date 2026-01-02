@@ -1589,7 +1589,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		bool error_current_object = false;
 		if(parsed_autocalculable() && origstr && !had_to_expression && !function_in_progress && (!current_parsed_function() || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index()) || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index())->suggestsQuotes()) && !CALCULATOR->hasWhereExpression(str, evalops) && str.find("0x") == string::npos && str.find("0d") == string::npos) {
 			string str_object = current_completion_object();
-			if(!str_object.empty()) {
+			if(!str_object.empty() && (str_object.back() < '0' || str_object.back() > '9')) {
 				MathStructure m;
 				CALCULATOR->beginTemporaryStopMessages();
 				CALCULATOR->parse(&m, str_object, evalops.parse_options);
@@ -5531,6 +5531,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		if(!do_calendars) calendarconversion_dialog_result_has_changed(mstruct);
 		if(!do_bases) numberbases_dialog_result_has_changed(mstruct);
 		floatingpoint_dialog_result_has_changed(mstruct);
+		if(current_parsed_function()) display_parse_status();
 	}
 	CALCULATOR->clearMessages();
 	unblock_error();
