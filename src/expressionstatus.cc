@@ -970,7 +970,7 @@ void display_parse_status() {
 					parsed_expression += _("optimal prefix");
 				} else if(equalsIgnoreCase(str_u, "base") || equalsIgnoreCase(str_u, _c("Units", "base"))) {
 					parsed_expression += _("base units");
-				} else if(equalsIgnoreCase(str_u, "mixed") || equalsIgnoreCase(str_u, _("mixed"))) {
+				} else if(equalsIgnoreCase(str_u, "mixed") || equalsIgnoreCase(str_u, _("mixed")) || str_u == "+") {
 					parsed_expression += _("mixed units");
 				} else if(equalsIgnoreCase(str_u, "factors") || equalsIgnoreCase(str_u, _("factors")) || equalsIgnoreCase(str_u, "factor")) {
 					parsed_expression += _("factors");
@@ -1060,7 +1060,9 @@ void display_parse_status() {
 					} else if(fden < 0) {
 						parsed_expression += _("fraction");
 					} else {
+						char c0 = 0;
 						if(str_u[0] == '0' || str_u[0] == '?' || str_u[0] == '+' || str_u[0] == '-') {
+							if(str_u[0] != '?') c0 = str_u[0];
 							str_u = str_u.substr(1, str_u.length() - 1);
 							remove_blank_ends(str_u);
 						} else if(str_u.length() > 1 && str_u[1] == '?' && (str_u[0] == 'b' || str_u[0] == 'a' || str_u[0] == 'd')) {
@@ -1097,7 +1099,7 @@ void display_parse_status() {
 							}
 						} else if(v) {
 							mparse_to = v;
-						} else if(!p) {
+						} else if(!p && !str_u.empty()) {
 							CALCULATOR->beginTemporaryStopMessages();
 							CompositeUnit cu("", evalops.parse_options.limit_implicit_multiplication ? "01" : "00", "", str_u);
 							int i_warn = 0, i_error = CALCULATOR->endTemporaryStopMessages(NULL, &i_warn);
@@ -1121,6 +1123,7 @@ void display_parse_status() {
 							if(i_error) {
 								ParseOptions pa = evalops.parse_options;
 								pa.units_enabled = true;
+								if(c0 != 0) str_u.insert(0, 1, c0);
 								CALCULATOR->parse(&mparse_to, str_u, pa);
 								if(auto_calculable && !test_autocalculatable(mparse_to)) auto_calculable = 0;
 							} else {
@@ -1132,7 +1135,7 @@ void display_parse_status() {
 						CALCULATOR->stopControl();
 						if(p) {
 							parsed_expression += p->preferredDisplayName(po.abbreviate_names, po.use_unicode_signs, false, false, po.can_display_unicode_string_function, po.can_display_unicode_string_arg).formattedName(-1, true, TAG_TYPE_HTML, 0, true, po.hide_underscore_spaces);
-						} else {
+						} else if(!str_u.empty()) {
 							CALCULATOR->beginTemporaryStopMessages();
 							parsed_expression += mparse_to.print(po, true, false, TAG_TYPE_HTML);
 							CALCULATOR->endTemporaryStopMessages();

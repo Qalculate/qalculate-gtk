@@ -47,6 +47,7 @@ dist_man_MANS = qalculate-gtk.1
 EXTRA_DIST = \
 	$(desktop_IN_FILES)	\
 	$(appdata_IN_FILES)	\
-	$(noinst_DATA)
+	$(noinst_DATA) \
+	its/appdata.its its/appdata.loc
 
 DISTCLEANFILES = $(desktop_DATA) $(appdata_DATA)

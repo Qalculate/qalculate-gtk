@@ -606,7 +606,6 @@ gboolean do_autocalc_selection_timeout(gpointer) {
 	return FALSE;
 }
 
-extern bool tabbed_completion;
 void on_expressionbuffer_cursor_position_notify() {
 	if(autocalc_selection_timeout_id != 0) {
 		g_source_remove(autocalc_selection_timeout_id);
@@ -614,7 +613,7 @@ void on_expressionbuffer_cursor_position_notify() {
 	}
 	clear_status_selection_text();
 	selstore_end = selstore_start;
-	tabbed_completion = false;
+	reset_tabbed_completion();
 	cursor_has_moved = true;
 	if(expression_has_changed_pos) {
 		expression_has_changed_pos = false;
@@ -630,7 +629,6 @@ void on_expressionbuffer_cursor_position_notify() {
 	}
 }
 
-extern bool tabbed_completion;
 void block_expression_modified() {
 	block_emodified++;
 }
@@ -642,7 +640,7 @@ void set_expression_modified(bool b, bool handle, bool autocalc) {
 		expression_has_changed = b;
 		return;
 	}
-	tabbed_completion = false;
+	reset_tabbed_completion();
 	stop_completion_timeout();
 	if(!undo_blocked()) add_expression_to_undo();
 	if(!expression_has_changed || (rpn_mode && gtk_text_buffer_get_char_count(expression_edit_buffer()) == 1)) {
@@ -1084,23 +1082,7 @@ return TRUE;}
 			break;
 		}
 		case GDK_KEY_ISO_Left_Tab: {
-			if(tabbed_completion) {
-				GtkTreePath *path = NULL;
-				if(gtk_tree_model_iter_previous(completion_sort, &tabbed_iter)) {
-					path = gtk_tree_model_get_path(completion_sort, &tabbed_iter);
-				} else {
-					gint rows = gtk_tree_model_iter_n_children(completion_sort, NULL);
-					if(rows > 0) {
-						path = gtk_tree_path_new_from_indices(rows - 1, -1);
-					}
-				}
-				if(path) {
-					on_completion_match_selected(GTK_TREE_VIEW(gtk_builder_get_object(main_builder, "completionview")), path, NULL, NULL);
-					gtk_tree_path_free(path);
-					tabbed_completion = true;
-					return TRUE;
-				}
-			}
+			if(activate_previous_completion()) return TRUE;
 		}
 		case GDK_KEY_Tab: {
 			if(!completion_visible()) break;

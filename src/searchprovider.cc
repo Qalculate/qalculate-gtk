@@ -200,9 +200,9 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		string str_to, str_where;
 		remove_blank_ends(str);
 		if(!CALCULATOR->parseComments(str, search_eo.parse_options).empty() || str.empty()) return;
-		bool b_to = CALCULATOR->separateToExpression(str, str_to, search_eo);
+		bool b_to = CALCULATOR->separateToExpression(str, str_to, search_eo, true);
 		CALCULATOR->separateWhereExpression(str, str_where, search_eo);
-		if(str.empty()) return;
+		if(str.empty() || str[0] == '/' || str == "." || (str.length() > 1 && str[1] == '/' && (str[0] == '~' || str[0] == '.'))) return;
 		size_t i = str.find_first_of(SPACES);
 		bool do_factors = false, do_pfe = false, do_calendars = false, do_bases = false, do_expand = false;
 		if(i != string::npos) {
@@ -211,7 +211,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 				str = str.substr(i + 1);
 				b_to = true;
 				do_factors = true;
-			} else if(equalsIgnoreCase(str1, "expand") || equalsIgnoreCase(str_to, _("expand"))) {
+			} else if(equalsIgnoreCase(str1, "expand") || equalsIgnoreCase(str1, _("expand"))) {
 				str = str.substr(i + 1);
 				b_to = true;
 				do_expand = true;
@@ -243,7 +243,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		else {
 			string str2 = str;
 			CALCULATOR->parseSigns(str2);
-			if(is_in(OPERATORS "\\" LEFT_PARENTHESIS LEFT_VECTOR_WRAP, str2[str2.length() - 1]) && str2[str2.length() - 1] != '!') {
+			if((is_in(OPERATORS "\\." LEFT_PARENTHESIS LEFT_VECTOR_WRAP, str2[str2.length() - 1]) && str2[str2.length() - 1] != '!') || (is_in(OPERATORS, str2[0]) && str2[0] != '~')) {
 				b_valid = false;
 			} else if(!b_to && m.isNumber() && expression.find_first_not_of(NUMBERS) == string::npos) {
 				b_valid = false;
@@ -251,10 +251,18 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 				b_valid = false;
 			} else if(m.isMultiplication() && str2.find_first_of(OPERATORS PARENTHESISS) == string::npos) {
 				bool first_digit = str2[0] > '0' && str2[0] <= '9';
-				for(size_t i2 = 1; i2 < m.size(); i2++) {
+				if(m.size() > 4) b_valid = false;
+				for(size_t i2 = 1; i2 < m.size() && b_valid; i2++) {
 					if((!first_digit && !m[i2].isUnit() && str_to.empty() && str_where.empty()) || m[i2].isNumber()) {
 						b_valid = false;
 						break;
+					}
+					for(size_t i3 = 0; i3 < m.size(); i3++) {
+						if(m[i3] == m[i2]) {
+							b_valid = false;
+							break;
+						}
+						if(i3 == 0) i3 = i2;
 					}
 				}
 			} else if(m.isFunction() && m.size() > 0 && str2.find_first_of(NOT_IN_NAMES NUMBERS) == string::npos) {

@@ -1,3 +1,44 @@
+2026-01-07 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix tab completion, when pressing shortcut key multiple times
+
+2026-01-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Support X, Y, and Z (uppercase) without backslash for function creation
+
+2026-01-02 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Call gtk_clipboard_set_can_store() after result has been copied to preserve clipboard contents after exit
+	* Do not show function help in status after expression has been calculated (using Enter or =)
+
+2025-12-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Customizable result widget height (in preferences)
+	* Do not show completion for x, y, and z if expression contains (elsewhere) x, y, or z variable
+	* Hide remember position and keep above options, in preferences, on Wayland
+
+2025-12-23 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not show completion when editing hexadecimal or duodecimal number (using "0x"/"0d"), or text argument
+	* Add --update-exchange-rates command line option
+
+2025-12-22 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not show calculate-as-you-type result for incomplete object name (e.g. "integ" interpreted as "int(e*g)")
+	* Do not show completion when input base uses non-digits, characters are preceded by backslash, or text is directly after quotation mark
+	* Fix delayed completion when tooltip is visible on Wayland
+	* Lower the maximum number of completion items visible on Wayland
+	* Fix slowdown in some unusual cases with conversion operator
+	* Improve decision to not calculate or not show result in Gnome search provider
+
+2025-11-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add option to show result above expression
+
+2025-11-22 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Remove intltool
+
 2025-11-13 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Do not perform calculate-as-you-type when currently edited function has too few arguments

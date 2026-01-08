@@ -25,7 +25,9 @@ void unblock_completion();
 bool completion_visible();
 gboolean hide_completion();
 void toggle_completion_visible();
+bool activate_previous_completion();
 bool activate_first_completion();
+void reset_tabbed_completion();
 
 bool completion_enter_pressed();
 void completion_up_pressed();

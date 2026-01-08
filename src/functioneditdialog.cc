@@ -567,7 +567,7 @@ void fix_expression(string &str) {
 				in_cit1 = !in_cit1;
 			} else if(!in_cit1 && str[i] == '\'') {
 				in_cit2 = !in_cit2;
-			} else if(!in_cit1 && !in_cit2 && (str[i] == 'x' || str[i] == 'y' || str[i] == 'z')) {
+			} else if(!in_cit1 && !in_cit2 && (str[i] == 'x' || str[i] == 'y' || str[i] == 'z' || str[i] == 'X' || str[i] == 'Y' || str[i] == 'Z')) {
 				size_t i2 = str.find_last_of(NOT_IN_NAMES NUMBERS, i);
 				size_t i3 = str.find_first_of(NOT_IN_NAMES NUMBERS, i);
 				if(i2 == string::npos) i2 = 0;

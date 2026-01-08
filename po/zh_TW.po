@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://github.com/Qalculate/qalculate-gtk/issues\n"
-"POT-Creation-Date: 2025-11-29 06:36+0100\n"
+"POT-Creation-Date: 2026-01-05 07:55+0100\n"
 "PO-Revision-Date: 2025-11-29 22:13+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -18,8 +18,8 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.2.2\n"
 
-#: data/qalculate-gtk.desktop.in:3 src/mainwindow.cc:8461
-#: src/mainwindow.cc:8468
+#: data/qalculate-gtk.desktop.in:3 src/mainwindow.cc:8509
+#: src/mainwindow.cc:8516
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
@@ -28,7 +28,7 @@ msgid "Calculator"
 msgstr "計算機"
 
 #: data/qalculate-gtk.desktop.in:5 data/qalculate-gtk.noinst.appdata.xml:8
-#: src/mainwindow.cc:7080
+#: src/mainwindow.cc:7128
 msgid "Powerful and easy to use calculator"
 msgstr "強大且易用的計算機"
 
@@ -79,15 +79,15 @@ msgstr "引數規則"
 #: data/matrix.ui:40 data/matrixedit.ui:53 data/shortcuts.ui:175
 #: data/unitedit.ui:59 data/unknownedit.ui:38 data/variableedit.ui:38
 #: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47
-#: src/expressionedit.cc:1327 src/historyview.cc:2826 src/historyview.cc:2924
-#: src/historyview.cc:2969 src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
+#: src/expressionedit.cc:1327 src/historyview.cc:2827 src/historyview.cc:2925
+#: src/historyview.cc:2970 src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
 #: src/insertfunctiondialog.cc:65 src/insertfunctiondialog.cc:108
 #: src/insertfunctiondialog.cc:110 src/insertfunctiondialog.cc:973
-#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:718
-#: src/mainwindow.cc:6782 src/mainwindow.cc:6784 src/mainwindow.cc:7748
+#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:719
+#: src/mainwindow.cc:6830 src/mainwindow.cc:6832 src/mainwindow.cc:7796
 #: src/matrixdialog.cc:389 src/menubar.cc:1217 src/menubar.cc:1258
-#: src/plotdialog.cc:378 src/plotdialog.cc:380 src/resultview.cc:548
-#: src/resultview.cc:550
+#: src/plotdialog.cc:378 src/plotdialog.cc:380 src/resultview.cc:552
+#: src/resultview.cc:554
 msgid "_Cancel"
 msgstr "取消(_C)"
 
@@ -96,11 +96,11 @@ msgstr "取消(_C)"
 #: data/datasets.ui:39 data/functionedit.ui:53 data/functionedit.ui:654
 #: data/matrixedit.ui:68 data/shortcuts.ui:205 data/unitedit.ui:74
 #: data/unknownedit.ui:53 data/variableedit.ui:53 src/expressionedit.cc:1327
-#: src/historyview.cc:2826 src/historyview.cc:2924 src/historyview.cc:2969
+#: src/historyview.cc:2827 src/historyview.cc:2925 src/historyview.cc:2970
 #: src/insertfunctiondialog.cc:65 src/insertfunctiondialog.cc:973
-#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:718 src/mainwindow.cc:811
-#: src/mainwindow.cc:882 src/mainwindow.cc:937 src/mainwindow.cc:1018
-#: src/mainwindow.cc:1074 src/mainwindow.cc:7748
+#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:719 src/mainwindow.cc:812
+#: src/mainwindow.cc:883 src/mainwindow.cc:938 src/mainwindow.cc:1019
+#: src/mainwindow.cc:1075 src/mainwindow.cc:7796
 msgid "_OK"
 msgstr "確定(_O)"
 
@@ -199,7 +199,7 @@ msgstr "檔案"
 msgid "Angle"
 msgstr "角度"
 
-#: data/argumentrules.ui:123 src/expressioncompletion.cc:1047
+#: data/argumentrules.ui:123 src/expressioncompletion.cc:1119
 msgid "Data object"
 msgstr "資料物件"
 
@@ -258,7 +258,7 @@ msgstr "類型"
 #: data/datasetedit.ui:656 data/functionedit.ui:93 data/matrixedit.ui:107
 #: data/unitedit.ui:113 data/unknownedit.ui:88 data/variableedit.ui:92
 #: src/conversionview.cc:508 src/dataseteditdialog.cc:227
-#: src/functioneditdialog.cc:444 src/historyview.cc:2931 src/menubar.cc:1224
+#: src/functioneditdialog.cc:444 src/historyview.cc:2932 src/menubar.cc:1224
 #: src/nameseditdialog.cc:155 src/unitsdialog.cc:1008
 msgid "Name"
 msgstr "名稱"
@@ -270,10 +270,10 @@ msgstr "自訂鍵盤按鈕"
 #: data/buttonsedit.ui:25 data/calendarconversion.ui:26 data/datasets.ui:129
 #: data/decimals.ui:45 data/floatingpoint.ui:27 data/functions.ui:24
 #: data/namesedit.ui:24 data/nbases.ui:24 data/percentage.ui:56 data/plot.ui:99
-#: data/precision.ui:31 data/preferences.ui:98 data/setbase.ui:38
+#: data/precision.ui:31 data/preferences.ui:105 data/setbase.ui:38
 #: data/shortcuts.ui:25 data/units.ui:26 data/variables.ui:24
-#: src/historyview.cc:2791 src/insertfunctiondialog.cc:448
-#: src/mainwindow.cc:722 src/mainwindow.cc:723 src/mainwindow.cc:725
+#: src/historyview.cc:2792 src/insertfunctiondialog.cc:448
+#: src/mainwindow.cc:723 src/mainwindow.cc:724 src/mainwindow.cc:726
 #: src/matrixdialog.cc:381 src/periodictabledialog.cc:86
 msgid "_Close"
 msgstr "關閉(_C)"
@@ -801,7 +801,7 @@ msgid "(De)activate the selected function"
 msgstr "(停)啟用選擇的函數"
 
 #: data/functions.ui:322 data/units.ui:516 data/variables.ui:325
-#: src/functionsdialog.cc:431 src/unitsdialog.cc:388 src/util.cc:1341
+#: src/functionsdialog.cc:431 src/unitsdialog.cc:388 src/util.cc:1366
 #: src/variablesdialog.cc:351
 msgid "Deac_tivate"
 msgstr "停用(_t)"
@@ -1043,7 +1043,7 @@ msgstr "偏好設定(_P)"
 msgid "_Mode"
 msgstr "模式(_M)"
 
-#: data/main.ui:1202 src/expressioncompletion.cc:2037
+#: data/main.ui:1202 src/expressioncompletion.cc:2110
 #: src/expressionedit.cc:1481
 msgid "Number Base"
 msgstr "底數"
@@ -1053,7 +1053,7 @@ msgid "Select Result and Expression Base…"
 msgstr "選擇結果和表達式的底數…"
 
 #: data/main.ui:1226 data/main.ui:4717 data/nbases.ui:77
-#: data/preferences.ui:1016 data/preferences.ui:1072 data/setbase.ui:84
+#: data/preferences.ui:1042 data/preferences.ui:1098 data/setbase.ui:84
 #: data/setbase.ui:323 src/expressionedit.cc:1484 src/keypad.cc:1012
 #: src/numberbasesdialog.cc:209 src/numberbasesdialog.cc:251
 msgid "Binary"
@@ -1078,7 +1078,7 @@ msgid "Duodecimal"
 msgstr "十二進制"
 
 #: data/main.ui:1265 data/main.ui:4721 data/nbases.ui:210
-#: data/preferences.ui:1032 data/preferences.ui:1088 data/setbase.ui:152
+#: data/preferences.ui:1058 data/preferences.ui:1114 data/setbase.ui:152
 #: data/setbase.ui:391 src/expressionedit.cc:1488 src/keypad.cc:1015
 #: src/numberbasesdialog.cc:213 src/numberbasesdialog.cc:255
 msgid "Hexadecimal"
@@ -1093,11 +1093,11 @@ msgstr "其他…"
 msgid "Sexagesimal"
 msgstr "六十進制"
 
-#: data/main.ui:1301 data/main.ui:8903 src/expressioncompletion.cc:2102
+#: data/main.ui:1301 data/main.ui:8903 src/expressioncompletion.cc:2175
 msgid "Time Format"
 msgstr "時間格式"
 
-#: data/main.ui:1311 src/expressioncompletion.cc:2094
+#: data/main.ui:1311 src/expressioncompletion.cc:2167
 #: src/expressionedit.cc:1489
 msgid "Roman Numerals"
 msgstr "羅馬數字"
@@ -1202,19 +1202,19 @@ msgstr "上取"
 msgid "Round Down"
 msgstr "下取"
 
-#: data/main.ui:1568 data/main.ui:8794 src/expressioncompletion.cc:2092
+#: data/main.ui:1568 data/main.ui:8794 src/expressioncompletion.cc:2165
 msgid "Complex Rectangular Form"
 msgstr "複數直角座標形式"
 
-#: data/main.ui:1579 data/main.ui:8805 src/expressioncompletion.cc:2056
+#: data/main.ui:1579 data/main.ui:8805 src/expressioncompletion.cc:2129
 msgid "Complex Exponential Form"
 msgstr "複數指數形式"
 
-#: data/main.ui:1590 data/main.ui:8816 src/expressioncompletion.cc:2088
+#: data/main.ui:1590 data/main.ui:8816 src/expressioncompletion.cc:2161
 msgid "Complex Polar Form"
 msgstr "複數極坐標形式"
 
-#: data/main.ui:1601 data/main.ui:8827 src/expressioncompletion.cc:2031
+#: data/main.ui:1601 data/main.ui:8827 src/expressioncompletion.cc:2104
 msgid "Complex Angle/Phasor Notation"
 msgstr "複數角度/相量記法"
 
@@ -1267,7 +1267,7 @@ msgstr "帶分數"
 msgid "Interval Display"
 msgstr "區間顯示"
 
-#: data/main.ui:1832 src/mainwindow.cc:1047
+#: data/main.ui:1832 src/mainwindow.cc:1048
 msgid "Adaptive"
 msgstr "自適應"
 
@@ -1283,7 +1283,7 @@ msgstr "區間"
 msgid "Plus/Minus"
 msgstr "正/負"
 
-#: data/main.ui:1867 data/preferences.ui:1824 src/mainwindow.cc:831
+#: data/main.ui:1867 data/preferences.ui:1850 src/mainwindow.cc:832
 msgid "Relative"
 msgstr "相對"
 
@@ -1475,7 +1475,7 @@ msgid "Angle Unit"
 msgstr "角度單位"
 
 #: data/main.ui:2364 data/plot.ui:423 data/plot.ui:1329
-#: data/preferences.ui:1389 src/buttonseditdialog.cc:462
+#: data/preferences.ui:1415 src/buttonseditdialog.cc:462
 msgid "None"
 msgstr "無"
 
@@ -1503,7 +1503,7 @@ msgstr "未知數分母假設為非零時發出警告"
 msgid "Warn About Denominators Assumed Non-Zero"
 msgstr "對未知數分母假設為非零發出警告"
 
-#: data/main.ui:2601 src/expressionedit.cc:1471 src/mainwindow.cc:1018
+#: data/main.ui:2601 src/expressionedit.cc:1471 src/mainwindow.cc:1019
 msgid "Parsing Mode"
 msgstr "剖析模式"
 
@@ -1637,7 +1637,7 @@ msgstr "檢查更新"
 msgid "_About"
 msgstr "關於(_A)"
 
-#: data/main.ui:3130 src/util.cc:936
+#: data/main.ui:3130 src/util.cc:960
 msgid "Toggle minimal window"
 msgstr "切換最小視窗"
 
@@ -1703,7 +1703,7 @@ msgstr "選擇的值為次方"
 msgid "Calculate the square root of the selected value"
 msgstr "計算選擇的值的平方根"
 
-#: data/main.ui:3802 src/historyview.cc:3699
+#: data/main.ui:3802 src/historyview.cc:3700
 msgid "History"
 msgstr "歷史記錄"
 
@@ -1823,8 +1823,8 @@ msgstr "顯示/隱藏程式設計鍵盤"
 msgid "Exact"
 msgstr "精確"
 
-#: data/main.ui:4678 src/expressioncompletion.cc:2070
-#: src/expressioncompletion.cc:2072
+#: data/main.ui:4678 src/expressioncompletion.cc:2143
+#: src/expressioncompletion.cc:2145
 msgid "Fraction"
 msgstr "分數"
 
@@ -1901,7 +1901,7 @@ msgstr "STO"
 msgid "Convert number bases"
 msgstr "轉換底數"
 
-#: data/main.ui:5756 src/util.cc:939
+#: data/main.ui:5756 src/util.cc:963
 msgid "Manage units"
 msgstr "管理單位"
 
@@ -1924,12 +1924,12 @@ msgstr "轉換"
 msgid "Kilogram"
 msgstr "公斤"
 
-#: data/main.ui:6108 data/nbases.ui:280 src/expressionstatus.cc:391
+#: data/main.ui:6108 data/nbases.ui:280 src/expressionstatus.cc:393
 #: src/keypad.cc:2851 src/keypad.cc:2852 src/keypad.cc:2853
 msgid "BIN"
 msgstr "BIN"
 
-#: data/main.ui:6130 data/nbases.ui:294 src/expressionstatus.cc:396
+#: data/main.ui:6130 data/nbases.ui:294 src/expressionstatus.cc:398
 #: src/keypad.cc:2855 src/keypad.cc:2856 src/keypad.cc:2857
 msgid "OCT"
 msgstr "OCT"
@@ -1939,11 +1939,11 @@ msgstr "OCT"
 msgid "DEC"
 msgstr "DEC"
 
-#: data/main.ui:6204 data/preferences.ui:1063
+#: data/main.ui:6204 data/preferences.ui:1089
 msgid "Two's complement input"
 msgstr "二的補數輸入"
 
-#: data/main.ui:6225 data/preferences.ui:1051
+#: data/main.ui:6225 data/preferences.ui:1077
 msgid "Two's complement output"
 msgstr "二的補數輸出"
 
@@ -2030,7 +2030,7 @@ msgid "Insert Parsed Text"
 msgstr "插入剖析文字"
 
 #: data/main.ui:8456 data/main.ui:9265 data/main.ui:9548
-#: src/searchprovider.cc:209
+#: src/searchprovider.cc:530
 msgid "Copy"
 msgstr "複製"
 
@@ -2046,11 +2046,11 @@ msgstr "複製全文"
 msgid "Search…"
 msgstr "搜尋…"
 
-#: data/main.ui:8496 src/historyview.cc:3221 src/historyview.cc:3236
+#: data/main.ui:8496 src/historyview.cc:3222 src/historyview.cc:3237
 msgid "Search by Date…"
 msgstr "按日期搜尋…"
 
-#: data/main.ui:8511 src/historyview.cc:3218
+#: data/main.ui:8511 src/historyview.cc:3219
 msgid "Add Bookmark…"
 msgstr "加入書籤…"
 
@@ -2062,7 +2062,7 @@ msgstr "書籤"
 msgid "Protect"
 msgstr "保護"
 
-#: data/main.ui:8543 src/historyview.cc:3211
+#: data/main.ui:8543 src/historyview.cc:3212
 msgid "Add Comment…"
 msgstr "加入註解…"
 
@@ -2138,7 +2138,7 @@ msgstr "十進制(_D)"
 msgid "_Hexadecimal"
 msgstr "十六進制(_H)"
 
-#: data/main.ui:8939 src/expressioncompletion.cc:2048
+#: data/main.ui:8939 src/expressioncompletion.cc:2121
 msgid "Decimal Fraction"
 msgstr "小數"
 
@@ -2250,7 +2250,7 @@ msgstr "選擇底數…"
 msgid "Display Expression Status"
 msgstr "顯示表達式狀態"
 
-#: data/main.ui:9570 src/util.cc:941
+#: data/main.ui:9570 src/util.cc:965
 msgid "Store result"
 msgstr "儲存結果"
 
@@ -2323,7 +2323,7 @@ msgstr "此變數所屬的類別"
 msgid "Names"
 msgstr "名稱"
 
-#: data/nbases.ui:8 data/setbase.ui:22 src/expressioncompletion.cc:2033
+#: data/nbases.ui:8 data/setbase.ui:22 src/expressioncompletion.cc:2106
 msgid "Number Bases"
 msgstr "底數"
 
@@ -2352,11 +2352,11 @@ msgstr "十六進制值"
 msgid "Show/hide keypad"
 msgstr "顯示/隱藏鍵盤"
 
-#: data/nbases.ui:322 src/expressionstatus.cc:401
+#: data/nbases.ui:322 src/expressionstatus.cc:403
 msgid "DUO"
 msgstr "DUO"
 
-#: data/nbases.ui:337 src/expressionstatus.cc:406 src/keypad.cc:2863
+#: data/nbases.ui:337 src/expressionstatus.cc:408 src/keypad.cc:2863
 #: src/keypad.cc:2864 src/keypad.cc:2865
 msgid "HEX"
 msgstr "HEX"
@@ -2447,7 +2447,7 @@ msgid "Plot"
 msgstr "繪圖"
 
 #: data/plot.ui:82 src/menubar.cc:1217 src/plotdialog.cc:378
-#: src/plotdialog.cc:380 src/resultview.cc:548 src/resultview.cc:550
+#: src/plotdialog.cc:380 src/resultview.cc:552 src/resultview.cc:554
 msgid "_Save"
 msgstr "儲存(_S)"
 
@@ -2678,36 +2678,36 @@ msgid ""
 "are always calculated exact)"
 msgstr "要顯示/計算的有效數字數量(簡單算術總是精確計算)"
 
-#: data/preferences.ui:82
+#: data/preferences.ui:89
 msgid "Preferences"
 msgstr "偏好設定"
 
-#: data/preferences.ui:135
+#: data/preferences.ui:142
 msgid "Save definitions on exit"
 msgstr "退出時儲存定義"
 
-#: data/preferences.ui:139
+#: data/preferences.ui:146
 msgid ""
 "If changes to functions, units and variables shall be saved automatically"
 msgstr "如果函數、單位和變數的變更要自動儲存"
 
-#: data/preferences.ui:152
+#: data/preferences.ui:159
 msgid "Clear history on exit"
 msgstr "退出時清除歷史記錄"
 
-#: data/preferences.ui:176
+#: data/preferences.ui:183
 msgid "Max history lines saved"
 msgstr "最大已儲存歷史記錄"
 
-#: data/preferences.ui:210
+#: data/preferences.ui:217
 msgid "Save history to separate file"
 msgstr "將歷史記錄儲存到單獨的檔案"
 
-#: data/preferences.ui:226
+#: data/preferences.ui:233
 msgid "Allow multiple instances"
 msgstr "允許多個實例"
 
-#: data/preferences.ui:230
+#: data/preferences.ui:237
 msgid ""
 "Allow multiple instances of the Qalculate! main window to be open at the "
 "same time.\n"
@@ -2719,40 +2719,40 @@ msgstr ""
 "\n"
 "請注意，只有最後關閉的實例的模式、歷史記錄和定義會被儲存。"
 
-#: data/preferences.ui:245
+#: data/preferences.ui:252
 msgid "Notify when a new version is available"
 msgstr "有新版本可用時通知"
 
-#: data/preferences.ui:261
+#: data/preferences.ui:268
 msgid "Save mode on exit"
 msgstr "退出時儲存模式"
 
-#: data/preferences.ui:265
+#: data/preferences.ui:272
 msgid "If the mode of the calculator shall be restored"
 msgstr "如果計算機的模式要被復原"
 
-#: data/preferences.ui:278
+#: data/preferences.ui:285
 msgid "Close application with Escape key"
 msgstr "用Esc鍵關閉應用程式"
 
-#: data/preferences.ui:282
+#: data/preferences.ui:289
 msgid ""
 "Close the application with the Escape key if the expression field is empty."
 msgstr "如果表達式欄位為空，則用Esc鍵關閉應用程式。"
 
-#: data/preferences.ui:295
+#: data/preferences.ui:302
 msgid "Use keyboard keys for RPN"
 msgstr "鍵盤按鍵用於RPN"
 
-#: data/preferences.ui:299
+#: data/preferences.ui:306
 msgid "Use keyboard operator keys for RPN operations (+-*/^)."
 msgstr "將鍵盤運算子鍵用於RPN運算(+-*/^)。"
 
-#: data/preferences.ui:313
+#: data/preferences.ui:320
 msgid "Use caret for bitwise XOR"
 msgstr "插入記號用於按位元XOR"
 
-#: data/preferences.ui:317
+#: data/preferences.ui:324
 msgid ""
 "Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The "
 "exponentiation operator (^) can always be input using Ctrl+*."
@@ -2760,226 +2760,232 @@ msgstr ""
 "使用鍵盤上的插入記號(^)輸入XOR(⊻)(否則使用Ctrl+^)。指數運算子(^)總是可以使用"
 "Ctrl+*輸入。"
 
-#: data/preferences.ui:341
+#: data/preferences.ui:348
 msgid "Expression in history"
 msgstr "歷史記錄中的表達式"
 
-#: data/preferences.ui:354
+#: data/preferences.ui:361
 msgid "Parsed"
 msgstr "剖析"
 
-#: data/preferences.ui:355
+#: data/preferences.ui:362
 msgid "Entered"
 msgstr "輸入"
 
-#: data/preferences.ui:356
+#: data/preferences.ui:363
 msgid "Entered + parsed"
 msgstr "輸入+剖析"
 
-#: data/preferences.ui:370
+#: data/preferences.ui:377
 msgid "Expression after calculation"
 msgstr "計算後的表達式"
 
-#: data/preferences.ui:383
+#: data/preferences.ui:390
 msgid "Keep expression"
 msgstr "保持表達式"
 
-#: data/preferences.ui:384 src/conversionview.cc:281 src/expressionedit.cc:812
+#: data/preferences.ui:391 src/conversionview.cc:281 src/expressionedit.cc:812
 msgid "Clear expression"
 msgstr "清除表達式"
 
-#: data/preferences.ui:385
+#: data/preferences.ui:392
 msgid "Replace with result"
 msgstr "用結果取代"
 
-#: data/preferences.ui:386
+#: data/preferences.ui:393
 msgid "Replace with result if shorter"
 msgstr "如果較短則用結果取代"
 
-#: data/preferences.ui:410
+#: data/preferences.ui:417
 msgid "Add calculate-as-you-type result to history"
 msgstr "將即時計算的結果加入到歷史記錄"
 
-#: data/preferences.ui:430
+#: data/preferences.ui:437
 msgid "Delay:"
 msgstr "延遲:"
 
-#: data/preferences.ui:470
+#: data/preferences.ui:477
 msgid "Time limit for plot:"
 msgstr "繪圖時間限制:"
 
-#: data/preferences.ui:507
+#: data/preferences.ui:514
 msgid "Behavior"
 msgstr "行為"
 
-#: data/preferences.ui:524
+#: data/preferences.ui:531
 msgid "Use system tray icon"
 msgstr "使用通知區域圖示"
 
-#: data/preferences.ui:527
+#: data/preferences.ui:534
 msgid "Hides the application in the system tray when the main window is closed"
 msgstr "關閉主視窗時將應用程式隱藏在通知區域中"
 
-#: data/preferences.ui:540
+#: data/preferences.ui:547
 msgid "Hide on startup"
 msgstr "啟動時隱藏"
 
-#: data/preferences.ui:555
+#: data/preferences.ui:562
 msgid "Remember window position"
 msgstr "記住視窗位置"
 
-#: data/preferences.ui:571
+#: data/preferences.ui:578
 msgid "Keep above other windows"
 msgstr "保持在其他視窗上方"
 
-#: data/preferences.ui:575
+#: data/preferences.ui:582
 msgid ""
 "Keep the main window above other windows (depending on platform and settings "
 "this might not work)"
 msgstr "主視窗保持在其他視窗上方(取決於平台和設定，這可能無效)"
 
-#: data/preferences.ui:588
+#: data/preferences.ui:595
 msgid "Enable Unicode symbols"
 msgstr "啟用Unicode符號"
 
-#: data/preferences.ui:592
+#: data/preferences.ui:599
 msgid "Disable this if you have problems with some fancy characters"
 msgstr "如果你有一些花俏字符的問題，請停用此功能"
 
-#: data/preferences.ui:605
+#: data/preferences.ui:612
 msgid "Ignore system language (requires restart)"
 msgstr "忽略系統語言(需要重新啟動)"
 
-#: data/preferences.ui:631
+#: data/preferences.ui:638
 msgid "Button padding"
 msgstr "按鈕填充"
 
-#: data/preferences.ui:651 data/preferences.ui:689 data/preferences.ui:762
-#: data/preferences.ui:792 src/buttonseditdialog.cc:183
-#: src/datasetsdialog.cc:524 src/modes.cc:46 src/modes.cc:57 src/util.cc:1040
+#: data/preferences.ui:658 data/preferences.ui:696 data/preferences.ui:769
+#: data/preferences.ui:799 src/buttonseditdialog.cc:183
+#: src/datasetsdialog.cc:524 src/modes.cc:46 src/modes.cc:57 src/util.cc:1064
 msgid "Default"
 msgstr "預設"
 
-#: data/preferences.ui:674
+#: data/preferences.ui:681
 msgid "/"
 msgstr "/"
 
-#: data/preferences.ui:720
+#: data/preferences.ui:727
 msgid "Application name"
 msgstr "應用程式名稱"
 
-#: data/preferences.ui:721
+#: data/preferences.ui:728
 msgid "Result"
 msgstr "結果"
 
-#: data/preferences.ui:722
+#: data/preferences.ui:729
 msgid "Application name + result"
 msgstr "應用程式名稱+結果"
 
-#: data/preferences.ui:723 src/menubar.cc:1265
+#: data/preferences.ui:730 src/menubar.cc:1265
 msgid "Mode"
 msgstr "模式"
 
-#: data/preferences.ui:724
+#: data/preferences.ui:731
 msgid "Application name + mode"
 msgstr "應用程式名稱+模式"
 
-#: data/preferences.ui:738
+#: data/preferences.ui:745
 msgid "Window title"
 msgstr "視窗標題"
 
-#: data/preferences.ui:750
+#: data/preferences.ui:757
 msgid "Theme"
 msgstr "主題"
 
-#: data/preferences.ui:763
+#: data/preferences.ui:770
 msgid "Light"
 msgstr "淺色"
 
-#: data/preferences.ui:764
+#: data/preferences.ui:771
 msgid "Dark"
 msgstr "深色"
 
-#: data/preferences.ui:765
+#: data/preferences.ui:772
 msgid "High contrast"
 msgstr "高對比"
 
-#: data/preferences.ui:766
+#: data/preferences.ui:773
 msgid "Dark high contrast"
 msgstr "深色高對比"
 
-#: data/preferences.ui:780
+#: data/preferences.ui:787
 msgid "Language"
 msgstr "語言"
 
-#: data/preferences.ui:821
+#: data/preferences.ui:828
 msgid "Tooltips"
 msgstr "工具提示"
 
-#: data/preferences.ui:835
+#: data/preferences.ui:842
 msgid "Show all"
 msgstr "顯示全部"
 
-#: data/preferences.ui:836
+#: data/preferences.ui:843
 msgid "Hide in keypad"
 msgstr "鍵盤中隱藏"
 
-#: data/preferences.ui:837
+#: data/preferences.ui:844
 msgid "Hide all"
 msgstr "隱藏全部"
 
-#: data/preferences.ui:863
+#: data/preferences.ui:858
 msgid "Number of expression lines"
 msgstr "表達式列數"
 
-#: data/preferences.ui:898
+#: data/preferences.ui:884
+#, fuzzy
+#| msgid "Custom result font"
+msgid "Custom result height"
+msgstr "自訂結果字型"
+
+#: data/preferences.ui:924
 msgid "Show result above expression"
 msgstr "在表達式上面顯示結果"
 
-#: data/preferences.ui:915
+#: data/preferences.ui:941
 msgid "Display expression status"
 msgstr "顯示表達式狀態"
 
-#: data/preferences.ui:919
+#: data/preferences.ui:945
 msgid ""
 "If as-you-type expression status shall be displayed below the expression "
 "entry"
 msgstr "如果輸入時的表達式狀態要在表達式框下顯示"
 
-#: data/preferences.ui:933
+#: data/preferences.ui:959
 msgid "Show parsed expression in result field"
 msgstr "在結果欄位中顯示剖析表達式"
 
-#: data/preferences.ui:937
+#: data/preferences.ui:963
 msgid ""
 "If as-you-type expression interpretation shall be displayed in the result "
 "field"
 msgstr "如果輸入時的表達式判讀要在結果欄位中顯示"
 
-#: data/preferences.ui:951
+#: data/preferences.ui:977
 msgid "Persistent keypad"
 msgstr "常駐鍵盤"
 
-#: data/preferences.ui:967
+#: data/preferences.ui:993
 msgid "Disable cursor blinking"
 msgstr "停用游標閃爍"
 
-#: data/preferences.ui:992
+#: data/preferences.ui:1018
 msgid "Look & Feel"
 msgstr "外觀和感覺"
 
-#: data/preferences.ui:1020
+#: data/preferences.ui:1046
 msgid ""
 "If two's complement representation shall be used for negative binary numbers."
 msgstr "如果要對負二進制數字使用二的補數表示法。"
 
-#: data/preferences.ui:1036
+#: data/preferences.ui:1062
 msgid ""
 "If two's complement representation shall be used for negative hexadecimal "
 "numbers."
 msgstr "如果要對負十六進制數字使用二的補數表示法。"
 
-#: data/preferences.ui:1076
+#: data/preferences.ui:1102
 msgid ""
 "Enables two's complement representation for input of negative binary "
 "numbers. All binary numbers starting with 1 are negative, unless binary bits "
@@ -2988,7 +2994,7 @@ msgstr ""
 "啟用二的補數表示法輸入負二進制數字。所有以1起始的二進制數字都是負數，除非設定"
 "二進制位元。"
 
-#: data/preferences.ui:1092
+#: data/preferences.ui:1118
 msgid ""
 "Enables two's complement representation for input of negative hexadecimal "
 "numbers. All hexadecimal numbers starting with 8 or higher are negative, "
@@ -2997,275 +3003,275 @@ msgstr ""
 "啟用二的補數表示法輸入負十六進制數字。所有以8或更高起始的十六進制數字都是負"
 "數，除非設定二進制位元。"
 
-#: data/preferences.ui:1107
+#: data/preferences.ui:1133
 msgid "Binary bits"
 msgstr "二進制位元"
 
-#: data/preferences.ui:1120
+#: data/preferences.ui:1146
 msgid "Automatic"
 msgstr "自動"
 
-#: data/preferences.ui:1147
+#: data/preferences.ui:1173
 msgid "Use lower case letters in non-decimal numbers"
 msgstr "在非十進制數字中使用小寫字母"
 
-#: data/preferences.ui:1151
+#: data/preferences.ui:1177
 msgid "If lower case letters should be used in numbers with non-decimal base"
 msgstr "如果小寫字母要在非十進制底數的數字中使用"
 
-#: data/preferences.ui:1164
+#: data/preferences.ui:1190
 msgid "Use special duodecimal symbols"
 msgstr "使用特殊的十二進制符號"
 
-#: data/preferences.ui:1168
+#: data/preferences.ui:1194
 msgid ""
 "If ↊ and ↋ (or X and E) shall be used instead of A and B for digits 10 and "
 "11 in numbers with base 12"
 msgstr "如果要在底數12的數字中對數字10和11使用↊和↋(或X和E)而不是A和B"
 
-#: data/preferences.ui:1181
+#: data/preferences.ui:1207
 msgid "Alternative base prefixes"
 msgstr "替代的底數前綴"
 
-#: data/preferences.ui:1185
+#: data/preferences.ui:1211
 msgid ""
 "If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
 "with \"0b00\" as prefixes"
 msgstr "如果十六進制數字要用\"0x0\"和二進制數字要用\"0b00\"為前綴顯示"
 
-#: data/preferences.ui:1198
+#: data/preferences.ui:1224
 msgid "Spell out logical operators"
 msgstr "拼寫邏輯運算子"
 
-#: data/preferences.ui:1202
+#: data/preferences.ui:1228
 msgid "If logical and/or shall be displayed as \"&&\"/\"||\" or \"and\"/\"or\""
 msgstr "如果邏輯and/or要顯示為\"&&\"/\"||\"或\"and\"/\"or\""
 
-#: data/preferences.ui:1227
+#: data/preferences.ui:1253
 msgid "Use E-notation instead of 10<sup><i>n</i></sup>"
 msgstr "使用E記法而不是10<sup><i>n</i></sup>"
 
-#: data/preferences.ui:1241
+#: data/preferences.ui:1267
 msgid "Use lower case \"e\" (as in 1e10)"
 msgstr "使用小寫\"e\"(如1e10)"
 
-#: data/preferences.ui:1245
+#: data/preferences.ui:1271
 msgid "If \"e\" shall be used instead of \"E\" in numbers"
 msgstr "如果要在數字中使用\"e\"而不是\"E\""
 
-#: data/preferences.ui:1258
+#: data/preferences.ui:1284
 msgid "Use comma as decimal separator"
 msgstr "使用逗號作為小數分隔符"
 
-#: data/preferences.ui:1275
+#: data/preferences.ui:1301
 msgid "Ignore comma in numbers"
 msgstr "忽略數字中的逗號"
 
-#: data/preferences.ui:1279
+#: data/preferences.ui:1305
 msgid ""
 "Allow commas, ',', to be used as thousands separator instead of as an "
 "function argument separator"
 msgstr "允許逗號','作為千位分隔符，而不是作為函數引數分隔符"
 
-#: data/preferences.ui:1292
+#: data/preferences.ui:1318
 msgid "Ignore dots in numbers"
 msgstr "忽略數字中的點"
 
-#: data/preferences.ui:1296
+#: data/preferences.ui:1322
 msgid ""
 "Allow dots, '.', to be used as thousands separator instead of as an "
 "alternative decimal sign"
 msgstr "允許點'.'作為千位分隔符，而不是作為替代的小數符號"
 
-#: data/preferences.ui:1309
+#: data/preferences.ui:1335
 msgid "Use 'j' as imaginary unit"
 msgstr "使用'j'作為虛數單位"
 
-#: data/preferences.ui:1313
+#: data/preferences.ui:1339
 msgid ""
 "Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
 "it in front of the imaginary part."
 msgstr "使用'j'(而不是'i')作為虛數單位的預設符號，然後將它放在虛部的前面。"
 
-#: data/preferences.ui:1327
+#: data/preferences.ui:1353
 msgid "Copy result as unformatted ASCII by default"
 msgstr "預設將結果複製為未格式化的ASCII"
 
-#: data/preferences.ui:1345
+#: data/preferences.ui:1371
 msgid "Use overline for repeating decimals"
 msgstr "循環小數使用頂線"
 
-#: data/preferences.ui:1349
+#: data/preferences.ui:1375
 msgid ""
 "Use overline (vinculum), instead of ellipsis, for repeating decimals when "
 "indicate repeating decimals is enabled."
 msgstr "指示循環小數啟用時，循環小數使用頂線(括線)而不是省略號。"
 
-#: data/preferences.ui:1376
+#: data/preferences.ui:1402
 msgid "Digit grouping"
 msgstr "數字分組"
 
-#: data/preferences.ui:1390
+#: data/preferences.ui:1416
 msgid "Standard"
 msgstr "標準"
 
-#: data/preferences.ui:1391
+#: data/preferences.ui:1417
 msgid "Local"
 msgstr "本地"
 
-#: data/preferences.ui:1392
+#: data/preferences.ui:1418
 msgid "Custom"
 msgstr "自訂"
 
-#: data/preferences.ui:1449
+#: data/preferences.ui:1475
 msgid "Multiplication sign"
 msgstr "乘號"
 
-#: data/preferences.ui:1607
+#: data/preferences.ui:1633
 msgid "Division sign"
 msgstr "除號"
 
-#: data/preferences.ui:1632
+#: data/preferences.ui:1658
 msgid "Numbers & Operators"
 msgstr "數字和運算子"
 
-#: data/preferences.ui:1649
+#: data/preferences.ui:1675
 msgid "Use binary prefixes for information units"
 msgstr "對資訊單位使用二進制前綴"
 
-#: data/preferences.ui:1653
+#: data/preferences.ui:1679
 msgid ""
-"Use binary, instead of decimal, prefixes by default for information units (e."
-"g. bytes)."
+"Use binary, instead of decimal, prefixes by default for information units "
+"(e.g. bytes)."
 msgstr "對資訊單位(例如位元組)預設使用二進制而不是十進制前綴。"
 
-#: data/preferences.ui:1666
+#: data/preferences.ui:1692
 msgid "Copy unformatted ASCII without units"
 msgstr "複製無單位的未格式化ASCII"
 
-#: data/preferences.ui:1683
+#: data/preferences.ui:1709
 msgid "Conversion to local currency"
 msgstr "轉換到本地貨幣"
 
-#: data/preferences.ui:1687
+#: data/preferences.ui:1713
 msgid ""
 "Automatically convert to the local currency when optimal unit conversion is "
 "activated."
 msgstr "當啟用最佳單位轉換時，自動轉換到本地貨幣。"
 
-#: data/preferences.ui:1711
+#: data/preferences.ui:1737
 msgid "Local currency"
 msgstr "本地貨幣"
 
-#: data/preferences.ui:1749
+#: data/preferences.ui:1775
 msgid "Exchange rates updates"
 msgstr "匯率更新"
 
-#: data/preferences.ui:1786
+#: data/preferences.ui:1812
 msgid "Temperature calculation mode:"
 msgstr "溫度計算模式:"
 
-#: data/preferences.ui:1802 src/mainwindow.cc:824
+#: data/preferences.ui:1828 src/mainwindow.cc:825
 msgid "Absolute"
 msgstr "絕對"
 
-#: data/preferences.ui:1846 src/mainwindow.cc:838
+#: data/preferences.ui:1872 src/mainwindow.cc:839
 msgid "Hybrid"
 msgstr "混合"
 
-#: data/preferences.ui:1884
+#: data/preferences.ui:1910
 msgid "Units & Currencies"
 msgstr "單位和貨幣"
 
-#: data/preferences.ui:1903
+#: data/preferences.ui:1929
 msgid "Show expression completion suggestions"
 msgstr "顯示表達式補全建議"
 
-#: data/preferences.ui:1919
+#: data/preferences.ui:1945
 msgid "Search titles and countries"
 msgstr "搜尋標題和國家"
 
-#: data/preferences.ui:1953 data/preferences.ui:1965
+#: data/preferences.ui:1979 data/preferences.ui:1991
 msgid "Minimum characters"
 msgstr "最少字元"
 
-#: data/preferences.ui:1991
+#: data/preferences.ui:2017
 msgid "Popup delay (ms)"
 msgstr "彈出延遲(ms)"
 
-#: data/preferences.ui:2022
+#: data/preferences.ui:2048
 msgid "Completion"
 msgstr "補全"
 
-#: data/preferences.ui:2041
+#: data/preferences.ui:2067
 msgid "Custom status font"
 msgstr "自訂狀態字型"
 
-#: data/preferences.ui:2045
+#: data/preferences.ui:2071
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
 msgstr "如果你想在顯示在表達式框下方的狀態中使用預設以外的其他字型"
 
-#: data/preferences.ui:2093
+#: data/preferences.ui:2119
 msgid "Custom expression font"
 msgstr "自訂表達式字型"
 
-#: data/preferences.ui:2097
+#: data/preferences.ui:2123
 msgid ""
 "If you want to use a font other than the default in the expression entry"
 msgstr "如果你想在表達式框中使用預設以外的其他字型"
 
-#: data/preferences.ui:2111
+#: data/preferences.ui:2137
 msgid "Custom result font"
 msgstr "自訂結果字型"
 
-#: data/preferences.ui:2115
+#: data/preferences.ui:2141
 msgid "If you want to use a font other than the default in the result display"
 msgstr "如果你想在顯示結果中使用預設以外的其他字型"
 
-#: data/preferences.ui:2145
+#: data/preferences.ui:2171
 msgid "Custom keypad font"
 msgstr "自訂鍵盤字型"
 
-#: data/preferences.ui:2149
+#: data/preferences.ui:2175
 msgid "If you want to use a font other than the default in the keypad"
 msgstr "如果你想在鍵盤中使用預設以外的其他字型"
 
-#: data/preferences.ui:2183
+#: data/preferences.ui:2209
 msgid "Status warning color"
 msgstr "狀態警告顏色"
 
-#: data/preferences.ui:2195
+#: data/preferences.ui:2221
 msgid "Status error color"
 msgstr "狀態錯誤顏色"
 
-#: data/preferences.ui:2207
+#: data/preferences.ui:2233
 msgid "Text color"
 msgstr "文字顏色"
 
-#: data/preferences.ui:2255
+#: data/preferences.ui:2281
 msgid "Highlight parenthesis background"
 msgstr "凸顯括號背景"
 
-#: data/preferences.ui:2308
+#: data/preferences.ui:2334
 msgid "Custom application font"
 msgstr "自訂應用程式字型"
 
-#: data/preferences.ui:2312
+#: data/preferences.ui:2338
 msgid ""
 "If you want to use a font other than the default for the whole application"
 msgstr "如果你想對整個應用程式使用預設以外的其他字型"
 
-#: data/preferences.ui:2326
+#: data/preferences.ui:2352
 msgid "Custom history font"
 msgstr "自訂歷史記錄字型"
 
-#: data/preferences.ui:2330
+#: data/preferences.ui:2356
 msgid "If you want to use a font other than the default in the history list"
 msgstr "如果你想在歷史記錄列表中使用預設以外的其他字型"
 
-#: data/preferences.ui:2353
+#: data/preferences.ui:2379
 msgid "Fonts & Colors"
 msgstr "字型和顏色"
 
@@ -3416,8 +3422,8 @@ msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
 "\n"
-"For non-linear relations use \\x for the factor and \\y for the exponent (e."
-"g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
+"For non-linear relations use \\x for the factor and \\y for the exponent "
+"(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
 "與基本單位的關係。對於線性關係，這應該只是一個數字。\n"
 "\n"
@@ -3564,7 +3570,7 @@ msgstr "找不到變數。"
 msgid "Unit not found."
 msgstr "找不到單位。"
 
-#: src/buttonseditdialog.cc:259 src/mainwindow.cc:7270
+#: src/buttonseditdialog.cc:259 src/mainwindow.cc:7318
 #: src/shortcutsdialog.cc:255 src/shortcutsdialog.cc:503
 msgid "Mode not found."
 msgstr "找不到模式。"
@@ -3647,13 +3653,13 @@ msgstr "小數點"
 msgid "Raise"
 msgstr "次方"
 
-#: src/buttonseditdialog.cc:372 src/expressionstatus.cc:706 src/keypad.cc:517
-#: src/keypad.cc:2757 src/util.cc:945
+#: src/buttonseditdialog.cc:372 src/expressionstatus.cc:721 src/keypad.cc:517
+#: src/keypad.cc:2757 src/util.cc:969
 msgid "M+ (memory plus)"
 msgstr "M+(記憶加上)"
 
-#: src/buttonseditdialog.cc:376 src/expressionstatus.cc:696 src/keypad.cc:522
-#: src/keypad.cc:2754 src/util.cc:942
+#: src/buttonseditdialog.cc:376 src/expressionstatus.cc:709 src/keypad.cc:522
+#: src/keypad.cc:2754 src/util.cc:966
 msgid "MC (memory clear)"
 msgstr "MC(記憶清除)"
 
@@ -3661,8 +3667,8 @@ msgstr "MC(記憶清除)"
 msgid "Backspace"
 msgstr "退格鍵"
 
-#: src/buttonseditdialog.cc:377 src/expressionstatus.cc:711 src/keypad.cc:523
-#: src/keypad.cc:2758 src/util.cc:946
+#: src/buttonseditdialog.cc:377 src/expressionstatus.cc:727 src/keypad.cc:523
+#: src/keypad.cc:2758 src/util.cc:970
 msgid "M− (memory minus)"
 msgstr "M−(記憶減去)"
 
@@ -3676,12 +3682,12 @@ msgid "Calculate expression"
 msgstr "計算表達式"
 
 #: src/buttonseditdialog.cc:379 src/keypad.cc:532 src/keypad.cc:2755
-#: src/util.cc:943
+#: src/util.cc:967
 msgid "MR (memory recall)"
 msgstr "MR(記憶喚回)"
 
-#: src/buttonseditdialog.cc:379 src/expressionstatus.cc:701 src/keypad.cc:532
-#: src/keypad.cc:2756 src/util.cc:944
+#: src/buttonseditdialog.cc:379 src/expressionstatus.cc:715 src/keypad.cc:532
+#: src/keypad.cc:2756 src/util.cc:968
 msgid "MS (memory store)"
 msgstr "MS(記憶儲存)"
 
@@ -3756,8 +3762,8 @@ msgstr "全部"
 #: src/conversionview.cc:130 src/conversionview.cc:131
 #: src/conversionview.cc:132 src/conversionview.cc:179
 #: src/conversionview.cc:460 src/functionsdialog.cc:144
-#: src/functionsdialog.cc:145 src/functionsdialog.cc:196 src/mainwindow.cc:7579
-#: src/mainwindow.cc:7611 src/mainwindow.cc:7635 src/unitsdialog.cc:166
+#: src/functionsdialog.cc:145 src/functionsdialog.cc:196 src/mainwindow.cc:7627
+#: src/mainwindow.cc:7659 src/mainwindow.cc:7683 src/unitsdialog.cc:166
 #: src/unitsdialog.cc:167 src/unitsdialog.cc:233 src/variablesdialog.cc:152
 #: src/variablesdialog.cc:153 src/variablesdialog.cc:211
 msgid "Uncategorized"
@@ -3775,7 +3781,7 @@ msgstr "文字"
 msgid "approximate"
 msgstr "近似"
 
-#: src/dataseteditdialog.cc:97 src/expressioncompletion.cc:1848
+#: src/dataseteditdialog.cc:97 src/expressioncompletion.cc:1921
 #: src/variablesdialog.cc:330
 msgid "number"
 msgstr "數字"
@@ -3821,7 +3827,7 @@ msgstr "屬性"
 msgid "Data Retrieval Function"
 msgstr "資料檢索函數"
 
-#: src/datasetsdialog.cc:227 src/expressionstatus.cc:571
+#: src/datasetsdialog.cc:227 src/expressionstatus.cc:573
 #: src/functionsdialog.cc:271
 msgid "argument"
 msgstr "引數"
@@ -3831,12 +3837,13 @@ msgid "New Data Object"
 msgstr "新資料物件"
 
 #: src/drawstructure.cc:644 src/drawstructure.cc:2770 src/expressionedit.cc:597
-#: src/expressionstatus.cc:1185 src/expressionstatus.cc:1221
+#: src/expressionstatus.cc:1214 src/expressionstatus.cc:1249
 #: src/historyview.cc:710 src/historyview.cc:1295 src/historyview.cc:1349
 #: src/historyview.cc:1602 src/historyview.cc:1662 src/historyview.cc:2185
-#: src/insertfunctiondialog.cc:298 src/keypad.cc:3109 src/mainwindow.cc:2788
-#: src/searchprovider.cc:152 src/searchprovider.cc:200
-#: src/searchprovider.cc:201 src/variablesdialog.cc:303
+#: src/insertfunctiondialog.cc:298 src/keypad.cc:3109 src/mainwindow.cc:2835
+#: src/searchprovider.cc:373 src/searchprovider.cc:396
+#: src/searchprovider.cc:473 src/searchprovider.cc:521
+#: src/searchprovider.cc:522 src/variablesdialog.cc:303
 msgid "approx."
 msgstr "近似"
 
@@ -3907,183 +3914,183 @@ msgstr ""
 "無法匯出到檔案\n"
 "%s"
 
-#: src/expressioncompletion.cc:1798
+#: src/expressioncompletion.cc:1871
 msgid "a previous result"
 msgstr "一個先前結果"
 
-#: src/expressioncompletion.cc:1811
+#: src/expressioncompletion.cc:1884
 msgid "matrix"
 msgstr "矩陣"
 
-#: src/expressioncompletion.cc:1813
+#: src/expressioncompletion.cc:1886
 msgid "vector"
 msgstr "向量"
 
-#: src/expressioncompletion.cc:1834 src/variablesdialog.cc:315
+#: src/expressioncompletion.cc:1907 src/variablesdialog.cc:315
 msgid "positive"
 msgstr "正數"
 
-#: src/expressioncompletion.cc:1835 src/variablesdialog.cc:316
+#: src/expressioncompletion.cc:1908 src/variablesdialog.cc:316
 msgid "non-positive"
 msgstr "非正數"
 
-#: src/expressioncompletion.cc:1836 src/variablesdialog.cc:317
+#: src/expressioncompletion.cc:1909 src/variablesdialog.cc:317
 msgid "negative"
 msgstr "負數"
 
-#: src/expressioncompletion.cc:1837 src/variablesdialog.cc:318
+#: src/expressioncompletion.cc:1910 src/variablesdialog.cc:318
 msgid "non-negative"
 msgstr "非負數"
 
-#: src/expressioncompletion.cc:1838 src/variablesdialog.cc:319
+#: src/expressioncompletion.cc:1911 src/variablesdialog.cc:319
 msgid "non-zero"
 msgstr "非零數"
 
-#: src/expressioncompletion.cc:1843 src/variablesdialog.cc:326
+#: src/expressioncompletion.cc:1916 src/variablesdialog.cc:326
 msgid "boolean"
 msgstr "布林"
 
-#: src/expressioncompletion.cc:1844 src/variablesdialog.cc:325
+#: src/expressioncompletion.cc:1917 src/variablesdialog.cc:325
 msgid "integer"
 msgstr "整數"
 
-#: src/expressioncompletion.cc:1845 src/variablesdialog.cc:327
+#: src/expressioncompletion.cc:1918 src/variablesdialog.cc:327
 msgid "rational"
 msgstr "有理數"
 
-#: src/expressioncompletion.cc:1846 src/variablesdialog.cc:328
+#: src/expressioncompletion.cc:1919 src/variablesdialog.cc:328
 msgid "real"
 msgstr "實數"
 
-#: src/expressioncompletion.cc:1847 src/variablesdialog.cc:329
+#: src/expressioncompletion.cc:1920 src/variablesdialog.cc:329
 msgid "complex"
 msgstr "複數"
 
-#: src/expressioncompletion.cc:1849
+#: src/expressioncompletion.cc:1922
 msgid "(not matrix)"
 msgstr "(非矩陣)"
 
-#: src/expressioncompletion.cc:1852 src/variablesdialog.cc:334
+#: src/expressioncompletion.cc:1925 src/variablesdialog.cc:334
 msgid "unknown"
 msgstr "未知數"
 
-#: src/expressioncompletion.cc:1854
+#: src/expressioncompletion.cc:1927
 msgid "default assumptions"
 msgstr "預設假設"
 
-#: src/expressioncompletion.cc:2005
+#: src/expressioncompletion.cc:2078
 msgid "Prefix"
 msgstr "前綴"
 
-#: src/expressioncompletion.cc:2035
+#: src/expressioncompletion.cc:2108
 msgid "Base Units"
 msgstr "基本單位"
 
-#: src/expressioncompletion.cc:2038
+#: src/expressioncompletion.cc:2111
 msgid "Binary-Coded Decimal"
 msgstr "二進碼十進數"
 
-#: src/expressioncompletion.cc:2040
+#: src/expressioncompletion.cc:2113
 msgid "Bijective Base-26"
 msgstr "雙射二十六進制"
 
-#: src/expressioncompletion.cc:2042
+#: src/expressioncompletion.cc:2115
 msgid "Binary Number"
 msgstr "二進制數字"
 
-#: src/expressioncompletion.cc:2044
+#: src/expressioncompletion.cc:2117
 msgid "Calendars"
 msgstr "曆法"
 
-#: src/expressioncompletion.cc:2046
+#: src/expressioncompletion.cc:2119
 msgid "Complex cis Form"
 msgstr "複數cis形式"
 
-#: src/expressioncompletion.cc:2050
+#: src/expressioncompletion.cc:2123
 msgid "Decimal Number"
 msgstr "十進制數字"
 
-#: src/expressioncompletion.cc:2052
+#: src/expressioncompletion.cc:2125
 msgid "Duodecimal Number"
 msgstr "十二進制數字"
 
-#: src/expressioncompletion.cc:2054
+#: src/expressioncompletion.cc:2127
 msgid "Engineering Notation"
 msgstr "工程記法"
 
-#: src/expressioncompletion.cc:2058
+#: src/expressioncompletion.cc:2131
 msgid "Factors"
 msgstr "因子"
 
-#: src/expressioncompletion.cc:2060
+#: src/expressioncompletion.cc:2133
 msgid "16-bit Floating Point Binary Format"
 msgstr "16位元浮點二進制格式"
 
-#: src/expressioncompletion.cc:2062
+#: src/expressioncompletion.cc:2135
 msgid "32-bit Floating Point Binary Format"
 msgstr "32位元浮點二進制格式"
 
-#: src/expressioncompletion.cc:2064
+#: src/expressioncompletion.cc:2137
 msgid "64-bit Floating Point Binary Format"
 msgstr "64位元浮點二進制格式"
 
-#: src/expressioncompletion.cc:2066
+#: src/expressioncompletion.cc:2139
 msgid "80-bit (x86) Floating Point Binary Format"
 msgstr "80位元(x86)浮點二進制格式"
 
-#: src/expressioncompletion.cc:2068
+#: src/expressioncompletion.cc:2141
 msgid "128-bit Floating Point Binary Format"
 msgstr "128位元浮點二進制格式"
 
-#: src/expressioncompletion.cc:2074
+#: src/expressioncompletion.cc:2147
 msgid "Hexadecimal Number"
 msgstr "十六進制數字"
 
-#: src/expressioncompletion.cc:2076
+#: src/expressioncompletion.cc:2149
 msgid "Latitude"
 msgstr "緯度"
 
-#: src/expressioncompletion.cc:2078
+#: src/expressioncompletion.cc:2151
 msgid "Longitude"
 msgstr "經度"
 
-#: src/expressioncompletion.cc:2080
+#: src/expressioncompletion.cc:2153
 msgid "Mixed Units"
 msgstr "混合單位"
 
-#: src/expressioncompletion.cc:2082
+#: src/expressioncompletion.cc:2155
 msgid "Octal Number"
 msgstr "八進制數字"
 
-#: src/expressioncompletion.cc:2084
+#: src/expressioncompletion.cc:2157
 msgid "Optimal Units"
 msgstr "最佳單位"
 
-#: src/expressioncompletion.cc:2086
+#: src/expressioncompletion.cc:2159
 msgid "Expanded Partial Fractions"
 msgstr "已展開部分分式"
 
-#: src/expressioncompletion.cc:2090 src/menubar.cc:1746
+#: src/expressioncompletion.cc:2163 src/menubar.cc:1746
 msgid "Optimal Prefix"
 msgstr "最佳前綴"
 
-#: src/expressioncompletion.cc:2096
+#: src/expressioncompletion.cc:2169
 msgid "Scientific Notation"
 msgstr "科學記法"
 
-#: src/expressioncompletion.cc:2098
+#: src/expressioncompletion.cc:2171
 msgid "Sexagesimal Number"
 msgstr "六十進制數字"
 
-#: src/expressioncompletion.cc:2100
+#: src/expressioncompletion.cc:2173
 msgid "Simple Notation"
 msgstr "簡單記法"
 
-#: src/expressioncompletion.cc:2104 src/expressionstatus.cc:935
+#: src/expressioncompletion.cc:2177 src/expressionstatus.cc:956
 msgid "Unicode"
 msgstr "Unicode"
 
-#: src/expressioncompletion.cc:2106
+#: src/expressioncompletion.cc:2179
 msgid "UTC Time Zone"
 msgstr "UTC時區"
 
@@ -4095,7 +4102,7 @@ msgstr "停止行程"
 msgid "Calculate expression and add to stack"
 msgstr "計算表達式並加入到堆疊"
 
-#: src/expressionedit.cc:1327 src/historyview.cc:2826
+#: src/expressionedit.cc:1327 src/historyview.cc:2827
 #: src/insertfunctiondialog.cc:65
 msgid "Select date"
 msgstr "選擇日期"
@@ -4148,344 +4155,344 @@ msgstr "延遲補全"
 msgid "Customize completion…"
 msgstr "自訂補全…"
 
-#: src/expressionstatus.cc:371
+#: src/expressionstatus.cc:373
 msgid "EXACT"
 msgstr "EXACT"
 
-#: src/expressionstatus.cc:374
+#: src/expressionstatus.cc:376
 msgid "APPROX"
 msgstr "APPROX"
 
-#: src/expressionstatus.cc:378
+#: src/expressionstatus.cc:380
 msgid "RPN"
 msgstr "RPN"
 
 #. Chain mode
-#: src/expressionstatus.cc:383
+#: src/expressionstatus.cc:385
 msgid "CHN"
 msgstr "CHN"
 
-#: src/expressionstatus.cc:411
+#: src/expressionstatus.cc:413
 msgid "ROMAN"
 msgstr "ROMAN"
 
-#: src/expressionstatus.cc:468
+#: src/expressionstatus.cc:470
 msgid "DEG"
 msgstr "DEG"
 
-#: src/expressionstatus.cc:473
+#: src/expressionstatus.cc:475
 msgid "RAD"
 msgstr "RAD"
 
-#: src/expressionstatus.cc:478
+#: src/expressionstatus.cc:480
 msgid "GRA"
 msgstr "GRA"
 
-#: src/expressionstatus.cc:485
+#: src/expressionstatus.cc:487
 msgid "PREC"
 msgstr "PREC"
 
-#: src/expressionstatus.cc:490
+#: src/expressionstatus.cc:492
 msgid "FUNC"
 msgstr "FUNC"
 
-#: src/expressionstatus.cc:496
+#: src/expressionstatus.cc:498
 msgid "UNIT"
 msgstr "UNIT"
 
-#: src/expressionstatus.cc:502
+#: src/expressionstatus.cc:504
 msgid "VAR"
 msgstr "VAR"
 
-#: src/expressionstatus.cc:508
+#: src/expressionstatus.cc:510
 msgid "INF"
 msgstr "INF"
 
-#: src/expressionstatus.cc:514
+#: src/expressionstatus.cc:516
 msgid "CPLX"
 msgstr "CPLX"
 
-#: src/expressionstatus.cc:542
+#: src/expressionstatus.cc:544
 #, c-format
 msgid "Too many arguments for %s()."
 msgstr "%s()的引數太多。"
 
-#: src/expressionstatus.cc:723 src/expressionstatus.cc:725
-#: src/mainwindow.cc:1545 src/mainwindow.cc:5099 src/searchprovider.cc:116
+#: src/expressionstatus.cc:740 src/expressionstatus.cc:742
+#: src/mainwindow.cc:1547 src/mainwindow.cc:5146 src/searchprovider.cc:210
 msgid "factorize"
 msgstr "分解為因子"
 
-#: src/expressionstatus.cc:726 src/expressionstatus.cc:728
-#: src/mainwindow.cc:1548 src/mainwindow.cc:5102 src/searchprovider.cc:116
+#: src/expressionstatus.cc:743 src/expressionstatus.cc:745
+#: src/mainwindow.cc:1550 src/mainwindow.cc:5149 src/searchprovider.cc:214
 msgid "expand"
 msgstr "展開"
 
-#: src/expressionstatus.cc:898 src/mainwindow.cc:1321 src/mainwindow.cc:4764
+#: src/expressionstatus.cc:919 src/mainwindow.cc:1323 src/mainwindow.cc:4811
 msgid "hexadecimal"
 msgstr "十六進制"
 
-#: src/expressionstatus.cc:899 src/expressionstatus.cc:1019
+#: src/expressionstatus.cc:920 src/expressionstatus.cc:1040
 msgid "hexadecimal number"
 msgstr "十六進制數字"
 
-#: src/expressionstatus.cc:900 src/mainwindow.cc:1324 src/mainwindow.cc:4767
+#: src/expressionstatus.cc:921 src/mainwindow.cc:1326 src/mainwindow.cc:4814
 msgid "octal"
 msgstr "八進制"
 
-#: src/expressionstatus.cc:901
+#: src/expressionstatus.cc:922
 msgid "octal number"
 msgstr "八進制數字"
 
-#: src/expressionstatus.cc:902 src/mainwindow.cc:1327 src/mainwindow.cc:4770
+#: src/expressionstatus.cc:923 src/mainwindow.cc:1329 src/mainwindow.cc:4817
 msgid "decimal"
 msgstr "十進制"
 
-#: src/expressionstatus.cc:903
+#: src/expressionstatus.cc:924
 msgid "decimal number"
 msgstr "十進制數字"
 
-#: src/expressionstatus.cc:904 src/mainwindow.cc:1331 src/mainwindow.cc:4774
+#: src/expressionstatus.cc:925 src/mainwindow.cc:1333 src/mainwindow.cc:4821
 msgid "duodecimal"
 msgstr "十二進制"
 
-#: src/expressionstatus.cc:905 src/expressionstatus.cc:907
+#: src/expressionstatus.cc:926 src/expressionstatus.cc:928
 msgid "duodecimal number"
 msgstr "十二進制數字"
 
-#: src/expressionstatus.cc:908 src/mainwindow.cc:1339 src/mainwindow.cc:4782
+#: src/expressionstatus.cc:929 src/mainwindow.cc:1341 src/mainwindow.cc:4829
 msgid "binary"
 msgstr "二進制"
 
-#: src/expressionstatus.cc:909 src/expressionstatus.cc:1013
+#: src/expressionstatus.cc:930 src/expressionstatus.cc:1034
 msgid "binary number"
 msgstr "二進制數字"
 
-#: src/expressionstatus.cc:910 src/mainwindow.cc:1342 src/mainwindow.cc:4785
+#: src/expressionstatus.cc:931 src/mainwindow.cc:1344 src/mainwindow.cc:4832
 msgid "roman"
 msgstr "羅馬"
 
-#: src/expressionstatus.cc:911
+#: src/expressionstatus.cc:932
 msgid "roman numerals"
 msgstr "羅馬數字"
 
-#: src/expressionstatus.cc:912 src/mainwindow.cc:1345 src/mainwindow.cc:4788
+#: src/expressionstatus.cc:933 src/mainwindow.cc:1347 src/mainwindow.cc:4835
 msgid "bijective"
 msgstr "雙射"
 
-#: src/expressionstatus.cc:913
+#: src/expressionstatus.cc:934
 msgid "bijective base-26"
 msgstr "雙射二十六進制"
 
-#: src/expressionstatus.cc:915
+#: src/expressionstatus.cc:936
 msgid "binary-coded decimal"
 msgstr "二進碼十進數"
 
-#: src/expressionstatus.cc:916 src/mainwindow.cc:1351 src/mainwindow.cc:1354
-#: src/mainwindow.cc:1357 src/mainwindow.cc:4794 src/mainwindow.cc:4797
-#: src/mainwindow.cc:4800
+#: src/expressionstatus.cc:937 src/mainwindow.cc:1353 src/mainwindow.cc:1356
+#: src/mainwindow.cc:1359 src/mainwindow.cc:4841 src/mainwindow.cc:4844
+#: src/mainwindow.cc:4847
 msgid "sexagesimal"
 msgstr "六十進制"
 
-#: src/expressionstatus.cc:917
+#: src/expressionstatus.cc:938
 msgid "sexagesimal number"
 msgstr "六十進制數字"
 
-#: src/expressionstatus.cc:918 src/expressionstatus.cc:919
-#: src/mainwindow.cc:1360 src/mainwindow.cc:1363 src/mainwindow.cc:4803
-#: src/mainwindow.cc:4806
+#: src/expressionstatus.cc:939 src/expressionstatus.cc:940
+#: src/mainwindow.cc:1362 src/mainwindow.cc:1365 src/mainwindow.cc:4850
+#: src/mainwindow.cc:4853
 msgid "latitude"
 msgstr "緯度"
 
-#: src/expressionstatus.cc:920 src/expressionstatus.cc:921
-#: src/mainwindow.cc:1366 src/mainwindow.cc:1369 src/mainwindow.cc:4809
-#: src/mainwindow.cc:4812
+#: src/expressionstatus.cc:941 src/expressionstatus.cc:942
+#: src/mainwindow.cc:1368 src/mainwindow.cc:1371 src/mainwindow.cc:4856
+#: src/mainwindow.cc:4859
 msgid "longitude"
 msgstr "經度"
 
-#: src/expressionstatus.cc:923
+#: src/expressionstatus.cc:944
 msgid "32-bit floating point"
 msgstr "32位元浮點數"
 
-#: src/expressionstatus.cc:925
+#: src/expressionstatus.cc:946
 msgid "64-bit floating point"
 msgstr "64位元浮點數"
 
-#: src/expressionstatus.cc:927
+#: src/expressionstatus.cc:948
 msgid "16-bit floating point"
 msgstr "16位元浮點數"
 
-#: src/expressionstatus.cc:929
+#: src/expressionstatus.cc:950
 msgid "80-bit (x86) floating point"
 msgstr "80位元(x86)浮點數"
 
-#: src/expressionstatus.cc:931
+#: src/expressionstatus.cc:952
 msgid "128-bit floating point"
 msgstr "128位元浮點數"
 
-#: src/expressionstatus.cc:932 src/mainwindow.cc:1387 src/mainwindow.cc:4830
+#: src/expressionstatus.cc:953 src/mainwindow.cc:1389 src/mainwindow.cc:4877
 msgid "time"
 msgstr "時間"
 
-#: src/expressionstatus.cc:933
+#: src/expressionstatus.cc:954
 msgid "time format"
 msgstr "時間格式"
 
-#: src/expressionstatus.cc:936 src/mainwindow.cc:1393 src/mainwindow.cc:4836
+#: src/expressionstatus.cc:957 src/mainwindow.cc:1395 src/mainwindow.cc:4883
 msgid "scientific"
 msgstr "科學"
 
-#: src/expressionstatus.cc:937
+#: src/expressionstatus.cc:958
 msgid "scientific notation"
 msgstr "科學記法"
 
-#: src/expressionstatus.cc:938 src/mainwindow.cc:1396 src/mainwindow.cc:4839
+#: src/expressionstatus.cc:959 src/mainwindow.cc:1398 src/mainwindow.cc:4886
 msgid "engineering"
 msgstr "工程"
 
-#: src/expressionstatus.cc:939
+#: src/expressionstatus.cc:960
 msgid "engineering notation"
 msgstr "工程記法"
 
-#: src/expressionstatus.cc:940 src/mainwindow.cc:1399 src/mainwindow.cc:4842
+#: src/expressionstatus.cc:961 src/mainwindow.cc:1401 src/mainwindow.cc:4889
 msgid "simple"
 msgstr "簡單"
 
-#: src/expressionstatus.cc:941
+#: src/expressionstatus.cc:962
 msgid "simple notation"
 msgstr "簡單記法"
 
-#: src/expressionstatus.cc:942 src/mainwindow.cc:1447 src/mainwindow.cc:4892
+#: src/expressionstatus.cc:963 src/mainwindow.cc:1449 src/mainwindow.cc:4939
 msgid "bases"
 msgstr "底數"
 
-#: src/expressionstatus.cc:943
+#: src/expressionstatus.cc:964
 msgid "number bases"
 msgstr "底數"
 
-#: src/expressionstatus.cc:944 src/expressionstatus.cc:945
-#: src/mainwindow.cc:1449 src/mainwindow.cc:4902
+#: src/expressionstatus.cc:965 src/expressionstatus.cc:966
+#: src/mainwindow.cc:1451 src/mainwindow.cc:4949
 msgid "calendars"
 msgstr "曆法"
 
-#: src/expressionstatus.cc:946 src/mainwindow.cc:1471 src/mainwindow.cc:4977
+#: src/expressionstatus.cc:967 src/mainwindow.cc:1473 src/mainwindow.cc:5024
 msgid "optimal"
 msgstr "最佳"
 
-#: src/expressionstatus.cc:947
+#: src/expressionstatus.cc:968
 msgid "optimal unit"
 msgstr "最佳單位"
 
-#: src/expressionstatus.cc:948 src/mainwindow.cc:1476 src/mainwindow.cc:4989
+#: src/expressionstatus.cc:969 src/mainwindow.cc:1478 src/mainwindow.cc:5036
 msgid "prefix"
 msgstr "前綴"
 
-#: src/expressionstatus.cc:949
+#: src/expressionstatus.cc:970
 msgid "optimal prefix"
 msgstr "最佳前綴"
 
 #. base units
-#: src/expressionstatus.cc:950 src/mainwindow.cc:1481 src/mainwindow.cc:4993
+#: src/expressionstatus.cc:971 src/mainwindow.cc:1483 src/mainwindow.cc:5040
 msgctxt "Units"
 msgid "base"
 msgstr "基本"
 
-#: src/expressionstatus.cc:951
+#: src/expressionstatus.cc:972
 msgid "base units"
 msgstr "基本單位"
 
-#: src/expressionstatus.cc:952 src/mainwindow.cc:1486 src/mainwindow.cc:5005
+#: src/expressionstatus.cc:973 src/mainwindow.cc:1488 src/mainwindow.cc:5052
 msgid "mixed"
 msgstr "混合"
 
-#: src/expressionstatus.cc:953
+#: src/expressionstatus.cc:974
 msgid "mixed units"
 msgstr "混合單位"
 
-#: src/expressionstatus.cc:954 src/expressionstatus.cc:955
-#: src/mainwindow.cc:1491 src/mainwindow.cc:5017
+#: src/expressionstatus.cc:975 src/expressionstatus.cc:976
+#: src/mainwindow.cc:1493 src/mainwindow.cc:5064
 msgid "factors"
 msgstr "因子"
 
-#: src/expressionstatus.cc:956 src/mainwindow.cc:1494 src/mainwindow.cc:5027
+#: src/expressionstatus.cc:977 src/mainwindow.cc:1496 src/mainwindow.cc:5074
 msgid "partial fraction"
 msgstr "部分分式"
 
-#: src/expressionstatus.cc:957
+#: src/expressionstatus.cc:978
 msgid "expanded partial fractions"
 msgstr "已展開部分分式"
 
-#: src/expressionstatus.cc:958 src/mainwindow.cc:1451 src/mainwindow.cc:4912
+#: src/expressionstatus.cc:979 src/mainwindow.cc:1453 src/mainwindow.cc:4959
 msgid "rectangular"
 msgstr "直角"
 
-#: src/expressionstatus.cc:958 src/mainwindow.cc:1451 src/mainwindow.cc:4912
+#: src/expressionstatus.cc:979 src/mainwindow.cc:1453 src/mainwindow.cc:4959
 msgid "cartesian"
 msgstr "笛卡兒"
 
-#: src/expressionstatus.cc:959
+#: src/expressionstatus.cc:980
 msgid "complex rectangular form"
 msgstr "複數直角座標形式"
 
-#: src/expressionstatus.cc:960 src/mainwindow.cc:1455 src/mainwindow.cc:4925
+#: src/expressionstatus.cc:981 src/mainwindow.cc:1457 src/mainwindow.cc:4972
 msgid "exponential"
 msgstr "指數"
 
-#: src/expressionstatus.cc:961
+#: src/expressionstatus.cc:982
 msgid "complex exponential form"
 msgstr "複數指數形式"
 
-#: src/expressionstatus.cc:962 src/mainwindow.cc:1459 src/mainwindow.cc:4938
+#: src/expressionstatus.cc:983 src/mainwindow.cc:1461 src/mainwindow.cc:4985
 msgid "polar"
 msgstr "極坐標"
 
-#: src/expressionstatus.cc:963
+#: src/expressionstatus.cc:984
 msgid "complex polar form"
 msgstr "複數極坐標形式"
 
-#: src/expressionstatus.cc:965
+#: src/expressionstatus.cc:986
 msgid "complex cis form"
 msgstr "複數cis形式"
 
-#: src/expressionstatus.cc:966 src/mainwindow.cc:1467 src/mainwindow.cc:4964
+#: src/expressionstatus.cc:987 src/mainwindow.cc:1469 src/mainwindow.cc:5011
 msgid "angle"
 msgstr "角度"
 
-#: src/expressionstatus.cc:967
+#: src/expressionstatus.cc:988
 msgid "complex angle notation"
 msgstr "複數角度記法"
 
-#: src/expressionstatus.cc:968 src/mainwindow.cc:1467 src/mainwindow.cc:4964
+#: src/expressionstatus.cc:989 src/mainwindow.cc:1469 src/mainwindow.cc:5011
 msgid "phasor"
 msgstr "相量"
 
-#: src/expressionstatus.cc:969
+#: src/expressionstatus.cc:990
 msgid "complex phasor notation"
 msgstr "複數相量記法"
 
-#: src/expressionstatus.cc:971
+#: src/expressionstatus.cc:992
 msgid "UTC time zone"
 msgstr "UTC時區"
 
 #. number base #
-#: src/expressionstatus.cc:1023 src/mainwindow.cc:1498 src/mainwindow.cc:5037
+#: src/expressionstatus.cc:1044 src/mainwindow.cc:1500 src/mainwindow.cc:5084
 msgctxt "Number base"
 msgid "base"
 msgstr "底數"
 
-#: src/expressionstatus.cc:1024
+#: src/expressionstatus.cc:1045
 #, c-format
 msgid "number base %s"
 msgstr "底數%s"
 
-#: src/expressionstatus.cc:1028 src/mainwindow.cc:1502 src/mainwindow.cc:5041
+#: src/expressionstatus.cc:1049 src/mainwindow.cc:1504 src/mainwindow.cc:5088
 msgid "decimals"
 msgstr "小數"
 
-#: src/expressionstatus.cc:1029
+#: src/expressionstatus.cc:1050
 msgid "decimal fraction"
 msgstr "小數"
 
-#: src/expressionstatus.cc:1034 src/expressionstatus.cc:1040 src/util.cc:661
+#: src/expressionstatus.cc:1055 src/expressionstatus.cc:1061 src/util.cc:685
 msgid "fraction"
 msgstr "分數"
 
@@ -4510,15 +4517,15 @@ msgid "Conversion (using \"to\") is not supported in functions."
 msgstr "在函數中不支援轉換(使用\"to\")。"
 
 #: src/functionsdialog.cc:135 src/functionsdialog.cc:136
-#: src/functionsdialog.cc:200 src/mainwindow.cc:7577 src/menubar.cc:1599
-#: src/util.cc:1291 src/util.cc:1292
+#: src/functionsdialog.cc:200 src/mainwindow.cc:7625 src/menubar.cc:1599
+#: src/util.cc:1316 src/util.cc:1317
 msgid "User functions"
 msgstr "使用者函數"
 
 #: src/functionsdialog.cc:153 src/functionsdialog.cc:154
-#: src/functionsdialog.cc:198 src/mainwindow.cc:7575 src/mainwindow.cc:7607
-#: src/mainwindow.cc:7631 src/unitsdialog.cc:174 src/unitsdialog.cc:175
-#: src/unitsdialog.cc:235 src/util.cc:1293 src/util.cc:1294
+#: src/functionsdialog.cc:198 src/mainwindow.cc:7623 src/mainwindow.cc:7655
+#: src/mainwindow.cc:7679 src/unitsdialog.cc:174 src/unitsdialog.cc:175
+#: src/unitsdialog.cc:235 src/util.cc:1318 src/util.cc:1319
 #: src/variablesdialog.cc:161 src/variablesdialog.cc:162
 #: src/variablesdialog.cc:213
 msgid "Inactive"
@@ -4553,7 +4560,7 @@ msgstr "預設: "
 msgid "Requirement"
 msgstr "需求"
 
-#: src/functionsdialog.cc:433 src/unitsdialog.cc:390 src/util.cc:1345
+#: src/functionsdialog.cc:433 src/unitsdialog.cc:390 src/util.cc:1370
 #: src/variablesdialog.cc:353
 msgid "Ac_tivate"
 msgstr "啟用(_t)"
@@ -4562,7 +4569,7 @@ msgstr "啟用(_t)"
 msgid "History Answer Value"
 msgstr "歷史記錄答案值"
 
-#: src/historyview.cc:112 src/mainwindow.cc:8666
+#: src/historyview.cc:112 src/mainwindow.cc:8717
 msgid "answer"
 msgstr "答案"
 
@@ -4590,31 +4597,31 @@ msgid ""
 "rate or increase the time limit in preferences."
 msgstr "產生繪圖資料太久。請降低採樣率或在偏好設定中增加時間限制。"
 
-#: src/historyview.cc:2154 src/mainwindow.cc:2538
+#: src/historyview.cc:2154 src/mainwindow.cc:2585
 msgid "RPN Register Moved"
 msgstr "RPN暫存器已移動"
 
-#: src/historyview.cc:2160 src/mainwindow.cc:2539 src/mainwindow.cc:5331
+#: src/historyview.cc:2160 src/mainwindow.cc:2586 src/mainwindow.cc:5378
 msgid "RPN Operation"
 msgstr "RPN運算"
 
-#: src/historyview.cc:2791
+#: src/historyview.cc:2792
 msgid "Search"
 msgstr "搜尋"
 
-#: src/historyview.cc:2791
+#: src/historyview.cc:2792
 msgid "_Search"
 msgstr "搜尋(_S)"
 
-#: src/historyview.cc:2869 src/historyview.cc:3217
+#: src/historyview.cc:2870 src/historyview.cc:3218
 msgid "Remove Bookmark"
 msgstr "移除書籤"
 
-#: src/historyview.cc:2924
+#: src/historyview.cc:2925
 msgid "Add Bookmark"
 msgstr "加入書籤"
 
-#: src/historyview.cc:2952
+#: src/historyview.cc:2953
 msgid ""
 "A bookmark with the selected name already exists.\n"
 "Do you want to overwrite it?"
@@ -4622,19 +4629,19 @@ msgstr ""
 "具有選擇名稱的書籤已存在。\n"
 "你想覆寫它嗎?"
 
-#: src/historyview.cc:2967 src/historyview.cc:3210
+#: src/historyview.cc:2968 src/historyview.cc:3211
 msgid "Edit Comment…"
 msgstr "編輯註解…"
 
-#: src/historyview.cc:2969
+#: src/historyview.cc:2970
 msgid "Comment"
 msgstr "註解"
 
-#: src/historyview.cc:3255
+#: src/historyview.cc:3256
 msgid "No items found"
 msgstr "找不到項目"
 
-#: src/historyview.cc:3689 src/stackview.cc:794
+#: src/historyview.cc:3690 src/stackview.cc:794
 msgid "Index"
 msgstr "索引"
 
@@ -4713,13 +4720,13 @@ msgstr "中鍵: %s"
 msgid "Raise (Ctrl+*)"
 msgstr "次方(Ctrl+*)"
 
-#: src/keypad.cc:810 src/util.cc:904
+#: src/keypad.cc:810 src/util.cc:928
 msgid "Set unknowns"
 msgstr "設定未知數"
 
 #. Show further items in a submenu
 #: src/keypad.cc:858 src/keypad.cc:946 src/keypad.cc:949 src/keypad.cc:2469
-#: src/menubar.cc:1396 src/menubar.cc:1491 src/resultview.cc:896
+#: src/menubar.cc:1396 src/menubar.cc:1491 src/resultview.cc:900
 msgid "more"
 msgstr "更多"
 
@@ -4755,7 +4762,7 @@ msgstr "所有函數"
 msgid "All variables"
 msgstr "所有變數"
 
-#: src/keypad.cc:2685 src/mainwindow.cc:7655 src/variablesdialog.cc:258
+#: src/keypad.cc:2685 src/mainwindow.cc:7703 src/variablesdialog.cc:258
 #: src/variablesdialog.cc:417 src/variablesdialog.cc:432
 #: src/variablesdialog.cc:448 src/variablesdialog.cc:468
 msgid "Variable does not exist anymore."
@@ -4766,43 +4773,47 @@ msgstr "變數不再存在。"
 msgid "ENTER"
 msgstr "ENTER"
 
-#: src/main.cc:59
+#: src/main.cc:60
 msgid "Execute expressions and commands from a file"
 msgstr "從檔案執行表達式和命令"
 
-#: src/main.cc:59
+#: src/main.cc:60
 msgid "FILE"
 msgstr "檔案"
 
-#: src/main.cc:60
+#: src/main.cc:61
 msgid "Start a new instance of the application"
 msgstr "啟動一個新的應用程式實例"
 
-#: src/main.cc:61
+#: src/main.cc:62
 msgid "Display the application version"
 msgstr "顯示應用程式版本"
 
-#: src/main.cc:62
+#: src/main.cc:63
 msgid "Specify the window title"
 msgstr "指定視窗標題"
 
-#: src/main.cc:62
+#: src/main.cc:63
 msgid "TITLE"
 msgstr "標題"
 
-#: src/main.cc:63
+#: src/main.cc:64 src/util.cc:979
+msgid "Update exchange rates"
+msgstr "更新匯率"
+
+#: src/main.cc:65
 msgid "Expression to calculate"
 msgstr "要計算的表達式"
 
-#: src/main.cc:63
+#: src/main.cc:65
 msgid "[EXPRESSION]"
 msgstr "[表達式]"
 
-#: src/main.cc:151 src/searchprovider.cc:656
+#: src/main.cc:153 src/searchprovider.cc:978
 msgid "Failed to load global definitions!\n"
 msgstr "無法載入全域定義!\n"
 
-#: src/main.cc:326
+#: src/main.cc:331
 #, c-format
 msgid ""
 "By default, only one instance (one main window) of %s is allowed.\n"
@@ -4825,18 +4836,18 @@ msgstr ""
 msgid "Set Window Title"
 msgstr "設定視窗標題"
 
-#: src/mainwindow.cc:528
+#: src/mainwindow.cc:529
 msgid "Exchange rate source:"
 msgid_plural "Exchange rate sources:"
 msgstr[0] "匯率來源:"
 
-#: src/mainwindow.cc:530
+#: src/mainwindow.cc:531
 #, c-format
 msgid "updated %s"
 msgid_plural "updated %s"
 msgstr[0] "已更新%s"
 
-#: src/mainwindow.cc:550
+#: src/mainwindow.cc:551
 msgid ""
 "When errors, warnings and other information are generated during "
 "calculation, the icon in the upper right corner of the expression entry "
@@ -4847,15 +4858,15 @@ msgstr ""
 "點。\n"
 "如果指標保持在上方或單擊圖示，則將顯示該訊息。"
 
-#: src/mainwindow.cc:610
+#: src/mainwindow.cc:611
 msgid "Path of executable not found."
 msgstr "找不到可執行的路徑。"
 
-#: src/mainwindow.cc:620
+#: src/mainwindow.cc:621
 msgid "curl not found."
 msgstr "找不到curl。"
 
-#: src/mainwindow.cc:685
+#: src/mainwindow.cc:686
 #, c-format
 msgid ""
 "Failed to run update script.\n"
@@ -4864,19 +4875,19 @@ msgstr ""
 "無法執行更新腳本。\n"
 "%s"
 
-#: src/mainwindow.cc:709
+#: src/mainwindow.cc:710
 msgid "Failed to check for updates."
 msgstr "無法檢查更新。"
 
-#: src/mainwindow.cc:709
+#: src/mainwindow.cc:710
 msgid "No updates found."
 msgstr "找不到更新。"
 
-#: src/mainwindow.cc:723
+#: src/mainwindow.cc:724
 msgid "_Download"
 msgstr "下載(_D)"
 
-#: src/mainwindow.cc:735
+#: src/mainwindow.cc:736
 #, c-format
 msgid ""
 "A new version of %s is available at %s.\n"
@@ -4887,7 +4898,7 @@ msgstr ""
 "\n"
 "你想更新到版本%s嗎?"
 
-#: src/mainwindow.cc:737
+#: src/mainwindow.cc:738
 #, c-format
 msgid ""
 "A new version of %s is available.\n"
@@ -4898,11 +4909,11 @@ msgstr ""
 "\n"
 "版本%s可以在%s得到。"
 
-#: src/mainwindow.cc:811
+#: src/mainwindow.cc:812
 msgid "Temperature Calculation Mode"
 msgstr "溫度計算模式"
 
-#: src/mainwindow.cc:821
+#: src/mainwindow.cc:822
 msgid ""
 "The expression is ambiguous.\n"
 "Please select temperature calculation mode\n"
@@ -4912,35 +4923,35 @@ msgstr ""
 "請選擇溫度計算模式\n"
 "(可以稍後在偏好設定中變更模式)。"
 
-#: src/mainwindow.cc:874
+#: src/mainwindow.cc:875
 msgid "Unknown variables (e.g. x, y, z) are by default assumed real."
 msgstr "未知變數(例如x、y、z)預設假設為實數。"
 
-#: src/mainwindow.cc:882
+#: src/mainwindow.cc:883
 msgid "Sinc Function"
 msgstr "Sinc函數"
 
-#: src/mainwindow.cc:892
+#: src/mainwindow.cc:893
 msgid "Please select desired variant of the sinc function."
 msgstr "請選擇期望的sinc函數變體。"
 
-#: src/mainwindow.cc:895
+#: src/mainwindow.cc:896
 msgid "Unnormalized"
 msgstr "未正規化"
 
-#: src/mainwindow.cc:902
+#: src/mainwindow.cc:903
 msgid "Normalized"
 msgstr "正規化"
 
-#: src/mainwindow.cc:937
+#: src/mainwindow.cc:938
 msgid "Interpretation of comma"
 msgstr "逗號的判讀"
 
-#: src/mainwindow.cc:937
+#: src/mainwindow.cc:938
 msgid "Interpretation of dots"
 msgstr "點的判讀"
 
-#: src/mainwindow.cc:947
+#: src/mainwindow.cc:948
 msgid ""
 "Please select interpretation of comma (\",\")\n"
 "(this can later be changed in preferences)."
@@ -4948,7 +4959,7 @@ msgstr ""
 "請選擇逗號(\",\")的判讀\n"
 "(可以稍後在偏好設定中變更)。"
 
-#: src/mainwindow.cc:947
+#: src/mainwindow.cc:948
 msgid ""
 "Please select interpretation of dots (\".\")\n"
 "(this can later be changed in preferences)."
@@ -4956,19 +4967,19 @@ msgstr ""
 "請選擇點(\".\")的判讀\n"
 "(可以稍後在偏好設定中變更)。"
 
-#: src/mainwindow.cc:950
+#: src/mainwindow.cc:951
 msgid "Both dot and comma as decimal separators"
 msgstr "點和逗號都作為小數分隔符"
 
-#: src/mainwindow.cc:957
+#: src/mainwindow.cc:958
 msgid "Comma as thousands separator"
 msgstr "逗號作為千位分隔符"
 
-#: src/mainwindow.cc:957
+#: src/mainwindow.cc:958
 msgid "Dot as thousands separator"
 msgstr "點作為千位分隔符"
 
-#: src/mainwindow.cc:964
+#: src/mainwindow.cc:965
 msgid ""
 "Comma as separator for function arguments\n"
 "and matrix/vector elements"
@@ -4976,11 +4987,11 @@ msgstr ""
 "逗號作為函數引數\n"
 "和矩陣/向量元素的分隔符"
 
-#: src/mainwindow.cc:964
+#: src/mainwindow.cc:965
 msgid "Only dot as decimal separator"
 msgstr "只有點作為小數分隔符"
 
-#: src/mainwindow.cc:1028
+#: src/mainwindow.cc:1029
 msgid ""
 "The expression is ambiguous.\n"
 "Please select interpretation of expressions with implicit multiplication\n"
@@ -4990,63 +5001,63 @@ msgstr ""
 "請選擇具有隱式乘法的表達式判讀\n"
 "(可以稍後在偏好設定中變更)。"
 
-#: src/mainwindow.cc:1031
+#: src/mainwindow.cc:1032
 msgid "Implicit multiplication first"
 msgstr "隱式乘法優先"
 
-#: src/mainwindow.cc:1039
+#: src/mainwindow.cc:1040
 msgid "Conventional"
 msgstr "常規"
 
-#: src/mainwindow.cc:1074
+#: src/mainwindow.cc:1075
 msgid "Percentage Interpretation"
 msgstr "百分比判讀"
 
-#: src/mainwindow.cc:1084
+#: src/mainwindow.cc:1085
 msgid "Please select interpretation of percentage addition."
 msgstr "請選擇百分比加法的判讀。"
 
-#: src/mainwindow.cc:1087
+#: src/mainwindow.cc:1088
 msgid "Add percentage of original value"
 msgstr "加上原始值的百分比"
 
-#: src/mainwindow.cc:1095
+#: src/mainwindow.cc:1096
 msgid "Add percentage multiplied by 1/100"
 msgstr "加上百分比乘以1/100"
 
-#: src/mainwindow.cc:2080
+#: src/mainwindow.cc:2127
 msgid "My Variables"
 msgstr "我的變數"
 
-#: src/mainwindow.cc:2717
+#: src/mainwindow.cc:2764
 msgid "Processing…"
 msgstr "處理中…"
 
-#: src/mainwindow.cc:2988
+#: src/mainwindow.cc:3035
 msgid "Factorizing…"
 msgstr "分解為因子中…"
 
-#: src/mainwindow.cc:2992
+#: src/mainwindow.cc:3039
 msgid "Expanding partial fractions…"
 msgstr "展開部分分式中…"
 
-#: src/mainwindow.cc:2996
+#: src/mainwindow.cc:3043
 msgid "Expanding…"
 msgstr "展開中…"
 
-#: src/mainwindow.cc:3001 src/mainwindow.cc:5271
+#: src/mainwindow.cc:3048 src/mainwindow.cc:5318
 msgid "Calculating…"
 msgstr "計算中…"
 
-#: src/mainwindow.cc:3005
+#: src/mainwindow.cc:3052
 msgid "Converting…"
 msgstr "轉換中…"
 
-#: src/mainwindow.cc:4883
+#: src/mainwindow.cc:4930
 msgid "Time zone parsing failed."
 msgstr "時區剖析失敗。"
 
-#: src/mainwindow.cc:5496 src/mainwindow.cc:7105 src/openhelp.cc:361
+#: src/mainwindow.cc:5545 src/mainwindow.cc:7153 src/openhelp.cc:361
 #, c-format
 msgid ""
 "Failed to open %s.\n"
@@ -5055,25 +5066,25 @@ msgstr ""
 "無法開啟%s。\n"
 "%s"
 
-#: src/mainwindow.cc:5650
+#: src/mainwindow.cc:5699
 msgid "Couldn't write definitions"
 msgstr "無法寫入定義"
 
-#: src/mainwindow.cc:5652 src/mainwindow.cc:5654 src/mainwindow.cc:6436
-#: src/mainwindow.cc:6438 src/mainwindow.cc:6481 src/mainwindow.cc:6483
+#: src/mainwindow.cc:5701 src/mainwindow.cc:5703 src/mainwindow.cc:6485
+#: src/mainwindow.cc:6487 src/mainwindow.cc:6530 src/mainwindow.cc:6532
 msgid "Ignore"
 msgstr "忽略"
 
-#: src/mainwindow.cc:5652 src/mainwindow.cc:6436 src/mainwindow.cc:6481
+#: src/mainwindow.cc:5701 src/mainwindow.cc:6485 src/mainwindow.cc:6530
 msgid "Cancel"
 msgstr "取消"
 
-#: src/mainwindow.cc:5652 src/mainwindow.cc:5654 src/mainwindow.cc:6436
-#: src/mainwindow.cc:6438 src/mainwindow.cc:6481 src/mainwindow.cc:6483
+#: src/mainwindow.cc:5701 src/mainwindow.cc:5703 src/mainwindow.cc:6485
+#: src/mainwindow.cc:6487 src/mainwindow.cc:6530 src/mainwindow.cc:6532
 msgid "Retry"
 msgstr "重試"
 
-#: src/mainwindow.cc:6434
+#: src/mainwindow.cc:6483
 #, c-format
 msgid ""
 "Couldn't write history to\n"
@@ -5082,7 +5093,7 @@ msgstr ""
 "無法寫入歷史記錄到\n"
 "%s"
 
-#: src/mainwindow.cc:6479
+#: src/mainwindow.cc:6528
 #, c-format
 msgid ""
 "Couldn't write preferences to\n"
@@ -5091,70 +5102,70 @@ msgstr ""
 "無法寫入偏好設定到\n"
 "%s"
 
-#: src/mainwindow.cc:6782 src/mainwindow.cc:6784
+#: src/mainwindow.cc:6830 src/mainwindow.cc:6832
 msgid "Select definitions file"
 msgstr "選擇定義檔"
 
-#: src/mainwindow.cc:6782 src/mainwindow.cc:6784
+#: src/mainwindow.cc:6830 src/mainwindow.cc:6832
 msgid "_Import"
 msgstr "匯入(_I)"
 
-#: src/mainwindow.cc:6788
+#: src/mainwindow.cc:6836
 msgid "XML Files"
 msgstr "XML檔"
 
-#: src/mainwindow.cc:6808
+#: src/mainwindow.cc:6856
 #, c-format
 msgid "Could not copy %s to %s."
 msgstr "無法將%s複製到%s。"
 
-#: src/mainwindow.cc:6816
+#: src/mainwindow.cc:6864
 #, c-format
 msgid "Could not read %s."
 msgstr "無法讀取%s。"
 
-#: src/mainwindow.cc:6824
+#: src/mainwindow.cc:6872
 #, c-format
 msgid "Could not copy file to %s."
 msgstr "無法將檔案複製到%s。"
 
-#: src/mainwindow.cc:7079
+#: src/mainwindow.cc:7127
 msgid "translator-credits"
 msgstr ""
 
-#: src/mainwindow.cc:7609 src/menubar.cc:1687 src/util.cc:1287 src/util.cc:1288
+#: src/mainwindow.cc:7657 src/menubar.cc:1687 src/util.cc:1312 src/util.cc:1313
 #: src/variablesdialog.cc:143 src/variablesdialog.cc:144
 #: src/variablesdialog.cc:215
 msgid "User variables"
 msgstr "使用者變數"
 
-#: src/mainwindow.cc:7633 src/menubar.cc:1427 src/menubar.cc:1522
+#: src/mainwindow.cc:7681 src/menubar.cc:1427 src/menubar.cc:1522
 #: src/unitsdialog.cc:158 src/unitsdialog.cc:159 src/unitsdialog.cc:237
-#: src/util.cc:1289 src/util.cc:1290
+#: src/util.cc:1314 src/util.cc:1315
 msgid "User units"
 msgstr "使用者單位"
 
-#: src/mainwindow.cc:7742
+#: src/mainwindow.cc:7790
 msgid "No unknowns in result."
 msgstr "結果中沒有未知數。"
 
-#: src/mainwindow.cc:7748
+#: src/mainwindow.cc:7796
 msgid "Set Unknowns"
 msgstr "設定未知數"
 
-#: src/mainwindow.cc:7748
+#: src/mainwindow.cc:7796
 msgid "_Apply"
 msgstr "套用(_A)"
 
-#: src/mainwindow.cc:8663
+#: src/mainwindow.cc:8714
 msgid "ans"
 msgstr "ans"
 
-#: src/mainwindow.cc:8664
+#: src/mainwindow.cc:8715
 msgid "Last Answer"
 msgstr "上一個答案"
 
-#: src/mainwindow.cc:8665
+#: src/mainwindow.cc:8716
 msgid ""
 "Contains the result of the most recent calculation. Multiple results of an "
 "equation is represented as a vector. Access separate solutions using ans(n) "
@@ -5163,23 +5174,23 @@ msgstr ""
 "包含最近計算的結果。方程式的多個結果表示為向量。使用ans(n)存取個別的解答(例如"
 "ans(1)代表第一個解答)。"
 
-#: src/mainwindow.cc:8668
+#: src/mainwindow.cc:8719
 msgid "Answer 2"
 msgstr "答案2"
 
-#: src/mainwindow.cc:8669
+#: src/mainwindow.cc:8720
 msgid "Answer 3"
 msgstr "答案3"
 
-#: src/mainwindow.cc:8670
+#: src/mainwindow.cc:8721
 msgid "Answer 4"
 msgstr "答案4"
 
-#: src/mainwindow.cc:8671
+#: src/mainwindow.cc:8722
 msgid "Answer 5"
 msgstr "答案5"
 
-#: src/mainwindow.cc:8681
+#: src/mainwindow.cc:8732
 msgid "Memory"
 msgstr "記憶"
 
@@ -5378,11 +5389,11 @@ msgstr "未知化學性質"
 msgid "Select file to export"
 msgstr "選擇要匯出的檔案"
 
-#: src/plotdialog.cc:385 src/resultview.cc:555
+#: src/plotdialog.cc:385 src/resultview.cc:559
 msgid "Allowed File Types"
 msgstr "允許的檔案類型"
 
-#: src/plotdialog.cc:396 src/resultview.cc:560
+#: src/plotdialog.cc:396 src/resultview.cc:564
 msgid "All Files"
 msgstr "所有檔案"
 
@@ -5405,29 +5416,29 @@ msgid ""
 "path, for plotting to work."
 msgstr "%s(%s)需要單獨安裝，並在可執行的搜尋路徑中找到，使繪圖能運作。"
 
-#: src/preferencesdialog.cc:113 src/preferencesdialog.cc:126
+#: src/preferencesdialog.cc:120 src/preferencesdialog.cc:133
 msgid "never"
 msgstr "從不"
 
-#: src/preferencesdialog.cc:114 src/preferencesdialog.cc:128
+#: src/preferencesdialog.cc:121 src/preferencesdialog.cc:135
 msgid "ask"
 msgstr "詢問"
 
-#: src/preferencesdialog.cc:122
+#: src/preferencesdialog.cc:129
 #, c-format
 msgid "%i day"
 msgid_plural "%i days"
 msgstr[0] "%i天"
 
-#: src/preferencesdialog.cc:289
+#: src/preferencesdialog.cc:296
 msgid "Please restart the program for the language change to take effect."
 msgstr "請重新啟動程式使語言變更生效。"
 
-#: src/resultview.cc:221 src/resultview.cc:458
+#: src/resultview.cc:225 src/resultview.cc:462
 msgid "result processing was aborted"
 msgstr "結果處理被終止"
 
-#: src/resultview.cc:221 src/resultview.cc:520
+#: src/resultview.cc:225 src/resultview.cc:524
 msgid ""
 "result is too long\n"
 "see history"
@@ -5435,11 +5446,11 @@ msgstr ""
 "結果太長\n"
 "請觀看歷史記錄"
 
-#: src/resultview.cc:242 src/resultview.cc:522
+#: src/resultview.cc:246 src/resultview.cc:526
 msgid "calculation was aborted"
 msgstr "計算被終止"
 
-#: src/resultview.cc:342
+#: src/resultview.cc:346
 msgid ""
 "Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
 "and press the enter key."
@@ -5447,17 +5458,17 @@ msgstr ""
 "在上面鍵入數學表達式，例如\"5 + 2 / 3\"，\n"
 "然後按Enter鍵。"
 
-#: src/resultview.cc:548 src/resultview.cc:550
+#: src/resultview.cc:552 src/resultview.cc:554
 #, fuzzy
 msgid "Select file to save PNG image to"
 msgstr "選擇要儲存PNG圖像到的檔案"
 
 #. Result was copied
-#: src/resultview.cc:1203
+#: src/resultview.cc:1207
 msgid "Copied"
 msgstr "已複製"
 
-#: src/searchprovider.cc:210
+#: src/searchprovider.cc:531
 msgid "Copy result to clipboard"
 msgstr "將結果復製到剪貼簿"
 
@@ -5515,312 +5526,308 @@ msgstr "編輯未知變數(全域)"
 msgid "New Unknown Variable"
 msgstr "新未知變數"
 
-#: src/util.cc:886
+#: src/util.cc:910
 msgid "Insert function"
 msgstr "插入函數"
 
-#: src/util.cc:887
+#: src/util.cc:911
 msgid "Insert function (dialog)"
 msgstr "插入函數(對話框)"
 
-#: src/util.cc:888
+#: src/util.cc:912
 msgid "Insert variable"
 msgstr "插入變數"
 
-#: src/util.cc:889
+#: src/util.cc:913
 msgid "Insert unit"
 msgstr "插入單位"
 
-#: src/util.cc:890
+#: src/util.cc:914
 msgid "Insert text"
 msgstr "插入文字"
 
-#: src/util.cc:891
+#: src/util.cc:915
 msgid "Insert date"
 msgstr "插入日期"
 
-#: src/util.cc:892
+#: src/util.cc:916
 msgid "Insert vector"
 msgstr "插入向量"
 
-#: src/util.cc:893
+#: src/util.cc:917
 msgid "Insert matrix"
 msgstr "插入矩陣"
 
-#: src/util.cc:894
+#: src/util.cc:918
 msgid "Insert smart parentheses"
 msgstr "插入智慧括號"
 
-#: src/util.cc:895
+#: src/util.cc:919
 msgid "Convert to unit"
 msgstr "轉換到單位"
 
-#: src/util.cc:896
+#: src/util.cc:920
 msgid "Convert to unit (entry)"
 msgstr "轉換到單位(輸入框)"
 
-#: src/util.cc:897
+#: src/util.cc:921
 msgid "Convert to optimal unit"
 msgstr "轉換到最佳單位"
 
-#: src/util.cc:898
+#: src/util.cc:922
 msgid "Convert to base units"
 msgstr "轉換到基本單位"
 
-#: src/util.cc:899
+#: src/util.cc:923
 msgid "Convert to optimal prefix"
 msgstr "轉換到最佳前綴"
 
-#: src/util.cc:900
+#: src/util.cc:924
 msgid "Convert to number base"
 msgstr "轉換到底數"
 
-#: src/util.cc:901
+#: src/util.cc:925
 msgid "Factorize result"
 msgstr "分解結果"
 
-#: src/util.cc:902
+#: src/util.cc:926
 msgid "Expand result"
 msgstr "展開結果"
 
-#: src/util.cc:903
+#: src/util.cc:927
 msgid "Expand partial fractions"
 msgstr "展開部分分式"
 
-#: src/util.cc:905
+#: src/util.cc:929
 msgid "RPN: down"
 msgstr "RPN: 向下"
 
-#: src/util.cc:906
+#: src/util.cc:930
 msgid "RPN: up"
 msgstr "RPN: 向上"
 
-#: src/util.cc:907
+#: src/util.cc:931
 msgid "RPN: swap"
 msgstr "RPN: 交換"
 
-#: src/util.cc:908
+#: src/util.cc:932
 msgid "RPN: copy"
 msgstr "RPN: 複製"
 
-#: src/util.cc:909
+#: src/util.cc:933
 msgid "RPN: lastx"
 msgstr ""
 
-#: src/util.cc:910
+#: src/util.cc:934
 msgid "RPN: delete register"
 msgstr "RPN: 刪除暫存器"
 
-#: src/util.cc:911
+#: src/util.cc:935
 msgid "RPN: clear stack"
 msgstr "RPN: 清除堆疊"
 
-#: src/util.cc:912
+#: src/util.cc:936
 #, fuzzy
 msgid "Load meta mode"
 msgstr "載入後設模式"
 
-#: src/util.cc:913
+#: src/util.cc:937
 msgid "Set expression base"
 msgstr "設定表達式底數"
 
-#: src/util.cc:914
+#: src/util.cc:938
 msgid "Set result base"
 msgstr "設定結果底數"
 
-#: src/util.cc:915
+#: src/util.cc:939
 msgid "Toggle exact mode"
 msgstr "切換精確模式"
 
-#: src/util.cc:916
+#: src/util.cc:940
 msgid "Set angle unit to degrees"
 msgstr "設定角度單位為度"
 
-#: src/util.cc:917
+#: src/util.cc:941
 msgid "Set angle unit to radians"
 msgstr "設定角度單位為弧度"
 
-#: src/util.cc:918
+#: src/util.cc:942
 msgid "Set angle unit to gradians"
 msgstr "設定角度單位為百分度"
 
-#: src/util.cc:919
+#: src/util.cc:943
 msgid "Toggle simple fractions"
 msgstr "切換簡單分數"
 
-#: src/util.cc:920
+#: src/util.cc:944
 msgid "Toggle mixed fractions"
 msgstr "切換帶分數"
 
-#: src/util.cc:921
+#: src/util.cc:945
 msgid "Toggle scientific notation"
 msgstr "切換科學記法"
 
-#: src/util.cc:922
+#: src/util.cc:946
 msgid "Toggle simple notation"
 msgstr "切換簡單記法"
 
-#: src/util.cc:923
+#: src/util.cc:947
 msgid "Toggle precision"
 msgstr "切換精確度"
 
-#: src/util.cc:924
+#: src/util.cc:948
 msgid "Toggle max decimals"
 msgstr "切換最大小數位數"
 
-#: src/util.cc:925
+#: src/util.cc:949
 msgid "Toggle min decimals"
 msgstr "切換最小小數位數"
 
-#: src/util.cc:926
+#: src/util.cc:950
 msgid "Toggle max/min decimals"
 msgstr "切換最大/最小小數位數"
 
-#: src/util.cc:927
+#: src/util.cc:951
 msgid "Toggle RPN mode"
 msgstr "切換RPN模式"
 
-#: src/util.cc:928
+#: src/util.cc:952
 msgid "Toggle calculate as you type"
 msgstr "切換即時計算"
 
-#: src/util.cc:929
+#: src/util.cc:953
 msgid "Toggle programming keypad"
 msgstr "切換程式設計鍵盤"
 
-#: src/util.cc:930
+#: src/util.cc:954
 msgid "Show keypad"
 msgstr "顯示鍵盤"
 
-#: src/util.cc:931
+#: src/util.cc:955
 msgid "Show history"
 msgstr "顯示歷史記錄"
 
-#: src/util.cc:932
+#: src/util.cc:956
 msgid "Search history"
 msgstr "搜尋歷史記錄"
 
-#: src/util.cc:933
+#: src/util.cc:957
 msgid "Clear history"
 msgstr "清除歷史記錄"
 
-#: src/util.cc:934
+#: src/util.cc:958
 msgid "Show conversion"
 msgstr "顯示轉換"
 
-#: src/util.cc:935
+#: src/util.cc:959
 msgid "Show RPN stack"
 msgstr "顯示RPN堆疊"
 
-#: src/util.cc:937
+#: src/util.cc:961
 msgid "Manage variables"
 msgstr "管理變數"
 
-#: src/util.cc:938
+#: src/util.cc:962
 msgid "Manage functions"
 msgstr "管理函數"
 
-#: src/util.cc:940
+#: src/util.cc:964
 msgid "Manage data sets"
 msgstr "管理資料集"
 
-#: src/util.cc:947
+#: src/util.cc:971
 msgid "New variable"
 msgstr "新變數"
 
-#: src/util.cc:948
+#: src/util.cc:972
 msgid "New function"
 msgstr "新函數"
 
-#: src/util.cc:949
+#: src/util.cc:973
 msgid "Open plot functions/data"
 msgstr "開啟函數/資料繪圖"
 
-#: src/util.cc:950
+#: src/util.cc:974
 msgid "Open convert number bases"
 msgstr "開啟轉換底數"
 
-#: src/util.cc:951
+#: src/util.cc:975
 msgid "Open floating point conversion"
 msgstr "開啟浮點轉換"
 
-#: src/util.cc:952
+#: src/util.cc:976
 msgid "Open calendar conversion"
 msgstr "開啟曆法轉換"
 
-#: src/util.cc:953
+#: src/util.cc:977
 msgid "Open percentage calculation tool"
 msgstr "開啟百分比計算工具"
 
-#: src/util.cc:954
+#: src/util.cc:978
 msgid "Open periodic table"
 msgstr "開啟元素週期表"
 
-#: src/util.cc:955
-msgid "Update exchange rates"
-msgstr "更新匯率"
-
-#: src/util.cc:956
+#: src/util.cc:980
 msgid "Copy result"
 msgstr "複製結果"
 
-#: src/util.cc:957
+#: src/util.cc:981
 msgid "Insert result"
 msgstr "插入結果"
 
-#: src/util.cc:958
+#: src/util.cc:982
 msgid "Save result image"
 msgstr "儲存結果圖像"
 
-#: src/util.cc:959
+#: src/util.cc:983
 msgid "Help"
 msgstr "幫助"
 
-#: src/util.cc:960
+#: src/util.cc:984
 msgid "Quit"
 msgstr "退出"
 
-#: src/util.cc:961
+#: src/util.cc:985
 msgid "Toggle chain mode"
 msgstr "切換連鎖模式"
 
-#: src/util.cc:962
+#: src/util.cc:986
 msgid "Toggle keep above"
 msgstr "切換保持在其他視窗上方"
 
-#: src/util.cc:963
+#: src/util.cc:987
 msgid "Show/hide completion"
 msgstr "顯示/隱藏補全"
 
-#: src/util.cc:964
+#: src/util.cc:988
 msgid "Perform completion (activate first item)"
 msgstr "執行補全(啟用第一項)"
 
-#: src/util.cc:1032
+#: src/util.cc:1056
 msgid "Formatted result"
 msgstr "格式化的結果"
 
-#: src/util.cc:1033
+#: src/util.cc:1057
 msgid "Unformatted ASCII result"
 msgstr "未格式化的ASCII結果"
 
-#: src/util.cc:1034
+#: src/util.cc:1058
 msgid "Unformatted ASCII result without units"
 msgstr "無單位未格式化的ASCII結果"
 
-#: src/util.cc:1035
+#: src/util.cc:1059
 msgid "Formatted expression"
 msgstr "格式化的表達式"
 
-#: src/util.cc:1036
+#: src/util.cc:1060
 msgid "Unformatted ASCII expression"
 msgstr "未格式化的ASCII表達式"
 
-#: src/util.cc:1037
+#: src/util.cc:1061
 msgid "Formatted expression + result"
 msgstr "格式化的表達式+結果"
 
-#: src/util.cc:1038
+#: src/util.cc:1062
 msgid "Unformatted ASCII expression + result"
 msgstr "未格式化的ASCII表達式+結果"
 
