@@ -1020,7 +1020,11 @@ run_function_edit_dialog:
 					gboolean g_b = FALSE;
 					gtk_tree_model_get(GTK_TREE_MODEL(tSubfunctions_store), &iter, 1, &gstr, 2, &g_b, -1);
 					string ssub = gstr;
+					gsub("{", "\a", ssub);
+					gsub("}", "\b", ssub);
 					fix_expression(ssub);
+					gsub("\a", "{", ssub);
+					gsub("\b", "}", ssub);
 					((UserFunction*) f)->addSubfunction(ssub, g_b);
 					b = gtk_tree_model_iter_next(GTK_TREE_MODEL(tSubfunctions_store), &iter);
 					g_free(gstr);
