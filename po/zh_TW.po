@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://github.com/Qalculate/qalculate-gtk/issues\n"
 "POT-Creation-Date: 2026-01-05 07:55+0100\n"
-"PO-Revision-Date: 2025-11-29 22:13+0800\n"
+"PO-Revision-Date: 2026-01-10 22:56+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_TW\n"
@@ -2830,13 +2830,13 @@ msgstr "記住視窗位置"
 
 #: data/preferences.ui:578
 msgid "Keep above other windows"
-msgstr "保持在其他視窗上方"
+msgstr "保持在其他視窗上面"
 
 #: data/preferences.ui:582
 msgid ""
 "Keep the main window above other windows (depending on platform and settings "
 "this might not work)"
-msgstr "主視窗保持在其他視窗上方(取決於平台和設定，這可能無效)"
+msgstr "主視窗保持在其他視窗上面(取決於平台和設定，這可能無效)"
 
 #: data/preferences.ui:595
 msgid "Enable Unicode symbols"
@@ -2933,10 +2933,8 @@ msgid "Number of expression lines"
 msgstr "表達式列數"
 
 #: data/preferences.ui:884
-#, fuzzy
-#| msgid "Custom result font"
 msgid "Custom result height"
-msgstr "自訂結果字型"
+msgstr "自訂結果高度"
 
 #: data/preferences.ui:924
 msgid "Show result above expression"
@@ -2950,7 +2948,7 @@ msgstr "顯示表達式狀態"
 msgid ""
 "If as-you-type expression status shall be displayed below the expression "
 "entry"
-msgstr "如果輸入時的表達式狀態要在表達式框下顯示"
+msgstr "如果輸入時的表達式狀態要在表達式框下面顯示"
 
 #: data/preferences.ui:959
 msgid "Show parsed expression in result field"
@@ -3141,8 +3139,8 @@ msgstr "對資訊單位使用二進制前綴"
 
 #: data/preferences.ui:1679
 msgid ""
-"Use binary, instead of decimal, prefixes by default for information units "
-"(e.g. bytes)."
+"Use binary, instead of decimal, prefixes by default for information units (e."
+"g. bytes)."
 msgstr "對資訊單位(例如位元組)預設使用二進制而不是十進制前綴。"
 
 #: data/preferences.ui:1692
@@ -3211,7 +3209,7 @@ msgstr "自訂狀態字型"
 msgid ""
 "If you want to use a font other than the default in the status display below "
 "the expression entry"
-msgstr "如果你想在顯示在表達式框下方的狀態中使用預設以外的其他字型"
+msgstr "如果你想在顯示在表達式框下面的狀態中使用預設以外的其他字型"
 
 #: data/preferences.ui:2119
 msgid "Custom expression font"
@@ -3422,8 +3420,8 @@ msgid ""
 "Relation to the base unit. For linear relations this should just be a "
 "number.\n"
 "\n"
-"For non-linear relations use \\x for the factor and \\y for the exponent "
-"(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
+"For non-linear relations use \\x for the factor and \\y for the exponent (e."
+"g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
 "與基本單位的關係。對於線性關係，這應該只是一個數字。\n"
 "\n"
@@ -5793,7 +5791,7 @@ msgstr "切換連鎖模式"
 
 #: src/util.cc:986
 msgid "Toggle keep above"
-msgstr "切換保持在其他視窗上方"
+msgstr "切換保持在上面"
 
 #: src/util.cc:987
 msgid "Show/hide completion"
