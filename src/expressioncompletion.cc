@@ -1075,7 +1075,7 @@ void do_completion(bool to_menu, bool force) {
 		gtk_widget_hide(completion_window);
 		return;
 	}
-	if(!force && !editing_to_expression && ((str.length() == 1 && (str[0] == 'x' || str[0] == 'y' || str[0] == 'z')) || (str.length() == 2 && ((str[0] == 'x' && str[1] == 'y') || (str[0] == 'x' && str[1] == 'z') || (str[0] == 'y' && str[1] == 'z'))) || (str.length() == 3 && str[0] == 'x' && str[1] == 'y' && str[2] == 'z')) && (test_x_count(current_parsed_expression(), str.find("x") != string::npos ? 2 : 1, str.find("y") != string::npos ? 2 : 1, str.find("z") != string::npos ? 2 : 1) || (current_parsed_function() && current_parsed_function_index() > 0 && test_x_count(current_parsed_function_struct()[current_parsed_function_index() - 1], str.find("x") != string::npos ? 2 : 1, str.find("y") != string::npos ? 2 : 1, str.find("z") != string::npos ? 2 : 1)))) {
+	if(!force && !editing_to_expression && ((str.length() == 1 && (str[0] == 'x' || str[0] == 'y' || str[0] == 'z')) || (str.length() == 2 && ((str[0] == 'x' && str[1] == 'y') || (str[0] == 'x' && str[1] == 'z') || (str[0] == 'y' && str[1] == 'z'))) || (str.length() == 3 && str[0] == 'x' && str[1] == 'y' && str[2] == 'z')) && (test_x_count(current_parsed_expression(), str.find("x") != string::npos ? 2 : 1, str.find("y") != string::npos ? 2 : 1, str.find("z") != string::npos ? 2 : 1) || (current_parsed_function() && current_parsed_function_index() > 0 && current_parsed_function_index() <= current_parsed_function_struct().size() && test_x_count(current_parsed_function_struct()[current_parsed_function_index() - 1], str.find("x") != string::npos ? 2 : 1, str.find("y") != string::npos ? 2 : 1, str.find("z") != string::npos ? 2 : 1)))) {
 		gtk_widget_hide(completion_window);
 		return;
 	}

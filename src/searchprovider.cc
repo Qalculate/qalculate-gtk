@@ -119,12 +119,12 @@ bool contains_plot_or_save_search(const string &str) {
 	}
 	return false;
 }
-int test_autocalculatable_search(const MathStructure &m, bool top = true) {
+int test_autocalculatable_search(const MathStructure &m, bool where = false, bool top = true) {
 	int ret = 1;
 	if(m.isFunction()) {
-		if(m.size() < (size_t) m.function()->minargs() && (m.size() != 1 || m[0].representsScalar())) return 0;
+		if(m.size() < (size_t) m.function()->minargs() && (!where || m.size() != 0) && (m.size() != 1 || m[0].representsScalar())) return 0;
 		else if(m.function()->id() == FUNCTION_ID_LOGN && m.size() == 2 && m[0].isUndefined() && m[1].isNumber()) return 0;
-		else if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND) ret = -1;
+		else if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND || (m.function()->subtype() == SUBTYPE_USER_FUNCTION && ((UserFunction*) m.function())->formula().find("plot(") != string::npos)) ret = -1;
 		else if(m.size() > 0 && (m.function()->id() == FUNCTION_ID_FACTORIAL || m.function()->id() == FUNCTION_ID_DOUBLE_FACTORIAL || m.function()->id() == FUNCTION_ID_MULTI_FACTORIAL) && m[0].isInteger() && m[0].number().integerLength() > 17) ret = -1;
 		else if(top && m.function()->subtype() == SUBTYPE_DATA_SET && m.size() >= 2 && m[1].isSymbolic() && equalsIgnoreCase(m[1].symbol(), "info")) ret = -1;
 
@@ -134,7 +134,7 @@ int test_autocalculatable_search(const MathStructure &m, bool top = true) {
 		ret = -1;
 	}
 	for(size_t i = 0; i < m.size(); i++) {
-		int ret_i = test_autocalculatable_search(m[i], false);
+		int ret_i = test_autocalculatable_search(m[i], where || (m.isFunction() && m.function()->id() == FUNCTION_ID_REPLACE && i > 0), false);
 		if(ret_i == 0) return 0;
 		else if(ret_i == -1) ret = -1;
 	}
@@ -224,7 +224,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		if(!str_where.empty()) {
 			MathStructure m_where;
 			CALCULATOR->parseExpressionAndWhere(&m, &m_where, str, str_where, pa);
-			if(has_error() || !test_autocalculatable_search(m_where)  || (!m_where.isComparison() && !m_where.isLogicalAnd() && !m_where.isLogicalOr())) {
+			if(has_error() || (!m_where.isComparison() && !m_where.isLogicalAnd() && !m_where.isLogicalOr()) || !test_autocalculatable_search(m_where, true)) {
 				b_valid = false;
 			} else {
 				CALCULATOR->parseSigns(str_where);
@@ -266,7 +266,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 					}
 				}
 			} else if(m.isFunction() && m.size() > 0 && str2.find_first_of(NOT_IN_NAMES NUMBERS) == string::npos) {
-				b_valid = false;
+				if(m.function()->minargs() > 0 || !m.function()->hasName(str)) b_valid = false;
 			}
 		}
 		if(!b_valid) {CALCULATOR->stopControl(); return;}

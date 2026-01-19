@@ -161,7 +161,7 @@ const char *times_sign(bool unit_expression = false);
 const char *divide_sign();
 bool result_is_autocalculated();
 
-bool test_autocalculatable(const MathStructure &m, bool top = true);
+bool test_autocalculatable(const MathStructure &m, bool where = false, bool top = true);
 
 std::string print_with_evalops(const Number &nr);
 

@@ -1414,14 +1414,15 @@ unsigned int combo_get_bits(GtkComboBox *w, bool has_auto) {
 	return bits;
 }
 
-bool test_autocalculatable(const MathStructure &m, bool top) {
+extern MathFunction *f_title;
+bool test_autocalculatable(const MathStructure &m, bool where, bool top) {
 	if(m.isFunction()) {
-		if(m.size() < (size_t) m.function()->minargs() && (m.size() != 1 || m[0].representsScalar())) {
+		if(m.size() < (size_t) m.function()->minargs() && (!where || m.size() != 0) && (m.size() != 1 || m[0].representsScalar())) {
 			MathStructure mfunc(m);
 			mfunc.calculateFunctions(evalops, false);
 			return false;
 		}
-		if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND) return false;
+		if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND || m.function() == f_title || (m.function()->subtype() == SUBTYPE_USER_FUNCTION && ((UserFunction*) m.function())->formula().find("plot(") != string::npos)) return false;
 		if(m.size() > 0 && (m.function()->id() == FUNCTION_ID_FACTORIAL || m.function()->id() == FUNCTION_ID_DOUBLE_FACTORIAL || m.function()->id() == FUNCTION_ID_MULTI_FACTORIAL) && m[0].isInteger() && m[0].number().integerLength() > 17) {
 			return false;
 		}
@@ -1431,7 +1432,7 @@ bool test_autocalculatable(const MathStructure &m, bool top) {
 		return false;
 	}
 	for(size_t i = 0; i < m.size(); i++) {
-		if(!test_autocalculatable(m[i], false)) return false;
+		if(!test_autocalculatable(m[i], where || (m.isFunction() && m.function()->id() == FUNCTION_ID_REPLACE && i > 0), false)) return false;
 	}
 	return true;
 }

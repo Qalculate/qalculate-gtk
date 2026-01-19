@@ -46,6 +46,7 @@ using std::stack;
 int block_error_timeout = 0;
 
 KnownVariable *vans[5], *v_memory;
+MathFunction *f_title;
 extern string selected_function_category;
 extern MathFunction *selected_function;
 extern string selected_variable_category;
@@ -1604,7 +1605,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					MathStructure *mfunc = NULL;
 					if(m.isFunction() && m.size() > 0) mfunc = &m;
 					else if(m.isMultiplication() && m.size() > 0 && m.last().isFunction() && m.last().size() > 0) mfunc = &m.last();
-					if(mfunc) {
+					if(mfunc && current_parsed_function()) {
 						if((*mfunc)[0].isMultiplication()) {
 							for(size_t i = 0; i < (*mfunc)[0].size(); i++) {
 								if(!(*mfunc)[0][i].isVariable() || ((*mfunc)[0][i].variable() != CALCULATOR->getVariableById(VARIABLE_ID_X) && (*mfunc)[0][i].variable() != CALCULATOR->getVariableById(VARIABLE_ID_Y) && (*mfunc)[0][i].variable() != CALCULATOR->getVariableById(VARIABLE_ID_Z))) {
@@ -1615,6 +1616,14 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 							}
 						} else if(!(*mfunc)[0].isVariable() || ((*mfunc)[0].variable() != CALCULATOR->getVariableById(VARIABLE_ID_X) && (*mfunc)[0].variable() != CALCULATOR->getVariableById(VARIABLE_ID_Y) && (*mfunc)[0].variable() != CALCULATOR->getVariableById(VARIABLE_ID_Z))) {
 							error_current_object = true;
+						}
+					}
+					if(!error_current_object && m.isMultiplication()) {
+						for(size_t i = 1; i < m.size(); i++) {
+							if(m[i].isVariable() && m[i].variable() == CALCULATOR->getVariableById(VARIABLE_ID_I) && m[i - 1].isUnit() && m[i - 1].unit()->baseUnit() != CALCULATOR->getRadUnit()) {
+								error_current_object = true;
+								break;
+							}
 						}
 					}
 					if(error_current_object) CALCULATOR->parse(&m, str, evalops.parse_options);
@@ -8738,7 +8747,7 @@ void initialize_variables_and_functions() {
 	/*ename.name = "MRC";
 	v_memory->addName(ename);*/
 	CALCULATOR->addVariable(v_memory);
-	CALCULATOR->addFunction(new SetTitleFunction());
+	f_title = CALCULATOR->addFunction(new SetTitleFunction());
 	initialize_history_functions();
 }
 

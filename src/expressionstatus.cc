@@ -873,7 +873,7 @@ void display_parse_status() {
 		if(!str_w.empty()) {
 			CALCULATOR->beginTemporaryStopMessages();
 			CALCULATOR->parseExpressionAndWhere(&mparse, &mwhere, str_e, str_w, evalops.parse_options);
-			if(auto_calculable && !test_autocalculatable(mwhere)) auto_calculable = 0;
+			if(auto_calculable && !test_autocalculatable(mwhere, true)) auto_calculable = 0;
 			mparse.format(po);
 			parsed_expression = mparse.print(po, true, false, TAG_TYPE_HTML);
 			parse_l = parsed_expression.length();
