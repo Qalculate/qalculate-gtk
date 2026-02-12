@@ -11,6 +11,10 @@ AM_CPPFLAGS = \
 	@GIOUNIX_CFLAGS@ \
 	@QALCULATE_CFLAGS@
 
+if PLATFORM_MACOS
+AM_CPPFLAGS += $(GTK_MAC_CFLAGS)
+endif
+
 if ENABLE_SEARCH_PROVIDER
 searchproviderdir=@libexecdir@
 searchprovider_PROGRAMS = qalculate-search-provider
@@ -81,6 +85,10 @@ qalculate_gtk_LDADD = \
 	@GTK_LIBS@ \
 	@WEBKITGTK_LIBS@ \
 	@QALCULATE_LIBS@
+
+if PLATFORM_MACOS
+qalculate_gtk_LDADD += $(GTK_MAC_LIBS)
+endif
 
 if ENABLE_SEARCH_PROVIDER
 gnome-search-provider2.c: $(top_srcdir)/data/org.gnome.ShellSearchProvider2.xml

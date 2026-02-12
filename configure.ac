@@ -54,7 +54,7 @@ esac
 
 AM_CONDITIONAL(PLATFORM_LINUX, test "$build_linux" = "yes")
 AM_CONDITIONAL(PLATFORM_WIN32, test "$build_windows" = "yes")
-
+AM_CONDITIONAL(PLATFORM_MACOS, test "$build_macos" = "yes")
 
 dnl  --------------------------------
 dnl | check for neccessary libraries |-----------------------------------------
@@ -122,6 +122,13 @@ AS_IF([test "x$with_local_help" != "xno"], [
 	AC_DEFINE([LOCAL_HELP], [1], [Use local help files])
 ])
 AM_CONDITIONAL(ENABLE_LOCAL_HELP, [test "x$with_local_help" != "xno"])
+
+if test "$build_mac" = "yes"; then
+  PKG_CHECK_MODULES(GTK_MAC, [gtk-mac-integration-gtk3 >= 3.0.1])
+  AC_SUBST(GTK_MAC_CFLAGS)
+  AC_SUBST(GTK_MAC_LIBS)
+  AC_DEFINE([HAVE_GTK_MAC], [1], [Define if gtk-mac-integration is available])
+fi
 
 PKG_CHECK_MODULES(QALCULATE, [
 	libqalculate >= 5.6.0
