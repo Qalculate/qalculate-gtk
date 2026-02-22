@@ -25,7 +25,7 @@ oldversion=`"$bindir/qalc" -v`;
 mkdir -p $tmpdir;
 if cd "$tmpdir"; then
 	if curl -L -o "CURRENT_VERSIONS" https://qalculate.github.io/CURRENT_VERSIONS; then
-		newversion=`grep libqalculate CURRENT_VERSIONS`;
+		newversion=`grep -m 1 libqalculate CURRENT_VERSIONS`;
 		newversion=${newversion##*:}
 		url=`grep linux-x86_64-selfcontained CURRENT_VERSIONS`;
 		url=${url#*:}
