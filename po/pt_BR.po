@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://github.com/Qalculate/qalculate-gtk/issues\n"
 "POT-Creation-Date: 2026-01-17 10:25+0100\n"
-"PO-Revision-Date: 2020-09-10 10:38-0300\n"
+"PO-Revision-Date: 2026-02-24 22:55-0300\n"
 "Last-Translator: Fúlvio Alves <fga.fulvio@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -16,10 +16,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.7\n"
+"X-Generator: Poedit 3.8\n"
 
-#: data/qalculate-gtk.desktop.in:3 src/mainwindow.cc:8518
-#: src/mainwindow.cc:8525
+#: data/qalculate-gtk.desktop.in:3 src/mainwindow.cc:8518 src/mainwindow.cc:8525
 msgid "Qalculate!"
 msgstr "Qalculate!"
 
@@ -42,10 +41,10 @@ msgstr "Qalculate! (GTK UI)"
 
 #: data/qalculate-gtk.noinst.appdata.xml:10
 msgid ""
-"Qalculate! is a multi-purpose cross-platform desktop calculator. It is "
-"simple to use but provides power and versatility normally reserved for "
-"complicated math packages, as well as useful tools for everyday needs (such "
-"as currency conversion and percent calculation)."
+"Qalculate! is a multi-purpose cross-platform desktop calculator. It is simple "
+"to use but provides power and versatility normally reserved for complicated "
+"math packages, as well as useful tools for everyday needs (such as currency "
+"conversion and percent calculation)."
 msgstr ""
 "Qalculate! é uma calculadora para desktop multiplataforma e multiuso. É "
 "simples de usar, mas fornece poder e versatilidade normalmente vistas em "
@@ -54,23 +53,23 @@ msgstr ""
 
 #: data/qalculate-gtk.noinst.appdata.xml:16
 msgid ""
-"Features include a large library of customizable functions, unit "
-"calculations and conversion, physical constants, symbolic calculations "
-"(including integrals and equations), arbitrary precision, uncertainty "
-"propagation, interval arithmetic, plotting, and a user-friendly interface."
+"Features include a large library of customizable functions, unit calculations "
+"and conversion, physical constants, symbolic calculations (including integrals "
+"and equations), arbitrary precision, uncertainty propagation, interval "
+"arithmetic, plotting, and a user-friendly interface."
 msgstr ""
-"Os recursos incluem uma grande biblioteca de funções personalizáveis, "
-"cálculos e conversão de unidades, constantes físicas, cálculos simbólicos "
-"(incluindo integrais e equações), precisão arbitrária, propagação de erros, "
-"aritmética de intervalos, plotagem e uma interface amigável."
+"Os recursos incluem uma grande biblioteca de funções personalizáveis, cálculos "
+"e conversão de unidades, constantes físicas, cálculos simbólicos (incluindo "
+"integrais e equações), precisão arbitrária, propagação de erros, aritmética de "
+"intervalos, plotagem e uma interface amigável."
 
 #: data/qalculate-gtk.noinst.appdata.xml:26
 msgid "The main window with history visible"
-msgstr ""
+msgstr "A janela principal com o histórico visível"
 
 #: data/qalculate-gtk.noinst.appdata.xml:30
 msgid "The main window with keypad visible"
-msgstr ""
+msgstr "A janela principal com o teclado visível"
 
 #: data/argumentrules.ui:22 data/functionedit.ui:618
 msgid "Argument Rules"
@@ -81,16 +80,15 @@ msgstr "Regras de argumento"
 #: data/datasets.ui:24 data/functionedit.ui:38 data/functionedit.ui:633
 #: data/matrix.ui:40 data/matrixedit.ui:53 data/shortcuts.ui:175
 #: data/unitedit.ui:59 data/unknownedit.ui:38 data/variableedit.ui:38
-#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47
-#: src/expressionedit.cc:1309 src/historyview.cc:2827 src/historyview.cc:2925
-#: src/historyview.cc:2970 src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
+#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47 src/expressionedit.cc:1309
+#: src/historyview.cc:2827 src/historyview.cc:2925 src/historyview.cc:2970
+#: src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
 #: src/insertfunctiondialog.cc:65 src/insertfunctiondialog.cc:108
 #: src/insertfunctiondialog.cc:110 src/insertfunctiondialog.cc:973
-#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:720
-#: src/mainwindow.cc:6839 src/mainwindow.cc:6841 src/mainwindow.cc:7805
-#: src/matrixdialog.cc:389 src/menubar.cc:1217 src/menubar.cc:1258
-#: src/plotdialog.cc:378 src/plotdialog.cc:380 src/resultview.cc:552
-#: src/resultview.cc:554
+#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:720 src/mainwindow.cc:6839
+#: src/mainwindow.cc:6841 src/mainwindow.cc:7805 src/matrixdialog.cc:389
+#: src/menubar.cc:1217 src/menubar.cc:1258 src/plotdialog.cc:378
+#: src/plotdialog.cc:380 src/resultview.cc:552 src/resultview.cc:554
 msgid "_Cancel"
 msgstr "_Cancelar"
 
@@ -223,8 +221,8 @@ msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
 msgstr ""
-"Por exemplo, se o argumento for uma matriz que deve ter igual número de "
-"linhas e colunas:  rows(\\x) = columns(\\x)"
+"Por exemplo, se o argumento for uma matriz que deve ter igual número de linhas "
+"e colunas:  rows(\\x) = columns(\\x)"
 
 #: data/argumentrules.ui:186
 msgid "Allow matrix"
@@ -254,8 +252,8 @@ msgstr "Incluir iguais"
 msgid "Max"
 msgstr "Máx"
 
-#: data/argumentrules.ui:347 data/unknownedit.ui:119
-#: src/dataseteditdialog.cc:230 src/functioneditdialog.cc:450
+#: data/argumentrules.ui:347 data/unknownedit.ui:119 src/dataseteditdialog.cc:230
+#: src/functioneditdialog.cc:450
 msgid "Type"
 msgstr "Tipo"
 
@@ -277,9 +275,9 @@ msgstr "Personalizar botões do teclado"
 #: data/namesedit.ui:24 data/nbases.ui:24 data/percentage.ui:56 data/plot.ui:99
 #: data/precision.ui:31 data/preferences.ui:105 data/setbase.ui:38
 #: data/shortcuts.ui:25 data/units.ui:26 data/variables.ui:24
-#: src/historyview.cc:2792 src/insertfunctiondialog.cc:448
-#: src/mainwindow.cc:724 src/mainwindow.cc:725 src/mainwindow.cc:727
-#: src/matrixdialog.cc:381 src/periodictabledialog.cc:86
+#: src/historyview.cc:2792 src/insertfunctiondialog.cc:448 src/mainwindow.cc:724
+#: src/mainwindow.cc:725 src/mainwindow.cc:727 src/matrixdialog.cc:381
+#: src/periodictabledialog.cc:86
 msgid "_Close"
 msgstr "_Fechar"
 
@@ -635,8 +633,8 @@ msgid ""
 "Maximal number of significant digits to display (by default determined by "
 "precision)"
 msgstr ""
-"Número máximo de dígitos significativos a exibir (por padrão, determinado "
-"pela precisão)"
+"Número máximo de dígitos significativos a exibir (por padrão, determinado pela "
+"precisão)"
 
 #: data/floatingpoint.ui:11
 msgid "Floating Point Conversion"
@@ -706,8 +704,8 @@ msgstr "Nome usado para chamar esta função em expressões"
 
 #: data/functionedit.ui:128
 msgid ""
-"Use \\x for the first, \\y for the second and \\z for the third argument. "
-"For more information click the help button."
+"Use \\x for the first, \\y for the second and \\z for the third argument. For "
+"more information click the help button."
 msgstr ""
 "Use \\x para o primeiro, \\y para o segundo e \\z para o terceiro argumento. "
 "Para mais informações, clique no botão de ajuda."
@@ -722,8 +720,8 @@ msgstr "Condição"
 
 #: data/functionedit.ui:197
 msgid ""
-"Condition that must be true for the function (e.g. if the second argument "
-"must be greater than the first: \"\\y > \\x\")"
+"Condition that must be true for the function (e.g. if the second argument must "
+"be greater than the first: \"\\y > \\x\")"
 msgstr ""
 "Condição que deve ser verdadeira para a função (por exemplo, se o segundo "
 "argumento deve ser maior que o primeiro: \"\\y > \\x\")"
@@ -847,8 +845,7 @@ msgstr "Radianos"
 msgid "Gradians"
 msgstr "Grados"
 
-#: data/main.ui:246 data/main.ui:399 data/main.ui:547
-#: src/variablesdialog.cc:337
+#: data/main.ui:246 data/main.ui:399 data/main.ui:547 src/variablesdialog.cc:337
 msgid "Default assumptions"
 msgstr "Suposições padrão"
 
@@ -1053,8 +1050,7 @@ msgstr "_Preferências"
 msgid "_Mode"
 msgstr "_Modo"
 
-#: data/main.ui:1202 src/expressioncompletion.cc:2202
-#: src/expressionedit.cc:1463
+#: data/main.ui:1202 src/expressioncompletion.cc:2202 src/expressionedit.cc:1463
 msgid "Number Base"
 msgstr "Base numérica"
 
@@ -1062,10 +1058,10 @@ msgstr "Base numérica"
 msgid "Select Result and Expression Base…"
 msgstr "Selecionar resultado e base de expressão…"
 
-#: data/main.ui:1226 data/main.ui:4717 data/nbases.ui:77
-#: data/preferences.ui:1056 data/preferences.ui:1112 data/setbase.ui:84
-#: data/setbase.ui:323 src/expressionedit.cc:1466 src/keypad.cc:1012
-#: src/numberbasesdialog.cc:209 src/numberbasesdialog.cc:251
+#: data/main.ui:1226 data/main.ui:4717 data/nbases.ui:77 data/preferences.ui:1056
+#: data/preferences.ui:1112 data/setbase.ui:84 data/setbase.ui:323
+#: src/expressionedit.cc:1466 src/keypad.cc:1012 src/numberbasesdialog.cc:209
+#: src/numberbasesdialog.cc:251
 msgid "Binary"
 msgstr "Binário"
 
@@ -1107,8 +1103,7 @@ msgstr "Sexagesimal"
 msgid "Time Format"
 msgstr "Formato da hora"
 
-#: data/main.ui:1311 src/expressioncompletion.cc:2259
-#: src/expressionedit.cc:1471
+#: data/main.ui:1311 src/expressioncompletion.cc:2259 src/expressionedit.cc:1471
 msgid "Roman Numerals"
 msgstr "Números romanos"
 
@@ -1335,11 +1330,10 @@ msgstr "Usar prefixos em todas as unidades"
 
 #: data/main.ui:1980
 msgid ""
-"Enables automatic use of hekto, deka, deci and centi when prefixes are "
-"enabled"
+"Enables automatic use of hekto, deka, deci and centi when prefixes are enabled"
 msgstr ""
-"Permite o uso automático de hekto, deka, deci e centi quando os prefixos "
-"estão ativados"
+"Permite o uso automático de hekto, deka, deci e centi quando os prefixos estão "
+"ativados"
 
 #: data/main.ui:1981
 msgid "Enable All SI Prefixes"
@@ -1487,8 +1481,8 @@ msgstr "Alterar unidade de ângulo usada em funções trigonimétricas"
 msgid "Angle Unit"
 msgstr "Unidade de ângulo"
 
-#: data/main.ui:2364 data/plot.ui:423 data/plot.ui:1329
-#: data/preferences.ui:1429 src/buttonseditdialog.cc:462
+#: data/main.ui:2364 data/plot.ui:423 data/plot.ui:1329 data/preferences.ui:1429
+#: src/buttonseditdialog.cc:462
 msgid "None"
 msgstr "Nenhum"
 
@@ -1510,8 +1504,7 @@ msgstr "Denominadores diferentes de zero"
 
 #: data/main.ui:2581
 msgid "Warn when unknown denominators are assumed non-zero"
-msgstr ""
-"Avisar quando denominadores incógnitos são assumidos diferentes de zero"
+msgstr "Avisar quando denominadores incógnitos são assumidos diferentes de zero"
 
 #: data/main.ui:2582
 msgid "Warn About Denominators Assumed Non-Zero"
@@ -1567,8 +1560,8 @@ msgstr "Limitar multiplicação implícita"
 
 #: data/main.ui:2692
 msgid ""
-"Parse decimal numbers as approximations with precision equal to the number "
-"of digits.\n"
+"Parse decimal numbers as approximations with precision equal to the number of "
+"digits.\n"
 "\n"
 "Off: 1.1 × 3.20 = 3.52\n"
 "On: 1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.16"
@@ -1812,8 +1805,8 @@ msgid ""
 "Automatically convert result to the current unit expression as long as the "
 "conversion box is visible."
 msgstr ""
-"Converter automaticamente o resultado na expressão de unidade atual, desde "
-"que a caixa de conversão esteja visível."
+"Converter automaticamente o resultado na expressão de unidade atual, desde que "
+"a caixa de conversão esteja visível."
 
 #: data/main.ui:4537
 msgid "Add prefix"
@@ -1825,8 +1818,7 @@ msgid ""
 "\n"
 "This can be overridden by prepending the unit expression with \"?\" or \"0\"."
 msgstr ""
-"Se a expressão da unidade não contiver nenhum prefixo, use o prefixo "
-"ideal. \n"
+"Se a expressão da unidade não contiver nenhum prefixo, use o prefixo ideal. \n"
 "Isso pode ser substituído ao adicionar a expressão da unidade com \"?\" ou "
 "\"0\"."
 
@@ -2426,8 +2418,8 @@ msgstr "Limpar"
 
 #: data/percentage.ui:6
 msgid ""
-"Enter two values, of which at most one is a percentage, and the others will "
-"be calculated for you."
+"Enter two values, of which at most one is a percentage, and the others will be "
+"calculated for you."
 msgstr ""
 "Digite dois valores, dos quais no máximo um é uma porcentagem, e os outros "
 "serão calculados para você."
@@ -2696,8 +2688,8 @@ msgstr "Recalcular expressão"
 
 #: data/precision.ui:99
 msgid ""
-"The number of significant digits to display/calculate (simple arithmetics "
-"are always calculated exact)"
+"The number of significant digits to display/calculate (simple arithmetics are "
+"always calculated exact)"
 msgstr ""
 "O número de dígitos significativos a serem exibidos/calculados (aritmética "
 "simples é sempre calculada exatamente)"
@@ -2711,8 +2703,7 @@ msgid "Save definitions on exit"
 msgstr "Salvar definições ao sair"
 
 #: data/preferences.ui:146
-msgid ""
-"If changes to functions, units and variables shall be saved automatically"
+msgid "If changes to functions, units and variables shall be saved automatically"
 msgstr ""
 "Para que alterações em funções, unidades e variáveis sejam salvas "
 "automaticamente"
@@ -2735,8 +2726,8 @@ msgstr "Permitir várias instâncias"
 
 #: data/preferences.ui:237
 msgid ""
-"Allow multiple instances of the Qalculate! main window to be open at the "
-"same time.\n"
+"Allow multiple instances of the Qalculate! main window to be open at the same "
+"time.\n"
 "\n"
 "Note that only the mode, history and definitions of the last closed instance "
 "will be saved."
@@ -2744,8 +2735,8 @@ msgstr ""
 "Permite que várias instâncias da janela principal do Qalculate! sejam "
 "abertas. \n"
 "\n"
-"Observe que apenas o modo, histórico e definições da última instância "
-"fechada serão salvos."
+"Observe que apenas o modo, histórico e definições da última instância fechada "
+"serão salvos."
 
 #: data/preferences.ui:252
 msgid "Notify when a new version is available"
@@ -2868,8 +2859,8 @@ msgid ""
 "Keep the main window above other windows (depending on platform and settings "
 "this might not work)"
 msgstr ""
-"Mantém a janela principal acima das outras janelas (dependendo da plataforma "
-"e das configurações, isso pode não funcionar)"
+"Mantém a janela principal acima das outras janelas (dependendo da plataforma e "
+"das configurações, isso pode não funcionar)"
 
 #: data/preferences.ui:595
 msgid "Enable Unicode symbols"
@@ -2889,8 +2880,8 @@ msgid "Button padding"
 msgstr "Preenchimento do botão"
 
 #: data/preferences.ui:658 data/preferences.ui:696 data/preferences.ui:769
-#: data/preferences.ui:799 src/buttonseditdialog.cc:183
-#: src/datasetsdialog.cc:524 src/modes.cc:46 src/modes.cc:57 src/util.cc:1064
+#: data/preferences.ui:799 src/buttonseditdialog.cc:183 src/datasetsdialog.cc:524
+#: src/modes.cc:46 src/modes.cc:57 src/util.cc:1064
 msgid "Default"
 msgstr "Padrão"
 
@@ -2963,20 +2954,16 @@ msgid "Hide all"
 msgstr "Ocultar tudo"
 
 #: data/preferences.ui:862
-#, fuzzy
-#| msgid "Show Parsed Expression"
 msgid "Show result above expression"
-msgstr "Mostrar expressão analisada"
+msgstr "Mostrar resultado acima da expressão"
 
 #: data/preferences.ui:889
 msgid "Number of expression lines"
 msgstr "Número de linhas de expressão"
 
 #: data/preferences.ui:915
-#, fuzzy
-#| msgid "Custom result font"
 msgid "Custom result height"
-msgstr "Fonte do resultado personalizada"
+msgstr "Altura do resultado personalizada"
 
 #: data/preferences.ui:955
 msgid "Display expression status"
@@ -2984,8 +2971,7 @@ msgstr "Exibir status da expressão"
 
 #: data/preferences.ui:959
 msgid ""
-"If as-you-type expression status shall be displayed below the expression "
-"entry"
+"If as-you-type expression status shall be displayed below the expression entry"
 msgstr ""
 "Para que o status da expressão, conforme você digita, seja exibido abaixo da "
 "entrada da expressão"
@@ -2996,8 +2982,7 @@ msgstr "Mostrar expressão analisada no campo de resultado"
 
 #: data/preferences.ui:977
 msgid ""
-"If as-you-type expression interpretation shall be displayed in the result "
-"field"
+"If as-you-type expression interpretation shall be displayed in the result field"
 msgstr ""
 "Se a interpretação da expressão à medida que você digita deve ser exibida no "
 "campo de resultados"
@@ -3031,13 +3016,12 @@ msgstr ""
 
 #: data/preferences.ui:1116
 msgid ""
-"Enables two's complement representation for input of negative binary "
-"numbers. All binary numbers starting with 1 are negative, unless binary bits "
-"is set."
+"Enables two's complement representation for input of negative binary numbers. "
+"All binary numbers starting with 1 are negative, unless binary bits is set."
 msgstr ""
 "Habilita a representação em complemento de dois para entrada de números "
-"binários negativos. Todos os números binários que começam com 1 são "
-"negativos, a menos que os bits binários esteja definida."
+"binários negativos. Todos os números binários que começam com 1 são negativos, "
+"a menos que os bits binários esteja definida."
 
 #: data/preferences.ui:1132
 msgid ""
@@ -3063,8 +3047,7 @@ msgstr "Usar letras minúsculas em números não-decimais"
 
 #: data/preferences.ui:1191
 msgid "If lower case letters should be used in numbers with non-decimal base"
-msgstr ""
-"Para que letras minúsculas sejam usadas em números com base não-decimal"
+msgstr "Para que letras minúsculas sejam usadas em números com base não-decimal"
 
 #: data/preferences.ui:1204
 msgid "Use special duodecimal symbols"
@@ -3072,8 +3055,8 @@ msgstr "Usar símbolos duodecimais especiais"
 
 #: data/preferences.ui:1208
 msgid ""
-"If ↊ and ↋ (or X and E) shall be used instead of A and B for digits 10 and "
-"11 in numbers with base 12"
+"If ↊ and ↋ (or X and E) shall be used instead of A and B for digits 10 and 11 "
+"in numbers with base 12"
 msgstr ""
 "Se ↊ e ↋ (ou X e E) devem ser usados ​​em vez de A e B para os dígitos 10 e 11 "
 "em números com base 12"
@@ -3084,8 +3067,8 @@ msgstr "Prefixos base alternativos"
 
 #: data/preferences.ui:1225
 msgid ""
-"If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
-"with \"0b00\" as prefixes"
+"If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers with "
+"\"0b00\" as prefixes"
 msgstr ""
 "Para que números hexadecimais sejam exibidos com \"0x0\" e números binários "
 "com \"0b00\" como prefixos"
@@ -3121,11 +3104,11 @@ msgstr "Ignorar vírgula em números"
 
 #: data/preferences.ui:1319
 msgid ""
-"Allow commas, ',', to be used as thousands separator instead of as an "
-"function argument separator"
+"Allow commas, ',', to be used as thousands separator instead of as an function "
+"argument separator"
 msgstr ""
-"Permite que vírgulas, ',',  sejam usadas como separador de milhares em vez "
-"de como separador de argumentos de função"
+"Permite que vírgulas, ',',  sejam usadas como separador de milhares em vez de "
+"como separador de argumentos de função"
 
 #: data/preferences.ui:1332
 msgid "Ignore dots in numbers"
@@ -3181,7 +3164,7 @@ msgstr "Local"
 
 #: data/preferences.ui:1432
 msgid "Custom"
-msgstr ""
+msgstr "Personalizado"
 
 #: data/preferences.ui:1489
 msgid "Multiplication sign"
@@ -3284,8 +3267,7 @@ msgid "Custom expression font"
 msgstr "Fonte da expressão personalizada"
 
 #: data/preferences.ui:2137
-msgid ""
-"If you want to use a font other than the default in the expression entry"
+msgid "If you want to use a font other than the default in the expression entry"
 msgstr ""
 "Se você desejar usar uma fonte diferente da padrão na entrada da expressão"
 
@@ -3319,9 +3301,8 @@ msgid "Text color"
 msgstr "Cor do texto"
 
 #: data/preferences.ui:2295
-#, fuzzy
 msgid "Highlight parenthesis background"
-msgstr "Parêntese direito"
+msgstr "Destacar o fundo entre parênteses"
 
 #: data/preferences.ui:2348
 msgid "Custom application font"
@@ -3338,8 +3319,7 @@ msgstr "Fonte do histórico personalizado"
 
 #: data/preferences.ui:2370
 msgid "If you want to use a font other than the default in the history list"
-msgstr ""
-"Se você deseja usar uma fonte diferente da padrão na lista do histórico"
+msgstr "Se você deseja usar uma fonte diferente da padrão na lista do histórico"
 
 #: data/preferences.ui:2393
 msgid "Fonts & Colors"
@@ -3467,17 +3447,17 @@ msgid ""
 "instead of \"17 in = 1 ft + 1 hand + 1 in\"."
 msgstr ""
 "Exemplo: a prioridade da unidade \"mão\" é definida como 2, enquanto a "
-"prioridade de ft (pé) e in (polegada) é definida como 1, o que resulta em "
-"\"17 pol = 1 pé + 5 pol\", em vez de \"17 pol = 1 pé + 1 mão + 1 pol\"."
+"prioridade de ft (pé) e in (polegada) é definida como 1, o que resulta em \"17 "
+"pol = 1 pé + 5 pol\", em vez de \"17 pol = 1 pé + 1 mão + 1 pol\"."
 
 #: data/unitedit.ui:451
 msgid ""
-"Example: minimum base unit number of yd (yard) is set to 12, which results "
-"in \"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
+"Example: minimum base unit number of yd (yard) is set to 12, which results in "
+"\"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
 msgstr ""
 "Exemplo: o número mínimo de unidade base de yd (jarda) é definido como 12, o "
-"que resulta em \"3 × 3 pés = 9 pés\" (em vez de \"3 jardas\") e \"4 × 3 pés "
-"= 4 jardas\"."
+"que resulta em \"3 × 3 pés = 9 pés\" (em vez de \"3 jardas\") e \"4 × 3 pés = "
+"4 jardas\"."
 
 #: data/unitedit.ui:468
 msgid "Exponent of the base unit"
@@ -3489,15 +3469,14 @@ msgid ""
 "that this unit is defined in relation to"
 msgstr ""
 "Unidade (para unidades derivadas nomeadas) ou expressão de unidade (para "
-"unidades derivadas não nomeadas) em relação à qual esta unidade é definida."
+"unidades derivadas não nomeadas) em relação à qual esta unidade é definida"
 
 #: data/unitedit.ui:501
 msgid ""
-"Relation to the base unit. For linear relations this should just be a "
-"number.\n"
+"Relation to the base unit. For linear relations this should just be a number.\n"
 "\n"
-"For non-linear relations use \\x for the factor and \\y for the exponent "
-"(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
+"For non-linear relations use \\x for the factor and \\y for the exponent (e.g. "
+"\"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
 "Relação com a unidade base. Para relações lineares, isso deve ser apenas um "
 "número.\n"
@@ -3647,14 +3626,14 @@ msgstr "Variável não encontrada."
 msgid "Unit not found."
 msgstr "Unidade não encontrada."
 
-#: src/buttonseditdialog.cc:259 src/mainwindow.cc:7327
-#: src/shortcutsdialog.cc:255 src/shortcutsdialog.cc:503
+#: src/buttonseditdialog.cc:259 src/mainwindow.cc:7327 src/shortcutsdialog.cc:255
+#: src/shortcutsdialog.cc:503
 msgid "Mode not found."
 msgstr "Modo não encontrado."
 
-#: src/buttonseditdialog.cc:271 src/setbasedialog.cc:78
-#: src/setbasedialog.cc:154 src/setbasedialog.cc:210 src/setbasedialog.cc:256
-#: src/shortcutsdialog.cc:267 src/shortcutsdialog.cc:515
+#: src/buttonseditdialog.cc:271 src/setbasedialog.cc:78 src/setbasedialog.cc:154
+#: src/setbasedialog.cc:210 src/setbasedialog.cc:256 src/shortcutsdialog.cc:267
+#: src/shortcutsdialog.cc:515
 msgid "Unsupported base."
 msgstr "Base não suportada."
 
@@ -3836,9 +3815,8 @@ msgstr "Indiano (Nacional)"
 msgid "All"
 msgstr "Todas"
 
-#: src/conversionview.cc:130 src/conversionview.cc:131
-#: src/conversionview.cc:132 src/conversionview.cc:179
-#: src/conversionview.cc:460 src/functionsdialog.cc:144
+#: src/conversionview.cc:130 src/conversionview.cc:131 src/conversionview.cc:132
+#: src/conversionview.cc:179 src/conversionview.cc:460 src/functionsdialog.cc:144
 #: src/functionsdialog.cc:145 src/functionsdialog.cc:196 src/mainwindow.cc:7636
 #: src/mainwindow.cc:7668 src/mainwindow.cc:7692 src/unitsdialog.cc:166
 #: src/unitsdialog.cc:167 src/unitsdialog.cc:233 src/variablesdialog.cc:152
@@ -3918,9 +3896,8 @@ msgstr "Novo Objeto de Dados"
 #: src/historyview.cc:710 src/historyview.cc:1295 src/historyview.cc:1349
 #: src/historyview.cc:1602 src/historyview.cc:1662 src/historyview.cc:2185
 #: src/insertfunctiondialog.cc:298 src/keypad.cc:3109 src/mainwindow.cc:2844
-#: src/searchprovider.cc:373 src/searchprovider.cc:396
-#: src/searchprovider.cc:473 src/searchprovider.cc:521
-#: src/searchprovider.cc:522 src/variablesdialog.cc:303
+#: src/searchprovider.cc:373 src/searchprovider.cc:396 src/searchprovider.cc:473
+#: src/searchprovider.cc:521 src/searchprovider.cc:522 src/variablesdialog.cc:303
 msgid "approx."
 msgstr "aprox."
 
@@ -3960,9 +3937,9 @@ msgstr "Não perguntar novamente"
 msgid "Select file to export to"
 msgstr "Selecionar o arquivo para o qual exportar"
 
-#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47
-#: src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
-#: src/insertfunctiondialog.cc:108 src/insertfunctiondialog.cc:110
+#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47 src/importcsvdialog.cc:49
+#: src/importcsvdialog.cc:51 src/insertfunctiondialog.cc:108
+#: src/insertfunctiondialog.cc:110
 msgid "_Open"
 msgstr "_Abrir"
 
@@ -4064,7 +4041,6 @@ msgid "Base Units"
 msgstr "Unidade base"
 
 #: src/expressioncompletion.cc:2203
-#, fuzzy
 msgid "Binary-Coded Decimal"
 msgstr "Decimal codificado em binário"
 
@@ -4295,13 +4271,13 @@ msgstr "CPLX"
 msgid "Too many arguments for %s()."
 msgstr "Argumentos em excesso para %s()."
 
-#: src/expressionstatus.cc:740 src/expressionstatus.cc:742
-#: src/mainwindow.cc:1548 src/mainwindow.cc:5155 src/searchprovider.cc:210
+#: src/expressionstatus.cc:740 src/expressionstatus.cc:742 src/mainwindow.cc:1548
+#: src/mainwindow.cc:5155 src/searchprovider.cc:210
 msgid "factorize"
 msgstr "fatorar"
 
-#: src/expressionstatus.cc:743 src/expressionstatus.cc:745
-#: src/mainwindow.cc:1551 src/mainwindow.cc:5158 src/searchprovider.cc:214
+#: src/expressionstatus.cc:743 src/expressionstatus.cc:745 src/mainwindow.cc:1551
+#: src/mainwindow.cc:5158 src/searchprovider.cc:214
 msgid "expand"
 msgstr "expandir"
 
@@ -4375,16 +4351,13 @@ msgstr "sexagesimal"
 msgid "sexagesimal number"
 msgstr "número sexagesimal"
 
-#: src/expressionstatus.cc:939 src/expressionstatus.cc:940
-#: src/mainwindow.cc:1363 src/mainwindow.cc:1366 src/mainwindow.cc:4859
-#: src/mainwindow.cc:4862
-#, fuzzy
+#: src/expressionstatus.cc:939 src/expressionstatus.cc:940 src/mainwindow.cc:1363
+#: src/mainwindow.cc:1366 src/mainwindow.cc:4859 src/mainwindow.cc:4862
 msgid "latitude"
 msgstr "latitude"
 
-#: src/expressionstatus.cc:941 src/expressionstatus.cc:942
-#: src/mainwindow.cc:1369 src/mainwindow.cc:1372 src/mainwindow.cc:4865
-#: src/mainwindow.cc:4868
+#: src/expressionstatus.cc:941 src/expressionstatus.cc:942 src/mainwindow.cc:1369
+#: src/mainwindow.cc:1372 src/mainwindow.cc:4865 src/mainwindow.cc:4868
 msgid "longitude"
 msgstr "longitude"
 
@@ -4448,8 +4421,8 @@ msgstr "bases"
 msgid "number bases"
 msgstr "bases numéricas"
 
-#: src/expressionstatus.cc:965 src/expressionstatus.cc:966
-#: src/mainwindow.cc:1452 src/mainwindow.cc:4958
+#: src/expressionstatus.cc:965 src/expressionstatus.cc:966 src/mainwindow.cc:1452
+#: src/mainwindow.cc:4958
 msgid "calendars"
 msgstr "calendários"
 
@@ -4471,7 +4444,6 @@ msgstr "prefixo ideal"
 
 #. base units
 #: src/expressionstatus.cc:971 src/mainwindow.cc:1484 src/mainwindow.cc:5049
-#, fuzzy
 msgctxt "Units"
 msgid "base"
 msgstr "base"
@@ -4488,8 +4460,8 @@ msgstr "mesclado"
 msgid "mixed units"
 msgstr "unidades mescladas"
 
-#: src/expressionstatus.cc:975 src/expressionstatus.cc:976
-#: src/mainwindow.cc:1494 src/mainwindow.cc:5073
+#: src/expressionstatus.cc:975 src/expressionstatus.cc:976 src/mainwindow.cc:1494
+#: src/mainwindow.cc:5073
 msgid "factors"
 msgstr "fatores"
 
@@ -4555,7 +4527,6 @@ msgstr "Fuso horário UTC"
 
 #. number base #
 #: src/expressionstatus.cc:1044 src/mainwindow.cc:1501 src/mainwindow.cc:5093
-#, fuzzy
 msgctxt "Number base"
 msgid "base"
 msgstr "base"
@@ -4566,7 +4537,6 @@ msgid "number base %s"
 msgstr "número base %s"
 
 #: src/expressionstatus.cc:1049 src/mainwindow.cc:1505 src/mainwindow.cc:5097
-#, fuzzy
 msgid "decimals"
 msgstr "decimais"
 
@@ -4617,12 +4587,12 @@ msgstr "Inativo"
 #, c-format
 msgid ""
 "Retrieves data from the %s data set for a given object and property. If "
-"\"info\" is typed as property, a dialog window will pop up with all "
-"properties of the object."
+"\"info\" is typed as property, a dialog window will pop up with all properties "
+"of the object."
 msgstr ""
 "Recupera dados do conjunto de dados %s para um determinado objeto e "
-"propriedade. Se \"info\" for digitado como propriedade, uma janela de "
-"diálogo será exibida com todas as propriedades do objeto."
+"propriedade. Se \"info\" for digitado como propriedade, uma janela de diálogo "
+"será exibida com todas as propriedades do objeto."
 
 #: src/functionsdialog.cc:312 src/insertfunctiondialog.cc:794
 msgid "Example:"
@@ -4676,11 +4646,11 @@ msgstr "Demorou muito para gerar os dados da plotagem."
 
 #: src/historyview.cc:824
 msgid ""
-"It took too long to generate the plot data. Please decrease the sampling "
-"rate or increase the time limit in preferences."
+"It took too long to generate the plot data. Please decrease the sampling rate "
+"or increase the time limit in preferences."
 msgstr ""
-"Demorou muito para gerar os dados da plotagem. Diminua a taxa de amostragem "
-"ou aumente o limite de tempo nas preferências."
+"Demorou muito para gerar os dados da plotagem. Diminua a taxa de amostragem ou "
+"aumente o limite de tempo nas preferências."
 
 #: src/historyview.cc:2154 src/mainwindow.cc:2594
 msgid "RPN Register Moved"
@@ -4938,10 +4908,10 @@ msgstr[1] "atualizados %s"
 
 #: src/mainwindow.cc:552
 msgid ""
-"When errors, warnings and other information are generated during "
-"calculation, the icon in the upper right corner of the expression entry "
-"changes to reflect this. If you hold the pointer over or click the icon, the "
-"message will be shown."
+"When errors, warnings and other information are generated during calculation, "
+"the icon in the upper right corner of the expression entry changes to reflect "
+"this. If you hold the pointer over or click the icon, the message will be "
+"shown."
 msgstr ""
 "Quando erros, avisos e outras informações são geradas durante o cálculo, o "
 "ícone à direita da entrada da expressão é alterado para exibir isso. Ao "
@@ -5167,7 +5137,6 @@ msgid "Ignore"
 msgstr "Ignorar"
 
 #: src/mainwindow.cc:5710 src/mainwindow.cc:6494 src/mainwindow.cc:6539
-#, fuzzy
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -5177,7 +5146,7 @@ msgid "Retry"
 msgstr "Tentar novamente"
 
 #: src/mainwindow.cc:6492
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Couldn't write history to\n"
 "%s"
@@ -5203,7 +5172,6 @@ msgid "_Import"
 msgstr "_Importar"
 
 #: src/mainwindow.cc:6845
-#, fuzzy
 msgid "XML Files"
 msgstr "Arquivos XML"
 
@@ -5330,9 +5298,11 @@ msgstr "A unidade não existe"
 
 #: src/menubar.cc:451
 msgid ""
-"Deactivation of interval arithmetic might result in inaccurate output. Do "
-"you want to deactivate it anyway?"
+"Deactivation of interval arithmetic might result in inaccurate output. Do you "
+"want to deactivate it anyway?"
 msgstr ""
+"A desativação da aritmética de intervalo pode resultar em saídas imprecisas. "
+"Deseja desativá-la mesmo assim?"
 
 #: src/menubar.cc:1217
 msgid "Save Mode"
@@ -6016,8 +5986,7 @@ msgstr "não matriz"
 #~ "Calculates an interval of possible values and keeps track of precision "
 #~ "changes."
 #~ msgstr ""
-#~ "Calcula um intervalo de valores possíveis e acompanha mudanças de "
-#~ "precisão."
+#~ "Calcula um intervalo de valores possíveis e acompanha mudanças de precisão."
 
 #, fuzzy
 #~ msgid "Act_ivate"
@@ -6027,11 +5996,10 @@ msgstr "não matriz"
 #~ msgstr "Atualizar taxas de câmbio ao inicializar"
 
 #~ msgid ""
-#~ "If current exchange rates shall be downloaded from the internet at "
-#~ "program start"
+#~ "If current exchange rates shall be downloaded from the internet at program "
+#~ "start"
 #~ msgstr ""
-#~ "Para que as taxas de câmbio sejam baixadas da internet no início do "
-#~ "programa"
+#~ "Para que as taxas de câmbio sejam baixadas da internet no início do programa"
 
 #~ msgid "Binary two's complement representation"
 #~ msgstr "Representação binária do complemento para dois"
@@ -6123,20 +6091,17 @@ msgstr "não matriz"
 #~ msgstr "x, y, z"
 
 #~ msgid "Use x, y and z for 1st, 2nd and 3rd function argument, respectively."
-#~ msgstr ""
-#~ "Use x, y e z para o 1º, 2º e 3º argumento da função, respectivamente."
+#~ msgstr "Use x, y e z para o 1º, 2º e 3º argumento da função, respectivamente."
 
 #~ msgid "\\x, \\y, \\z"
 #~ msgstr "\\x, \\y, \\z"
 
 #~ msgid ""
-#~ "Use \\x, \\y and \\z for 1st, 2nd and 3rd function argument, "
-#~ "respectively. This avoids potential conflicts with variables, functions "
-#~ "and units."
+#~ "Use \\x, \\y and \\z for 1st, 2nd and 3rd function argument, respectively. "
+#~ "This avoids potential conflicts with variables, functions and units."
 #~ msgstr ""
-#~ "Use \\x, \\y and \\z for 1st, 2nd and 3rd function argument, "
-#~ "respectively. Isso evita possíveis conflitos com variáveis, funções e "
-#~ "unidades."
+#~ "Use \\x, \\y and \\z for 1st, 2nd and 3rd function argument, respectively. "
+#~ "Isso evita possíveis conflitos com variáveis, funções e unidades."
 
 #~ msgid "Relation is exact"
 #~ msgstr "Relação é exata"
@@ -6276,8 +6241,8 @@ msgstr "não matriz"
 #~ "Allow dots, '.',  to be used as thousands separator instead of as an "
 #~ "alternative decimal sign"
 #~ msgstr ""
-#~ "Permite que pontos, '.',  sejam usados como separador de milhares em vez "
-#~ "de como um sinal decimal alternativo"
+#~ "Permite que pontos, '.',  sejam usados como separador de milhares em vez de "
+#~ "como um sinal decimal alternativo"
 
 #~ msgid "x"
 #~ msgstr "x"
@@ -6285,8 +6250,7 @@ msgstr "não matriz"
 #~ msgid ""
 #~ "If a matrix or vectors shall be generated from the contents of the file "
 #~ msgstr ""
-#~ "Se uma matriz ou vetores devem ser gerados a partir do conteúdo do "
-#~ "arquivo "
+#~ "Se uma matriz ou vetores devem ser gerados a partir do conteúdo do arquivo "
 
 #~ msgid "Use dark theme"
 #~ msgstr "Usar tema escuro"
