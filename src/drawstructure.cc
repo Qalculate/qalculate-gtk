@@ -1118,7 +1118,32 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				for(size_t i = 0; i < m.size(); i++) {
 					hetmp = 0;
 					ips_n.wrap = b_cis ? (i == 1 && ((m[1][0].isMultiplication() && m[1][0][1].neededMultiplicationSign(po, ips_n, m[1][0], 2, false, false, false, false) != MULTIPLICATION_SIGN_NONE) || (m[1][0].isNegate() && m[1][0][0].isMultiplication() && m[1][0][0][1].neededMultiplicationSign(po, ips_n, m[1][0][0], 2, false, false, false, false) != MULTIPLICATION_SIGN_NONE))) : m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					surface_terms.push_back(draw_structure((b_cis && i == 1) ? m[i][0] : m[i], po, caf, ips_n, &hetmp, scaledown, color, &xtmp, &wotmp));
+					if(i == 0 && m.size() && !po.preserve_precision && (m[i].isNumber() || (m[i].isNegate() && m[i][0].isNumber())) && m[1].isUnit() && m[i].isApproximate() && m[i].precision() < 0 && m[1].unit()->isCurrency() && !po.use_max_decimals && !po.use_min_decimals) {
+						// Set number of decimals for converted currency
+						PrintOptions po2 = po;
+						po2.use_max_decimals = true;
+						po2.max_decimals = 4;
+						const Number &nr = (m[i].isNegate() ? m[i][0].number() : m[i].number());
+						if(nr >= 1000000L) {
+							po2.max_decimals = 0;
+						} else if(nr >= 10000) {
+							po2.max_decimals = 2;
+						} else if(nr.isFraction()) {
+							Number nlog(nr);
+							nlog.log(10);
+							nlog.trunc();
+							if(nlog < -1) po2.max_decimals = 4 - nlog.intValue();
+						}
+						if(po2.max_decimals > PRECISION) po2.max_decimals = PRECISION;
+						if(po2.max_decimals > 2) {
+							po2.use_min_decimals = true;
+							po2.min_decimals = po2.max_decimals - 2;
+						}
+						po2.show_ending_zeroes = false;
+						surface_terms.push_back(draw_structure((b_cis && i == 1) ? m[i][0] : m[i], po2, caf, ips_n, &hetmp, scaledown, color, &xtmp, &wotmp));
+					} else {
+						surface_terms.push_back(draw_structure((b_cis && i == 1) ? m[i][0] : m[i], po, caf, ips_n, &hetmp, scaledown, color, &xtmp, &wotmp));
+					}
 					if(CALCULATOR->aborted()) {
 						for(size_t i = 0; i < surface_terms.size(); i++) {
 							if(surface_terms[i]) cairo_surface_destroy(surface_terms[i]);
