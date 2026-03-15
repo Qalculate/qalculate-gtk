@@ -1182,10 +1182,49 @@ bool contains_extreme_number(const MathStructure &m) {
 	return false;
 }
 
+int intervals_are_relative(const MathStructure &m) {
+	int ret = -1;
+	if(m.isFunction() && m.function()->id() == FUNCTION_ID_UNCERTAINTY && m.size() == 3) {
+		if(m[2].isOne() && m[1].isMultiplication() && m[1].size() > 1 && m[1].last().isVariable() && (m[1].last().variable() == CALCULATOR->getVariableById(VARIABLE_ID_PERCENT) || m[1].last().variable() == CALCULATOR->getVariableById(VARIABLE_ID_PERMILLE) || m[1].last().variable() == CALCULATOR->getVariableById(VARIABLE_ID_PERMYRIAD))) {
+			ret = 1;
+		} else {
+			return 0;
+		}
+	}
+	if(m.isFunction() && m.function()->id() == FUNCTION_ID_INTERVAL) return 0;
+	for(size_t i = 0; i < m.size(); i++) {
+		int ret_i = intervals_are_relative(m[i]);
+		if(ret_i == 0) return 0;
+		else if(ret_i > 0) ret = ret_i;
+	}
+	return ret;
+}
+IntervalDisplay get_adaptive_interval_display(const string &expression_str, const MathStructure *mp) {
+	if((mp && mp->containsFunction(CALCULATOR->f_uncertainty)) || expression_str.find("+/-") != string::npos || expression_str.find("+/" SIGN_MINUS) != string::npos || expression_str.find("±") != string::npos) {
+		if(mp && intervals_are_relative(*mp) > 0) return INTERVAL_DISPLAY_RELATIVE;
+		return INTERVAL_DISPLAY_PLUSMINUS;
+	} else if(mp && mp->containsFunctionId(FUNCTION_ID_INTERVAL)) {
+		return INTERVAL_DISPLAY_INTERVAL;
+	} else {
+		bool b = false;
+		if(CALCULATOR->hasWhereExpression(expression_str, evalops)) {
+			MathFunction *f = CALCULATOR->getFunctionById(FUNCTION_ID_INTERVAL);
+			for(size_t i = 1; f && i <= f->countNames(); i++) {
+				if(expression_str.find(f->getName(i).name) != string::npos) {
+					b = true;
+					break;
+				}
+			}
+		}
+		if(b) return INTERVAL_DISPLAY_INTERVAL;
+	}
+	return  INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
+}
+
 void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	if(result_blocked() || calculation_blocked()) return;
 
-	bool do_factors = false, do_pfe = false, do_expand = false;
+	bool do_factors = false, do_mixed = false, do_pfe = false, do_expand = false;
 
 	ComplexNumberForm cnf_bak = evalops.complex_number_form;
 	ComplexNumberForm cnf = evalops.complex_number_form;
@@ -1476,6 +1515,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
 					str_conv = "";
 					do_to = true;
+					do_mixed = false;
 				} else if(equalsIgnoreCase(to_str, "prefix") || equalsIgnoreCase(to_str, _("prefix"))) {
 					evalops.parse_options.units_enabled = true;
 					to_prefix = 1;
@@ -1486,16 +1526,22 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					evalops.auto_post_conversion = POST_CONVERSION_BASE;
 					str_conv = "";
 					do_to = true;
+					do_mixed = false;
 				} else if(equalsIgnoreCase(to_str, "mixed") || equalsIgnoreCase(to_str, _("mixed"))) {
 					evalops.parse_options.units_enabled = true;
 					evalops.auto_post_conversion = POST_CONVERSION_NONE;
 					evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_FORCE_INTEGER;
 					do_to = true;
+					if(!str_conv.empty()) do_mixed = true;
 				} else if(equalsIgnoreCase(to_str, "factors") || equalsIgnoreCase(to_str, _("factors")) || equalsIgnoreCase(to_str, "factor")) {
 					do_factors = true;
+					do_pfe = false;
+					do_expand = false;
 					str = from_str;
 				} else if(equalsIgnoreCase(to_str, "partial fraction") || equalsIgnoreCase(to_str, _("partial fraction"))) {
 					do_pfe = true;
+					do_factors = false;
+					do_expand = false;
 					str = from_str;
 				// number base #
 				} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _c("Number base", "base"))) {
@@ -1522,6 +1568,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 						if(delay_complex != (cnf != COMPLEX_NUMBER_FORM_POLAR && cnf != COMPLEX_NUMBER_FORM_CIS) && u && u->baseUnit() == CALCULATOR->getRadUnit() && u->baseExponent() == 1) delay_complex = !delay_complex;
 						if(!str_conv.empty()) str_conv += " to ";
 						str_conv += to_str;
+						do_mixed = false;
 					}
 				}
 				if(str_left.empty()) break;
@@ -1548,9 +1595,13 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 				if(to_str == "factor" || equalsIgnoreCase(to_str, "factorize") || equalsIgnoreCase(to_str, _("factorize"))) {
 					str = str.substr(i + 1);
 					do_factors = true;
+					do_pfe = false;
+					do_expand = false;
 				} else if(equalsIgnoreCase(to_str, "expand") || equalsIgnoreCase(to_str, _("expand"))) {
 					str = str.substr(i + 1);
 					do_expand = true;
+					do_factors = false;
+					do_pfe = false;
 				}
 			}
 		}
@@ -1642,17 +1693,20 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			CALCULATOR->clearMessages();
 		} else if(contains_extreme_number(mauto) || mauto.countTotalChildren() > 1000) {
 			mauto.setAborted();
-		} else if(do_factors || do_pfe || do_expand) {
+		} else if(do_factors || do_pfe || do_expand || do_mixed) {
 			CALCULATOR->startControl(100);
-			if(do_factors) {
+			if(do_pfe) {
+				mauto.expandPartialFractions(evalops);
+			} else if(do_expand) {
+				mauto.expand(evalops);
+			} else if(do_factors) {
 				if((mauto.isNumber() || mauto.isVector()) && to_fraction == 0 && to_fixed_fraction == 0) to_fraction = 2;
 				if(!mauto.integerFactorize()) {
 					mauto.structure(STRUCTURING_FACTORIZE, evalops, true);
 				}
-			} else if(do_pfe) {
-				mauto.expandPartialFractions(evalops);
-			} else if(do_expand) {
-				mauto.expand(evalops);
+			} else if(do_mixed) {
+				evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_FORCE_INTEGER;
+				mauto.set(CALCULATOR->convertToMixedUnits(mauto, evalops));
 			}
 			if(CALCULATOR->aborted()) mauto.setAborted();
 			CALCULATOR->stopControl();
@@ -1691,6 +1745,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 
 		CALCULATOR->startControl(100);
 
+		if(adaptive_interval_display) printops.interval_display = get_adaptive_interval_display(prev_autocalc_str, parsed_mstruct);
 		if(to_base != 0 || to_fraction > 0 || to_fixed_fraction >= 2 || to_prefix != 0 || (to_caf >= 0 && to_caf != complex_angle_form) || to_tz != TIME_ZONE_LOCAL || to_form != TO_FORM_OFF) {
 			if(to_base != 0 && (to_base != printops.base || to_bits != printops.binary_bits || (to_base == BASE_CUSTOM && to_nbase != CALCULATOR->customOutputBase()) || (to_base == BASE_DUODECIMAL && to_duo_syms && !printops.duodecimal_symbols))) {
 				printops.base = to_base;
@@ -2511,24 +2566,6 @@ void ViewThread::run() {
 	}
 }
 
-int intervals_are_relative(MathStructure &m) {
-	int ret = -1;
-	if(m.isFunction() && m.function()->id() == FUNCTION_ID_UNCERTAINTY && m.size() == 3) {
-		if(m[2].isOne() && m[1].isMultiplication() && m[1].size() > 1 && m[1].last().isVariable() && (m[1].last().variable() == CALCULATOR->getVariableById(VARIABLE_ID_PERCENT) || m[1].last().variable() == CALCULATOR->getVariableById(VARIABLE_ID_PERMILLE) || m[1].last().variable() == CALCULATOR->getVariableById(VARIABLE_ID_PERMYRIAD))) {
-			ret = 1;
-		} else {
-			return 0;
-		}
-	}
-	if(m.isFunction() && m.function()->id() == FUNCTION_ID_INTERVAL) return 0;
-	for(size_t i = 0; i < m.size(); i++) {
-		int ret_i = intervals_are_relative(m[i]);
-		if(ret_i == 0) return 0;
-		else if(ret_i > 0) ret = ret_i;
-	}
-	return ret;
-}
-
 /*
 	set result in result widget and add to history widget
 */
@@ -2604,14 +2641,7 @@ void setResult(Prefix *prefix, bool update_history, bool update_parse, bool forc
 		unblock_error();
 		return;
 	}
-	if(update_parse && adaptive_interval_display) {
-		string expression_str = get_expression_text();
-		if((parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_uncertainty)) || expression_str.find("+/-") != string::npos || expression_str.find("+/" SIGN_MINUS) != string::npos || expression_str.find("±") != string::npos) {
-			if(parsed_mstruct && intervals_are_relative(*parsed_mstruct) > 0) printops.interval_display = INTERVAL_DISPLAY_RELATIVE;
-			else printops.interval_display = INTERVAL_DISPLAY_PLUSMINUS;
-		} else if(parsed_mstruct && parsed_mstruct->containsFunction(CALCULATOR->f_interval)) printops.interval_display = INTERVAL_DISPLAY_INTERVAL;
-		else printops.interval_display = INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
-	}
+	if(update_parse && adaptive_interval_display) printops.interval_display = get_adaptive_interval_display(get_expression_text(), parsed_mstruct);
 	if(update_history) result_text = "?";
 
 	if(update_parse) {
@@ -4208,7 +4238,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 	b_busy = true;
 	b_busy_expression = true;
 
-	bool do_factors = false, do_pfe = false, do_expand = false, do_ceu = execute_str.empty(), do_bases = false, do_calendars = false;
+	bool do_factors = false, do_mixed = false, do_pfe = false, do_expand = false, do_ceu = execute_str.empty(), do_bases = false, do_calendars = false;
 	if(do_stack && !rpn_mode) do_stack = false;
 	if(do_stack && do_mathoperation && f && stack_index == 0) do_stack = false;
 	if(!do_stack) stack_index = 0;
@@ -5042,6 +5072,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				evalops.auto_post_conversion = POST_CONVERSION_OPTIMAL_SI;
 				str_conv = "";
 				do_to = true;
+				do_mixed = false;
 			} else if(equalsIgnoreCase(to_str, "prefix") || equalsIgnoreCase(to_str, _("prefix"))) {
 				evalops.parse_options.units_enabled = true;
 				to_prefix = 1;
@@ -5058,6 +5089,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				evalops.auto_post_conversion = POST_CONVERSION_BASE;
 				str_conv = "";
 				do_to = true;
+				do_mixed = false;
 			} else if(equalsIgnoreCase(to_str, "mixed") || equalsIgnoreCase(to_str, _("mixed"))) {
 				if(from_str.empty()) {
 					b_busy = false;
@@ -5070,6 +5102,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				evalops.auto_post_conversion = POST_CONVERSION_NONE;
 				evalops.mixed_units_conversion = MIXED_UNITS_CONVERSION_FORCE_INTEGER;
 				do_to = true;
+				if(!str_conv.empty()) do_mixed = true;
 			} else if(equalsIgnoreCase(to_str, "factors") || equalsIgnoreCase(to_str, _("factors")) || equalsIgnoreCase(to_str, "factor")) {
 				if(from_str.empty()) {
 					b_busy = false;
@@ -5079,6 +5112,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					return;
 				}
 				do_factors = true;
+				do_pfe = false;
+				do_expand = false;
 				execute_str = from_str;
 			} else if(equalsIgnoreCase(to_str, "partial fraction") || equalsIgnoreCase(to_str, _("partial fraction"))) {
 				if(from_str.empty()) {
@@ -5089,6 +5124,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					return;
 				}
 				do_pfe = true;
+				do_factors = false;
+				do_expand = false;
 				execute_str = from_str;
 			} else if(equalsIgnoreCase(to_str1, "base") || equalsIgnoreCase(to_str1, _c("Number base", "base"))) {
 				base_from_string(to_str2, to_base, to_nbase);
@@ -5121,6 +5158,7 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 					if(delay_complex != (cnf != COMPLEX_NUMBER_FORM_POLAR && cnf != COMPLEX_NUMBER_FORM_CIS) && u && u->baseUnit() == CALCULATOR->getRadUnit() && u->baseExponent() == 1) delay_complex = !delay_complex;
 					if(!str_conv.empty()) str_conv += " to ";
 					str_conv += to_str;
+					do_mixed = false;
 				}
 			}
 			if(str_left.empty()) break;
@@ -5155,9 +5193,13 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 			if(to_str == "factor" || equalsIgnoreCase(to_str, "factorize") || equalsIgnoreCase(to_str, _("factorize"))) {
 				execute_str = str.substr(i + 1);
 				do_factors = true;
+				do_pfe = false;
+				do_expand = false;
 			} else if(equalsIgnoreCase(to_str, "expand") || equalsIgnoreCase(to_str, _("expand"))) {
 				execute_str = str.substr(i + 1);
 				do_expand = true;
+				do_factors = false;
+				do_pfe = false;
 			}
 		}
 	}
@@ -5468,16 +5510,22 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 		}
 	}
 
-	if(do_factors || do_pfe || do_expand) {
+	if(do_factors || do_pfe || do_expand || do_mixed) {
+		int com = 0;
+		if(do_pfe) com = COMMAND_EXPAND_PARTIAL_FRACTIONS;
+		else if(do_expand) com = COMMAND_EXPAND;
+		else if(do_factors) com = COMMAND_FACTORIZE;
+		else if(do_mixed) com = COMMAND_CONVERT_MIXED;
 		if(do_stack && stack_index != 0) {
 			MathStructure *save_mstruct = mstruct;
 			mstruct = CALCULATOR->getRPNRegister(stack_index + 1);
-			if(do_factors && (mstruct->isNumber() || mstruct->isVector()) && to_fraction == 0 && to_fixed_fraction == 0) to_fraction = 2;
-			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false, true);
+			if(com == COMMAND_FACTORIZE && (mstruct->isNumber() || mstruct->isVector()) && to_fraction == 0 && to_fixed_fraction == 0) to_fraction = 2;
+
+			executeCommand(com, false, true);
 			mstruct = save_mstruct;
 		} else {
-			if(do_factors && (mstruct->isNumber() || mstruct->isVector()) && to_fraction == 0 && to_fixed_fraction == 0) to_fraction = 2;
-			executeCommand(do_pfe ? COMMAND_EXPAND_PARTIAL_FRACTIONS : (do_expand ? COMMAND_EXPAND : COMMAND_FACTORIZE), false, true);
+			if(com == COMMAND_FACTORIZE && (mstruct->isNumber() || mstruct->isVector()) && to_fraction == 0 && to_fixed_fraction == 0) to_fraction = 2;
+			executeCommand(com, false, true);
 		}
 	}
 
