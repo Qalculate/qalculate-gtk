@@ -1,0 +1,5811 @@
+# Georgian translation for qalculate-gtk.
+# Copyright (C) 2026 qalculate-gtk's authors.
+# This file is distributed under the same license as the qalculate-gtk package.
+# Ekaterine Papava <papava.e@gtu.ge>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: qalculate-gtk 5.9.0\n"
+"Report-Msgid-Bugs-To: https://github.com/Qalculate/qalculate-gtk/issues\n"
+"POT-Creation-Date: 2026-01-17 10:25+0100\n"
+"PO-Revision-Date: 2026-03-27 14:22+0100\n"
+"Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
+"Language-Team: Georgian <(nothing)>\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.9\n"
+
+#: data/qalculate-gtk.desktop.in:3 src/mainwindow.cc:8518
+#: src/mainwindow.cc:8525
+msgid "Qalculate!"
+msgstr "Qalculate!"
+
+#: data/qalculate-gtk.desktop.in:4
+msgid "Calculator"
+msgstr "კალკულატორი"
+
+#: data/qalculate-gtk.desktop.in:5 data/qalculate-gtk.noinst.appdata.xml:8
+#: src/mainwindow.cc:7137
+msgid "Powerful and easy to use calculator"
+msgstr "ძლიერი და მარტივი გამოსაყენებელი კალკულატორი"
+
+#: data/qalculate-gtk.desktop.in:14
+msgid "calculation;arithmetic;scientific;financial;"
+msgstr "calculation;arithmetic;scientific;financial;გამოთვლა;არითმეტიკა;სამეცნიერო;ფინანსური;"
+
+#: data/qalculate-gtk.noinst.appdata.xml:7
+msgid "Qalculate! (GTK UI)"
+msgstr "Qalculate! (GTK UI)"
+
+#: data/qalculate-gtk.noinst.appdata.xml:10
+msgid ""
+"Qalculate! is a multi-purpose cross-platform desktop calculator. It is "
+"simple to use but provides power and versatility normally reserved for "
+"complicated math packages, as well as useful tools for everyday needs (such "
+"as currency conversion and percent calculation)."
+msgstr ""
+"Qalculate! წარმოადგენს მრავალფუნქციურ პლატფორმათაშორის კალკულატორს. ის "
+"მარტივია, მაგრამ გაწვდით სიმძლავრეს და მოქნილობას, რომელიც, ჩვეულებრივ, "
+"მათემატიკის პაკეტებს აქვთ, ისევე, როგორც სასარგებლო ხელსაწყოებს ყოველდღიური "
+"საჭიროებებისთვის (როგორიცაა ვალუტის გადაყვანა და პროცენტების გამოთვლა)."
+
+#: data/qalculate-gtk.noinst.appdata.xml:16
+msgid ""
+"Features include a large library of customizable functions, unit "
+"calculations and conversion, physical constants, symbolic calculations "
+"(including integrals and equations), arbitrary precision, uncertainty "
+"propagation, interval arithmetic, plotting, and a user-friendly interface."
+msgstr ""
+"ფუნქციები მოიცავს მორგებადი ფუნქციების დიდ ბიბლიოთეკას, ერთეულების გამოთვლას "
+"და გადაყვანას, ფიზიკურ კონსტანტებს, სიმბოლურ გამოთვლებს (ინტეგრალებისა და "
+"განტოლებების ჩათვლით), სასურველი სიზუსტეს, გრაფიკებს და მოსახერხებელ "
+"ინტერფეისს."
+
+#: data/qalculate-gtk.noinst.appdata.xml:26
+msgid "The main window with history visible"
+msgstr "მთავარი ფანჯარა ხილული ისტორიით"
+
+#: data/qalculate-gtk.noinst.appdata.xml:30
+msgid "The main window with keypad visible"
+msgstr "მთავარი ფანჯარა ხილული ციფრული კლავიატურით"
+
+#: data/argumentrules.ui:22 data/functionedit.ui:618
+msgid "Argument Rules"
+msgstr "არგუმენტის წესები"
+
+#: data/argumentrules.ui:37 data/buttonsedit.ui:244 data/csvexport.ui:23
+#: data/csvimport.ui:31 data/datasetedit.ui:23 data/datasetedit.ui:332
+#: data/datasets.ui:24 data/functionedit.ui:38 data/functionedit.ui:633
+#: data/matrix.ui:40 data/matrixedit.ui:53 data/shortcuts.ui:175
+#: data/unitedit.ui:59 data/unknownedit.ui:38 data/variableedit.ui:38
+#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47
+#: src/expressionedit.cc:1309 src/historyview.cc:2827 src/historyview.cc:2925
+#: src/historyview.cc:2970 src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
+#: src/insertfunctiondialog.cc:65 src/insertfunctiondialog.cc:108
+#: src/insertfunctiondialog.cc:110 src/insertfunctiondialog.cc:973
+#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:720
+#: src/mainwindow.cc:6839 src/mainwindow.cc:6841 src/mainwindow.cc:7805
+#: src/matrixdialog.cc:389 src/menubar.cc:1217 src/menubar.cc:1258
+#: src/plotdialog.cc:378 src/plotdialog.cc:380 src/resultview.cc:552
+#: src/resultview.cc:554
+msgid "_Cancel"
+msgstr "გაუ_ქმება"
+
+#: data/argumentrules.ui:52 data/buttonsedit.ui:259 data/csvexport.ui:38
+#: data/csvimport.ui:47 data/datasetedit.ui:38 data/datasetedit.ui:347
+#: data/datasets.ui:39 data/functionedit.ui:53 data/functionedit.ui:654
+#: data/matrixedit.ui:68 data/shortcuts.ui:205 data/unitedit.ui:74
+#: data/unknownedit.ui:53 data/variableedit.ui:53 src/expressionedit.cc:1309
+#: src/historyview.cc:2827 src/historyview.cc:2925 src/historyview.cc:2970
+#: src/insertfunctiondialog.cc:65 src/insertfunctiondialog.cc:973
+#: src/insertfunctiondialog.cc:1081 src/mainwindow.cc:720 src/mainwindow.cc:813
+#: src/mainwindow.cc:884 src/mainwindow.cc:939 src/mainwindow.cc:1020
+#: src/mainwindow.cc:1076 src/mainwindow.cc:7805
+msgid "_OK"
+msgstr "_დიახ"
+
+#: data/argumentrules.ui:85 data/buttonsedit.ui:337 data/shortcuts.ui:283
+msgid "Argument name"
+msgstr "არგუმენტის სახელი"
+
+#: data/argumentrules.ui:102
+msgid "Free"
+msgstr "უფასო"
+
+#: data/argumentrules.ui:103 data/datasetedit.ui:213 data/main.ui:277
+#: data/main.ui:430 data/main.ui:578 data/main.ui:2406 data/unknownedit.ui:144
+msgid "Number"
+msgstr "რიცხვი"
+
+#: data/argumentrules.ui:104 data/main.ui:312 data/main.ui:465 data/main.ui:613
+#: data/main.ui:2445 data/unknownedit.ui:147
+msgid "Integer"
+msgstr "მთელი რიცხვი"
+
+#: data/argumentrules.ui:105
+msgid "Symbol"
+msgstr "სიმბოლო"
+
+#: data/argumentrules.ui:106 data/datasetedit.ui:212
+msgid "Text"
+msgstr "ტექსტი"
+
+#: data/argumentrules.ui:107
+msgid "Date"
+msgstr "თარიღი"
+
+#: data/argumentrules.ui:108 data/main.ui:747 data/matrix.ui:204
+#: data/matrixedit.ui:271 src/matrixdialog.cc:392
+msgid "Vector"
+msgstr "ვექტორი"
+
+#: data/argumentrules.ui:109 data/csvimport.ui:173 data/main.ui:738
+#: data/matrix.ui:24 data/matrix.ui:186 data/matrixedit.ui:252
+#: src/matrixdialog.cc:394
+msgid "Matrix"
+msgstr "მატრიცა"
+
+#: data/argumentrules.ui:110
+msgid "Positive number"
+msgstr "დადებითი რიცხვი"
+
+#: data/argumentrules.ui:111
+msgid "Non-zero number"
+msgstr "არანულოვანი რიცხვი"
+
+#: data/argumentrules.ui:112
+msgid "Non-negative number"
+msgstr "არაუარყოფითი რიცხვი"
+
+#: data/argumentrules.ui:113
+msgid "Positive integer"
+msgstr "დადებითი მთელი რიცხვი"
+
+#: data/argumentrules.ui:114
+msgid "Non-zero integer"
+msgstr "არანულოვანი მთელი რიცხვი"
+
+#: data/argumentrules.ui:115
+msgid "Non-negative integer"
+msgstr "არაუარყოფითი მთელი რიცხვი"
+
+#: data/argumentrules.ui:116 data/main.ui:321 data/main.ui:474 data/main.ui:622
+#: data/main.ui:2455 data/unknownedit.ui:148
+msgid "Boolean"
+msgstr "ბულევი"
+
+#: data/argumentrules.ui:117 src/dataseteditdialog.cc:478
+msgid "Object"
+msgstr "ობიექტი"
+
+#: data/argumentrules.ui:118 data/datasetedit.ui:765 data/main.ui:765
+#: data/plot.ui:235 src/functionsdialog.cc:579
+msgid "Function"
+msgstr "ფუნქცია"
+
+#: data/argumentrules.ui:119 data/main.ui:783 data/main.ui:4437
+msgid "Unit"
+msgstr "ერთეული"
+
+#: data/argumentrules.ui:120 data/main.ui:729 src/variablesdialog.cc:529
+msgid "Variable"
+msgstr "ცვლადი"
+
+#: data/argumentrules.ui:121 data/csvexport.ui:162 data/csvimport.ui:82
+msgid "File"
+msgstr "ფაილი"
+
+#: data/argumentrules.ui:122
+msgid "Angle"
+msgstr "კუთხე"
+
+#: data/argumentrules.ui:123 src/expressioncompletion.cc:1171
+msgid "Data object"
+msgstr "მონაცემის ობიექტი"
+
+#: data/argumentrules.ui:124
+msgid "Data property"
+msgstr "მონაცემის თვისება"
+
+#: data/argumentrules.ui:136
+msgid "Enable rules and type test"
+msgstr "წესების ჩართვა და ტიპის შემოწმება"
+
+#: data/argumentrules.ui:154
+msgid "Custom condition"
+msgstr "მორგებული პირობა"
+
+#: data/argumentrules.ui:173
+msgid ""
+"For example if argument is a matrix that must have equal number of rows and "
+"columns: rows(\\x) = columns(\\x)"
+msgstr ""
+"მაგალითად, თუ არგუმენტი მატრიცაა, რომელსაც მწკრივებისა და სვეტების ტოლი "
+"რაოდენობა უნდა ჰქონდეთ: rows(\\x) = columns(\\x)"
+
+#: data/argumentrules.ui:186
+msgid "Allow matrix"
+msgstr "მატრიცის დაშვება"
+
+#: data/argumentrules.ui:203
+msgid "Forbid zero"
+msgstr "ნულის აკრძალვა"
+
+#: data/argumentrules.ui:219
+msgid "Handle vector"
+msgstr "ვექტორის დამშავება"
+
+#: data/argumentrules.ui:223
+msgid "Calculate function for each separate element in vector."
+msgstr "ფუნქციის გამოთვლა ვექტორის თითოეული ცალკეული ელემენტისთვის."
+
+#: data/argumentrules.ui:236
+msgid "Min"
+msgstr "მინ"
+
+#: data/argumentrules.ui:252 data/argumentrules.ui:306
+msgid "Include equals"
+msgstr "ტოლობების ჩასმა"
+
+#: data/argumentrules.ui:290
+msgid "Max"
+msgstr "მაქს"
+
+#: data/argumentrules.ui:347 data/unknownedit.ui:119
+#: src/dataseteditdialog.cc:230 src/functioneditdialog.cc:450
+msgid "Type"
+msgstr "ტიპი"
+
+#: data/argumentrules.ui:359 data/csvimport.ui:106 data/datasetedit.ui:72
+#: data/datasetedit.ui:656 data/functionedit.ui:93 data/matrixedit.ui:107
+#: data/unitedit.ui:113 data/unknownedit.ui:88 data/variableedit.ui:92
+#: src/conversionview.cc:508 src/dataseteditdialog.cc:227
+#: src/functioneditdialog.cc:444 src/historyview.cc:2932 src/menubar.cc:1224
+#: src/nameseditdialog.cc:155 src/unitsdialog.cc:1008
+msgid "Name"
+msgstr "სახელი"
+
+#: data/buttonsedit.ui:10 data/main.ui:1162
+msgid "Customize Keypad Buttons"
+msgstr "ციფრული კლავიატურის ღილაკების მორგება"
+
+#: data/buttonsedit.ui:25 data/calendarconversion.ui:26 data/datasets.ui:129
+#: data/decimals.ui:45 data/floatingpoint.ui:27 data/functions.ui:24
+#: data/namesedit.ui:24 data/nbases.ui:24 data/percentage.ui:56 data/plot.ui:99
+#: data/precision.ui:31 data/preferences.ui:105 data/setbase.ui:38
+#: data/shortcuts.ui:25 data/units.ui:26 data/variables.ui:24
+#: src/historyview.cc:2792 src/insertfunctiondialog.cc:448
+#: src/mainwindow.cc:724 src/mainwindow.cc:725 src/mainwindow.cc:727
+#: src/matrixdialog.cc:381 src/periodictabledialog.cc:86
+msgid "_Close"
+msgstr "და_ხურვა"
+
+#: data/buttonsedit.ui:70 src/buttonseditdialog.cc:418
+msgid "Label"
+msgstr "ჭდე"
+
+#: data/buttonsedit.ui:107 src/buttonseditdialog.cc:421
+msgid "Left-click"
+msgstr "მარცხენა-წკაპი"
+
+#: data/buttonsedit.ui:123 src/buttonseditdialog.cc:424
+msgid "Right-click"
+msgstr "მარჯვენა წკაპი"
+
+#: data/buttonsedit.ui:139 src/buttonseditdialog.cc:427
+msgid "Middle-click"
+msgstr "შუა წკაპი"
+
+#: data/buttonsedit.ui:165
+msgid "Reset"
+msgstr "ჩამოყრა"
+
+#: data/buttonsedit.ui:228
+msgid "Button Action"
+msgstr "ღილაკის ქმედება"
+
+#: data/buttonsedit.ui:321 data/floatingpoint.ui:62 data/shortcuts.ui:267
+#: data/variableedit.ui:122 src/insertfunctiondialog.cc:512
+#: src/shortcutsdialog.cc:579 src/stackview.cc:800
+msgid "Value"
+msgstr "მნიშვნელობა"
+
+#: data/calendarconversion.ui:8 data/main.ui:899
+msgid "Calendar Conversion"
+msgstr "კალენდრის გადაყვანა"
+
+#: data/csvexport.ui:8
+msgid "Export CSV File"
+msgstr "CSV ფაილის გატანა"
+
+#: data/csvexport.ui:69
+msgid "Current result"
+msgstr "მიმდინარე შედეგი"
+
+#: data/csvexport.ui:85
+msgid "Matrix/vector variable"
+msgstr "მატრიცული/ვექტორული ცვლადი"
+
+#: data/csvexport.ui:104 data/csvimport.ui:262
+msgid "Delimiter"
+msgstr "გამყოფი"
+
+#: data/csvexport.ui:130 data/csvimport.ui:293
+msgid "Comma"
+msgstr "მძიმე"
+
+#: data/csvexport.ui:131 data/csvimport.ui:294
+msgid "Tabulator"
+msgstr "ტაბულატორი"
+
+#: data/csvexport.ui:132 data/csvimport.ui:295
+msgid "Semicolon"
+msgstr "წერტილმძიმე"
+
+#: data/csvexport.ui:133 data/csvimport.ui:296
+msgid "Space"
+msgstr "ჰარე"
+
+#: data/csvexport.ui:134 data/csvimport.ui:297
+msgid "Other"
+msgstr "სხვა"
+
+#: data/csvimport.ui:15
+msgid "Import CSV File"
+msgstr "CSV ფაილის შემოტანა"
+
+#: data/csvimport.ui:36
+msgid "Do not import the file"
+msgstr "ამ ფაილის შემოტანა არ მოხდეს"
+
+#: data/csvimport.ui:52
+msgid "Import the file"
+msgstr "ფაილის შემოტანა"
+
+#: data/csvimport.ui:94
+msgid "Import as"
+msgstr "შემოტანა, როგორც"
+
+#: data/csvimport.ui:118 data/datasetedit.ui:84 data/datasetedit.ui:386
+#: data/functionedit.ui:479 data/matrixedit.ui:454 data/unitedit.ui:137
+#: data/variableedit.ui:250
+msgid "Descriptive name"
+msgstr "გასაგები სახელი"
+
+#: data/csvimport.ui:130 data/functionedit.ui:449 data/main.ui:4389
+#: data/matrixedit.ui:425 data/unitedit.ui:125 data/variableedit.ui:223
+#: src/conversionview.cc:519 src/functionsdialog.cc:593 src/unitsdialog.cc:1022
+#: src/variablesdialog.cc:543
+msgid "Category"
+msgstr "კატეგორია"
+
+#: data/csvimport.ui:142
+msgid "First row"
+msgstr "პირველი მწკრივი"
+
+#: data/csvimport.ui:153
+msgid "Name of the data file to import"
+msgstr "შემოსატანი მონაცემთა ფაილის სახელი"
+
+#: data/csvimport.ui:177
+msgid "If a matrix shall be generated from the contents of the file"
+msgstr "უნდა დაგენერირდეს მატრიცა ფაილის შემცველობისგან, თუ არა"
+
+#: data/csvimport.ui:191
+msgid "Vectors"
+msgstr "ვექტორები"
+
+#: data/csvimport.ui:195
+msgid "If vectors shall be generated from the contents of the file"
+msgstr "უნდა დაგენერირდეს ვექტორები ფაილის შემცველობისგან, თუ არა"
+
+#: data/csvimport.ui:217
+msgid ""
+"Name (or name prefix) used to reference generated variable(s) in expressions"
+msgstr ""
+"სახელი (ან სახელის პრეფიქსი), რომლებიც გამოსახულებებში გენერირებულ ცვლადებში "
+"გამოიყენება"
+
+#: data/csvimport.ui:232 data/matrixedit.ui:465 data/variableedit.ui:234
+msgid "Title displayed in menus and in variable manager"
+msgstr "მენიუებში და ცვლადების მმართველში ნაჩვენები სათაური"
+
+#: data/csvimport.ui:245
+msgid "The first row with data to import in the file"
+msgstr "პირველი მონაცემებიანი მწკრივი შემოსატან ფაილში"
+
+#: data/csvimport.ui:271
+msgid "Includes headings"
+msgstr "სათაურების ჩასმა"
+
+#: data/csvimport.ui:275
+msgid "If the first row contains column headings"
+msgstr "თუ პირველი მწკრივი სვეტის სათაურების შეიცავს"
+
+#: data/csvimport.ui:290
+msgid "Delimiter used to separate columns in the file"
+msgstr "ფაილში სვეტების გამოსაყოფად გამოყენებული სიმბოლო"
+
+#: data/csvimport.ui:311
+msgid "Custom delimiter"
+msgstr "გამყოფის მითითებულ სიმბოლოზე დაყენება"
+
+#: data/datasetedit.ui:8
+msgid "Edit Data Property"
+msgstr "მონაცემთა თვისების ჩასწორება"
+
+#: data/datasetedit.ui:96 data/datasetedit.ui:410 data/functionedit.ui:522
+#: data/functionedit.ui:593 data/matrixedit.ui:480 data/matrixedit.ui:502
+#: data/unitedit.ui:161 data/variableedit.ui:262 data/variableedit.ui:327
+msgid "Description"
+msgstr "აღწერა"
+
+#: data/datasetedit.ui:108
+msgid "Value Type"
+msgstr "მნიშვნელობის ტიპი"
+
+#: data/datasetedit.ui:117
+msgid "Use as key"
+msgstr "გამოყენება გასაღების სახით"
+
+#: data/datasetedit.ui:133
+msgid "Case sensitive value"
+msgstr "მნიშვნელობაში დიდი და პატარა ასოები განსხვავდება"
+
+#: data/datasetedit.ui:149
+msgid "Approximate value"
+msgstr "დაახლოებითი მნისვნელობა"
+
+#: data/datasetedit.ui:165
+msgid "Value uses brackets"
+msgstr "მნიშვნელობა იყენებს ფრჩხილებს"
+
+#: data/datasetedit.ui:180
+msgid "Hide"
+msgstr "დამალვა"
+
+#: data/datasetedit.ui:199 data/main.ui:4345
+msgid "Unit expression"
+msgstr "ერთეულების გამოსახულება"
+
+#: data/datasetedit.ui:214 data/functionedit.ui:149 data/functionedit.ui:689
+#: data/plot.ui:197 src/functioneditdialog.cc:470 src/plotdialog.cc:776
+msgid "Expression"
+msgstr "გამოსახულება"
+
+#: data/datasetedit.ui:242
+msgid "Name used for reference"
+msgstr "მიმართვისთვის გამოყენებული სახელი"
+
+#: data/datasetedit.ui:259 data/datasetedit.ui:479
+msgid "Title displayed in menus and in data set manager"
+msgstr "მენიუებში და მონაცემთა ნაკრების მმართველში ნაჩვენები სათაური"
+
+#: data/datasetedit.ui:279 data/datasetedit.ui:285
+msgid "Description of this data property"
+msgstr "ამ მონაცემთა თვისების აღწერა"
+
+#: data/datasetedit.ui:317 src/dataseteditdialog.cc:364
+msgid "Edit Data Set"
+msgstr "მონაცემთა ნაკრების ჩასწორება"
+
+#: data/datasetedit.ui:398
+msgid "Data file"
+msgstr "მონაცემების ფაილი"
+
+#: data/datasetedit.ui:422
+msgid "Copyright"
+msgstr "საავტორო უფლებები"
+
+#: data/datasetedit.ui:462
+msgid "Description of this data set"
+msgstr "ამ მონაცემთა ნაკრების აღწერა"
+
+#: data/datasetedit.ui:517 data/unitedit.ui:293
+msgid "General"
+msgstr "ზოგადი"
+
+#: data/datasetedit.ui:535
+msgid "Properties:"
+msgstr "თვისებები:"
+
+#: data/datasetedit.ui:553
+msgid "Definition of the properties of this data set"
+msgstr "ამ მონაცემთა ნაკრების თვისებების აღწერა"
+
+#: data/datasetedit.ui:574 data/functions.ui:258 data/main.ui:720
+#: data/units.ui:452 data/variables.ui:261
+msgid "_New"
+msgstr "_ახალი"
+
+#: data/datasetedit.ui:590 data/functionedit.ui:271 data/functionedit.ui:374
+#: data/functions.ui:275 data/main.ui:959 data/namesedit.ui:101
+#: data/shortcuts.ui:103 data/units.ui:469 data/variables.ui:278
+msgid "_Edit"
+msgstr "_ჩასწორება"
+
+#: data/datasetedit.ui:606 data/functions.ui:292 data/units.ui:486
+#: data/variables.ui:295 src/menubar.cc:1258
+msgid "_Delete"
+msgstr "_წაშლა"
+
+#: data/datasetedit.ui:636 src/datasetsdialog.cc:163 src/functionsdialog.cc:391
+msgid "Properties"
+msgstr "თვისებები"
+
+#: data/datasetedit.ui:668
+msgid "Object argument name"
+msgstr "ობიექტის არგუმენტის სახელი"
+
+#: data/datasetedit.ui:680
+msgid "Property argument name"
+msgstr "თვისების არგუმენტის სახელი"
+
+#: data/datasetedit.ui:692
+msgid "Default property"
+msgstr "ნაგულისხმევი თვისება"
+
+#: data/datasetedit.ui:703
+msgid "Name used to invoke the function in expressions"
+msgstr "გამოსახულებაში ფუნქციის გამოსაძახებელად გამოყენებული სახელი"
+
+#: data/datasets.ui:8 src/datasetsdialog.cc:477
+msgid "Edit Data Object"
+msgstr "მონაცემთა ობიექტის ცასწორება"
+
+#: data/datasets.ui:114 data/main.ui:995 src/dataseteditdialog.cc:470
+msgid "Data Sets"
+msgstr "მონაცემის სეტები"
+
+#: data/datasets.ui:175 data/main.ui:774 src/datasetsdialog.cc:432
+msgid "Data Set"
+msgstr "მონაცემთა ნაკრები"
+
+#: data/datasets.ui:215
+msgid "Create a new data set"
+msgstr "ახალი მონაცემთა ნაკრების შექმნა"
+
+#: data/datasets.ui:237
+msgid "Edit the selected data set"
+msgstr "მონიშნული მონაცემთა ნაკრების ჩასწორება"
+
+#: data/datasets.ui:259
+msgid "Delete the selected data set"
+msgstr "მონიშნული მონაცემთა ბაკრების წაშლა"
+
+#: data/datasets.ui:303
+msgid "Objects"
+msgstr "ობიექტები"
+
+#: data/datasets.ui:344
+msgid "Create a new data object"
+msgstr "ახალი მონაცემთა ობიექტის შექმნა"
+
+#: data/datasets.ui:366
+msgid "Edit the selected data object"
+msgstr "მონიშნული მონაცემთა ობიექტის ჩასწორება"
+
+#: data/datasets.ui:388
+msgid "Remove the selected data object"
+msgstr "მონიშნული მონაცემთა ობიექტის წაშლა"
+
+#: data/datasets.ui:471
+msgid "Data Set Description"
+msgstr "მონაცემთა ნაკრების აღწერა"
+
+#: data/datasets.ui:551
+msgid "Object Attributes"
+msgstr "ობიექტის ატრიბუტები"
+
+#: data/decimals.ui:26
+msgid "Decimals"
+msgstr "ციფრები მძიმის შემდეგ"
+
+#: data/decimals.ui:50 data/matrix.ui:45 data/plot.ui:104 data/precision.ui:36
+msgid "Close this window"
+msgstr "ამ ფანჯრის დახურვა"
+
+#: data/decimals.ui:78
+msgid "Min decimals"
+msgstr "მინ. ციფრი"
+
+#: data/decimals.ui:93
+msgid "Max decimals"
+msgstr "მაქს. ციფრი"
+
+#: data/decimals.ui:108
+msgid "Significant digits"
+msgstr "მნიშვნელოვანი ციფრები"
+
+#: data/decimals.ui:126
+msgid "Minimal number of displayed decimals"
+msgstr "ნაჩვენები ათწილადების მინიმალური რაოდენობა"
+
+#: data/decimals.ui:143
+msgid "Maximal number of decimals to display (and round to)"
+msgstr "ნაჩვენები ათწილადების მაქს. რაოდენობა (და დამრგვალება)"
+
+#: data/decimals.ui:162
+msgid ""
+"Maximal number of significant digits to display (by default determined by "
+"precision)"
+msgstr ""
+"ნაჩვენები საჭირო ციფრების მაქს. რაოდენობა (ნაგულისხმევად განისაზღვრება "
+"სიზუსტის მიერ)"
+
+#: data/floatingpoint.ui:11
+msgid "Floating Point Conversion"
+msgstr "მცურავმძიმიანი რიცხვების გადაყვანა"
+
+#: data/floatingpoint.ui:106
+msgid "Hexadecimal representation"
+msgstr "თექვსმეტობითი რიცხვების გადაყვანა"
+
+#: data/floatingpoint.ui:119
+msgid "Conversion error"
+msgstr "გადაყვანის შეცდომა"
+
+#: data/floatingpoint.ui:132
+msgid "Binary representation"
+msgstr "ორობითი წარმოდგენა"
+
+#: data/floatingpoint.ui:145
+msgid "Floating point value"
+msgstr "მცურავმძიმიანი მნიშვნელობა"
+
+#: data/floatingpoint.ui:158
+msgid "Format"
+msgstr "ფორმატი"
+
+#: data/floatingpoint.ui:172
+msgid "16-bit (half precision)"
+msgstr "16-ბიტიანი (ნახევრად სიზუსტე)"
+
+#: data/floatingpoint.ui:173
+msgid "32-bit (single precision)"
+msgstr "32-ბიტიანი (ერთჯერადი სიზუსტე)"
+
+#: data/floatingpoint.ui:174
+msgid "64-bit (double precision)"
+msgstr "64-ბიტიანი (ორმაგი სიზუსტე)"
+
+#: data/floatingpoint.ui:175
+msgid "80-bit (x86 extended format)"
+msgstr "80-ბიტიანი (x86 გაფართოებული ფორმატი)"
+
+#: data/floatingpoint.ui:176
+msgid "128-bit (quadruple precision)"
+msgstr "128-ბიტიანი (ოთხმაგი სიზუსტე)"
+
+#: data/floatingpoint.ui:177
+msgid "Microchip 24-bit"
+msgstr "24-ბიტიანი მიკროჩიპი"
+
+#: data/floatingpoint.ui:178
+msgid "Microchip 32-bit"
+msgstr "32-ბიტიანი მიკროჩიპი"
+
+#: data/functionedit.ui:8 src/functioneditdialog.cc:863
+msgid "Edit Function"
+msgstr "ფუნქციის ჩასწორება"
+
+#: data/functionedit.ui:23 data/main.ui:2844 data/matrixedit.ui:38
+#: data/plot.ui:66 data/unitedit.ui:44 data/unknownedit.ui:23
+#: data/variableedit.ui:23
+msgid "_Help"
+msgstr "_დახმარება"
+
+#: data/functionedit.ui:104
+msgid "Name used to invoke this function in expressions"
+msgstr "გამოსახულებებში ამ ფუნქციის გამოსაძახებელი სახელი"
+
+#: data/functionedit.ui:128
+msgid ""
+"Use \\x for the first, \\y for the second and \\z for the third argument. "
+"For more information click the help button."
+msgstr ""
+"გამოიყენეთ \\x პირველისთვის, \\y მეორე და \\z მესამე არგუმენტისთვის. მეტი "
+"ინფორმაციის მისაღებად დააწკაპუნეთ დახმარების ღილაკზე."
+
+#: data/functionedit.ui:165 data/matrixedit.ui:362 data/variableedit.ui:184
+msgid "Required"
+msgstr "აუცილებელია"
+
+#: data/functionedit.ui:186
+msgid "Condition"
+msgstr "პირობა"
+
+#: data/functionedit.ui:197
+msgid ""
+"Condition that must be true for the function (e.g. if the second argument "
+"must be greater than the first: \"\\y > \\x\")"
+msgstr ""
+"პირობა, რომელიც ჭეშმარიტი უნდა იყოს ფუნქციისთვის (მაგ: თუ მეორე არგუმენტი "
+"პირველზე მეტი უნდა იყოს: \"\\y > \\x\")"
+
+#: data/functionedit.ui:215
+msgid "Sub-functions"
+msgstr "ქვეფუნქციები"
+
+#: data/functionedit.ui:255 data/functionedit.ui:358 data/namesedit.ui:85
+#: data/plot.ui:521 data/shortcuts.ui:87
+msgid "_Add"
+msgstr "დ_ამატება"
+
+#: data/functionedit.ui:287 data/functionedit.ui:390 data/namesedit.ui:117
+#: data/plot.ui:554 data/shortcuts.ui:120
+msgid "_Remove"
+msgstr "_წაშლა"
+
+#: data/functionedit.ui:317 src/functionsdialog.cc:332
+msgid "Arguments"
+msgstr "არგუმენტები"
+
+#: data/functionedit.ui:429
+msgid "Details"
+msgstr "დეტალები"
+
+#: data/functionedit.ui:490
+msgid "Title displayed in menus and in function manager"
+msgstr "მენიუებში და ფუნქციებში მმართველში ნაჩვენები სათაური"
+
+#: data/functionedit.ui:502
+msgid "Hide function"
+msgstr "ფუნქციის დამალვა"
+
+#: data/functionedit.ui:505
+msgid "If this function shall be hidden in menus"
+msgstr "უნდა იყოს ეს ფუნქცია დამალული მენიუებში, თუ არა"
+
+#: data/functionedit.ui:557
+msgid "Example"
+msgstr "მაგალითი"
+
+#: data/functionedit.ui:638 data/functionedit.ui:642
+msgid "Do not save modifications"
+msgstr "ცვლილებები არ შეინახოს"
+
+#: data/functionedit.ui:724 src/functioneditdialog.cc:475
+msgid "Precalculate"
+msgstr "წინასწარი გამოთვლა"
+
+#: data/functionedit.ui:728
+msgid "Calculate the subfunction once only, before the main function"
+msgstr "მთავარ ფუნქციამდე ქვეფუნქციების, მხოლოდ, ერთხელ გამოთვლა"
+
+#: data/functions.ui:8 data/main.ui:977 data/main.ui:2116
+msgid "Functions"
+msgstr "ფუნქციები"
+
+#: data/functions.ui:102 data/units.ui:235 data/variables.ui:80
+msgid "Categor_y"
+msgstr "კატეგორ_ია"
+
+#: data/functions.ui:129
+msgid "_Function"
+msgstr "_ფუნქცია"
+
+#: data/functions.ui:201 data/units.ui:395 data/variables.ui:204
+msgid "Desc_ription"
+msgstr "აღწე_რა"
+
+#: data/functions.ui:263 data/main.ui:5434
+msgid "Create a new function"
+msgstr "ახალი ფუნქციის შექმნა"
+
+#: data/functions.ui:280
+msgid "Edit the selected function"
+msgstr "მონიშნული ფუნქციის ჩასწორება"
+
+#: data/functions.ui:297
+msgid "Delete the selected function"
+msgstr "მონიშნული ფუნქციის წაშლა"
+
+#: data/functions.ui:316
+msgid "(De)activate the selected function"
+msgstr "მონიშნული ფუნქციის (დე)აქტივაცია"
+
+#: data/functions.ui:322 data/units.ui:516 data/variables.ui:325
+#: src/functionsdialog.cc:431 src/unitsdialog.cc:388 src/util.cc:1366
+#: src/variablesdialog.cc:351
+msgid "Deac_tivate"
+msgstr "დეაქტივაცია"
+
+#: data/functions.ui:335 src/insertfunctiondialog.cc:452
+msgid "C_alculate"
+msgstr "_გამოთვლა"
+
+#: data/functions.ui:340
+msgid "Insert (or execute) the selected function into the expression entry"
+msgstr "მონიშნული ფუნქციის ჩასმა (ან შესრულება) გამოსახულების ჩანაწერში"
+
+#: data/functions.ui:352 data/plot.ui:537 data/plot.ui:800 data/plot.ui:1358
+msgid "A_pply"
+msgstr "_გადატარება"
+
+#: data/functions.ui:357
+msgid "Apply the selected function to the current expression"
+msgstr "მონიშნული ფუნქციის გადატარება მიმდინარე გამოსახულებაზე"
+
+#: data/main.ui:69 data/main.ui:151 data/main.ui:201 data/main.ui:2334
+#: data/main.ui:9387
+msgid "Degrees"
+msgstr "გრადუსი"
+
+#: data/main.ui:78 data/main.ui:160 data/main.ui:210 data/main.ui:2344
+#: data/main.ui:9396
+msgid "Radians"
+msgstr "რადიანები"
+
+#: data/main.ui:87 data/main.ui:169 data/main.ui:219 data/main.ui:2354
+#: data/main.ui:9405
+msgid "Gradians"
+msgstr "გრადიანები"
+
+#: data/main.ui:246 data/main.ui:399 data/main.ui:547
+#: src/variablesdialog.cc:337
+msgid "Default assumptions"
+msgstr "ნაგულისხმები დაშვებები"
+
+#: data/main.ui:260 data/main.ui:338 data/main.ui:413 data/main.ui:490
+#: data/main.ui:561 data/main.ui:639 data/main.ui:2386 data/main.ui:2472
+#: data/unknownedit.ui:164 src/periodictabledialog.cc:143
+msgid "Unknown"
+msgstr "უცნობი"
+
+#: data/main.ui:268 data/main.ui:421 data/main.ui:569 data/main.ui:2396
+msgid "Not Matrix"
+msgstr "მატრიცა არაა"
+
+#: data/main.ui:285 data/main.ui:438 data/main.ui:586 data/main.ui:2415
+msgid "Complex"
+msgstr "რთული"
+
+#: data/main.ui:294 data/main.ui:447 data/main.ui:595 data/main.ui:2425
+msgid "Real"
+msgstr "ნამდვილი"
+
+#: data/main.ui:303 data/main.ui:456 data/main.ui:604 data/main.ui:2435
+msgid "Rational"
+msgstr "რაციონალური"
+
+#: data/main.ui:347 data/main.ui:499 data/main.ui:648 data/main.ui:2482
+#: data/unknownedit.ui:169
+msgid "Non-Zero"
+msgstr "არა-ნულოვანი"
+
+#: data/main.ui:356 data/main.ui:508 data/main.ui:657 data/main.ui:2492
+#: data/unknownedit.ui:165
+msgid "Positive"
+msgstr "დადებითი"
+
+#: data/main.ui:365 data/main.ui:517 data/main.ui:666 data/main.ui:2502
+#: data/unknownedit.ui:166
+msgid "Non-Negative"
+msgstr "არა-უარყოფითი"
+
+#: data/main.ui:374 data/main.ui:526 data/main.ui:675 data/main.ui:2512
+#: data/unknownedit.ui:167
+msgid "Negative"
+msgstr "უარყოფითი"
+
+#: data/main.ui:383 data/main.ui:535 data/main.ui:684 data/main.ui:2522
+#: data/unknownedit.ui:168
+msgid "Non-Positive"
+msgstr "არა-დადებითი"
+
+#: data/main.ui:711
+msgid "_File"
+msgstr "_ფაილი"
+
+#: data/main.ui:756
+msgid "Unknown Variable"
+msgstr "უცნობი ცვლადი"
+
+#: data/main.ui:796
+msgid "Import CSV File…"
+msgstr "CSV ფაილის შემოტანა…"
+
+#: data/main.ui:805
+msgid "Export CSV File…"
+msgstr "CSV ფაილის გატანა…"
+
+#: data/main.ui:814
+msgid "_Store Result…"
+msgstr "შედეგი_ს შენახვა…"
+
+#: data/main.ui:823
+msgid "Save Result Image…"
+msgstr "გამოსახულების შედეგის შენახვა…"
+
+#: data/main.ui:838
+msgid "Save local functions, variables and units"
+msgstr "ლოკალური ფუნქციების, ცვლადებისა და ერთეულების შენახვა"
+
+#: data/main.ui:839
+msgid "Save Definitions"
+msgstr "აღწერების შენახვა"
+
+#: data/main.ui:848
+msgid "Import Definitions File…"
+msgstr "აღწერების ფაილის შემოტანა…"
+
+#: data/main.ui:857
+msgid "Fetch current exchange rates from the Internet"
+msgstr "მიმდინარე გაცვლის კურსების გამოთხოვა ინტერნეტიდან"
+
+#: data/main.ui:858
+msgid "Update Exchange Rates"
+msgstr "გაცვლის კურსების განახლება"
+
+#: data/main.ui:873
+msgid "Plot Functions/Data"
+msgstr "ფუნქციების/მონაცემების გრაფიკები"
+
+#: data/main.ui:882
+msgid "Convert Number Bases"
+msgstr "რიცხვების ფუძეების გადაყვანა"
+
+#: data/main.ui:891
+msgid "Floating Point Conversion (IEEE 754)"
+msgstr "მცურავმძიმიანის გადაყვანა (IEEE 754)"
+
+#: data/main.ui:908
+msgid "Percentage Calculation Tool"
+msgstr "პროცენტის გამოთვლის ხელსაწყო"
+
+#: data/main.ui:916 data/periodictable.ui:8
+msgid "Periodic Table"
+msgstr "პერიოდული სისტემა"
+
+#: data/main.ui:931
+msgid "Minimal Window"
+msgstr "მინიმალური ფანჯარა"
+
+#: data/main.ui:946
+msgid "_Quit"
+msgstr "გასვ_ლა"
+
+#: data/main.ui:968 data/main.ui:2106 data/variables.ui:8
+msgid "Variables"
+msgstr "ცვლადები"
+
+#: data/main.ui:986 data/main.ui:2126 data/units.ui:8
+msgid "Units"
+msgstr "საზომი ერთეულები"
+
+#: data/main.ui:1010 data/main.ui:2555 data/main.ui:6029 data/main.ui:6860
+#: src/keypad.cc:815 src/keypad.cc:3298 src/keypad.cc:3416
+msgid "Factorize"
+msgstr "მამრავლებად დაშლა"
+
+#: data/main.ui:1019 data/main.ui:2545 src/keypad.cc:813 src/keypad.cc:3307
+#: src/keypad.cc:3419
+msgid "Expand"
+msgstr "ამოკეცვა"
+
+#: data/main.ui:1028 data/main.ui:8689
+msgid "Apply partial fraction decomposition to the current result."
+msgstr "ნაწილობრივი დაშლის გადატარება მიმდინარე შედეგზე."
+
+#: data/main.ui:1029 data/main.ui:8690 src/keypad.cc:817
+msgid "Expand Partial Fractions"
+msgstr "წილადი რიცხვების გაფართოება"
+
+#: data/main.ui:1038 data/main.ui:8699
+msgid "Set Unknowns…"
+msgstr "უცნობების დაყენება…"
+
+#: data/main.ui:1047 data/main.ui:8370
+msgid "Convert to Unit"
+msgstr "გადაყვანა ერთეულში"
+
+#: data/main.ui:1055
+msgid "Set Prefix"
+msgstr "პრეფიქსის დაყენება"
+
+#: data/main.ui:1063
+msgid "Convert to Unit Expression…"
+msgstr "გადაყვანა ერთეულის გამოსახულებაში…"
+
+#: data/main.ui:1072 data/main.ui:2037
+msgid "Convert to Base Units"
+msgstr "გადაყვანა ძირითად ერთეულებში"
+
+#: data/main.ui:1081 data/main.ui:2047
+msgid "Convert to Optimal Unit"
+msgstr "გადაყვანა ოპტიმალურ ერთეულში"
+
+#: data/main.ui:1096 src/expressionedit.cc:1491
+msgid "Insert Date…"
+msgstr "თარიღის ჩასმა…"
+
+#: data/main.ui:1105 src/expressionedit.cc:1492
+msgid "Insert Matrix…"
+msgstr "მატრიცის ჩასმა…"
+
+#: data/main.ui:1114 src/expressionedit.cc:1493
+msgid "Insert Vector…"
+msgstr "ვექტორის ჩასმა…"
+
+#: data/main.ui:1129
+msgid "_Copy Result"
+msgstr "შედეგის _კოპირება"
+
+#: data/main.ui:1138
+msgid "Copy Result as Unformatted ASCII"
+msgstr "შედეგის კოპირება დაუფორმატებელი ASCII-ის სახით"
+
+#: data/main.ui:1153 data/shortcuts.ui:10
+msgid "Keyboard Shortcuts"
+msgstr "კლავიატურის მალსახმობები"
+
+#: data/main.ui:1171
+msgid "_Preferences"
+msgstr "_მორგება"
+
+#: data/main.ui:1193
+msgid "_Mode"
+msgstr "რეჟი_მი"
+
+#: data/main.ui:1202 src/expressioncompletion.cc:2202
+#: src/expressionedit.cc:1463
+msgid "Number Base"
+msgstr "ათვლის სისტემა"
+
+#: data/main.ui:1211
+msgid "Select Result and Expression Base…"
+msgstr "აირჩიეთ შედეგის და გამოსახულების ბაზა…"
+
+#: data/main.ui:1226 data/main.ui:4717 data/nbases.ui:77
+#: data/preferences.ui:1056 data/preferences.ui:1112 data/setbase.ui:84
+#: data/setbase.ui:323 src/expressionedit.cc:1466 src/keypad.cc:1012
+#: src/numberbasesdialog.cc:209 src/numberbasesdialog.cc:251
+msgid "Binary"
+msgstr "ორობითი"
+
+#: data/main.ui:1235 data/main.ui:4718 data/nbases.ui:90 data/setbase.ui:101
+#: data/setbase.ui:340 src/expressionedit.cc:1467 src/keypad.cc:1013
+#: src/numberbasesdialog.cc:210 src/numberbasesdialog.cc:252
+msgid "Octal"
+msgstr "რვაობითი"
+
+#: data/main.ui:1245 data/main.ui:4719 data/nbases.ui:64 data/setbase.ui:118
+#: data/setbase.ui:357 src/expressionedit.cc:1468 src/keypad.cc:1014
+#: src/numberbasesdialog.cc:211 src/numberbasesdialog.cc:253
+msgid "Decimal"
+msgstr "ათობითი"
+
+#: data/main.ui:1256 data/main.ui:4720 data/main.ui:8874 data/nbases.ui:181
+#: data/setbase.ui:135 data/setbase.ui:374 src/expressionedit.cc:1469
+#: src/numberbasesdialog.cc:212 src/numberbasesdialog.cc:254
+msgid "Duodecimal"
+msgstr "თორმეტობითი"
+
+#: data/main.ui:1265 data/main.ui:4721 data/nbases.ui:210
+#: data/preferences.ui:1072 data/preferences.ui:1128 data/setbase.ui:152
+#: data/setbase.ui:391 src/expressionedit.cc:1470 src/keypad.cc:1015
+#: src/numberbasesdialog.cc:213 src/numberbasesdialog.cc:255
+msgid "Hexadecimal"
+msgstr "თექვსმეტობითი"
+
+#: data/main.ui:1275 data/main.ui:4725 data/main.ui:8923
+#: src/expressionedit.cc:1472
+msgid "Other…"
+msgstr "სხვა…"
+
+#: data/main.ui:1291 data/main.ui:4722 data/main.ui:8893 data/setbase.ui:169
+msgid "Sexagesimal"
+msgstr "ექვსობითი"
+
+#: data/main.ui:1301 data/main.ui:8903 src/expressioncompletion.cc:2267
+msgid "Time Format"
+msgstr "დროის ფორმატი"
+
+#: data/main.ui:1311 src/expressioncompletion.cc:2259
+#: src/expressionedit.cc:1471
+msgid "Roman Numerals"
+msgstr "რომაული ციფრები"
+
+#: data/main.ui:1325
+msgid "Numerical Display"
+msgstr "რიცხვების გამოტანა"
+
+#: data/main.ui:1334 data/main.ui:4695
+msgid "Normal"
+msgstr "ნორმალური"
+
+#: data/main.ui:1344 data/main.ui:4696 data/main.ui:8748
+msgid "Engineering"
+msgstr "საინჟინრო"
+
+#: data/main.ui:1354 data/main.ui:4697
+msgid "Scientific"
+msgstr "სამეცნიერო"
+
+#: data/main.ui:1364
+msgid "Purely Scientific"
+msgstr "სუფთა სამეცნიერო"
+
+#: data/main.ui:1374 data/main.ui:4699
+msgid "Simple"
+msgstr "მარტივი"
+
+#: data/main.ui:1390
+msgid ""
+"Off: 1/7 ≈ 0.14285714\n"
+"On: 1/7 = 0.142857 142857..."
+msgstr ""
+"გამორთ: 1/7 ≈ 0.14285714\n"
+"ჩართ: 1/7 = 0.142857 142857..."
+
+#: data/main.ui:1392
+msgid "Indicate Repeating Decimals"
+msgstr "განმეორებად ათწილადებზე მითითება"
+
+#: data/main.ui:1401
+msgid "Show Ending Zeroes"
+msgstr "დამაბოლოებელი ნულების ჩვენება"
+
+#: data/main.ui:1410
+msgid ""
+"Off: -x + y\n"
+"On: y - x"
+msgstr ""
+"გამორთ: -x + y\n"
+"ჩართ: y - x"
+
+#: data/main.ui:1412
+msgid "Sort Minus Last"
+msgstr "უარყოფითების ბოლოს დალაგება"
+
+#: data/main.ui:1428
+msgid "Round Halfway Numbers Away from Zero"
+msgstr "ნახევრამდე რიცხვების ნულიდან დამრგვალება"
+
+#: data/main.ui:1439
+msgid "Round Halfway Numbers to Even"
+msgstr "ნახევრამდე რიცხვების ლუწამდე დამრგვალება"
+
+#: data/main.ui:1449
+msgid "Other Rounding Methods"
+msgstr "სხვა დამრგვალების მეთოდები"
+
+#: data/main.ui:1459
+msgid "Round Halfway Numbers to Odd"
+msgstr "ნახევრამდე რიცხვების კენტამდე დამრგვალება"
+
+#: data/main.ui:1470
+msgid "Round Halfway Numbers Toward Zero"
+msgstr "ნახევრამდე რიცხვების ნულისკენ დამრგვალება"
+
+#: data/main.ui:1481
+msgid "Round Halfway Numbers to Random"
+msgstr "ნახევრამდე რიცხვების შემთხვევითამდე დამრგვალება"
+
+#: data/main.ui:1492
+msgid "Round Halfway Numbers Up"
+msgstr "ნახევრამდე რიცხვების ზემოთ დამრგვალება"
+
+#: data/main.ui:1503
+msgid "Round Halfway Numbers Down"
+msgstr "ნახევრამდე რიცხვების ქვემოთ დამრგვალება"
+
+#: data/main.ui:1514
+msgid "Round Toward Zero"
+msgstr "დამრგვალება ნულისკენ"
+
+#: data/main.ui:1525
+msgid "Round Away from Zero"
+msgstr "დამრგვალება ნულიდან"
+
+#: data/main.ui:1536
+msgid "Round Up"
+msgstr "დამრგვალება ზემოთ"
+
+#: data/main.ui:1547
+msgid "Round Down"
+msgstr "დამრგვალება ქვემოთ"
+
+#: data/main.ui:1568 data/main.ui:8794 src/expressioncompletion.cc:2257
+msgid "Complex Rectangular Form"
+msgstr "კომპლექსური რიცხვის ოთხკუთხედი ფორმა"
+
+#: data/main.ui:1579 data/main.ui:8805 src/expressioncompletion.cc:2221
+msgid "Complex Exponential Form"
+msgstr "კომპლექსური რიცხვის ექსპონენტური ფორმა"
+
+#: data/main.ui:1590 data/main.ui:8816 src/expressioncompletion.cc:2253
+msgid "Complex Polar Form"
+msgstr "კომპლექსური რიცხვის პოლარული ფორმა"
+
+#: data/main.ui:1601 data/main.ui:8827 src/expressioncompletion.cc:2196
+msgid "Complex Angle/Phasor Notation"
+msgstr "კომპლექსური რიცხვის კუთხის/ვექტორის ნოტაცია"
+
+#: data/main.ui:1616
+msgid "Rational Number Form"
+msgstr "რაციონალური რიცხვის ფორმა"
+
+#: data/main.ui:1625
+msgid "1/3 ≈ 0.33333"
+msgstr "1/3 ≈ 0.33333"
+
+#: data/main.ui:1626
+msgid "Decimal Fractions"
+msgstr "ათწილადის წილადები"
+
+#: data/main.ui:1636
+msgid ""
+"3/9 = 1/3\n"
+"6/4 = 1.5"
+msgstr ""
+"3/9 = 1/3\n"
+"6/4 = 1.5"
+
+#: data/main.ui:1638
+msgid "Exact Decimal Fractions"
+msgstr "ზუსტი ათწილადის წილადები"
+
+#: data/main.ui:1648
+msgid "6/4 = 3/2"
+msgstr "6/4 = 3/2"
+
+#: data/main.ui:1649
+msgid "Simple Fractions"
+msgstr "მარტივი წილადები"
+
+#: data/main.ui:1659
+msgid "6/4 = 1+1/2"
+msgstr "6/4 = 1+1/2"
+
+#: data/main.ui:1660
+msgid "Mixed Fractions"
+msgstr "შერეული წილადები"
+
+#. Mixed fraction
+#: data/main.ui:1776
+msgid "Mixed"
+msgstr "შერეული"
+
+#: data/main.ui:1824
+msgid "Interval Display"
+msgstr "ინტერვალის ჩვენება"
+
+#: data/main.ui:1832 src/mainwindow.cc:1049
+msgid "Adaptive"
+msgstr "შეგუებადი"
+
+#: data/main.ui:1840
+msgid "Significant Digits"
+msgstr "მნიშვნელოვანი ციფრები"
+
+#: data/main.ui:1849 src/buttonseditdialog.cc:350 src/keypad.cc:458
+msgid "Interval"
+msgstr "ინტერვალი"
+
+#: data/main.ui:1858
+msgid "Plus/Minus"
+msgstr "პლუს/მინუს"
+
+#: data/main.ui:1867 data/preferences.ui:1864 src/mainwindow.cc:833
+msgid "Relative"
+msgstr "ფარდობითი"
+
+#: data/main.ui:1876
+msgid "Concise"
+msgstr "მოკლე"
+
+#: data/main.ui:1885
+msgid "Midpoint"
+msgstr "შუა წერტილი"
+
+#: data/main.ui:1916
+msgid "Allow concise uncertainty input"
+msgstr "მოკლე გაურკვევლობის შეყვანის დაშვება"
+
+#: data/main.ui:1928
+msgid "Unit Display"
+msgstr "ერთეულის ჩვენება"
+
+#: data/main.ui:1937 data/main.ui:9105
+msgid "Do not use any prefixes in result"
+msgstr "შედეგებში პრეფიქსები გამოყენებული არ იქნება"
+
+#: data/main.ui:1946 data/main.ui:9114
+msgid "Show prefixes for primarily SI and CGS units."
+msgstr "პრეფიქსების, ძირითადად, SI და CGS ერთეულებისთვის ჩვენება."
+
+#: data/main.ui:1947 data/main.ui:9115
+msgid "Use prefixes for selected units"
+msgstr "პრეფიქსების გამოყენება არჩეული ერთეულებისთვის"
+
+#: data/main.ui:1956 data/main.ui:9124
+msgid "Use prefixes also for currencies"
+msgstr "პრეფიქსების გამოყენება, ასევე, ვალუტებისთვის"
+
+#: data/main.ui:1965 data/main.ui:9133
+msgid "Use prefixes for all units"
+msgstr "პრეფიქსების გამოყენება ყველა ერთეულისთვის"
+
+#: data/main.ui:1980
+msgid ""
+"Enables automatic use of hekto, deka, deci and centi when prefixes are "
+"enabled"
+msgstr ""
+"ჰექტო, დეკა, დეცის და ცენტის ავტომატური გამოყენება, როცა პრეფიქსები ჩართულია"
+
+#: data/main.ui:1981
+msgid "Enable All SI Prefixes"
+msgstr "ყველა SI პრეფიქსის ჩართვა"
+
+#: data/main.ui:1990
+msgid ""
+"Enables automatic setting of prefix for denominator in addition to the "
+"numerator"
+msgstr ""
+"ჩართავს პრეფიქსის ავტომატურად დაყენებას მნიშვნელისთვის მრიცხველთან ერთად"
+
+#: data/main.ui:1991 data/main.ui:9157
+msgid "Enable Denominator Prefixes"
+msgstr "მნიშვნელის პრეფიქსების ჩართვა"
+
+#: data/main.ui:2000
+msgid ""
+"Off: J / K\n"
+"On: J·K^-1"
+msgstr ""
+"გამორთ: J / K\n"
+"ჩართ: J·K^-1"
+
+#: data/main.ui:2002
+msgid "Negative Exponents"
+msgstr "უარყოფითი ხარისხები"
+
+#: data/main.ui:2010
+msgid ""
+"Off: (2 m)/s\n"
+"On: 2 (m/s)"
+msgstr ""
+"გამორთ: (2 მ)/წმ\n"
+"ჩართ: 2 (მ/წმ)"
+
+#: data/main.ui:2012
+msgid "Place Units Separately"
+msgstr "ერთეულების ცალკე მოთავსება"
+
+#: data/main.ui:2027
+msgid "No Additional Conversion"
+msgstr "დამატებითი გადაყვანის გარეშე"
+
+#: data/main.ui:2057
+msgid "Convert to Optimal SI Unit"
+msgstr "გადაყვანა ოპტიმალურ SI ერთეულში"
+
+#: data/main.ui:2067 data/main.ui:9064
+msgid ""
+"If enabled:\n"
+"15 in = 1 ft + 3 in\n"
+"3.2 h = 3 h + 12 min"
+msgstr ""
+"თუ ჩართულია:\n"
+"15 დუიმი = 1 ფტ + 3 დუიმი\n"
+"3.2 სთ = 3 სთ + 12 წთ"
+
+#: data/main.ui:2070 data/main.ui:9067
+msgid "Convert to Mixed Units"
+msgstr "გადაყვანა შერეულ ერთეულებში"
+
+#: data/main.ui:2082
+msgid "Abbreviate Names"
+msgstr "სახელების შემოკლება"
+
+#: data/main.ui:2097
+msgid "Enabled Objects"
+msgstr "ჩართული ობიექტები"
+
+#: data/main.ui:2136
+msgid "Unknowns"
+msgstr "უცნობები"
+
+#: data/main.ui:2152
+msgid "Units in Physical Constants"
+msgstr "ერთეულები ფიზიკურ მუდმივებში"
+
+#: data/main.ui:2161
+msgid "If not enabled, treats all variables as unknown"
+msgstr "თუ ჩართულ არაა, ყველა ცვლადი უცნობად ჩაითვლება"
+
+#: data/main.ui:2162
+msgid "Calculate Variables"
+msgstr "ცვლადების გამოთვლა"
+
+#: data/main.ui:2178
+msgid "Disables/enables complex numbers in result"
+msgstr "ჩართავს/გამორთავს კომპლექსურ რეიცხვებს შედეგში"
+
+#: data/main.ui:2179
+msgid "Allow Complex Result"
+msgstr "რთული შედეგის დაშვება"
+
+#: data/main.ui:2189
+msgid "Disables/enables infinite numbers in result"
+msgstr "ჩართავს/გამორთავს უსასრულო რიცხვებს შედეგში"
+
+#: data/main.ui:2190
+msgid "Allow Infinite Result"
+msgstr "უსასრულო შედეგის დაშვება"
+
+#: data/main.ui:2210
+msgid "Approximation"
+msgstr "დაახლოებით"
+
+#: data/main.ui:2219
+msgid ""
+"Off: 1/2 × pi ≈ 1.5707963\n"
+"On: 1/2 × pi = 0.5 pi"
+msgstr ""
+"გამორთ: 1/2 × pi ≈ 1.5707963\n"
+"ჩართ: 1/2 × pi = 0.5 pi"
+
+#: data/main.ui:2221
+msgid "Always Exact"
+msgstr "ყოველთვის ზუსტი"
+
+#: data/main.ui:2230
+msgid "Try Exact"
+msgstr "ზუსტის ცდა"
+
+#: data/main.ui:2240 src/datasetsdialog.cc:525
+msgid "Approximate"
+msgstr "დაახლოებით"
+
+#: data/main.ui:2256 data/main.ui:2300
+msgid "Interval Arithmetic"
+msgstr "ინტერვალების არითმეტიკა"
+
+#: data/main.ui:2270
+msgid "Interval Calculation"
+msgstr "ინტერვალის გამოთვლა"
+
+#: data/main.ui:2290
+msgid "Variance Formula"
+msgstr "დისპერსიის ფორმულა"
+
+#: data/main.ui:2324
+msgid "Change angle unit used in trigonometric functions"
+msgstr "ტრიგონომეტრიულ ფუნქციებში გამოყენებული კუთხის შეცვლა"
+
+#: data/main.ui:2325
+msgid "Angle Unit"
+msgstr "კუთხის ერთეული"
+
+#: data/main.ui:2364 data/plot.ui:423 data/plot.ui:1329
+#: data/preferences.ui:1429 src/buttonseditdialog.cc:462
+msgid "None"
+msgstr "არცერთი"
+
+#: data/main.ui:2378
+msgid "Assumptions"
+msgstr "დაშვებები"
+
+#: data/main.ui:2536
+msgid "Algebraic Mode"
+msgstr "ალგებრული რეჟიმი"
+
+#: data/main.ui:2571 data/main.ui:8722
+msgid "Assume that unknown denominators are non-zero"
+msgstr "დაშვება, რომ უცნობი მნიშვნელები არანულოვანია"
+
+#: data/main.ui:2572 data/main.ui:8723
+msgid "Non-Zero Denominators"
+msgstr "არანულოვანი მნიშვნელები"
+
+#: data/main.ui:2581
+msgid "Warn when unknown denominators are assumed non-zero"
+msgstr "გაფრთხილება, როცა უცნობი მნიშვნელები ჩათვლილია ნულის არტოლად"
+
+#: data/main.ui:2582
+msgid "Warn About Denominators Assumed Non-Zero"
+msgstr "გაფრთხილება, როცა უცნობი მნიშვნელები ჩათვლილია ნულის არტოლად"
+
+#: data/main.ui:2601 src/expressionedit.cc:1453 src/mainwindow.cc:1020
+msgid "Parsing Mode"
+msgstr "ანალიზის რეჟიმი"
+
+#: data/main.ui:2612 data/main.ui:9451
+msgid "Adaptive Parsing"
+msgstr "ადაპტიური ანალიზი"
+
+#: data/main.ui:2623 data/main.ui:9461
+msgid "Parse Implicit Multiplication First"
+msgstr "ჯერ მოხდება არაცხადი გამრავლებების ანალიზი"
+
+#: data/main.ui:2634 data/main.ui:9472
+msgid "Conventional Parsing"
+msgstr "მიღებული დამუშავება"
+
+#: data/main.ui:2644 data/main.ui:9483
+msgid "Chain Syntax"
+msgstr "ჯაჭვური სინტაქსი"
+
+#: data/main.ui:2656 data/main.ui:9494
+msgid "RPN Syntax"
+msgstr "RPN სინტაქსი"
+
+#: data/main.ui:2671
+msgid ""
+"Off: 100 + 20% = 100 +  20/100 = 100.2\n"
+"On: 100 + 20% = 100 × 120% = 120"
+msgstr ""
+"გამორთ: 100 + 20% = 100 +  20/100 = 100.2\n"
+"ჩართ: 100 + 20% = 100 × 120% = 120"
+
+#: data/main.ui:2673
+msgid "Simplified Percentage Calculation"
+msgstr "გაადვილებული პროცენტულობის გამოთვლა"
+
+#: data/main.ui:2682
+msgid ""
+"Off: xy = x × y\n"
+"On: xy != x × y"
+msgstr ""
+"გამორთ: xy = x × y\n"
+"ჩართ: xy != x × y"
+
+#: data/main.ui:2684
+msgid "Limit Implicit Multiplication"
+msgstr "არასწორი გამრავლების შეზღუდვა"
+
+#: data/main.ui:2692
+msgid ""
+"Parse decimal numbers as approximations with precision equal to the number "
+"of digits.\n"
+"\n"
+"Off: 1.1 × 3.20 = 3.52\n"
+"On: 1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.16"
+msgstr ""
+"ათობითი რიცხვების დამუშავება სიზუსტით, რომელიც ციფრების რაოდენობას უდრის.\n"
+"\n"
+"გამორთ: 1.1 × 3.20 = 3.52\n"
+"ჩართ: 1.1 × 3.20 = 1.1±0.05 × 3.20±0.005 ≈ 3.5±0.16"
+
+#: data/main.ui:2696 data/main.ui:9436
+msgid "Read Precision"
+msgstr "კითხვის სიზუსტე"
+
+#: data/main.ui:2714
+msgid "_Precision"
+msgstr "_სიზუსტე"
+
+#: data/main.ui:2723
+msgid "_Decimals"
+msgstr "ათწილა_დები"
+
+#: data/main.ui:2738
+msgid "Calculate As You Type"
+msgstr "გამოთვლა მაშინვე, როცა კრეფთ"
+
+#: data/main.ui:2747
+msgid "Chain Mode"
+msgstr "რეჟიმი 'ჯაჭვი'"
+
+#: data/main.ui:2756
+msgid "Activate the RPN stack."
+msgstr "RPN-ის სტეკის გააქტიურება."
+
+#: data/main.ui:2757
+msgid "RPN Mode"
+msgstr "RPN რეჟიმი"
+
+#: data/main.ui:2771 data/main.ui:9172 src/expressionedit.cc:1474
+msgid "Meta Modes"
+msgstr "მეტარეჟიმი"
+
+#: data/main.ui:2786 data/main.ui:9187 src/expressionedit.cc:1488
+msgid "Save Mode…"
+msgstr "შენახვის რეჟიმი…"
+
+#: data/main.ui:2795
+msgid "Delete Mode…"
+msgstr "რეჟიმის წაშლა…"
+
+#: data/main.ui:2807
+msgid "Save Default _Mode"
+msgstr "ნაგულისხმევი _რეჟიმის შენახვა"
+
+#: data/main.ui:2820
+msgid "Fu_nctions"
+msgstr "ფუ_ნქციები"
+
+#: data/main.ui:2828
+msgid "_Variables"
+msgstr "ც_ვლადები"
+
+#: data/main.ui:2836
+msgid "_Units"
+msgstr "ერთე_ულები"
+
+#: data/main.ui:2853
+msgid "_Contents"
+msgstr "შემ_ცველობა"
+
+#: data/main.ui:2862
+msgid "Report a Bug"
+msgstr "შეცდომის ანგარიში"
+
+#: data/main.ui:2870
+msgid "Check for Updates"
+msgstr "განახლებების &შემოწმება"
+
+#: data/main.ui:2879
+msgid "_About"
+msgstr "_შესახებ"
+
+#: data/main.ui:3130 src/util.cc:960
+msgid "Toggle minimal window"
+msgstr "მინიმალური ფანჯრის გადართვა"
+
+#: data/main.ui:3272
+msgid "Calculation result"
+msgstr "გამოთვლის შედეგი"
+
+#: data/main.ui:3384
+msgid "_Keypad"
+msgstr "ციფრული _კლავიატურა"
+
+#: data/main.ui:3408
+msgid ""
+"Toggles persistent keypad (makes it possible to show keypad and history "
+"simultaneously)"
+msgstr ""
+"გადართავს მუდმივ ციფრულ კლავიატურას (შესაძლებელს ხდის ციფრული კლავიატურისა "
+"და ისტორიის ერთდროულად ჩვენებას)"
+
+#: data/main.ui:3438
+msgid "_History"
+msgstr "_ისტორია"
+
+#: data/main.ui:3462
+msgid "C_onversion"
+msgstr "_გადაყვანა"
+
+#: data/main.ui:3485 data/main.ui:4326
+msgid "RPN Stack"
+msgstr "RPN სტეკი"
+
+#: data/main.ui:3568
+msgid "Insert the selected value"
+msgstr "მონიშნული მნიშვნელობის ჩასმა"
+
+#: data/main.ui:3591
+msgid "Insert the selected text"
+msgstr "მონიშნული ტექსტის ჩასმა"
+
+#: data/main.ui:3624
+msgid "Copy the selected text"
+msgstr "მონიშნული ტექსტის კოპირება"
+
+#: data/main.ui:3652
+msgid "Add the selected value(s)"
+msgstr "მონიშნული მნიშვნელობების მიმატება"
+
+#: data/main.ui:3674
+msgid "Subtract the selected value(s)"
+msgstr "მონიშნული მნიშვნელობების გამოკლება"
+
+#: data/main.ui:3696
+msgid "Multiply the selected value(s)"
+msgstr "მონიშნული მნიშვნელობების გამრავლება"
+
+#: data/main.ui:3718
+msgid "Divide the the selected value(s)"
+msgstr "მონიშნული მნიშვნელობების გაყოფა"
+
+#: data/main.ui:3740
+msgid "Raise to the power of the selected value"
+msgstr "მონიშნული მნიშვნელობის ხარისხში აყვანა"
+
+#: data/main.ui:3763
+msgid "Calculate the square root of the selected value"
+msgstr "მონიშნული მნიშვნელობის კვადრატული ფესვის გამოთვლა"
+
+#: data/main.ui:3802 src/historyview.cc:3700
+msgid "History"
+msgstr "ისტორია"
+
+#. Fixes missing support for context in ui file translations
+#: data/main.ui:3832 src/stackview.cc:845
+msgctxt "Keypad"
+msgid "Add the two top values together"
+msgstr "ორი ზედა მნიშვნელობის მიმატება"
+
+#: data/main.ui:3855
+msgid "Subtract the top value from the second value"
+msgstr "ზედა მნიშვნელობის გამოკლება მეორე მნიშვნელობაზე"
+
+#: data/main.ui:3878
+msgid "Multiply the top two values"
+msgstr "ორი ზედა მნიშვნელობის გამრავლება"
+
+#: data/main.ui:3901
+msgid "Divide the second value by the top value"
+msgstr "მეორე მნიშვნელობის გაყოფა ზედაზე"
+
+#: data/main.ui:3924
+msgid "Raise the second value to the power of the top value"
+msgstr "მეორე მნიშვნელობის აყვანა ზედა მნიშვნელობის ხარისხში"
+
+#: data/main.ui:3964
+msgid "Negate the top value (Ctrl+-)"
+msgstr "ზედა მნიშვნელობის ნიშნის შეცვლა (Ctrl+-)"
+
+#: data/main.ui:3988
+msgid "Invert the top value"
+msgstr "ზედა მნიშვნელობის ინვერსია"
+
+#: data/main.ui:4012
+msgid "Calculate the square root of the top value"
+msgstr "ზედა მნიშვნელობის კვადრატული ფესვის გამოთვლა"
+
+#: data/main.ui:4045
+msgid "Calculate the sum of all values"
+msgstr "ყველა მნიშვნელობის ჯამის გამოთვლა"
+
+#: data/main.ui:4113 src/stackview.cc:687 src/stackview.cc:747
+msgid "Rotate the stack or move selected register up"
+msgstr "სტეკის მობრუნება, ან მონიშნული რეგისტრის ატანა"
+
+#: data/main.ui:4136 src/stackview.cc:695 src/stackview.cc:748
+msgid "Rotate the stack or move selected register down"
+msgstr "სტეკის მობრუნება, ან მონიშნული რეგისტრის ჩამოტანა"
+
+#: data/main.ui:4158 src/stackview.cc:703 src/stackview.cc:749
+msgid ""
+"Swap the two top values or move the selected value to the top of the stack"
+msgstr ""
+"ზედა ორი მნიშვნელობის მიმოცვლა, ან მონიშნული მნიშვნელობის სტეკის თავში ატანა"
+
+#: data/main.ui:4196 src/stackview.cc:711 src/stackview.cc:750
+msgid "Copy the selected or top value to the top of the stack"
+msgstr "მონიშნული, ან ზედა მნიშვნელობის სტეკის თავში ატანა"
+
+#: data/main.ui:4218 src/stackview.cc:719 src/stackview.cc:751
+msgid "Enter the top value from before the last numeric operation"
+msgstr "შეიყვანეთ ზედა მნიშვნელობა ბოლო რიცხვით ოპერაციამდე"
+
+#: data/main.ui:4240 src/stackview.cc:727 src/stackview.cc:752
+msgid "Delete the top or selected value"
+msgstr "ზედა, ან მონიშნული მნიშვნელობის წაშლა"
+
+#: data/main.ui:4272
+msgid "Edit the selected value"
+msgstr "მონიშნული მნიშვნელობის ჩასწორება"
+
+#: data/main.ui:4294 src/stackview.cc:735 src/stackview.cc:753
+msgid "Clear the RPN stack"
+msgstr "RPN: სტეკის გასუფთავება"
+
+#: data/main.ui:4356
+msgid "Unit(s) and prefix to convert result to"
+msgstr "ერთეულები და პრეფიქსი, რომელშიც შედეგის გადაყვანა მოხდება"
+
+#: data/main.ui:4499
+msgid "Convert"
+msgstr "გადაყვანა"
+
+#: data/main.ui:4520
+msgid "Continuous conversion"
+msgstr "უყვეტი გადაყვანა"
+
+#: data/main.ui:4524
+msgid ""
+"Automatically convert result to the current unit expression as long as the "
+"conversion box is visible."
+msgstr ""
+
+#: data/main.ui:4537
+msgid "Add prefix"
+msgstr "პრეფიქსის დამატება"
+
+#: data/main.ui:4541
+msgid ""
+"If unit expression does not contain any prefixes, use optimal prefix.\n"
+"\n"
+"This can be overridden by prepending the unit expression with \"?\" or \"0\"."
+msgstr ""
+
+#: data/main.ui:4569
+msgid "Conversion"
+msgstr "გადაყვანა"
+
+#: data/main.ui:4602 src/keypad.cc:3568 src/keypad.cc:3598
+msgid "Show/hide programming keypad"
+msgstr "პროგრამირების ციფრული კლავიატურის ჩვენება/დამალვა"
+
+#: data/main.ui:4658 data/main.ui:8714 data/main.ui:9427
+#: src/datasetsdialog.cc:526
+msgid "Exact"
+msgstr "ზუსტი"
+
+#: data/main.ui:4678 src/expressioncompletion.cc:2235
+#: src/expressioncompletion.cc:2237
+msgid "Fraction"
+msgstr "ნაწილი"
+
+#: data/main.ui:4692
+msgid "Numerical display"
+msgstr "რიცხვების გამოტანა"
+
+#: data/main.ui:4698
+msgid "Pure"
+msgstr "Pure"
+
+#: data/main.ui:4714
+msgid "Number base"
+msgstr "ათვლის სისტემა"
+
+#: data/main.ui:4723 data/setbase.ui:186
+msgid "Time format"
+msgstr "დროის ფორმატი"
+
+#: data/main.ui:4724 data/main.ui:8913
+msgid "Roman"
+msgstr "რომანული"
+
+#: data/main.ui:4808
+msgid "sin"
+msgstr "სინ"
+
+#: data/main.ui:4859
+msgid "cos"
+msgstr "კოს"
+
+#: data/main.ui:4910
+msgid "tan"
+msgstr "tan"
+
+#: data/main.ui:4961
+msgid "ln"
+msgstr "ln"
+
+#: data/main.ui:5005
+msgid "Equals"
+msgstr "უდრის"
+
+#: data/main.ui:5067
+msgid "sqrt"
+msgstr "კვფესვი"
+
+#: data/main.ui:5118
+msgid "sum"
+msgstr "ჯამი"
+
+#: data/main.ui:5162 data/main.ui:5218 data/main.ui:5274
+msgid "Unknown variable"
+msgstr "უცნობი ცვლადი"
+
+#: data/main.ui:5337
+msgid "mod"
+msgstr "mod"
+
+#: data/main.ui:5547
+msgid "mean"
+msgstr "მიშვნელობა"
+
+#: data/main.ui:5591 src/keypad.cc:1017
+msgid "Store result as a variable"
+msgstr "შედეგის ცვლადში შენახვა"
+
+#. Standard calculator button. Do not use more than three characters.
+#: data/main.ui:5601 data/main.ui:6560
+msgid "STO"
+msgstr "შნხ"
+
+#: data/main.ui:5647
+msgid "Convert number bases"
+msgstr "რიცხვების ფუძის გადაყვანა"
+
+#: data/main.ui:5756 src/util.cc:963
+msgid "Manage units"
+msgstr "ერთეულების მართვა"
+
+#. Fixes missing support for context in ui file translations
+#: data/main.ui:5766 src/keypad.cc:3609
+msgctxt "Manage units button"
+msgid "u"
+msgstr "u"
+
+#: data/main.ui:5863
+msgid "Conversion operator"
+msgstr "გადაყვანის ოპერატორი"
+
+#: data/main.ui:5873 src/keypad.cc:3610
+msgctxt "Button for convert to operator"
+msgid "to"
+msgstr "სადამდე"
+
+#: data/main.ui:5974
+msgid "Kilogram"
+msgstr "კილოგრამი"
+
+#: data/main.ui:6108 data/nbases.ui:280 src/expressionstatus.cc:393
+#: src/keypad.cc:2851 src/keypad.cc:2852 src/keypad.cc:2853
+msgid "BIN"
+msgstr "ორობ"
+
+#: data/main.ui:6130 data/nbases.ui:294 src/expressionstatus.cc:398
+#: src/keypad.cc:2855 src/keypad.cc:2856 src/keypad.cc:2857
+msgid "OCT"
+msgstr "რვაობ"
+
+#: data/main.ui:6152 data/nbases.ui:308 src/keypad.cc:2859 src/keypad.cc:2860
+#: src/keypad.cc:2861
+msgid "DEC"
+msgstr "ათობ"
+
+#: data/main.ui:6204 data/preferences.ui:1103
+msgid "Two's complement input"
+msgstr "დამატებითი კოდი შეყვანისთვის"
+
+#: data/main.ui:6225 data/preferences.ui:1091
+msgid "Two's complement output"
+msgstr "დამატებითი კოდი გამოტანისთვის"
+
+#: data/main.ui:6339 data/nbases.ui:878 src/buttonseditdialog.cc:371
+#: src/keypad.cc:387 src/keypad.cc:388 src/keypad.cc:516 src/keypad.cc:693
+msgid "Bitwise Exclusive OR"
+msgstr "ბიტური ექსკლუზიური ან"
+
+#: data/main.ui:6382 data/nbases.ui:966 src/keypad.cc:689
+msgid "Bitwise Left Shift"
+msgstr "ბიტური წანაცვლება მარცხნივ"
+
+#: data/main.ui:6404 data/nbases.ui:988 src/keypad.cc:690
+msgid "Bitwise Right Shift"
+msgstr "ბიტური წანაცვლება მარჯვნივ"
+
+#: data/main.ui:6882
+msgid "Floating point conversion"
+msgstr "მცურავმძიმიანი რიცხვების გადაყვანა"
+
+#: data/main.ui:6950
+msgid "Show/hide left keypad"
+msgstr "მარცხენა ციფრული კლავიატურის ჩვენება/დამალვა"
+
+#: data/main.ui:6975
+msgid "Show/hide right keypad"
+msgstr "მარჯვენა ციფრული კლავიატურის ჩვენება/დამალვა"
+
+#. Standard calculator button. Do not use more than three characters.
+#: data/main.ui:7584 data/nbases.ui:929 src/keypad.cc:523
+msgid "DEL"
+msgstr "წშლ"
+
+#. Standard calculator button. Do not use more than three characters.
+#: data/main.ui:7606 data/nbases.ui:951 src/keypad.cc:522
+msgid "C"
+msgstr "ცენტრ"
+
+#: data/main.ui:7694 src/buttonseditdialog.cc:378 src/keypad.cc:524
+msgid "Previous result"
+msgstr "წინა შედეგი"
+
+#. Standard calculator button. Do not use more than three characters.
+#: data/main.ui:7703 src/keypad.cc:524
+msgid "ANS"
+msgstr "პსხ"
+
+#: data/main.ui:8028 src/keypad.cc:477
+msgid "EXP"
+msgstr "EXP"
+
+#: data/main.ui:8362
+msgid "Add to Expression"
+msgstr "გამოსახულებაში ჩამატება"
+
+#: data/main.ui:8382
+msgid "Persistent Keypad"
+msgstr "მუდმივი ციფრული კლავიატურა"
+
+#: data/main.ui:8394 data/main.ui:9315 data/main.ui:9599
+msgid "Edit"
+msgstr "ჩასწორება"
+
+#: data/main.ui:8402 data/main.ui:8421 data/main.ui:8595 data/main.ui:9366
+#: data/main.ui:9606 data/nbases.ui:922 src/buttonseditdialog.cc:377
+#: src/keypad.cc:523
+msgid "Delete"
+msgstr "წაშლა"
+
+#: data/main.ui:8414 data/main.ui:8588
+msgid "Update"
+msgstr "განახლება"
+
+#: data/main.ui:8432
+msgid "Insert Value"
+msgstr "მნიშვნელობის ჩასმა"
+
+#: data/main.ui:8440 data/main.ui:9243
+msgid "Insert Text"
+msgstr "ტექსტის ჩასმა"
+
+#: data/main.ui:8448
+msgid "Insert Parsed Text"
+msgstr "დამუშავებული ტექსტის ჩასმა"
+
+#: data/main.ui:8456 data/main.ui:9265 data/main.ui:9548
+#: src/searchprovider.cc:530
+msgid "Copy"
+msgstr "კოპირება"
+
+#: data/main.ui:8464 data/main.ui:8638 data/main.ui:9557
+msgid "Copy Unformatted ASCII"
+msgstr "დაუფორმატებელი ASCII-ის ჩასმა"
+
+#: data/main.ui:8473
+msgid "Copy Full Text"
+msgstr "მთლიანი ტექსტის კოპირება"
+
+#: data/main.ui:8487
+msgid "Search…"
+msgstr "ძებნა…"
+
+#: data/main.ui:8496 src/historyview.cc:3222 src/historyview.cc:3237
+msgid "Search by Date…"
+msgstr "ძებნა თარიღით…"
+
+#: data/main.ui:8511 src/historyview.cc:3219
+msgid "Add Bookmark…"
+msgstr "სანიშნის დამატება…"
+
+#: data/main.ui:8520
+msgid "Bookmarks"
+msgstr "სანიშნეები"
+
+#: data/main.ui:8534
+msgid "Protect"
+msgstr "დაცვა"
+
+#: data/main.ui:8543 src/historyview.cc:3212
+msgid "Add Comment…"
+msgstr "კომენტარის დამატება…"
+
+#: data/main.ui:8558
+msgid "Move To Top"
+msgstr "თავში ატანა"
+
+#: data/main.ui:8567
+msgid "Remove"
+msgstr "წაშლა"
+
+#: data/main.ui:8576
+msgid "Clear All"
+msgstr "ყველას გასუფთავება"
+
+#: data/main.ui:8605
+msgid "Show Parsed Expression"
+msgstr "დამუშავებული გამოსახულების ჩვენება"
+
+#: data/main.ui:8614
+msgid "Show Result"
+msgstr "შედეგის ჩვენეება"
+
+#: data/main.ui:8629
+msgid "_Copy"
+msgstr "_კოპირება"
+
+#: data/main.ui:8647
+msgid "_Store…"
+msgstr "_დამახსოვრება…"
+
+#: data/main.ui:8656
+msgid "Save Image…"
+msgstr "გამოსახულების შენახვა…"
+
+#: data/main.ui:8671
+msgid "_Factorize"
+msgstr "მამრავლებად _დაშლა"
+
+#: data/main.ui:8680
+msgid "_Expand"
+msgstr "_ჩამოსლა"
+
+#: data/main.ui:8738
+msgid "_Normal"
+msgstr "_ნორმალური"
+
+#: data/main.ui:8758
+msgid "Sc_ientific"
+msgstr "სამეცნ_იერო"
+
+#: data/main.ui:8768
+msgid "Purel_y Scientific"
+msgstr "სუფთა სამე_ცნიერო"
+
+#: data/main.ui:8778
+msgid "Simp_le"
+msgstr "_მარტივი"
+
+#: data/main.ui:8844
+msgid "_Binary"
+msgstr "ორობი_თი"
+
+#: data/main.ui:8853
+msgid "_Octal"
+msgstr "რვა_ობითი"
+
+#: data/main.ui:8863
+msgid "_Decimal"
+msgstr "ა_თობითი"
+
+#: data/main.ui:8883
+msgid "_Hexadecimal"
+msgstr "თ_ექვსმეტობითი"
+
+#: data/main.ui:8939 src/expressioncompletion.cc:2213
+msgid "Decimal Fraction"
+msgstr "ათწილადები"
+
+#: data/main.ui:8949
+msgid "Exact Decimal Fraction"
+msgstr "ზუსტი ათწილადის წილადები"
+
+#: data/main.ui:8959
+msgid "Simple Fraction"
+msgstr "მარტივი წილადი"
+
+#: data/main.ui:8969
+msgid "Mixed Fraction"
+msgstr "შერეული წილადი"
+
+#: data/main.ui:8993
+msgid "_Abbreviate Names"
+msgstr "სახელების შემოკლებ_ა"
+
+#: data/main.ui:9008
+msgid "C_onvert…"
+msgstr "გადა_ყვანა…"
+
+#: data/main.ui:9017
+msgid "Convert to Base _Units"
+msgstr "გადაყვანა ძირითად ერთე_ულებში"
+
+#: data/main.ui:9026
+msgid "Convert _to Optimal Unit"
+msgstr "გადაყვანა ოპ_ტიმალურ ერთეულში"
+
+#: data/main.ui:9035
+msgid "Use Optimal Prefix"
+msgstr "ოპტიმალური პრეფიქსის გამოყენება"
+
+#: data/main.ui:9043
+msgid "Convert to"
+msgstr "გარდაქმნა"
+
+#: data/main.ui:9081
+msgid "Convert to UTC"
+msgstr "გადაყვანა UTC-ში"
+
+#: data/main.ui:9090
+msgid "Convert to Calendars"
+msgstr "გადაყვანა კალენდრებში"
+
+#: data/main.ui:9148
+msgid "Enable All SI Prefi_xes"
+msgstr "ყველა SI პრეფი_ქსის ჩართვა"
+
+#: data/main.ui:9206
+msgid "View/Edit Matrix"
+msgstr "მატრიცის ნახვა/ჩასწორება"
+
+#: data/main.ui:9215
+msgid "View/Edit Vector"
+msgstr "ვექტორის ნახვა/ჩასწორება"
+
+#: data/main.ui:9230 data/main.ui:9533
+msgid "Show Parsed Expression in Result Field"
+msgstr "დამუშავებული გამოსახულების ჩვენება შედეგის ველში"
+
+#: data/main.ui:9251
+msgid "Copy Text"
+msgstr "ტექსტის კოპირება"
+
+#: data/main.ui:9274
+msgid "To Top"
+msgstr "ზემოთ"
+
+#: data/main.ui:9282
+msgid "Swap"
+msgstr "სვაპი"
+
+#: data/main.ui:9291
+msgid "Up"
+msgstr "ჩართულია"
+
+#: data/main.ui:9300
+msgid "Down"
+msgstr "გამორთულია"
+
+#: data/main.ui:9324
+msgid "Negate"
+msgstr "უარყოფა"
+
+#: data/main.ui:9333
+msgid "Invert"
+msgstr "ინვერსია"
+
+#: data/main.ui:9342
+msgid "Square"
+msgstr "კვადრატი"
+
+#: data/main.ui:9351
+msgid "Square Root"
+msgstr "კვადრატული ფესვი"
+
+#: data/main.ui:9374
+msgid "Clear Stack"
+msgstr "სტეკის გასუფთავება"
+
+#: data/main.ui:9511
+msgid "Select Number Base…"
+msgstr "აირჩიეთ რიცხვის ბაზა…"
+
+#: data/main.ui:9524
+msgid "Display Expression Status"
+msgstr "გამოსახულების სტატუსის ჩვენება"
+
+#: data/main.ui:9570 src/util.cc:965
+msgid "Store result"
+msgstr "შედეგის შენახვა"
+
+#. Add current result to variable value
+#: data/main.ui:9577
+msgid "Add result"
+msgstr "შედეგის დამატება"
+
+#. Subtruct current result from variable value
+#: data/main.ui:9585
+msgid "Subtract result"
+msgstr "შედეგის გამოკლება"
+
+#: data/matrix.ui:56 data/units.ui:529 data/variables.ui:338
+#: src/insertfunctiondialog.cc:334 src/insertfunctiondialog.cc:455
+msgid "_Insert"
+msgstr "ჩა_სმა"
+
+#: data/matrix.ui:61
+msgid "Insert the matrix/vector into the expression"
+msgstr "მატრიცის/ვექტორის ჩასმა გამოსახულებაში"
+
+#: data/matrix.ui:96 data/matrixedit.ui:120 src/matrixdialog.cc:280
+#: src/matrixdialog.cc:288
+msgid "Elements"
+msgstr "ელემენტები"
+
+#: data/matrix.ui:114 data/matrixedit.ui:186
+msgid "Number of rows in this matrix (rows displayed for vectors)"
+msgstr "მწკრივების რაოდენობა ამ მატრიცაში (ვექტორებისთვის ნაჩვენები მწკრივები)"
+
+#: data/matrix.ui:148 data/matrixedit.ui:221
+msgid "Number of columns in this matrix (columns displayed for vectors)"
+msgstr "სვეტების რაოდენობა ამ მატრიცაში (ვექტორებისთვის ნაჩვენები სვეტები)"
+
+#: data/matrix.ui:190 data/matrix.ui:208 data/matrixedit.ui:256
+#: data/matrixedit.ui:275
+msgid "If this is a matrix or vector"
+msgstr "თუ ეს ან მატრიცაა, ან ვექტორი"
+
+#: data/matrix.ui:268 data/matrixedit.ui:305
+msgid "Current element:"
+msgstr "მიმდინარე ელემენტი:"
+
+#: data/matrixedit.ui:22 src/matrixeditdialog.cc:404
+msgid "Edit Matrix"
+msgstr "მატრიცის ჩასწორება"
+
+#: data/matrixedit.ui:161 data/variableedit.ui:103
+msgid "Name used to reference this variable in expressions"
+msgstr "სახელი, რომელიც გამოსახულებებში ამ ცვლადზე მომართვისას გამოიყენება"
+
+#: data/matrixedit.ui:333 data/unknownedit.ui:199 data/variableedit.ui:155
+msgid "Temporary"
+msgstr "დროებითი"
+
+#: data/matrixedit.ui:403 data/variableedit.ui:295
+msgid "Hide variable"
+msgstr "ცვლადის დამალვა"
+
+#: data/matrixedit.ui:406 data/variableedit.ui:298
+msgid "If this variable shall be hidden in menus"
+msgstr "უნდა იყოს ეს ცვლადი დამალული მენიუებში, თუ არა"
+
+#: data/matrixedit.ui:436 data/variableedit.ui:202
+msgid "The category this variable belongs to"
+msgstr "კატეგორია, რომელსაც ეს ცვლადი ეკუთვნის"
+
+#: data/namesedit.ui:8
+msgid "Names"
+msgstr "სახელები"
+
+#: data/nbases.ui:8 data/setbase.ui:22 src/expressioncompletion.cc:2198
+msgid "Number Bases"
+msgstr "რიცხვის ფუძეები"
+
+#: data/nbases.ui:102
+msgid "Binary value"
+msgstr "ორობითი მნიშვნელობა"
+
+#: data/nbases.ui:118
+msgid "Decimal value"
+msgstr "ათობითი მნიშვნელობა"
+
+#: data/nbases.ui:134 data/nbases.ui:163 data/nbases.ui:193
+msgid "Octal value"
+msgstr "რვაობითი მნიშვნელობა"
+
+#: data/nbases.ui:151 data/setbase.ui:203 data/setbase.ui:408
+#: src/numberbasesdialog.cc:214 src/numberbasesdialog.cc:256
+msgid "Roman numerals"
+msgstr "რომაული რიცხვები"
+
+#: data/nbases.ui:222
+msgid "Hexadecimal value"
+msgstr "თექვსმეტობითი მნიშვნელობა"
+
+#: data/nbases.ui:246
+msgid "Show/hide keypad"
+msgstr "ციფრული კლავიატურის ჩვენება/დამალვა"
+
+#: data/nbases.ui:322 src/expressionstatus.cc:403
+msgid "DUO"
+msgstr "თრმტ"
+
+#: data/nbases.ui:337 src/expressionstatus.cc:408 src/keypad.cc:2863
+#: src/keypad.cc:2864 src/keypad.cc:2865
+msgid "HEX"
+msgstr "თექვს"
+
+#: data/nbases.ui:351
+msgid "ROM"
+msgstr "რომი"
+
+#. Fixes missing support for context in ui file translations
+#. Mathematical operation
+#: data/nbases.ui:746 src/buttonseditdialog.cc:372 src/keypad.cc:517
+#: src/numberbasesdialog.cc:866
+msgctxt "Keypad"
+msgid "Add"
+msgstr "დამატება"
+
+#: data/nbases.ui:768 src/buttonseditdialog.cc:375 src/keypad.cc:520
+msgid "Subtract"
+msgstr "გამოკლება"
+
+#: data/nbases.ui:790 src/buttonseditdialog.cc:371 src/keypad.cc:516
+msgid "Multiply"
+msgstr "გამრავლება"
+
+#: data/nbases.ui:812 src/buttonseditdialog.cc:370 src/keypad.cc:515
+msgid "Divide"
+msgstr "გაყოფა"
+
+#: data/nbases.ui:834 src/buttonseditdialog.cc:372 src/keypad.cc:517
+#: src/keypad.cc:691 src/keypad.cc:1008
+msgid "Bitwise AND"
+msgstr "ბიტური და"
+
+#: data/nbases.ui:856 src/buttonseditdialog.cc:375 src/keypad.cc:520
+#: src/keypad.cc:692 src/keypad.cc:1009
+msgid "Bitwise OR"
+msgstr "ბიტური ან"
+
+#: data/nbases.ui:900 src/keypad.cc:694 src/keypad.cc:1010
+msgid "Bitwise NOT"
+msgstr "ბიტური არა-არ"
+
+#: data/nbases.ui:944 data/percentage.ui:41 src/buttonseditdialog.cc:376
+#: src/expressionedit.cc:1405 src/keypad.cc:522
+msgid "Clear"
+msgstr "გასუფთავება"
+
+#: data/percentage.ui:6
+msgid ""
+"Enter two values, of which at most one is a percentage, and the others will "
+"be calculated for you."
+msgstr ""
+"შეიყვანეთ ორი მნიშვნელობა, რომლიდანაც ერთი პროცენტია და დანარჩენებს ჩვენ "
+"გამოვთვლით."
+
+#: data/percentage.ui:11
+msgid "Percentage"
+msgstr "პროცენტი"
+
+#: data/percentage.ui:26
+msgid "Calculate"
+msgstr "გამოთვლა"
+
+#: data/percentage.ui:97
+msgid "Value 1"
+msgstr "მნიშვნელობა 1"
+
+#: data/percentage.ui:109
+msgid "2 compared to 1"
+msgstr "2 შედარებული 1-თან"
+
+#: data/percentage.ui:137 data/percentage.ui:281
+msgid "Change from 1 to 2"
+msgstr "ცვლილება 1-დან 2-მდე"
+
+#: data/percentage.ui:181
+msgid "Value 2"
+msgstr "მნიშვნელობა 2"
+
+#: data/percentage.ui:209
+msgid "1 compared to 2"
+msgstr "1 შედარებული 2-თან"
+
+#: data/percentage.ui:253
+msgid "Change from 2 to 1"
+msgstr "ცვლილება 2-დან 1-მდე"
+
+#: data/plot.ui:50
+msgid "Plot"
+msgstr "გრაფიკი"
+
+#: data/plot.ui:82 src/menubar.cc:1217 src/plotdialog.cc:378
+#: src/plotdialog.cc:380 src/resultview.cc:552 src/resultview.cc:554
+msgid "_Save"
+msgstr "_შენახვა"
+
+#: data/plot.ui:87
+msgid "Save as png, svg, postscript, eps, latex or fig"
+msgstr "შენახვა png, svg, postscript, eps, latex, ან fig"
+
+#: data/plot.ui:156 data/plot.ui:856 src/dataseteditdialog.cc:224
+#: src/plotdialog.cc:773
+msgid "Title"
+msgstr "სათაური"
+
+#: data/plot.ui:252
+msgid "Vector/matrix"
+msgstr "ვექტორი/მატრიცა"
+
+#: data/plot.ui:269
+msgid "Paired matrix"
+msgstr "დაწყვილებული მატრიცა"
+
+#: data/plot.ui:286
+msgid "Rows"
+msgstr "მწკრივები"
+
+#: data/plot.ui:290
+msgid "if you want to split matrix in rows instead of columns"
+msgstr "თუ გნებავთ, მატრიცა სვეტების მაგიერ მწკრივებად დაყოთ"
+
+#: data/plot.ui:318
+msgid "X variable"
+msgstr "X ცვლადი"
+
+#: data/plot.ui:330
+msgid "The variable name used in expression"
+msgstr "გამოსახულებაში გამოყენებული ცვლადის სახელი"
+
+#: data/plot.ui:360
+msgid "Style"
+msgstr "სტილი"
+
+#: data/plot.ui:374
+msgid "Line"
+msgstr "ხაზი"
+
+#: data/plot.ui:375
+msgid "Points"
+msgstr "ქულები"
+
+#: data/plot.ui:376
+msgid "Line with points"
+msgstr "ხაზი წერტილებით"
+
+#: data/plot.ui:377
+msgid "Boxes/bars"
+msgstr "მართკუთხედები/დაშვების ხაზები"
+
+#: data/plot.ui:378
+msgid "Histogram"
+msgstr "ჰისტოგრამა"
+
+#: data/plot.ui:379
+msgid "Steps"
+msgstr "ბიჯები"
+
+#: data/plot.ui:380
+msgid "Candlesticks"
+msgstr "იაპონური სანთლები"
+
+#: data/plot.ui:381
+msgid "Dots"
+msgstr "წერტილები"
+
+#: data/plot.ui:382
+msgid "Polar"
+msgstr "პოლარული"
+
+#: data/plot.ui:409
+msgid "Smoothing"
+msgstr "დაგლუვება"
+
+#: data/plot.ui:424
+msgid "Monotonic"
+msgstr "მონოტონური"
+
+#: data/plot.ui:425
+msgid "Natural cubic splines"
+msgstr "ნატურალური კუბური სპლაინები"
+
+#: data/plot.ui:426
+msgid "Bezier"
+msgstr "ბეზიე"
+
+#: data/plot.ui:427
+msgid "Bezier (monotonic)"
+msgstr "ბეზიე (მონოტონური)"
+
+#: data/plot.ui:454
+msgid "Y-axis"
+msgstr "Y-ღერძი"
+
+#: data/plot.ui:469
+msgid "Primary"
+msgstr "ძირითადი"
+
+#: data/plot.ui:485
+msgid "Secondary"
+msgstr "მეორადი"
+
+#: data/plot.ui:608
+msgid "Data"
+msgstr "მონაცემები"
+
+#: data/plot.ui:633
+msgid "Minimum x value"
+msgstr "მინიმალური x-ის მნიშვნელობა"
+
+#: data/plot.ui:673
+msgid "Maximum x value"
+msgstr "მაქსიმალური x-ის მნიშვნელობა"
+
+#: data/plot.ui:710
+msgid "Sampling rate"
+msgstr "დისკრეტიზაციის სიხშირე"
+
+#: data/plot.ui:756
+msgid "Step size"
+msgstr "ბიჯის ზომა"
+
+#: data/plot.ui:830
+msgid "Function Range"
+msgstr "ფუნქციის დიაპაზონი"
+
+#: data/plot.ui:892
+msgid "Display grid"
+msgstr "ბადის ჩვენება"
+
+#: data/plot.ui:908
+msgid "Display full border"
+msgstr "სრული საზღვრის ჩვენება"
+
+#: data/plot.ui:936
+msgid "Minimum y value"
+msgstr "მინიმალური y მნიშვნელობა"
+
+#: data/plot.ui:983
+msgid "Maximum y value"
+msgstr "მაქსიმალური y მნიშვნელობა"
+
+#: data/plot.ui:1030
+msgid "Logarithmic x scale"
+msgstr "X-ის ლოგარითმული მასშტაბირება"
+
+#: data/plot.ui:1076
+msgid "Logarithmic y scale"
+msgstr "Y-ის ლოგარითმული მასშტაბირება"
+
+#: data/plot.ui:1125
+msgid "X-axis label"
+msgstr "X-ღერძის ჭდე"
+
+#: data/plot.ui:1164
+msgid "Y-axis label"
+msgstr "Y-ღერძის ჭდე"
+
+#: data/plot.ui:1203
+msgid "Line width"
+msgstr "ხაზის სიგანე"
+
+#: data/plot.ui:1245
+msgid "Color display"
+msgstr "ფერადი გამოტანა"
+
+#: data/plot.ui:1260
+msgid "Color"
+msgstr "ფერი"
+
+#: data/plot.ui:1276
+msgid "Monochrome"
+msgstr "შავთეთრი"
+
+#: data/plot.ui:1315
+msgid "Legend placement"
+msgstr "ახსნის მდებარეობა"
+
+#: data/plot.ui:1330
+msgid "Top-left"
+msgstr "ზედა მარცხენა"
+
+#: data/plot.ui:1331
+msgid "Top-right"
+msgstr "ზედა მარჯვენა"
+
+#: data/plot.ui:1332
+msgid "Bottom-left"
+msgstr "ქვედა მარცხენა"
+
+#: data/plot.ui:1333
+msgid "Bottom-right"
+msgstr "ქვედა მარჯვენა"
+
+#: data/plot.ui:1334
+msgid "Below"
+msgstr "ქვემოთ"
+
+#: data/plot.ui:1335
+msgid "Outside"
+msgstr "გარედან"
+
+#: data/plot.ui:1388
+msgid "Appearance"
+msgstr "გარეგნობა"
+
+#: data/precision.ui:15 data/precision.ui:88
+msgid "Precision"
+msgstr "სიზუსტე"
+
+#: data/precision.ui:48
+msgid "_Recalculate"
+msgstr "თავიდან _გამოთვლა"
+
+#: data/precision.ui:53 data/precision.ui:58
+msgid "Recalculate expression"
+msgstr "გამოსახულების თავიდან გამოთვალ"
+
+#: data/precision.ui:99
+msgid ""
+"The number of significant digits to display/calculate (simple arithmetics "
+"are always calculated exact)"
+msgstr ""
+
+#: data/preferences.ui:89
+msgid "Preferences"
+msgstr "მორგება"
+
+#: data/preferences.ui:142
+msgid "Save definitions on exit"
+msgstr "აღწერების შენახვა გასვლისას"
+
+#: data/preferences.ui:146
+msgid ""
+"If changes to functions, units and variables shall be saved automatically"
+msgstr ""
+
+#: data/preferences.ui:159
+msgid "Clear history on exit"
+msgstr "ისტორიის გასუფთავება გასვლისას"
+
+#: data/preferences.ui:183
+msgid "Max history lines saved"
+msgstr "მაქს. შენახული ისტორიის ხაზები"
+
+#: data/preferences.ui:217
+msgid "Save history to separate file"
+msgstr "ისტორიის შენახვა ცალკე ფაილში"
+
+#: data/preferences.ui:233
+msgid "Allow multiple instances"
+msgstr "ერთზე მეტი გაშვებული ასლის დაშვება"
+
+#: data/preferences.ui:237
+msgid ""
+"Allow multiple instances of the Qalculate! main window to be open at the "
+"same time.\n"
+"\n"
+"Note that only the mode, history and definitions of the last closed instance "
+"will be saved."
+msgstr ""
+
+#: data/preferences.ui:252
+msgid "Notify when a new version is available"
+msgstr "გამაფრთხილე, როცა ხელმისაწვდომი იქნება ახალი ვერსია"
+
+#: data/preferences.ui:268
+msgid "Save mode on exit"
+msgstr "რეჟიმის შენახვა გასვლისას"
+
+#: data/preferences.ui:272
+msgid "If the mode of the calculator shall be restored"
+msgstr "უნდა აღდგეს, თუ არა კალკულატორის რეჟიმი"
+
+#: data/preferences.ui:285
+msgid "Close application with Escape key"
+msgstr "აპლიკაციის დახურვა ღილაკით Escape"
+
+#: data/preferences.ui:289
+msgid ""
+"Close the application with the Escape key if the expression field is empty."
+msgstr ""
+
+#: data/preferences.ui:302
+msgid "Use keyboard keys for RPN"
+msgstr "კლავიატურის ღილაკების გამოყენება RPN-ისთვის"
+
+#: data/preferences.ui:306
+msgid "Use keyboard operator keys for RPN operations (+-*/^)."
+msgstr ""
+"კლავიატურის ოპერატორი ღილაკების გამოყენება RPN ოპერაციებისთვის (+-*/^)."
+
+#: data/preferences.ui:320
+msgid "Use caret for bitwise XOR"
+msgstr "კარეტის გამოყენება ბიტური XOR-ისთვის"
+
+#: data/preferences.ui:324
+msgid ""
+"Input XOR (⊻) using caret (^) on keyboard (otherwise use Ctrl+^). The "
+"exponentiation operator (^) can always be input using Ctrl+*."
+msgstr ""
+
+#: data/preferences.ui:348
+msgid "Expression in history"
+msgstr "გამოსახულება ისტორიაში"
+
+#: data/preferences.ui:361
+msgid "Parsed"
+msgstr "დამუშავებული"
+
+#: data/preferences.ui:362
+msgid "Entered"
+msgstr "შეყვანილი"
+
+#: data/preferences.ui:363
+msgid "Entered + parsed"
+msgstr "შეყვანილი + დამუშავებული"
+
+#: data/preferences.ui:377
+msgid "Expression after calculation"
+msgstr "გამოსახულება გამთვლის შემდეგ"
+
+#: data/preferences.ui:390
+msgid "Keep expression"
+msgstr "გამოსახულების შენარჩუნება"
+
+#: data/preferences.ui:391 src/conversionview.cc:281 src/expressionedit.cc:810
+msgid "Clear expression"
+msgstr "გამოსახულების გასუფთავება"
+
+#: data/preferences.ui:392
+msgid "Replace with result"
+msgstr "ჩანაცვლება შედეგით"
+
+#: data/preferences.ui:393
+msgid "Replace with result if shorter"
+msgstr "ჩანაცვლება შედეგით, თუ უფრო მოკლეა"
+
+#: data/preferences.ui:417
+msgid "Add calculate-as-you-type result to history"
+msgstr "აკრეფისას გამოთვლის შედეგის დამატება ისტორიაში"
+
+#: data/preferences.ui:437
+msgid "Delay:"
+msgstr "დაყოვნება:"
+
+#: data/preferences.ui:477
+msgid "Time limit for plot:"
+msgstr "დროის ლიმიტი გრაფიკისთვის:"
+
+#: data/preferences.ui:514
+msgid "Behavior"
+msgstr "ქცევა"
+
+#: data/preferences.ui:531
+msgid "Use system tray icon"
+msgstr "სისტემის კუთხეში ხატულას გამოყენება"
+
+#: data/preferences.ui:534
+msgid "Hides the application in the system tray when the main window is closed"
+msgstr ""
+
+#: data/preferences.ui:547
+msgid "Hide on startup"
+msgstr "დამალვა გაშვებისას"
+
+#: data/preferences.ui:562
+msgid "Remember window position"
+msgstr "ფანჯრის მდებარეობის დამახსოვრება"
+
+#: data/preferences.ui:578
+msgid "Keep above other windows"
+msgstr "დანარჩენი ფანჯრების ზემოთ ქონა"
+
+#: data/preferences.ui:582
+msgid ""
+"Keep the main window above other windows (depending on platform and settings "
+"this might not work)"
+msgstr ""
+
+#: data/preferences.ui:595
+msgid "Enable Unicode symbols"
+msgstr "უნიკოდის სიმბოლოების ჩართვა"
+
+#: data/preferences.ui:599
+msgid "Disable this if you have problems with some fancy characters"
+msgstr ""
+
+#: data/preferences.ui:612
+msgid "Ignore system language (requires restart)"
+msgstr "სისტემის ენის იგნორირება (საჭიროა რესტარტი)"
+
+#: data/preferences.ui:638
+msgid "Button padding"
+msgstr "ღილაკის შევსება"
+
+#: data/preferences.ui:658 data/preferences.ui:696 data/preferences.ui:769
+#: data/preferences.ui:799 src/buttonseditdialog.cc:183
+#: src/datasetsdialog.cc:524 src/modes.cc:46 src/modes.cc:57 src/util.cc:1064
+msgid "Default"
+msgstr "ნაგულისხმევი"
+
+#: data/preferences.ui:681
+msgid "/"
+msgstr "/"
+
+#: data/preferences.ui:727
+msgid "Application name"
+msgstr "აპლიკაციის სახელი"
+
+#: data/preferences.ui:728
+msgid "Result"
+msgstr "შედეგი"
+
+#: data/preferences.ui:729
+msgid "Application name + result"
+msgstr "აპლიკაციის სახელი + შედეგი"
+
+#: data/preferences.ui:730 src/menubar.cc:1265
+msgid "Mode"
+msgstr "რეჟიმი"
+
+#: data/preferences.ui:731
+msgid "Application name + mode"
+msgstr "აპლიკაციის სახელი + რეჟიმი"
+
+#: data/preferences.ui:745
+msgid "Window title"
+msgstr "ფანჯრის სათაური"
+
+#: data/preferences.ui:757
+msgid "Theme"
+msgstr "თემა"
+
+#: data/preferences.ui:770
+msgid "Light"
+msgstr "ღია"
+
+#: data/preferences.ui:771
+msgid "Dark"
+msgstr "მუქი"
+
+#: data/preferences.ui:772
+msgid "High contrast"
+msgstr "მაღალი კონტრასტი"
+
+#: data/preferences.ui:773
+msgid "Dark high contrast"
+msgstr "მუქი მაღალი კონტრასტით"
+
+#: data/preferences.ui:787
+msgid "Language"
+msgstr "ენა"
+
+#: data/preferences.ui:828
+msgid "Tooltips"
+msgstr "მინიშნებები"
+
+#: data/preferences.ui:842
+msgid "Show all"
+msgstr "ყველას ჩვენება"
+
+#: data/preferences.ui:843
+msgid "Hide in keypad"
+msgstr "დამალვა ციფრულ კლავიატურაში"
+
+#: data/preferences.ui:844
+msgid "Hide all"
+msgstr "ყველას დამალვა"
+
+#: data/preferences.ui:862
+msgid "Show result above expression"
+msgstr "შედეგის ჩვენება გამოსახულების ზემოდან"
+
+#: data/preferences.ui:889
+msgid "Number of expression lines"
+msgstr "გამოსახულების ხაზების რაოდენობა"
+
+#: data/preferences.ui:915
+msgid "Custom result height"
+msgstr "შედეგის მორგებული სიმაღლე"
+
+#: data/preferences.ui:955
+msgid "Display expression status"
+msgstr "გამოსახულების სტატუსის ჩვენება"
+
+#: data/preferences.ui:959
+msgid ""
+"If as-you-type expression status shall be displayed below the expression "
+"entry"
+msgstr ""
+
+#: data/preferences.ui:973
+msgid "Show parsed expression in result field"
+msgstr "დამუშავებული გამოსახულების ჩვენება შედეგის ველში"
+
+#: data/preferences.ui:977
+msgid ""
+"If as-you-type expression interpretation shall be displayed in the result "
+"field"
+msgstr ""
+
+#: data/preferences.ui:991
+msgid "Persistent keypad"
+msgstr "მუდმივი ციფრული კლავიატურა"
+
+#: data/preferences.ui:1007
+msgid "Disable cursor blinking"
+msgstr "კურსორის ციმციმის გამორთვა"
+
+#: data/preferences.ui:1032
+msgid "Look & Feel"
+msgstr "გარეგნობა"
+
+#: data/preferences.ui:1060
+msgid ""
+"If two's complement representation shall be used for negative binary numbers."
+msgstr ""
+
+#: data/preferences.ui:1076
+msgid ""
+"If two's complement representation shall be used for negative hexadecimal "
+"numbers."
+msgstr ""
+
+#: data/preferences.ui:1116
+msgid ""
+"Enables two's complement representation for input of negative binary "
+"numbers. All binary numbers starting with 1 are negative, unless binary bits "
+"is set."
+msgstr ""
+
+#: data/preferences.ui:1132
+msgid ""
+"Enables two's complement representation for input of negative hexadecimal "
+"numbers. All hexadecimal numbers starting with 8 or higher are negative, "
+"unless binary bits is set."
+msgstr ""
+
+#: data/preferences.ui:1147
+msgid "Binary bits"
+msgstr "ორობითი ბიტები"
+
+#: data/preferences.ui:1160
+msgid "Automatic"
+msgstr "ავტომატური"
+
+#: data/preferences.ui:1187
+msgid "Use lower case letters in non-decimal numbers"
+msgstr "პატარა ასოების გამოყენება არა-ათობით რიცხვებში"
+
+#: data/preferences.ui:1191
+msgid "If lower case letters should be used in numbers with non-decimal base"
+msgstr ""
+
+#: data/preferences.ui:1204
+msgid "Use special duodecimal symbols"
+msgstr "სპეციალური თორმეტობითის სიმბოლოების გამოყენება"
+
+#: data/preferences.ui:1208
+msgid ""
+"If ↊ and ↋ (or X and E) shall be used instead of A and B for digits 10 and "
+"11 in numbers with base 12"
+msgstr ""
+
+#: data/preferences.ui:1221
+msgid "Alternative base prefixes"
+msgstr "ბაზის ალტერნატიული პრეფისები"
+
+#: data/preferences.ui:1225
+msgid ""
+"If hexadecimal numbers shall be displayed with \"0x0\" and binary numbers "
+"with \"0b00\" as prefixes"
+msgstr ""
+
+#: data/preferences.ui:1238
+msgid "Spell out logical operators"
+msgstr "ლოგიკური ოპერაციების ლოგიკურად გადმოცემა"
+
+#: data/preferences.ui:1242
+msgid "If logical and/or shall be displayed as \"&&\"/\"||\" or \"and\"/\"or\""
+msgstr ""
+
+#: data/preferences.ui:1267
+msgid "Use E-notation instead of 10<sup><i>n</i></sup>"
+msgstr "E-ნოტაციის გამოყენება 10<sup><i>n</i></sup>-ის მაგიერ"
+
+#: data/preferences.ui:1281
+msgid "Use lower case \"e\" (as in 1e10)"
+msgstr "პატარა ასო \"e\"-ის გამოყენება (მაგ: 1e10)"
+
+#: data/preferences.ui:1285
+msgid "If \"e\" shall be used instead of \"E\" in numbers"
+msgstr "რიცხვებში უნდა იყოს \"E\" გამოყენებული \"e\"-ის მაგიერ, თუ არა"
+
+#: data/preferences.ui:1298
+msgid "Use comma as decimal separator"
+msgstr "მძიმის გამოყენება ათწილადის გამყოფად"
+
+#: data/preferences.ui:1315
+msgid "Ignore comma in numbers"
+msgstr "მძიმის გამოტოვება რიცხვებში"
+
+#: data/preferences.ui:1319
+msgid ""
+"Allow commas, ',', to be used as thousands separator instead of as an "
+"function argument separator"
+msgstr ""
+
+#: data/preferences.ui:1332
+msgid "Ignore dots in numbers"
+msgstr "მძიმის გამოტოვება რიცხვებში"
+
+#: data/preferences.ui:1336
+msgid ""
+"Allow dots, '.', to be used as thousands separator instead of as an "
+"alternative decimal sign"
+msgstr ""
+
+#: data/preferences.ui:1349
+msgid "Use 'j' as imaginary unit"
+msgstr "\"j\"-ის გამოყენება წარმოსახვითი ერთეულისთვის"
+
+#: data/preferences.ui:1353
+msgid ""
+"Use 'j' (instead of 'i') as default symbol for the imaginary unit, and place "
+"it in front of the imaginary part."
+msgstr ""
+
+#: data/preferences.ui:1367
+msgid "Copy result as unformatted ASCII by default"
+msgstr "შედეგის კოპირება ნაგულისხმევად დაუფორმატებელი ASCII-ის სახით"
+
+#: data/preferences.ui:1385
+msgid "Use overline for repeating decimals"
+msgstr "ზემოდან ხაზის გამოყენება გამეორებადი ათწილადებისთვის"
+
+#: data/preferences.ui:1389
+msgid ""
+"Use overline (vinculum), instead of ellipsis, for repeating decimals when "
+"indicate repeating decimals is enabled."
+msgstr ""
+"ზემოდან ხაზის (კავშირის) გამოყენება ოვალის მაგიერ გამეორებადი "
+"ათწილადებისთვის, როცა ჩართულია გამეორებადი ათწილადების ჩვენება."
+
+#: data/preferences.ui:1416
+msgid "Digit grouping"
+msgstr "ციფრების დაჯგუფება"
+
+#: data/preferences.ui:1430
+msgid "Standard"
+msgstr "სტანდარტული"
+
+#: data/preferences.ui:1431
+msgid "Local"
+msgstr "ლოკალური"
+
+#: data/preferences.ui:1432
+msgid "Custom"
+msgstr "ხელით"
+
+#: data/preferences.ui:1489
+msgid "Multiplication sign"
+msgstr "გამრავლების ნიშანი"
+
+#: data/preferences.ui:1647
+msgid "Division sign"
+msgstr "გაყოფის ნიშანი"
+
+#: data/preferences.ui:1672
+msgid "Numbers & Operators"
+msgstr "რიცხვები & ოპერატორები"
+
+#: data/preferences.ui:1689
+msgid "Use binary prefixes for information units"
+msgstr "ორობითი პრეფიქსების გამოყენება ინფორმაციის ერთეულებისთვის"
+
+#: data/preferences.ui:1693
+msgid ""
+"Use binary, instead of decimal, prefixes by default for information units "
+"(e.g. bytes)."
+msgstr ""
+"ორობითი პრეფიქსების გამოყენება ნაგულისხმევად ათობითის მაგიერ ინფორმაციის "
+"ერთეულებისთვის (მაგ: ბაიტი)."
+
+#: data/preferences.ui:1706
+msgid "Copy unformatted ASCII without units"
+msgstr "დაუფორმატებელი ASCII-ის კოპირება ერთეულების გარეშე"
+
+#: data/preferences.ui:1723
+msgid "Conversion to local currency"
+msgstr "გადაყვანა ლოკალურ ვალუტაში"
+
+#: data/preferences.ui:1727
+msgid ""
+"Automatically convert to the local currency when optimal unit conversion is "
+"activated."
+msgstr ""
+
+#: data/preferences.ui:1751
+msgid "Local currency"
+msgstr "ლოკალური ვალუტა"
+
+#: data/preferences.ui:1789
+msgid "Exchange rates updates"
+msgstr "გაცვლის კურსების განახლება"
+
+#: data/preferences.ui:1826
+msgid "Temperature calculation mode:"
+msgstr "ტემპერატურის გამოთვლის რეჟიმი:"
+
+#: data/preferences.ui:1842 src/mainwindow.cc:826
+msgid "Absolute"
+msgstr "აბსოლუტური"
+
+#: data/preferences.ui:1886 src/mainwindow.cc:840
+msgid "Hybrid"
+msgstr "ჰიბრიდული"
+
+#: data/preferences.ui:1924
+msgid "Units & Currencies"
+msgstr "ერთეულები & ვალუტები"
+
+#: data/preferences.ui:1943
+msgid "Show expression completion suggestions"
+msgstr "გამოსახულების დასრულების მინიშნებების ჩვენება"
+
+#: data/preferences.ui:1959
+msgid "Search titles and countries"
+msgstr "სათაურების და ქვეყნების ძებნა"
+
+#: data/preferences.ui:1993 data/preferences.ui:2005
+msgid "Minimum characters"
+msgstr "სიმბოლოების მინ. რაოდენობა"
+
+#: data/preferences.ui:2031
+msgid "Popup delay (ms)"
+msgstr "მხტუნარას დაყოვნება (მწმ)"
+
+#: data/preferences.ui:2062
+msgid "Completion"
+msgstr "დასრულება"
+
+#: data/preferences.ui:2081
+msgid "Custom status font"
+msgstr "მორგებული სტატუსის ფონტი"
+
+#: data/preferences.ui:2085
+msgid ""
+"If you want to use a font other than the default in the status display below "
+"the expression entry"
+msgstr ""
+
+#: data/preferences.ui:2133
+msgid "Custom expression font"
+msgstr "მორგებული გამოხატულების ფონტი"
+
+#: data/preferences.ui:2137
+msgid ""
+"If you want to use a font other than the default in the expression entry"
+msgstr ""
+
+#: data/preferences.ui:2151
+msgid "Custom result font"
+msgstr "მორგებული შედეგის ფონტი"
+
+#: data/preferences.ui:2155
+msgid "If you want to use a font other than the default in the result display"
+msgstr ""
+
+#: data/preferences.ui:2185
+msgid "Custom keypad font"
+msgstr "მორგებული ციფრული კლავიატურის ფონტი"
+
+#: data/preferences.ui:2189
+msgid "If you want to use a font other than the default in the keypad"
+msgstr ""
+
+#: data/preferences.ui:2223
+msgid "Status warning color"
+msgstr "გაფრთხილების სტატუსის ფერი"
+
+#: data/preferences.ui:2235
+msgid "Status error color"
+msgstr "შეცდომის სტატუსისფერი"
+
+#: data/preferences.ui:2247
+msgid "Text color"
+msgstr "ტექსტის ფერი"
+
+#: data/preferences.ui:2295
+msgid "Highlight parenthesis background"
+msgstr "ფრჩხილების ფონის გამოკვეთა"
+
+#: data/preferences.ui:2348
+msgid "Custom application font"
+msgstr "მორგებული აპლიკაციის ფონტი"
+
+#: data/preferences.ui:2352
+msgid ""
+"If you want to use a font other than the default for the whole application"
+msgstr ""
+
+#: data/preferences.ui:2366
+msgid "Custom history font"
+msgstr "მორგებული ისტორიის ფონტი"
+
+#: data/preferences.ui:2370
+msgid "If you want to use a font other than the default in the history list"
+msgstr ""
+
+#: data/preferences.ui:2393
+msgid "Fonts & Colors"
+msgstr "ფონტები და ფერები"
+
+#: data/setbase.ui:220 data/setbase.ui:425
+msgid "Other:"
+msgstr "სხვა:"
+
+#: data/setbase.ui:253 data/setbase.ui:458 src/setbasedialog.cc:50
+#: src/setbasedialog.cc:57 src/setbasedialog.cc:133 src/setbasedialog.cc:194
+#: src/setbasedialog.cc:231 src/setbasedialog.cc:240 src/setbasedialog.cc:350
+#: src/setbasedialog.cc:432 src/setbasedialog.cc:585 src/setbasedialog.cc:737
+msgid "Bijective base-26"
+msgstr "ბიექტური საბაზისო-26"
+
+#: data/setbase.ui:282
+msgid "<b>Result Base</b>"
+msgstr "<b>შედეგის ბაზა</b>"
+
+#: data/setbase.ui:482
+msgid "<b>Expression Base</b>"
+msgstr "<b>გამოსახულების აბზა</b>"
+
+#: data/shortcuts.ui:159
+msgid "New Keyboard Shortcut"
+msgstr "ახალი კლავიატურის მალსახმობი"
+
+#: data/shortcuts.ui:190 src/shortcutsdialog.cc:196 src/shortcutsdialog.cc:293
+#: src/shortcutsdialog.cc:447 src/shortcutsdialog.cc:541
+msgid "Add Action"
+msgstr "ქმედების დამატება"
+
+#: data/unitedit.ui:29 src/uniteditdialog.cc:191
+msgid "Edit Unit"
+msgstr "ერთეულის ჩასწორება"
+
+#: data/unitedit.ui:149
+msgid "System"
+msgstr "სისტემა"
+
+#: data/unitedit.ui:193
+msgid "Hide unit"
+msgstr "ერთეულის დამალვა"
+
+#: data/unitedit.ui:196
+msgid "If this unit shall be hidden in menus"
+msgstr "უნდა იყოს ეს ერთეული დამალული მენიუებში, თუ არა"
+
+#: data/unitedit.ui:216
+msgid "Imperial"
+msgstr "იმპერიული"
+
+#: data/unitedit.ui:217
+msgid "US Survey"
+msgstr "ამერიკული გეოდეზიური"
+
+#: data/unitedit.ui:236
+msgid "Title displayed in menus and in unit manager"
+msgstr "მენიუებში და ერთეულების მმართველში ნაჩვენები სათაური"
+
+#: data/unitedit.ui:267
+msgid "Singular form of this unit's name"
+msgstr "ერთეულის სახელის მხოლობითი ფორმა"
+
+#: data/unitedit.ui:313
+msgid "Class"
+msgstr "კლასი"
+
+#: data/unitedit.ui:324
+msgid ""
+"The class that this unit belongs to. Named derived units are defined in "
+"relation to a single other unit, with an optional exponent, while (unnamed) "
+"derived units are defined by a unit expression with one or multiple units."
+msgstr ""
+
+#: data/unitedit.ui:329
+msgid "Base unit"
+msgstr "საბაზისო ერთეული"
+
+#: data/unitedit.ui:330
+msgid "Named derived unit"
+msgstr "სახელიანი წარმოებული ერთეული"
+
+#: data/unitedit.ui:331
+msgid "Derived unit"
+msgstr "წარმოებული ერთეული"
+
+#: data/unitedit.ui:346
+msgid "Base unit(s)"
+msgstr "საბაზისო ერთეულ(ებ)-ი"
+
+#: data/unitedit.ui:358
+msgid "Exponent"
+msgstr "ხარისხი"
+
+#: data/unitedit.ui:370 data/unitedit.ui:556
+msgid "Relation"
+msgstr "ურთიერთობა"
+
+#: data/unitedit.ui:382
+msgid "Inverse relation"
+msgstr "ურთიერთობის შებრუნება"
+
+#: data/unitedit.ui:391
+msgid "Mix with base unit"
+msgstr "შერევა საბაზისო ერთეულთან"
+
+#: data/unitedit.ui:411
+msgid "Priority"
+msgstr "პრიორიტეტი"
+
+#: data/unitedit.ui:423
+msgid "Minimum base unit number"
+msgstr "მინიმალური საბაზისო ერთეულის რაოდენობა"
+
+#: data/unitedit.ui:434
+msgid ""
+"Example: priority of the unit \"hand\" is set to 2, while priority of ft "
+"(foot) and in (inch) is set to 1, which results in \"17 in = 1 ft + 5 in\", "
+"instead of \"17 in = 1 ft + 1 hand + 1 in\"."
+msgstr ""
+
+#: data/unitedit.ui:451
+msgid ""
+"Example: minimum base unit number of yd (yard) is set to 12, which results "
+"in \"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
+msgstr ""
+
+#: data/unitedit.ui:468
+msgid "Exponent of the base unit"
+msgstr "საბაზისო ერთეულის ექსპონენტი"
+
+#: data/unitedit.ui:486
+msgid ""
+"Unit (for named derived unit) or unit expression (for unnamed derived unit) "
+"that this unit is defined in relation to"
+msgstr ""
+
+#: data/unitedit.ui:501
+msgid ""
+"Relation to the base unit. For linear relations this should just be a "
+"number.\n"
+"\n"
+"For non-linear relations use \\x for the factor and \\y for the exponent "
+"(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
+msgstr ""
+
+#: data/unitedit.ui:519
+msgid "Specify for non-linear relation, for conversion back to the base unit."
+msgstr ""
+
+#: data/unitedit.ui:532
+msgid "Use with prefixes by default"
+msgstr "ნაგულისხმევად პრეფიქსებით გამოყენება"
+
+#: data/units.ui:66
+msgid "Convert between units"
+msgstr "ერთეულებს შორის გადაყვანა"
+
+#: data/units.ui:86
+msgid "="
+msgstr "="
+
+#: data/units.ui:98
+msgid "Conver_sion"
+msgstr "გადა_ყვანა"
+
+#: data/units.ui:123
+msgid "Converted value"
+msgstr "გადაყვანილი მნიშვნელობა"
+
+#: data/units.ui:141
+msgid "Value to convert from"
+msgstr "მნიშვნელობა, საიდანაც გადაყვანა ხდება"
+
+#: data/units.ui:306
+msgid "_Unit"
+msgstr "ერთე_ული"
+
+#: data/units.ui:457
+msgid "Create a new unit"
+msgstr "ახალი ერთეულის შექმნა"
+
+#: data/units.ui:474
+msgid "Edit the selected unit"
+msgstr "მონიშნული ერთეულის ჩასწორება"
+
+#: data/units.ui:491
+msgid "Delete the selected unit"
+msgstr "მონიშნული ერთეულის წაშლა"
+
+#: data/units.ui:510
+msgid "(De)activate the selected unit"
+msgstr "მონიშნული ერთეულის (დე)აქტივაცია"
+
+#: data/units.ui:534
+msgid "Insert the selected unit into the expression entry"
+msgstr "მონიშნული ერთეულის ჩასმა გამოსახულების ჩანაწერში"
+
+#: data/units.ui:546
+msgid "C_onvert"
+msgstr "გ_არდაქმნა"
+
+#: data/units.ui:551
+msgid "Convert the result to the selected unit"
+msgstr "შედეგის გადაყვანა არჩეულ ერთეულში"
+
+#: data/units.ui:640
+msgid "Type anywhere"
+msgstr "კრეფა, სადაც გნებავთ"
+
+#: data/unknownedit.ui:8 src/unknowneditdialog.cc:118
+msgid "Edit Unknown Variable"
+msgstr "უცნობი ცვლადის ჩასწორება"
+
+#: data/unknownedit.ui:97
+msgid "Use custom assumptions"
+msgstr "ნაგულისხმევი დაშვებების გამოყენება"
+
+#: data/unknownedit.ui:131
+msgid "Sign"
+msgstr "ხელმოწერა"
+
+#: data/unknownedit.ui:145
+msgid "Real Number"
+msgstr "რეალური რიცხვი"
+
+#: data/unknownedit.ui:146
+msgid "Rational Number"
+msgstr "რაციონალური რიცხვი"
+
+#: data/unknownedit.ui:183
+msgid "Name used to reference this unknown variable in expressions"
+msgstr ""
+
+#: data/variableedit.ui:8 src/variableeditdialog.cc:171
+msgid "Edit Variable"
+msgstr "ცვლადის ჩასწორება"
+
+#: data/variables.ui:130
+msgid "_Variable"
+msgstr "ც_ვლადი"
+
+#: data/variables.ui:266
+msgid "Create a new variable"
+msgstr "ახალი ცვლადის შექმნა"
+
+#: data/variables.ui:283
+msgid "Edit the selected variable"
+msgstr "მონიშნული ცვლადის ჩასწორება"
+
+#: data/variables.ui:300
+msgid "Delete the selected variable"
+msgstr "მონიშნული ცვლადის წაშლა"
+
+#: data/variables.ui:319
+msgid "(De)activate the selected variable"
+msgstr "მონიშნული ფუნქციის (დე)აქტივაცია"
+
+#: data/variables.ui:343
+msgid "Insert the selected variable into the expression entry"
+msgstr "მონიშნული ცვლადის ჩასმა გამოსახულების ჩანაწერში"
+
+#: data/variables.ui:355
+msgid "E_xport"
+msgstr "გა_ტანა"
+
+#: src/buttonseditdialog.cc:220 src/shortcutsdialog.cc:217
+#: src/shortcutsdialog.cc:465
+msgid "Empty value."
+msgstr "ცარიელი მნიშვნელობა."
+
+#: src/buttonseditdialog.cc:230 src/shortcutsdialog.cc:226
+#: src/shortcutsdialog.cc:474
+msgid "Function not found."
+msgstr "ფუქცია აღმოჩენილი არაა."
+
+#: src/buttonseditdialog.cc:238 src/shortcutsdialog.cc:234
+#: src/shortcutsdialog.cc:482
+msgid "Variable not found."
+msgstr "ცვლადი აღმოჩენილი არაა."
+
+#: src/buttonseditdialog.cc:250 src/shortcutsdialog.cc:246
+#: src/shortcutsdialog.cc:494
+msgid "Unit not found."
+msgstr "ერთეული აღმოჩენილი არაა."
+
+#: src/buttonseditdialog.cc:259 src/mainwindow.cc:7327
+#: src/shortcutsdialog.cc:255 src/shortcutsdialog.cc:503
+msgid "Mode not found."
+msgstr "რეჟიმი აღმოჩენილი არაა."
+
+#: src/buttonseditdialog.cc:271 src/setbasedialog.cc:78
+#: src/setbasedialog.cc:154 src/setbasedialog.cc:210 src/setbasedialog.cc:256
+#: src/shortcutsdialog.cc:267 src/shortcutsdialog.cc:515
+msgid "Unsupported base."
+msgstr "მხარდაუჭერელი ფუძე."
+
+#: src/buttonseditdialog.cc:283 src/shortcutsdialog.cc:279
+#: src/shortcutsdialog.cc:527
+msgid "Unsupported value."
+msgstr "მხარდაუჭერელი მნიშვნელობა."
+
+#: src/buttonseditdialog.cc:347 src/keypad.cc:447
+msgid "Cycle through previous expression"
+msgstr "გადასვლა წინა გამოსახულებაზე"
+
+#: src/buttonseditdialog.cc:348 src/keypad.cc:454
+msgid "Move cursor left or right"
+msgstr "კურსორის გადატანა მარჯვნივ, ან მარცხნივ"
+
+#: src/buttonseditdialog.cc:348 src/keypad.cc:454
+msgid "Move cursor to beginning or end"
+msgstr "კურსორის გადატანა თავში, ან ბოლოში"
+
+#: src/buttonseditdialog.cc:350 src/keypad.cc:458
+msgid "Uncertainty/interval"
+msgstr "გაურკვევლობა/ინტერვალი"
+
+#: src/buttonseditdialog.cc:350 src/keypad.cc:458
+msgid "Relative error"
+msgstr "ფარდობითი შეცდომა"
+
+#: src/buttonseditdialog.cc:351 src/keypad.cc:459
+msgid "Argument separator"
+msgstr "არგუმენტის გამყოფი"
+
+#: src/buttonseditdialog.cc:351 src/buttonseditdialog.cc:365 src/keypad.cc:459
+#: src/keypad.cc:474
+msgid "Blank space"
+msgstr "ცარიელი სივრცე"
+
+#: src/buttonseditdialog.cc:351 src/buttonseditdialog.cc:365 src/keypad.cc:459
+#: src/keypad.cc:474
+msgid "New line"
+msgstr "ახალი ხაზი"
+
+#: src/buttonseditdialog.cc:352 src/keypad.cc:460 src/keypad.cc:3551
+#: src/keypad.cc:3588 src/keypad.cc:3591
+msgid "Smart parentheses"
+msgstr "ჭკვიანი ფრჩხილები"
+
+#: src/buttonseditdialog.cc:352 src/keypad.cc:460
+msgid "Vector brackets"
+msgstr "ვექტორული ფრჩხილები"
+
+#: src/buttonseditdialog.cc:353 src/keypad.cc:462
+msgid "Left parenthesis"
+msgstr "მარცხენა მრგვალი ფრჩხილი"
+
+#: src/buttonseditdialog.cc:353 src/keypad.cc:462
+msgid "Left vector bracket"
+msgstr "მარცხენა ვექტორული ფრჩხილი"
+
+#: src/buttonseditdialog.cc:354 src/keypad.cc:463
+msgid "Right parenthesis"
+msgstr "მარჯვენა მრგვალი ფრჩხილი"
+
+#: src/buttonseditdialog.cc:354 src/keypad.cc:463
+msgid "Right vector bracket"
+msgstr "მარჯვენა ვექტორული ფრჩხილი"
+
+#: src/buttonseditdialog.cc:365 src/keypad.cc:474
+msgid "Decimal point"
+msgstr "ათობითი წერტილი"
+
+#: src/buttonseditdialog.cc:369
+msgid "Raise"
+msgstr "აწევა"
+
+#: src/buttonseditdialog.cc:372 src/expressionstatus.cc:721 src/keypad.cc:517
+#: src/keypad.cc:2757 src/util.cc:969
+msgid "M+ (memory plus)"
+msgstr "M+ (მიმატება მეხსიერებაში მყოფ მნიშვნელობაზე)"
+
+#: src/buttonseditdialog.cc:376 src/expressionstatus.cc:709 src/keypad.cc:522
+#: src/keypad.cc:2754 src/util.cc:966
+msgid "MC (memory clear)"
+msgstr "MC (მეხსიერების გასუფთავება)"
+
+#: src/buttonseditdialog.cc:377 src/keypad.cc:523
+msgid "Backspace"
+msgstr "Backspace"
+
+#: src/buttonseditdialog.cc:377 src/expressionstatus.cc:727 src/keypad.cc:523
+#: src/keypad.cc:2758 src/util.cc:970
+msgid "M− (memory minus)"
+msgstr "M- (მეხსიერებაში მყოფ მნიშვნელობაზე გამოკლება)"
+
+#: src/buttonseditdialog.cc:378 src/keypad.cc:524
+msgid "Previous result (static)"
+msgstr "წინა შედეგი (სტატიკური)"
+
+#: src/buttonseditdialog.cc:379 src/expressionedit.cc:817 src/keypad.cc:532
+#: src/keypad.cc:3535
+msgid "Calculate expression"
+msgstr "გამოსახულების გამოთვლა"
+
+#: src/buttonseditdialog.cc:379 src/keypad.cc:532 src/keypad.cc:2755
+#: src/util.cc:967
+msgid "MR (memory recall)"
+msgstr "MR (მეხსიერებიდან გახსენება)"
+
+#: src/buttonseditdialog.cc:379 src/expressionstatus.cc:715 src/keypad.cc:532
+#: src/keypad.cc:2756 src/util.cc:968
+msgid "MS (memory store)"
+msgstr "MS (მეხსიერებაში დამახსოვრება)"
+
+#: src/buttonseditdialog.cc:455 src/shortcutsdialog.cc:574
+#: src/shortcutsdialog.cc:601
+msgid "Action"
+msgstr "ქმედება"
+
+#: src/calendarconversiondialog.cc:53
+msgid "The selected Chinese year does not exist."
+msgstr "არჩეული ჩინური წელიწადი არ არსებობს."
+
+#: src/calendarconversiondialog.cc:65
+msgid "Conversion to Gregorian calendar failed."
+msgstr "გრეგორიანულ კალენდარზე გადაყვანა ჩავარდა."
+
+#: src/calendarconversiondialog.cc:90
+#, c-format
+msgid "Calendar conversion failed for: %s."
+msgstr "კალენდრის გადაყვანა ჩავარდა: %s."
+
+#: src/calendarconversiondialog.cc:105
+msgid "Gregorian"
+msgstr "გრეგორიანული"
+
+#: src/calendarconversiondialog.cc:106
+msgid "Revised Julian (Milanković)"
+msgstr "იულიუსისეული ჩასწორებული (მილანკოვიჩი)"
+
+#: src/calendarconversiondialog.cc:107
+msgid "Julian"
+msgstr "ჯულიენი"
+
+#: src/calendarconversiondialog.cc:108
+msgid "Islamic (Hijri)"
+msgstr "ისლამური (ჰიჯრი)"
+
+#: src/calendarconversiondialog.cc:109
+msgid "Hebrew"
+msgstr "ივრითი"
+
+#: src/calendarconversiondialog.cc:110
+msgid "Chinese"
+msgstr "ჩინური"
+
+#: src/calendarconversiondialog.cc:111
+msgid "Persian (Solar Hijri)"
+msgstr "სპარსული (მზის ჰიჯრი)"
+
+#: src/calendarconversiondialog.cc:112
+msgid "Coptic"
+msgstr "კოპტური"
+
+#: src/calendarconversiondialog.cc:113
+msgid "Ethiopian"
+msgstr "ეთიოპიური"
+
+#: src/calendarconversiondialog.cc:114
+msgid "Indian (National)"
+msgstr "ინდური (ნაციონალური)"
+
+#. if no category has been selected (previously selected has been renamed/deleted), select "All"
+#: src/conversionview.cc:83 src/conversionview.cc:139 src/conversionview.cc:177
+#: src/functionsdialog.cc:90 src/functionsdialog.cc:160
+#: src/functionsdialog.cc:194 src/functionsdialog.cc:564 src/unitsdialog.cc:113
+#: src/unitsdialog.cc:182 src/unitsdialog.cc:231 src/unitsdialog.cc:978
+#: src/variablesdialog.cc:91 src/variablesdialog.cc:168
+#: src/variablesdialog.cc:209 src/variablesdialog.cc:514
+msgid "All"
+msgstr "ყველა"
+
+#: src/conversionview.cc:130 src/conversionview.cc:131
+#: src/conversionview.cc:132 src/conversionview.cc:179
+#: src/conversionview.cc:460 src/functionsdialog.cc:144
+#: src/functionsdialog.cc:145 src/functionsdialog.cc:196 src/mainwindow.cc:7636
+#: src/mainwindow.cc:7668 src/mainwindow.cc:7692 src/unitsdialog.cc:166
+#: src/unitsdialog.cc:167 src/unitsdialog.cc:233 src/variablesdialog.cc:152
+#: src/variablesdialog.cc:153 src/variablesdialog.cc:211
+msgid "Uncategorized"
+msgstr "კატეგორიის გარეშე"
+
+#: src/conversionview.cc:505 src/unitsdialog.cc:1005
+msgid "Flag"
+msgstr "ალამი"
+
+#: src/dataseteditdialog.cc:89
+msgid "text"
+msgstr "ტექსტი"
+
+#: src/dataseteditdialog.cc:94 src/dataseteditdialog.cc:102
+msgid "approximate"
+msgstr "approximate"
+
+#: src/dataseteditdialog.cc:97 src/expressioncompletion.cc:2013
+#: src/variablesdialog.cc:330
+msgid "number"
+msgstr "ნომერი"
+
+#: src/dataseteditdialog.cc:105 src/historyview.cc:170
+msgid "expression"
+msgstr "გამსახულება"
+
+#. indicating that the property is a data set key
+#: src/dataseteditdialog.cc:111 src/datasetsdialog.cc:181
+#: src/functionsdialog.cc:412
+msgid "key"
+msgstr "გასაღები"
+
+#: src/dataseteditdialog.cc:306 src/dataseteditdialog.cc:442
+#: src/functioneditdialog.cc:938 src/importcsvdialog.cc:149
+#: src/matrixeditdialog.cc:553 src/menubar.cc:1243 src/uniteditdialog.cc:331
+#: src/unknowneditdialog.cc:191 src/variableeditdialog.cc:279
+msgid "Empty name field."
+msgstr "ცარიელი სახელის ველი."
+
+#: src/dataseteditdialog.cc:366
+msgid "Edit Data Set (global)"
+msgstr "მონაცემთა ნაკრების ჩასწორება (გლობალური)"
+
+#: src/dataseteditdialog.cc:368
+msgid "New Data Set"
+msgstr "ახალი მონაცემთა ნაკრები"
+
+#: src/dataseteditdialog.cc:454 src/functioneditdialog.cc:973
+msgid ""
+"A function with the same name already exists.\n"
+"Do you want to overwrite the function?"
+msgstr ""
+
+#: src/dataseteditdialog.cc:485
+msgid "Property"
+msgstr "თვისება"
+
+#: src/datasetsdialog.cc:197
+msgid "Data Retrieval Function"
+msgstr "მონაცემების მიღების ფუნქცია"
+
+#: src/datasetsdialog.cc:227 src/expressionstatus.cc:573
+#: src/functionsdialog.cc:271
+msgid "argument"
+msgstr "არგიმენტი"
+
+#: src/datasetsdialog.cc:479
+msgid "New Data Object"
+msgstr "ახალი მონაცემთა ობიექტი"
+
+#: src/drawstructure.cc:644 src/drawstructure.cc:2770 src/expressionedit.cc:597
+#: src/expressionstatus.cc:1214 src/expressionstatus.cc:1249
+#: src/historyview.cc:710 src/historyview.cc:1295 src/historyview.cc:1349
+#: src/historyview.cc:1602 src/historyview.cc:1662 src/historyview.cc:2185
+#: src/insertfunctiondialog.cc:298 src/keypad.cc:3109 src/mainwindow.cc:2844
+#: src/searchprovider.cc:373 src/searchprovider.cc:396
+#: src/searchprovider.cc:473 src/searchprovider.cc:521
+#: src/searchprovider.cc:522 src/variablesdialog.cc:303
+msgid "approx."
+msgstr "დაახლ."
+
+#: src/drawstructure.cc:1843
+msgid "and"
+msgstr "და"
+
+#: src/drawstructure.cc:1846 src/historyview.cc:933 src/historyview.cc:968
+#: src/historyview.cc:969
+msgid "or"
+msgstr "ან"
+
+#: src/drawstructure.cc:2686
+msgid "undefined"
+msgstr "გაურკვეველი"
+
+#: src/exchangerates.cc:77
+msgid "Fetching exchange rates."
+msgstr "გაცვლის კურსების მირება."
+
+#: src/exchangerates.cc:109
+msgid "Do you wish to update the exchange rates now?"
+msgstr "გნებავთ მიმოცვლის კურსების ახლა განახლება?"
+
+#: src/exchangerates.cc:111
+#, c-format
+msgid "It has been %s day since the exchange rates last were updated."
+msgid_plural "It has been %s days since the exchange rates last were updated."
+msgstr[0] "მიმოცვლის კურსები ბოლოს %s დღის წინ განახლდა."
+msgstr[1] "მიმოცვლის კურსები ბოლოს %s დღის წინ განახლდა."
+
+#: src/exchangerates.cc:112
+msgid "Do not ask again"
+msgstr "აღარ მკითხო"
+
+#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47
+msgid "Select file to export to"
+msgstr "აირჩიეთ გასატანი ფაილი"
+
+#: src/exportcsvdialog.cc:45 src/exportcsvdialog.cc:47
+#: src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
+#: src/insertfunctiondialog.cc:108 src/insertfunctiondialog.cc:110
+msgid "_Open"
+msgstr "_გახსნა"
+
+#: src/exportcsvdialog.cc:133 src/importcsvdialog.cc:141
+msgid "No file name entered."
+msgstr "ფაილის სახელი შეყვანილი არაა."
+
+#: src/exportcsvdialog.cc:162 src/importcsvdialog.cc:186
+msgid "No delimiter selected."
+msgstr "გამყოფი არჩეული არაა."
+
+#: src/exportcsvdialog.cc:175
+msgid "No variable name entered."
+msgstr "ცვლადის სახელი შეყვანილი არაა."
+
+#: src/exportcsvdialog.cc:187
+msgid "No known variable with entered name found."
+msgstr "შეყვანილი სახელის მქონე ცნობილი ცვლადი აღმოჩენილი არაა."
+
+#: src/exportcsvdialog.cc:194
+#, c-format
+msgid ""
+"Could not export to file \n"
+"%s"
+msgstr ""
+"გატანის შეცდომა ფაილში\n"
+"%s"
+
+#: src/expressioncompletion.cc:1963
+msgid "a previous result"
+msgstr "წინა შედეგი"
+
+#: src/expressioncompletion.cc:1976
+msgid "matrix"
+msgstr "მატრიცა"
+
+#: src/expressioncompletion.cc:1978
+msgid "vector"
+msgstr "ვექტორი"
+
+#: src/expressioncompletion.cc:1999 src/variablesdialog.cc:315
+msgid "positive"
+msgstr "დადებითი"
+
+#: src/expressioncompletion.cc:2000 src/variablesdialog.cc:316
+msgid "non-positive"
+msgstr "არა-დადებითი"
+
+#: src/expressioncompletion.cc:2001 src/variablesdialog.cc:317
+msgid "negative"
+msgstr "უარყოფითი"
+
+#: src/expressioncompletion.cc:2002 src/variablesdialog.cc:318
+msgid "non-negative"
+msgstr "არა-უარყოფითი"
+
+#: src/expressioncompletion.cc:2003 src/variablesdialog.cc:319
+msgid "non-zero"
+msgstr "არა-ნულოვანი"
+
+#: src/expressioncompletion.cc:2008 src/variablesdialog.cc:326
+msgid "boolean"
+msgstr "ლოგიკური"
+
+#: src/expressioncompletion.cc:2009 src/variablesdialog.cc:325
+msgid "integer"
+msgstr "მთელი რიცხვი"
+
+#: src/expressioncompletion.cc:2010 src/variablesdialog.cc:327
+msgid "rational"
+msgstr "რაციონალური"
+
+#: src/expressioncompletion.cc:2011 src/variablesdialog.cc:328
+msgid "real"
+msgstr "რეალი"
+
+#: src/expressioncompletion.cc:2012 src/variablesdialog.cc:329
+msgid "complex"
+msgstr "კომპლექსური"
+
+#: src/expressioncompletion.cc:2014
+msgid "(not matrix)"
+msgstr "(მატრიცა არაა)"
+
+#: src/expressioncompletion.cc:2017 src/variablesdialog.cc:334
+msgid "unknown"
+msgstr "უცნობი"
+
+#: src/expressioncompletion.cc:2019
+msgid "default assumptions"
+msgstr "ნაგულისხმები დაშვებები"
+
+#: src/expressioncompletion.cc:2170
+msgid "Prefix"
+msgstr "პრეფიქსი"
+
+#: src/expressioncompletion.cc:2200
+msgid "Base Units"
+msgstr "ძირითადი საზომი ერთეულები"
+
+#: src/expressioncompletion.cc:2203
+msgid "Binary-Coded Decimal"
+msgstr "ბინარულად კოდირებული ათობითი"
+
+#: src/expressioncompletion.cc:2205
+msgid "Bijective Base-26"
+msgstr "ბიექტური საბაზისო-26"
+
+#: src/expressioncompletion.cc:2207
+msgid "Binary Number"
+msgstr "ორობითი რიცხვი"
+
+#: src/expressioncompletion.cc:2209
+msgid "Calendars"
+msgstr "კალენდრები"
+
+#: src/expressioncompletion.cc:2211
+msgid "Complex cis Form"
+msgstr "კომპლექსური ცის ფორმა"
+
+#: src/expressioncompletion.cc:2215
+msgid "Decimal Number"
+msgstr "ათობითი რიცხვი"
+
+#: src/expressioncompletion.cc:2217
+msgid "Duodecimal Number"
+msgstr "თორმეტობითი რიცხვი"
+
+#: src/expressioncompletion.cc:2219
+msgid "Engineering Notation"
+msgstr "საინჟინრო ნოტაცა"
+
+#: src/expressioncompletion.cc:2223
+msgid "Factors"
+msgstr "მამრავლები"
+
+#: src/expressioncompletion.cc:2225
+msgid "16-bit Floating Point Binary Format"
+msgstr "16-ბიტიანი მცურავმძიმიანი ორობითი ფორმატი"
+
+#: src/expressioncompletion.cc:2227
+msgid "32-bit Floating Point Binary Format"
+msgstr "32-ბიტიანი მცურავმძიმიანი ორობითი ფორმატი"
+
+#: src/expressioncompletion.cc:2229
+msgid "64-bit Floating Point Binary Format"
+msgstr "64-ბიტიანი მცურავმძიმიანი ორობითი ფორმატი"
+
+#: src/expressioncompletion.cc:2231
+msgid "80-bit (x86) Floating Point Binary Format"
+msgstr "80-ბიტიანი(x86) მცურავმძიმიანი ორობითი ფორმატი"
+
+#: src/expressioncompletion.cc:2233
+msgid "128-bit Floating Point Binary Format"
+msgstr "128-ბიტიანი მცურავმძიმიანი ორობითი ფორმატი"
+
+#: src/expressioncompletion.cc:2239
+msgid "Hexadecimal Number"
+msgstr "თექვსმეტობითი რიცხვი"
+
+#: src/expressioncompletion.cc:2241
+msgid "Latitude"
+msgstr "განედი"
+
+#: src/expressioncompletion.cc:2243
+msgid "Longitude"
+msgstr "გრძედი"
+
+#: src/expressioncompletion.cc:2245
+msgid "Mixed Units"
+msgstr "შერეული ერთეულები"
+
+#: src/expressioncompletion.cc:2247
+msgid "Octal Number"
+msgstr "რვაობითი რიცხვი"
+
+#: src/expressioncompletion.cc:2249
+msgid "Optimal Units"
+msgstr "ოპტიმალური ერთეულები"
+
+#: src/expressioncompletion.cc:2251
+msgid "Expanded Partial Fractions"
+msgstr "გაფართოებული ათწილადის წილადები"
+
+#: src/expressioncompletion.cc:2255 src/menubar.cc:1746
+msgid "Optimal Prefix"
+msgstr "ოპტიმალური პრეფიქსი"
+
+#: src/expressioncompletion.cc:2261
+msgid "Scientific Notation"
+msgstr "სამეცნიერო ნოტაცია"
+
+#: src/expressioncompletion.cc:2263
+msgid "Sexagesimal Number"
+msgstr "ექვსობითი რიცხვი"
+
+#: src/expressioncompletion.cc:2265
+msgid "Simple Notation"
+msgstr "მარტივი ნოტაცია"
+
+#: src/expressioncompletion.cc:2269 src/expressionstatus.cc:956
+msgid "Unicode"
+msgstr "უნიკოდი"
+
+#: src/expressioncompletion.cc:2271
+msgid "UTC Time Zone"
+msgstr "UTC დროის სარტყელი"
+
+#: src/expressionedit.cc:799
+msgid "Stop process"
+msgstr "პროცესის გაჩერება"
+
+#: src/expressionedit.cc:817 src/expressionedit.cc:1825 src/keypad.cc:3531
+msgid "Calculate expression and add to stack"
+msgstr "გამოსახულების გამოთვლა და სტეკზე დამატება"
+
+#: src/expressionedit.cc:1309 src/historyview.cc:2827
+#: src/insertfunctiondialog.cc:65
+msgid "Select date"
+msgstr "აირჩიეთ თარიღი"
+
+#: src/expressionedit.cc:1408
+msgid "Clear History"
+msgstr "ისტორიის გაწმენდა"
+
+#: src/expressionedit.cc:1412
+msgid "Abort"
+msgstr "შეწყვეტა"
+
+#: src/expressionedit.cc:1415
+msgid "Undo"
+msgstr "დაბრუნება"
+
+#: src/expressionedit.cc:1418
+msgid "Redo"
+msgstr "გამეორება"
+
+#: src/expressionedit.cc:1423
+msgid "Completion Mode"
+msgstr "დასრულების რეჟიმი"
+
+#: src/expressionedit.cc:1436
+msgid "Limited strict completion"
+msgstr "შეზღუდული მკაცრი დასრულება"
+
+#: src/expressionedit.cc:1437
+msgid "Strict completion"
+msgstr "მკაცრი დასრულება"
+
+#: src/expressionedit.cc:1438
+msgid "Limited full completion"
+msgstr "შეზღუდული სრული დასრულება"
+
+#: src/expressionedit.cc:1439
+msgid "Full completion"
+msgstr "სრული დასრულება"
+
+#: src/expressionedit.cc:1440
+msgid "No completion"
+msgstr "დასრულების გარეშე"
+
+#: src/expressionedit.cc:1449
+msgid "Delayed completion"
+msgstr "დაყოვნებული დასრულება"
+
+#: src/expressionedit.cc:1451
+msgid "Customize completion…"
+msgstr "დასრულების მორგება…"
+
+#: src/expressionstatus.cc:373
+msgid "EXACT"
+msgstr "EXACT"
+
+#: src/expressionstatus.cc:376
+msgid "APPROX"
+msgstr "დაახლ"
+
+#: src/expressionstatus.cc:380
+msgid "RPN"
+msgstr "RPN"
+
+#. Chain mode
+#: src/expressionstatus.cc:385
+msgid "CHN"
+msgstr "ჯჭვ"
+
+#: src/expressionstatus.cc:413
+msgid "ROMAN"
+msgstr "ROMAN"
+
+#: src/expressionstatus.cc:470
+msgid "DEG"
+msgstr "დონე"
+
+#: src/expressionstatus.cc:475
+msgid "RAD"
+msgstr "რად"
+
+#: src/expressionstatus.cc:480
+msgid "GRA"
+msgstr "გრად"
+
+#: src/expressionstatus.cc:487
+msgid "PREC"
+msgstr "სზტ"
+
+#: src/expressionstatus.cc:492
+msgid "FUNC"
+msgstr "ფუნქც"
+
+#: src/expressionstatus.cc:498
+msgid "UNIT"
+msgstr "ერთეული"
+
+#: src/expressionstatus.cc:504
+msgid "VAR"
+msgstr "VAR"
+
+#: src/expressionstatus.cc:510
+msgid "INF"
+msgstr "ინფ"
+
+#: src/expressionstatus.cc:516
+msgid "CPLX"
+msgstr "რთლ"
+
+#: src/expressionstatus.cc:544
+#, c-format
+msgid "Too many arguments for %s()."
+msgstr "მეტისმეტად ბევრი არგუმენტი %s()-ისთვის."
+
+#: src/expressionstatus.cc:740 src/expressionstatus.cc:742
+#: src/mainwindow.cc:1548 src/mainwindow.cc:5155 src/searchprovider.cc:210
+msgid "factorize"
+msgstr "მამრავლებად დაშლა"
+
+#: src/expressionstatus.cc:743 src/expressionstatus.cc:745
+#: src/mainwindow.cc:1551 src/mainwindow.cc:5158 src/searchprovider.cc:214
+msgid "expand"
+msgstr "ამოკეცვა"
+
+#: src/expressionstatus.cc:919 src/mainwindow.cc:1324 src/mainwindow.cc:4820
+msgid "hexadecimal"
+msgstr "თექვსმეტობითი"
+
+#: src/expressionstatus.cc:920 src/expressionstatus.cc:1040
+msgid "hexadecimal number"
+msgstr "თექვსმეტობითი რიცხვი"
+
+#: src/expressionstatus.cc:921 src/mainwindow.cc:1327 src/mainwindow.cc:4823
+msgid "octal"
+msgstr "რვაობითი"
+
+#: src/expressionstatus.cc:922
+msgid "octal number"
+msgstr "რვაობითი რიცხვი"
+
+#: src/expressionstatus.cc:923 src/mainwindow.cc:1330 src/mainwindow.cc:4826
+msgid "decimal"
+msgstr "ათობითი"
+
+#: src/expressionstatus.cc:924
+msgid "decimal number"
+msgstr "ათობითი რიცხვი"
+
+#: src/expressionstatus.cc:925 src/mainwindow.cc:1334 src/mainwindow.cc:4830
+msgid "duodecimal"
+msgstr "თორმეტობითი"
+
+#: src/expressionstatus.cc:926 src/expressionstatus.cc:928
+msgid "duodecimal number"
+msgstr "თორმეტობითი რიცხვი"
+
+#: src/expressionstatus.cc:929 src/mainwindow.cc:1342 src/mainwindow.cc:4838
+msgid "binary"
+msgstr "ბინარული"
+
+#: src/expressionstatus.cc:930 src/expressionstatus.cc:1034
+msgid "binary number"
+msgstr "ორობითი რიცხვი"
+
+#: src/expressionstatus.cc:931 src/mainwindow.cc:1345 src/mainwindow.cc:4841
+msgid "roman"
+msgstr "რომანული"
+
+#: src/expressionstatus.cc:932
+msgid "roman numerals"
+msgstr "რომაული რიცხვები"
+
+#: src/expressionstatus.cc:933 src/mainwindow.cc:1348 src/mainwindow.cc:4844
+msgid "bijective"
+msgstr "ბიექტურობა"
+
+#: src/expressionstatus.cc:934
+msgid "bijective base-26"
+msgstr "ბიექტური საბაზისო-26"
+
+#: src/expressionstatus.cc:936
+msgid "binary-coded decimal"
+msgstr "ბინარულად კოდირებული ათობითი"
+
+#: src/expressionstatus.cc:937 src/mainwindow.cc:1354 src/mainwindow.cc:1357
+#: src/mainwindow.cc:1360 src/mainwindow.cc:4850 src/mainwindow.cc:4853
+#: src/mainwindow.cc:4856
+msgid "sexagesimal"
+msgstr "ექვსობითი"
+
+#: src/expressionstatus.cc:938
+msgid "sexagesimal number"
+msgstr "ექვსობითი რიცხვი"
+
+#: src/expressionstatus.cc:939 src/expressionstatus.cc:940
+#: src/mainwindow.cc:1363 src/mainwindow.cc:1366 src/mainwindow.cc:4859
+#: src/mainwindow.cc:4862
+msgid "latitude"
+msgstr "განედი"
+
+#: src/expressionstatus.cc:941 src/expressionstatus.cc:942
+#: src/mainwindow.cc:1369 src/mainwindow.cc:1372 src/mainwindow.cc:4865
+#: src/mainwindow.cc:4868
+msgid "longitude"
+msgstr "გრძედი"
+
+#: src/expressionstatus.cc:944
+msgid "32-bit floating point"
+msgstr "32-ბიტიანი მცურავმძიმიანი რიცხვი"
+
+#: src/expressionstatus.cc:946
+msgid "64-bit floating point"
+msgstr "64-ბიტიანი მცურავმძიმიანი რიცხვი"
+
+#: src/expressionstatus.cc:948
+msgid "16-bit floating point"
+msgstr "16-ბიტიანი მცურავმძიმიანი რიცხვი"
+
+#: src/expressionstatus.cc:950
+msgid "80-bit (x86) floating point"
+msgstr "80-ბიტიანი(x86) მცურავმძიმიანი"
+
+#: src/expressionstatus.cc:952
+msgid "128-bit floating point"
+msgstr "128-ბიტიანი მცურავმძიმიანი"
+
+#: src/expressionstatus.cc:953 src/mainwindow.cc:1390 src/mainwindow.cc:4886
+msgid "time"
+msgstr "დრო"
+
+#: src/expressionstatus.cc:954
+msgid "time format"
+msgstr "დროის ფორმატი"
+
+#: src/expressionstatus.cc:957 src/mainwindow.cc:1396 src/mainwindow.cc:4892
+msgid "scientific"
+msgstr "სამეცნიერო"
+
+#: src/expressionstatus.cc:958
+msgid "scientific notation"
+msgstr "სამეცნიერო ჩანაწერი"
+
+#: src/expressionstatus.cc:959 src/mainwindow.cc:1399 src/mainwindow.cc:4895
+msgid "engineering"
+msgstr "საინჟინრო"
+
+#: src/expressionstatus.cc:960
+msgid "engineering notation"
+msgstr "საინჟინრო ნოტაცა"
+
+#: src/expressionstatus.cc:961 src/mainwindow.cc:1402 src/mainwindow.cc:4898
+msgid "simple"
+msgstr "მარტივი"
+
+#: src/expressionstatus.cc:962
+msgid "simple notation"
+msgstr "მარტივი ნოტაცია"
+
+#: src/expressionstatus.cc:963 src/mainwindow.cc:1450 src/mainwindow.cc:4948
+msgid "bases"
+msgstr "ფუძეები"
+
+#: src/expressionstatus.cc:964
+msgid "number bases"
+msgstr "რიცხვის ფუძეები"
+
+#: src/expressionstatus.cc:965 src/expressionstatus.cc:966
+#: src/mainwindow.cc:1452 src/mainwindow.cc:4958
+msgid "calendars"
+msgstr "კალენდრები"
+
+#: src/expressionstatus.cc:967 src/mainwindow.cc:1474 src/mainwindow.cc:5033
+msgid "optimal"
+msgstr "ოპტიმალური"
+
+#: src/expressionstatus.cc:968
+msgid "optimal unit"
+msgstr "ოპტიმალური ერთეული"
+
+#: src/expressionstatus.cc:969 src/mainwindow.cc:1479 src/mainwindow.cc:5045
+msgid "prefix"
+msgstr "პრეფიქსი"
+
+#: src/expressionstatus.cc:970
+msgid "optimal prefix"
+msgstr "ოპტიმალური პრეფიქსი"
+
+#. base units
+#: src/expressionstatus.cc:971 src/mainwindow.cc:1484 src/mainwindow.cc:5049
+msgctxt "Units"
+msgid "base"
+msgstr "ბაზა"
+
+#: src/expressionstatus.cc:972
+msgid "base units"
+msgstr "ძირითადი ერთეულები"
+
+#: src/expressionstatus.cc:973 src/mainwindow.cc:1489 src/mainwindow.cc:5061
+msgid "mixed"
+msgstr "შერეული"
+
+#: src/expressionstatus.cc:974
+msgid "mixed units"
+msgstr "შერეული ერთეულები"
+
+#: src/expressionstatus.cc:975 src/expressionstatus.cc:976
+#: src/mainwindow.cc:1494 src/mainwindow.cc:5073
+msgid "factors"
+msgstr "factors"
+
+#: src/expressionstatus.cc:977 src/mainwindow.cc:1497 src/mainwindow.cc:5083
+msgid "partial fraction"
+msgstr "partial fraction"
+
+#: src/expressionstatus.cc:978
+msgid "expanded partial fractions"
+msgstr "გაფართოებული ათწილადის წილადები"
+
+#: src/expressionstatus.cc:979 src/mainwindow.cc:1454 src/mainwindow.cc:4968
+msgid "rectangular"
+msgstr "მართკუთხედი"
+
+#: src/expressionstatus.cc:979 src/mainwindow.cc:1454 src/mainwindow.cc:4968
+msgid "cartesian"
+msgstr "დეკარტის"
+
+#: src/expressionstatus.cc:980
+msgid "complex rectangular form"
+msgstr "კომპლექსური რიცხვის ოთხკუთხედი ფორმა"
+
+#: src/expressionstatus.cc:981 src/mainwindow.cc:1458 src/mainwindow.cc:4981
+msgid "exponential"
+msgstr "ექსპოტენციალური"
+
+#: src/expressionstatus.cc:982
+msgid "complex exponential form"
+msgstr "კომპლექსური რიცხვის ექსპონენტური ფორმა"
+
+#: src/expressionstatus.cc:983 src/mainwindow.cc:1462 src/mainwindow.cc:4994
+msgid "polar"
+msgstr "პოლარული"
+
+#: src/expressionstatus.cc:984
+msgid "complex polar form"
+msgstr "კომპლექსური რიცხვის პოლარული ფორმა"
+
+#: src/expressionstatus.cc:986
+msgid "complex cis form"
+msgstr "კომპლექსური ცის ფორმა"
+
+#: src/expressionstatus.cc:987 src/mainwindow.cc:1470 src/mainwindow.cc:5020
+msgid "angle"
+msgstr "angle"
+
+#: src/expressionstatus.cc:988
+msgid "complex angle notation"
+msgstr "კომპლექსური რიცხვის კუთხის ნოტაცია"
+
+#: src/expressionstatus.cc:989 src/mainwindow.cc:1470 src/mainwindow.cc:5020
+msgid "phasor"
+msgstr "ფაზური"
+
+#: src/expressionstatus.cc:990
+msgid "complex phasor notation"
+msgstr "კომპლექსური რიცხვის ვექტორის ნოტაცია"
+
+#: src/expressionstatus.cc:992
+msgid "UTC time zone"
+msgstr "UTC დროის სარტყელი"
+
+#. number base #
+#: src/expressionstatus.cc:1044 src/mainwindow.cc:1501 src/mainwindow.cc:5093
+msgctxt "Number base"
+msgid "base"
+msgstr "ბაზა"
+
+#: src/expressionstatus.cc:1045
+#, c-format
+msgid "number base %s"
+msgstr "რიცხვის ბაზა %s"
+
+#: src/expressionstatus.cc:1049 src/mainwindow.cc:1505 src/mainwindow.cc:5097
+msgid "decimals"
+msgstr "ათწილადები"
+
+#: src/expressionstatus.cc:1050
+msgid "decimal fraction"
+msgstr "ათწილადის წილადი"
+
+#: src/expressionstatus.cc:1055 src/expressionstatus.cc:1061 src/util.cc:685
+msgid "fraction"
+msgstr "ნაწილი"
+
+#: src/functioneditdialog.cc:480 src/nameseditdialog.cc:174
+msgid "Reference"
+msgstr "მითითება"
+
+#: src/functioneditdialog.cc:865
+msgid "Edit Function (global)"
+msgstr "ფუნქციის ჩასწორება (გლობალური)"
+
+#: src/functioneditdialog.cc:867
+msgid "New Function"
+msgstr "ახალი ფუნქცია"
+
+#: src/functioneditdialog.cc:957
+msgid "Empty expression field."
+msgstr "ცარიელი გამოსახულების ველი."
+
+#: src/functioneditdialog.cc:963
+msgid "Conversion (using \"to\") is not supported in functions."
+msgstr ""
+
+#: src/functionsdialog.cc:135 src/functionsdialog.cc:136
+#: src/functionsdialog.cc:200 src/mainwindow.cc:7634 src/menubar.cc:1599
+#: src/util.cc:1316 src/util.cc:1317
+msgid "User functions"
+msgstr "მომხმარებლის ფუნქციები"
+
+#: src/functionsdialog.cc:153 src/functionsdialog.cc:154
+#: src/functionsdialog.cc:198 src/mainwindow.cc:7632 src/mainwindow.cc:7664
+#: src/mainwindow.cc:7688 src/unitsdialog.cc:174 src/unitsdialog.cc:175
+#: src/unitsdialog.cc:235 src/util.cc:1318 src/util.cc:1319
+#: src/variablesdialog.cc:161 src/variablesdialog.cc:162
+#: src/variablesdialog.cc:213
+msgid "Inactive"
+msgstr "არააქტიური"
+
+#: src/functionsdialog.cc:300
+#, c-format
+msgid ""
+"Retrieves data from the %s data set for a given object and property. If "
+"\"info\" is typed as property, a dialog window will pop up with all "
+"properties of the object."
+msgstr ""
+
+#: src/functionsdialog.cc:312 src/insertfunctiondialog.cc:794
+msgid "Example:"
+msgstr "მაგალითი:"
+
+#. optional argument
+#: src/functionsdialog.cc:358 src/insertfunctiondialog.cc:655
+#: src/insertfunctiondialog.cc:666
+msgid "optional"
+msgstr "არასავალდებულო"
+
+#. argument default, in description
+#: src/functionsdialog.cc:362
+msgid "default: "
+msgstr "ნაგულისხმები: "
+
+#: src/functionsdialog.cc:376
+msgid "Requirement"
+msgstr "მოთხოვნა"
+
+#: src/functionsdialog.cc:433 src/unitsdialog.cc:390 src/util.cc:1370
+#: src/variablesdialog.cc:353
+msgid "Ac_tivate"
+msgstr "აქტივაცია"
+
+#: src/historyview.cc:111
+msgid "History Answer Value"
+msgstr "პასუხის მნიშვნელობა ისტორიაში"
+
+#: src/historyview.cc:112 src/mainwindow.cc:8726
+msgid "answer"
+msgstr "პასუხი"
+
+#: src/historyview.cc:115 src/historyview.cc:173
+msgid "History Index(es)"
+msgstr "ისტორიის ინდექს(ებ)-ი"
+
+#: src/historyview.cc:126 src/historyview.cc:184
+#, c-format
+msgid "History index %s does not exist."
+msgstr "ისტორიის ინდექსი %s არ არსებობს."
+
+#: src/historyview.cc:169
+msgid "History Parsed Expression"
+msgstr "ისტორიიდან გამოსახულების ანალიზი"
+
+#: src/historyview.cc:824 src/plotdialog.cc:464 src/plotdialog.cc:475
+#: src/plotdialog.cc:486
+msgid "It took too long to generate the plot data."
+msgstr "მონაცემების გრაფიკის აგებას მეტისმეტად ბევრი დრო დასჭირდა."
+
+#: src/historyview.cc:824
+msgid ""
+"It took too long to generate the plot data. Please decrease the sampling "
+"rate or increase the time limit in preferences."
+msgstr ""
+
+#: src/historyview.cc:2154 src/mainwindow.cc:2594
+msgid "RPN Register Moved"
+msgstr "RPM რეგისტრი გადატანილია"
+
+#: src/historyview.cc:2160 src/mainwindow.cc:2595 src/mainwindow.cc:5387
+msgid "RPN Operation"
+msgstr "RPN ოპერაცია"
+
+#: src/historyview.cc:2792
+msgid "Search"
+msgstr "ძებნა"
+
+#: src/historyview.cc:2792
+msgid "_Search"
+msgstr "_ძებნა"
+
+#: src/historyview.cc:2870 src/historyview.cc:3218
+msgid "Remove Bookmark"
+msgstr "სანიშნეს წაშლა"
+
+#: src/historyview.cc:2925
+msgid "Add Bookmark"
+msgstr "სანიშნეს დამატება"
+
+#: src/historyview.cc:2953
+msgid ""
+"A bookmark with the selected name already exists.\n"
+"Do you want to overwrite it?"
+msgstr ""
+
+#: src/historyview.cc:2968 src/historyview.cc:3211
+msgid "Edit Comment…"
+msgstr "კომენტარის ჩასწორება…"
+
+#: src/historyview.cc:2970
+msgid "Comment"
+msgstr "კომენტარი"
+
+#: src/historyview.cc:3256
+msgid "No items found"
+msgstr "ჩანაწერები ნაპოვნი არაა"
+
+#: src/historyview.cc:3690 src/stackview.cc:794
+msgid "Index"
+msgstr "ინდექსი"
+
+#: src/importcsvdialog.cc:49 src/importcsvdialog.cc:51
+msgid "Select file to import"
+msgstr "აირჩიეთ შემოსატანი ფაილი"
+
+#: src/importcsvdialog.cc:155 src/matrixeditdialog.cc:560
+#: src/uniteditdialog.cc:338 src/unknowneditdialog.cc:198
+#: src/variableeditdialog.cc:292
+msgid ""
+"A unit or variable with the same name already exists.\n"
+"Do you want to overwrite it?"
+msgstr ""
+
+#: src/importcsvdialog.cc:191
+#, c-format
+msgid ""
+"Could not import from file \n"
+"%s"
+msgstr ""
+"შემოტანა შეუძლებელია ფაილიდან\n"
+"%s"
+
+#: src/insertfunctiondialog.cc:108 src/insertfunctiondialog.cc:110
+msgid "Select file"
+msgstr "აირჩიეთ ფაილი"
+
+#: src/insertfunctiondialog.cc:334 src/insertfunctiondialog.cc:455
+msgid "Apply to Stack"
+msgstr "სტეკზე გადატარება"
+
+#: src/insertfunctiondialog.cc:443
+msgid "Keep open"
+msgstr "ღიად დატოვება"
+
+#. RPN Enter (calculate and add to stack)
+#: src/insertfunctiondialog.cc:452
+msgid "Enter"
+msgstr "შესვლა"
+
+#: src/insertfunctiondialog.cc:514
+msgid "Argument"
+msgstr "არგუმენტი"
+
+#: src/insertfunctiondialog.cc:569
+msgid "True"
+msgstr "ჭეშმარიტი"
+
+#: src/insertfunctiondialog.cc:571
+msgid "False"
+msgstr "მცდარი"
+
+#: src/insertfunctiondialog.cc:610
+msgid "Info"
+msgstr "ინფორმაცია"
+
+#: src/keypad.cc:368
+#, c-format
+msgid "Right-click/long press: %s"
+msgstr "მარჯვენა-წკაპი/დიდხანს დაჭერა: %s"
+
+#: src/keypad.cc:369
+#, c-format
+msgid "Right-click: %s"
+msgstr "მარჯვენა-წკაპი: %s"
+
+#: src/keypad.cc:375
+#, c-format
+msgid "Middle-click: %s"
+msgstr "შუა-წკაპი: %s"
+
+#: src/keypad.cc:489
+msgid "Raise (Ctrl+*)"
+msgstr "ამოწევა (Ctrl+*)"
+
+#: src/keypad.cc:810 src/util.cc:928
+msgid "Set unknowns"
+msgstr "უცნობების დაყენება"
+
+#. Show further items in a submenu
+#: src/keypad.cc:858 src/keypad.cc:946 src/keypad.cc:949 src/keypad.cc:2469
+#: src/menubar.cc:1396 src/menubar.cc:1491 src/resultview.cc:900
+msgid "more"
+msgstr "მეტი"
+
+#: src/keypad.cc:1008
+msgid "Logical AND"
+msgstr "ლოგიკური და"
+
+#: src/keypad.cc:1009
+msgid "Logical OR"
+msgstr "ლოგიკური ან"
+
+#: src/keypad.cc:1010
+msgid "Logical NOT"
+msgstr "ლოგიკური არა"
+
+#: src/keypad.cc:1012 src/keypad.cc:1013 src/keypad.cc:1014 src/keypad.cc:1015
+msgid "Toggle Result Base"
+msgstr "შედეგის ბაზის გადართვა"
+
+#: src/keypad.cc:1017
+msgid "Open menu with stored variables"
+msgstr "შენახული ცვლადების შემცველი მენიუს გახსნა"
+
+#: src/keypad.cc:2012
+msgid "log10 function not found."
+msgstr "log10 ფუნქცია აღმოჩენილი არაა."
+
+#: src/keypad.cc:2594
+msgid "All functions"
+msgstr "ყველა ფუნქცია"
+
+#: src/keypad.cc:2647
+msgid "All variables"
+msgstr "ყველა ცვლადი"
+
+#: src/keypad.cc:2685 src/mainwindow.cc:7712 src/variablesdialog.cc:258
+#: src/variablesdialog.cc:417 src/variablesdialog.cc:432
+#: src/variablesdialog.cc:448 src/variablesdialog.cc:468
+msgid "Variable does not exist anymore."
+msgstr "ცვლადი უკვე აღარ არსებობს."
+
+#. RPN Enter (calculate and add to stack)
+#: src/keypad.cc:3530
+msgid "ENTER"
+msgstr "შეყვანა"
+
+#: src/main.cc:60
+msgid "Execute expressions and commands from a file"
+msgstr "გამოსახულებებისა და ბრძანებების შესრულება ფაილიდან"
+
+#: src/main.cc:60
+msgid "FILE"
+msgstr "FILE"
+
+#: src/main.cc:61
+msgid "Start a new instance of the application"
+msgstr "აპლიკაციის ახალი ასლის გაშვება"
+
+#: src/main.cc:62
+msgid "Display the application version"
+msgstr "აპლიკაციის ვერსიის ჩვენება"
+
+#: src/main.cc:63
+msgid "Specify the window title"
+msgstr "მიუთითეთ ფანჯრის სათაური"
+
+#: src/main.cc:63
+msgid "TITLE"
+msgstr "სათაური"
+
+#: src/main.cc:64 src/util.cc:979
+msgid "Update exchange rates"
+msgstr "გაცვლის კურსების განახლება"
+
+#: src/main.cc:65
+msgid "Expression to calculate"
+msgstr "გამოსათვლელი გამოსახულება"
+
+#: src/main.cc:65
+msgid "[EXPRESSION]"
+msgstr "[გამოსახულება]"
+
+#: src/main.cc:153 src/searchprovider.cc:978
+msgid "Failed to load global definitions!\n"
+msgstr "გლობალური აღწერების ჩატვირთვა ვერ მოხერხდა!\n"
+
+#: src/main.cc:331
+#, c-format
+msgid ""
+"By default, only one instance (one main window) of %s is allowed.\n"
+"\n"
+"If multiple instances are opened simultaneously, only the definitions "
+"(variables, functions, etc.), mode, preferences, and history of the last "
+"closed window will be saved.\n"
+"\n"
+"Do you, despite this, want to change the default behavior and allow multiple "
+"simultaneous instances?"
+msgstr ""
+
+#: src/mainwindow.cc:254
+msgid "Set Window Title"
+msgstr "ფანჯრის სათაურის დაყენება"
+
+#: src/mainwindow.cc:530
+msgid "Exchange rate source:"
+msgid_plural "Exchange rate sources:"
+msgstr[0] "გაცვლის კურსის წყარო:"
+msgstr[1] "გაცვლის კურსის წყაროები:"
+
+#: src/mainwindow.cc:532
+#, c-format
+msgid "updated %s"
+msgid_plural "updated %s"
+msgstr[0] "განახლდა %s"
+msgstr[1] "განახლდა %s"
+
+#: src/mainwindow.cc:552
+msgid ""
+"When errors, warnings and other information are generated during "
+"calculation, the icon in the upper right corner of the expression entry "
+"changes to reflect this. If you hold the pointer over or click the icon, the "
+"message will be shown."
+msgstr ""
+
+#: src/mainwindow.cc:612
+msgid "Path of executable not found."
+msgstr "გამშვები ფაილის ბილიკი აღმოჩენილი არაა."
+
+#: src/mainwindow.cc:622
+msgid "curl not found."
+msgstr "curl აღმოჩენილი არაა."
+
+#: src/mainwindow.cc:687
+#, c-format
+msgid ""
+"Failed to run update script.\n"
+"%s"
+msgstr ""
+"სკრიპტის განახლება ჩავარდა.\n"
+"%s"
+
+#: src/mainwindow.cc:711
+msgid "Failed to check for updates."
+msgstr "განახლებების შემოწმება ჩავარდა."
+
+#: src/mainwindow.cc:711
+msgid "No updates found."
+msgstr "განახლებები აღმოჩენილი არა."
+
+#: src/mainwindow.cc:725
+msgid "_Download"
+msgstr "_გადმოწერა"
+
+#: src/mainwindow.cc:737
+#, c-format
+msgid ""
+"A new version of %s is available at %s.\n"
+"\n"
+"Do you wish to update to version %s?"
+msgstr ""
+"ხელმისაწვდომია %s-ის ახალი ვერსია მისამართზე %s.\n"
+"\n"
+"გნებავთ განახლება ვერსიამდე %s?"
+
+#: src/mainwindow.cc:739
+#, c-format
+msgid ""
+"A new version of %s is available.\n"
+"\n"
+"You can get version %s at %s."
+msgstr ""
+"ხელმისაწვდომია %s-ის ახალი ვერსია.\n"
+"\n"
+"%s-ის ახალი ვერსიის გადმოწერა შეგიძლიათ მისამართიდან %s."
+
+#: src/mainwindow.cc:813
+msgid "Temperature Calculation Mode"
+msgstr "ტემპერატურის გამოთვლის რეჟიმი"
+
+#: src/mainwindow.cc:823
+msgid ""
+"The expression is ambiguous.\n"
+"Please select temperature calculation mode\n"
+"(the mode can later be changed in preferences)."
+msgstr ""
+
+#: src/mainwindow.cc:876
+msgid "Unknown variables (e.g. x, y, z) are by default assumed real."
+msgstr "უცნობი ცვლადები (მაგ: x, y, z) ნაგულისხმევად ითვლება რეალურად."
+
+#: src/mainwindow.cc:884
+msgid "Sinc Function"
+msgstr "ფუნქცია Sinc"
+
+#: src/mainwindow.cc:894
+msgid "Please select desired variant of the sinc function."
+msgstr "აირჩიეთ sinc ფუნქციის სასურველი ვარიანტი."
+
+#: src/mainwindow.cc:897
+msgid "Unnormalized"
+msgstr "დაუნორმალიზებელი"
+
+#: src/mainwindow.cc:904
+msgid "Normalized"
+msgstr "ნორმალიზებულია"
+
+#: src/mainwindow.cc:939
+msgid "Interpretation of comma"
+msgstr "მძიმის ინტერპრეტაცია"
+
+#: src/mainwindow.cc:939
+msgid "Interpretation of dots"
+msgstr "წერტილების ინტერპრეტაცია"
+
+#: src/mainwindow.cc:949
+msgid ""
+"Please select interpretation of comma (\",\")\n"
+"(this can later be changed in preferences)."
+msgstr ""
+
+#: src/mainwindow.cc:949
+msgid ""
+"Please select interpretation of dots (\".\")\n"
+"(this can later be changed in preferences)."
+msgstr ""
+
+#: src/mainwindow.cc:952
+msgid "Both dot and comma as decimal separators"
+msgstr "ორივე, წერტილიც და მძიმეც, როგორც წილადის გამყოფი"
+
+#: src/mainwindow.cc:959
+msgid "Comma as thousands separator"
+msgstr "მძიმე ათასების გამყოფად"
+
+#: src/mainwindow.cc:959
+msgid "Dot as thousands separator"
+msgstr "წერტილი, როგორც ათასების გამყოფი"
+
+#: src/mainwindow.cc:966
+msgid ""
+"Comma as separator for function arguments\n"
+"and matrix/vector elements"
+msgstr ""
+
+#: src/mainwindow.cc:966
+msgid "Only dot as decimal separator"
+msgstr "წილადების გამყოფად მხოლოდ წერტილის გამოყენება"
+
+#: src/mainwindow.cc:1030
+msgid ""
+"The expression is ambiguous.\n"
+"Please select interpretation of expressions with implicit multiplication\n"
+"(this can later be changed in preferences)."
+msgstr ""
+
+#: src/mainwindow.cc:1033
+msgid "Implicit multiplication first"
+msgstr "ჯერ მოხდება არაცხადი გამრავლებების ანალიზი"
+
+#: src/mainwindow.cc:1041
+msgid "Conventional"
+msgstr "მიღებული"
+
+#: src/mainwindow.cc:1076
+msgid "Percentage Interpretation"
+msgstr "პროცენტების ინტერპრეტაცია"
+
+#: src/mainwindow.cc:1086
+msgid "Please select interpretation of percentage addition."
+msgstr "აირჩიეთ პროცენტების მიმატების ინტერპრეტაცია."
+
+#: src/mainwindow.cc:1089
+msgid "Add percentage of original value"
+msgstr "ორიგინალი მნიშვნელობის პროცენტების მიმატება"
+
+#: src/mainwindow.cc:1097
+msgid "Add percentage multiplied by 1/100"
+msgstr "1/100-ზე გამრავლებული პროცენტების მიმატება"
+
+#: src/mainwindow.cc:2136
+msgid "My Variables"
+msgstr "ჩემი ცვლადები"
+
+#: src/mainwindow.cc:2773
+msgid "Processing…"
+msgstr "დამუშავება…"
+
+#: src/mainwindow.cc:3044
+msgid "Factorizing…"
+msgstr "ფაქტორიზაცია…"
+
+#: src/mainwindow.cc:3048
+msgid "Expanding partial fractions…"
+msgstr "წილადი რიცხვების გაფართოება…"
+
+#: src/mainwindow.cc:3052
+msgid "Expanding…"
+msgstr "გაფართოება…"
+
+#: src/mainwindow.cc:3057 src/mainwindow.cc:5327
+msgid "Calculating…"
+msgstr "გამოთვლა…"
+
+#: src/mainwindow.cc:3061
+msgid "Converting…"
+msgstr "გადაყვანა…"
+
+#: src/mainwindow.cc:4939
+msgid "Time zone parsing failed."
+msgstr "დროის სარტყელის დამუშავების შეცდომა."
+
+#: src/mainwindow.cc:5554 src/mainwindow.cc:7162 src/openhelp.cc:361
+#, c-format
+msgid ""
+"Failed to open %s.\n"
+"%s"
+msgstr ""
+"'%s'-ის გახსნა ჩავარდა.\n"
+"%s"
+
+#: src/mainwindow.cc:5708
+msgid "Couldn't write definitions"
+msgstr "აღწერების ჩაწერის შეცდომა"
+
+#: src/mainwindow.cc:5710 src/mainwindow.cc:5712 src/mainwindow.cc:6494
+#: src/mainwindow.cc:6496 src/mainwindow.cc:6539 src/mainwindow.cc:6541
+msgid "Ignore"
+msgstr "იგნორი"
+
+#: src/mainwindow.cc:5710 src/mainwindow.cc:6494 src/mainwindow.cc:6539
+msgid "Cancel"
+msgstr "გაუქმება"
+
+#: src/mainwindow.cc:5710 src/mainwindow.cc:5712 src/mainwindow.cc:6494
+#: src/mainwindow.cc:6496 src/mainwindow.cc:6539 src/mainwindow.cc:6541
+msgid "Retry"
+msgstr "თავიდან ცდა"
+
+#: src/mainwindow.cc:6492
+#, c-format
+msgid ""
+"Couldn't write history to\n"
+"%s"
+msgstr ""
+"ისტორიის ჩაწერის შეცდომა ფაილში\n"
+"%s"
+
+#: src/mainwindow.cc:6537
+#, c-format
+msgid ""
+"Couldn't write preferences to\n"
+"%s"
+msgstr ""
+"კონფიგურაციის ჩაწერის შეცდომა ფაილში\n"
+"%s"
+
+#: src/mainwindow.cc:6839 src/mainwindow.cc:6841
+msgid "Select definitions file"
+msgstr "აირჩიეთ აღწერების ფაილი"
+
+#: src/mainwindow.cc:6839 src/mainwindow.cc:6841
+msgid "_Import"
+msgstr "შ_ემოტანა"
+
+#: src/mainwindow.cc:6845
+msgid "XML Files"
+msgstr "XML ფაილები"
+
+#: src/mainwindow.cc:6865
+#, c-format
+msgid "Could not copy %s to %s."
+msgstr "\"%s\"-დან \"%s\"-ში კოპირება შეუძლებელია."
+
+#: src/mainwindow.cc:6873
+#, c-format
+msgid "Could not read %s."
+msgstr "%s-ის წაკითხვა შეუძლებელია."
+
+#: src/mainwindow.cc:6881
+#, c-format
+msgid "Could not copy file to %s."
+msgstr "ფაილის %s-ში კოპირება შეუძლებელია."
+
+#: src/mainwindow.cc:7136
+msgid "translator-credits"
+msgstr "ეკატერინე პაპავა"
+
+#: src/mainwindow.cc:7666 src/menubar.cc:1687 src/util.cc:1312 src/util.cc:1313
+#: src/variablesdialog.cc:143 src/variablesdialog.cc:144
+#: src/variablesdialog.cc:215
+msgid "User variables"
+msgstr "მომხმარებლის ცვლადები"
+
+#: src/mainwindow.cc:7690 src/menubar.cc:1427 src/menubar.cc:1522
+#: src/unitsdialog.cc:158 src/unitsdialog.cc:159 src/unitsdialog.cc:237
+#: src/util.cc:1314 src/util.cc:1315
+msgid "User units"
+msgstr "მომხმარებლის ერთეულები"
+
+#: src/mainwindow.cc:7799
+msgid "No unknowns in result."
+msgstr "შედეგში უცნობები არაა."
+
+#: src/mainwindow.cc:7805
+msgid "Set Unknowns"
+msgstr "უცნობების დაყენება"
+
+#: src/mainwindow.cc:7805
+msgid "_Apply"
+msgstr "გ_ადატარება"
+
+#: src/mainwindow.cc:8723
+msgid "ans"
+msgstr "პას"
+
+#: src/mainwindow.cc:8724
+msgid "Last Answer"
+msgstr "ბოლო პასუხი"
+
+#: src/mainwindow.cc:8725
+msgid ""
+"Contains the result of the most recent calculation. Multiple results of an "
+"equation is represented as a vector. Access separate solutions using ans(n) "
+"(e.g. ans(1) for the first solution)."
+msgstr ""
+
+#: src/mainwindow.cc:8728
+msgid "Answer 2"
+msgstr "პასუხი 2"
+
+#: src/mainwindow.cc:8729
+msgid "Answer 3"
+msgstr "პასუხი 3"
+
+#: src/mainwindow.cc:8730
+msgid "Answer 4"
+msgstr "პასუხი 4"
+
+#: src/mainwindow.cc:8731
+msgid "Answer 5"
+msgstr "პასუხი 5"
+
+#: src/mainwindow.cc:8741
+msgid "Memory"
+msgstr "მეხსიერება"
+
+#: src/matrixdialog.cc:73 src/matrixeditdialog.cc:94
+msgid "none"
+msgstr "არცერთი"
+
+#: src/matrixdialog.cc:282 src/matrixdialog.cc:290
+msgid "Elements (in horizontal order)"
+msgstr "ელემენტები (ჰორიზონტალური მიმდევრობით)"
+
+#: src/matrixdialog.cc:384
+msgid "Vector Result"
+msgstr "ვექტორული შედეგი"
+
+#: src/matrixdialog.cc:386
+msgid "Matrix Result"
+msgstr "მატრიცული შედეგი"
+
+#: src/matrixeditdialog.cc:395
+msgid "Edit Vector"
+msgstr "ვექტორის ჩასწორება"
+
+#: src/matrixeditdialog.cc:397
+msgid "Edit Vector (global)"
+msgstr "ვექტორის ჩასწორება (გლობალური)"
+
+#: src/matrixeditdialog.cc:399
+msgid "New Vector"
+msgstr "ახალი ვექტორი"
+
+#: src/matrixeditdialog.cc:406
+msgid "Edit Matrix (global)"
+msgstr "მატრიცის ჩასწორება (გლობალური)"
+
+#: src/matrixeditdialog.cc:408
+msgid "New Matrix"
+msgstr "ახალი მატრიცა"
+
+#: src/menubar.cc:122
+msgid "Unit does not exist"
+msgstr "ერთეული არ არსებობს"
+
+#: src/menubar.cc:451
+msgid ""
+"Deactivation of interval arithmetic might result in inaccurate output. Do "
+"you want to deactivate it anyway?"
+msgstr ""
+
+#: src/menubar.cc:1217
+msgid "Save Mode"
+msgstr "შენახვის რეჟიმი"
+
+#: src/menubar.cc:1247
+msgid "Preset mode cannot be overwritten."
+msgstr "წინასწარ დაყენებულ რეჟიმს თავზე ვერ გადააწერთ."
+
+#: src/menubar.cc:1258
+msgid "Delete Mode"
+msgstr "რეჟიმის წაშლა"
+
+#: src/menubar.cc:1435
+msgid "Prefixes"
+msgstr "პრეფიქსები"
+
+#: src/menubar.cc:1745
+msgid "No Prefix"
+msgstr "პრეფიქსის გარეშე"
+
+#: src/menubar.cc:2703
+msgid "Open Settings Folder"
+msgid_plural "Open Settings Folders"
+msgstr[0] "პარამეტრების საქაღალდის გახსნა"
+msgstr[1] "პარამეტრის საქაღალდეების გახსნა"
+
+#: src/modes.cc:46 src/modes.cc:56
+msgid "Preset"
+msgstr "პრესეტი"
+
+#: src/modes.cc:132
+msgid "Default mode loaded at first startup for new users"
+msgstr ""
+
+#: src/modes.cc:133
+msgid "Mode loaded at each startup and, by default, saved at exit"
+msgstr ""
+
+#: src/nameseditdialog.cc:101
+msgid "Illegal name"
+msgstr "დაუშვებელი სახელი"
+
+#: src/nameseditdialog.cc:104 src/nameseditdialog.cc:252
+#: src/nameseditdialog.cc:271 src/nameseditdialog.cc:280
+msgid ""
+"A conflicting object with the same name exists. If you proceed and save "
+"changes, the conflicting object will be overwritten or deactivated."
+msgstr ""
+
+#: src/nameseditdialog.cc:164
+msgid "Abbreviation"
+msgstr "აბრევიატურა"
+
+#: src/nameseditdialog.cc:170
+msgid "Plural"
+msgstr "მრავლობითი"
+
+#: src/nameseditdialog.cc:180
+msgid "Avoid input"
+msgstr "შეყვანის თავიდან აცილება"
+
+#: src/nameseditdialog.cc:186
+msgid "Suffix"
+msgstr "სუფიქსი"
+
+#: src/nameseditdialog.cc:192
+msgid "Case sensitive"
+msgstr "დიდი და პატარა ასოების განსხვავება"
+
+#: src/nameseditdialog.cc:198
+msgid "Completion only"
+msgstr "მხოლოდ დასრულება"
+
+#: src/numberbasesdialog.cc:140 src/numberbasesdialog.cc:148
+#: src/numberbasesdialog.cc:156 src/numberbasesdialog.cc:164
+#: src/numberbasesdialog.cc:187
+msgid "result is too long"
+msgstr "შედეგი მეტისმეტად ბევრია"
+
+#: src/openhelp.cc:379
+msgid "Could not display help for Qalculate!."
+msgstr "Qalculate-ის დახმარების ჩვენება შეუძლებელია!."
+
+#: src/openhelp.cc:477
+#, c-format
+msgid ""
+"Could not display help for Qalculate!.\n"
+"%s"
+msgstr ""
+"Qalculate-ის დახმარების ჩვენება შეუძლებელია!.\n"
+"%s"
+
+#: src/periodictabledialog.cc:89
+msgid "Element Data"
+msgstr "ელემენტის მონაცემები"
+
+#: src/periodictabledialog.cc:127
+msgid "Classification"
+msgstr "კლასიფიკაცია"
+
+#: src/periodictabledialog.cc:132
+msgid "Alkali Metal"
+msgstr "ტუტე ლითონი"
+
+#: src/periodictabledialog.cc:133
+msgid "Alkaline-Earth Metal"
+msgstr "ტუტემიწა ლითონები"
+
+#: src/periodictabledialog.cc:134
+msgid "Lanthanide"
+msgstr "ლანთანიდი"
+
+#: src/periodictabledialog.cc:135
+msgid "Actinide"
+msgstr "აქტინიდი"
+
+#: src/periodictabledialog.cc:136
+msgid "Transition Metal"
+msgstr "გარდამავალი ლითონი"
+
+#: src/periodictabledialog.cc:137
+msgid "Metal"
+msgstr "მეტალი"
+
+#: src/periodictabledialog.cc:138
+msgid "Metalloid"
+msgstr "მეტალოიდები"
+
+#: src/periodictabledialog.cc:139
+msgid "Polyatomic Non-Metal"
+msgstr "პოლიატომური არალითონი"
+
+#: src/periodictabledialog.cc:140
+msgid "Diatomic Non-Metal"
+msgstr "დიატომური არალითონი"
+
+#: src/periodictabledialog.cc:141
+msgid "Noble Gas"
+msgstr "კეთილშობილი აირები"
+
+#: src/periodictabledialog.cc:142
+msgid "Unknown chemical properties"
+msgstr "უცნობი ქიმიური თვისებები"
+
+#: src/plotdialog.cc:378 src/plotdialog.cc:380
+msgid "Select file to export"
+msgstr "აირჩიეთ გასატანი ფაილი"
+
+#: src/plotdialog.cc:385 src/resultview.cc:559
+msgid "Allowed File Types"
+msgstr "დაშვებული ფაილის ტიპები"
+
+#: src/plotdialog.cc:396 src/resultview.cc:564
+msgid "All Files"
+msgstr "ყველა ფაილი"
+
+#: src/plotdialog.cc:509 src/plotdialog.cc:592
+msgid "Empty expression."
+msgstr "ცარიელი გამოსახულება."
+
+#: src/plotdialog.cc:523 src/plotdialog.cc:606
+msgid "Empty x variable."
+msgstr "ცარიელი ცვლადი x."
+
+#: src/plotdialog.cc:807
+msgid "Gnuplot was not found."
+msgstr "Gnuplot აღმოჩენილი არაა."
+
+#: src/plotdialog.cc:809
+#, c-format
+msgid ""
+"%s (%s) needs to be installed separately, and found in the executable search "
+"path, for plotting to work."
+msgstr ""
+
+#: src/preferencesdialog.cc:120 src/preferencesdialog.cc:133
+msgid "never"
+msgstr "არასოდეს"
+
+#: src/preferencesdialog.cc:121 src/preferencesdialog.cc:135
+msgid "ask"
+msgstr "კითხვა"
+
+#: src/preferencesdialog.cc:129
+#, c-format
+msgid "%i day"
+msgid_plural "%i days"
+msgstr[0] "%i დღე"
+msgstr[1] "%i დღე"
+
+#: src/preferencesdialog.cc:296
+msgid "Please restart the program for the language change to take effect."
+msgstr "ენის ცვლილებების ძალაში შესასვლელად გადატვირთეთ პროგრამა."
+
+#: src/resultview.cc:225 src/resultview.cc:462
+msgid "result processing was aborted"
+msgstr "შედეგის დამუშავება შეწყდა"
+
+#: src/resultview.cc:225 src/resultview.cc:524
+msgid ""
+"result is too long\n"
+"see history"
+msgstr ""
+"შედეგი მეტისმეტად გრძელია\n"
+"იხილეთ ისტორია"
+
+#: src/resultview.cc:246 src/resultview.cc:526
+msgid "calculation was aborted"
+msgstr "გამოთვლა შეწყდა"
+
+#: src/resultview.cc:346
+msgid ""
+"Type a mathematical expression above, e.g. \"5 + 2 / 3\",\n"
+"and press the enter key."
+msgstr ""
+
+#: src/resultview.cc:552 src/resultview.cc:554
+msgid "Select file to save PNG image to"
+msgstr "აირჩიეთ ფაილი PNG გამოსახულების შესანახად"
+
+#. Result was copied
+#: src/resultview.cc:1207
+msgid "Copied"
+msgstr "დაკოპირდა"
+
+#: src/searchprovider.cc:531
+msgid "Copy result to clipboard"
+msgstr "შედეგის ბუფერში კოპირება"
+
+#: src/shortcutsdialog.cc:154
+msgid "Set key combination"
+msgstr "ღილაკების მიმდევრობის დაყენება"
+
+#. Make the line reasonably long, but not to short (at least around 40 characters)
+#: src/shortcutsdialog.cc:158
+msgid ""
+"Press the key combination you wish to use for the action\n"
+"(press Escape to cancel)."
+msgstr ""
+
+#: src/shortcutsdialog.cc:168
+msgid "No keys"
+msgstr "ღილაკების გარეშე"
+
+#: src/shortcutsdialog.cc:307 src/shortcutsdialog.cc:375
+msgid ""
+"The key combination is already in use.\n"
+"Do you wish to replace the current action?"
+msgstr ""
+
+#: src/shortcutsdialog.cc:583
+msgid "Key combination"
+msgstr "ღილაკების მიმდევრობა"
+
+#: src/uniteditdialog.cc:193
+msgid "Edit Unit (global)"
+msgstr "ერთეულის ჩასწორება (გლობალური)"
+
+#: src/uniteditdialog.cc:195
+msgid "New Unit"
+msgstr "ახალი სექცია"
+
+#: src/uniteditdialog.cc:365 src/uniteditdialog.cc:417
+msgid "Base unit does not exist."
+msgstr "საბაზისო ერთეული არ არსებობს."
+
+#. do not delete units that are used by other units
+#: src/unitsdialog.cc:756
+msgid "Cannot delete unit as it is needed by other units."
+msgstr "ერთეულის წაშლა შეუძლებელია, რადგან ის სხვა ერთეულებს სჭირდება."
+
+#: src/unknowneditdialog.cc:120
+msgid "Edit Unknown Variable (global)"
+msgstr "უცნობი ცვლადის ჩასწორება (გლობალური)"
+
+#: src/unknowneditdialog.cc:122
+msgid "New Unknown Variable"
+msgstr "ახალი უცნობი ცვლადი"
+
+#: src/util.cc:910
+msgid "Insert function"
+msgstr "ფუნქციის ჩასმა"
+
+#: src/util.cc:911
+msgid "Insert function (dialog)"
+msgstr "ფუნქციის ჩასმა (დიალოგი)"
+
+#: src/util.cc:912
+msgid "Insert variable"
+msgstr "ცვლადის ჩასმა"
+
+#: src/util.cc:913
+msgid "Insert unit"
+msgstr "ერთეულის ჩასმა"
+
+#: src/util.cc:914
+msgid "Insert text"
+msgstr "ტექსტის ჩასმა"
+
+#: src/util.cc:915
+msgid "Insert date"
+msgstr "თარიღის ჩასმა"
+
+#: src/util.cc:916
+msgid "Insert vector"
+msgstr "ვექტორის ჩასმა"
+
+#: src/util.cc:917
+msgid "Insert matrix"
+msgstr "მატრიცის ჩასმა"
+
+#: src/util.cc:918
+msgid "Insert smart parentheses"
+msgstr "ჭკვიანი ფრჩხილების ჩასმა"
+
+#: src/util.cc:919
+msgid "Convert to unit"
+msgstr "გადაყვანა ერთეულში"
+
+#: src/util.cc:920
+msgid "Convert to unit (entry)"
+msgstr "გადაყვანა ერთეულში (ჩანაწერი)"
+
+#: src/util.cc:921
+msgid "Convert to optimal unit"
+msgstr "გადაყვანა ოპტიმალურ ერთეულში"
+
+#: src/util.cc:922
+msgid "Convert to base units"
+msgstr "გადაყვანა ძირითად ერთეულებში"
+
+#: src/util.cc:923
+msgid "Convert to optimal prefix"
+msgstr "გადაყვანა ოპტიმალურ პრეფიქსში"
+
+#: src/util.cc:924
+msgid "Convert to number base"
+msgstr "გადაყვანა რიცხვის ბაზაში"
+
+#: src/util.cc:925
+msgid "Factorize result"
+msgstr "შედეგის მამრავლებად დაშლა"
+
+#: src/util.cc:926
+msgid "Expand result"
+msgstr "შედეგის გაშლა"
+
+#: src/util.cc:927
+msgid "Expand partial fractions"
+msgstr ""
+
+#: src/util.cc:929
+msgid "RPN: down"
+msgstr "RPN: ქვემოთ"
+
+#: src/util.cc:930
+msgid "RPN: up"
+msgstr "RPN: მაღლა"
+
+#: src/util.cc:931
+msgid "RPN: swap"
+msgstr "RPN: მიმოცვლა"
+
+#: src/util.cc:932
+msgid "RPN: copy"
+msgstr "RPN: კოპირება"
+
+#: src/util.cc:933
+msgid "RPN: lastx"
+msgstr "RPN: ბოლო x"
+
+#: src/util.cc:934
+msgid "RPN: delete register"
+msgstr "RPN: რეგისტრის წაშლა"
+
+#: src/util.cc:935
+msgid "RPN: clear stack"
+msgstr "RPN: სტეკის გასუფთავება"
+
+#: src/util.cc:936
+msgid "Load meta mode"
+msgstr "მეტარეჟიმის ჩატვირთვა"
+
+#: src/util.cc:937
+msgid "Set expression base"
+msgstr "გამოსახულების ბაზის დაყენება"
+
+#: src/util.cc:938
+msgid "Set result base"
+msgstr "შედეგის ბაზის დაყენება"
+
+#: src/util.cc:939
+msgid "Toggle exact mode"
+msgstr "ზუსტი რეჟიმის გადართვა"
+
+#: src/util.cc:940
+msgid "Set angle unit to degrees"
+msgstr "კუთხის ერთეულის გრადუსებზე დაყენება"
+
+#: src/util.cc:941
+msgid "Set angle unit to radians"
+msgstr "კუთხის ერთეულის რადიანებზე დაყენება"
+
+#: src/util.cc:942
+msgid "Set angle unit to gradians"
+msgstr "კუთხის ერთეულის გრადიანებზე დაყენება"
+
+#: src/util.cc:943
+msgid "Toggle simple fractions"
+msgstr "მარტივი წილადების გადართვა"
+
+#: src/util.cc:944
+msgid "Toggle mixed fractions"
+msgstr "შერეული წილადების გადართვა"
+
+#: src/util.cc:945
+msgid "Toggle scientific notation"
+msgstr "სამეცნიერო ნოტაციის გადართვა"
+
+#: src/util.cc:946
+msgid "Toggle simple notation"
+msgstr "მარტივი ნოტაციის გადართვა"
+
+#: src/util.cc:947
+msgid "Toggle precision"
+msgstr "სიზუსტის გადართვა"
+
+#: src/util.cc:948
+msgid "Toggle max decimals"
+msgstr "მაქს. ათწილადების გადართვა"
+
+#: src/util.cc:949
+msgid "Toggle min decimals"
+msgstr "მინ. ათწილადების გადართვა"
+
+#: src/util.cc:950
+msgid "Toggle max/min decimals"
+msgstr "მაქს./მინ. ათწილადების გადართვა"
+
+#: src/util.cc:951
+msgid "Toggle RPN mode"
+msgstr "RPN რეჟიმის გადართვა"
+
+#: src/util.cc:952
+msgid "Toggle calculate as you type"
+msgstr "აკრეფისას გამოთვლის გადართვა"
+
+#: src/util.cc:953
+msgid "Toggle programming keypad"
+msgstr "პროგრამირების ციფრული კლავიატურის გადართვა"
+
+#: src/util.cc:954
+msgid "Show keypad"
+msgstr "ციფრული კლავიატურის ჩვენება"
+
+#: src/util.cc:955
+msgid "Show history"
+msgstr "ისტორიის ჩვენება"
+
+#: src/util.cc:956
+msgid "Search history"
+msgstr "ძებნის ისტორია"
+
+#: src/util.cc:957
+msgid "Clear history"
+msgstr "ისტორიის გასუფთავება"
+
+#: src/util.cc:958
+msgid "Show conversion"
+msgstr "გადაყვანის ჩვენება"
+
+#: src/util.cc:959
+msgid "Show RPN stack"
+msgstr "RPN სტეკის ჩვენება"
+
+#: src/util.cc:961
+msgid "Manage variables"
+msgstr "ცვლადების მართვა"
+
+#: src/util.cc:962
+msgid "Manage functions"
+msgstr "ფუნქციების მართვა"
+
+#: src/util.cc:964
+msgid "Manage data sets"
+msgstr "მონაცემთა ნაკრებების მართვა"
+
+#: src/util.cc:971
+msgid "New variable"
+msgstr "ახალი ცვლადი"
+
+#: src/util.cc:972
+msgid "New function"
+msgstr "ახალი ფუნქცია"
+
+#: src/util.cc:973
+msgid "Open plot functions/data"
+msgstr "ფუნქციების/მონაცემების გრაფიკების გახსნა"
+
+#: src/util.cc:974
+msgid "Open convert number bases"
+msgstr "რიცხვების ფუძის გადაყვანის გახსნა"
+
+#: src/util.cc:975
+msgid "Open floating point conversion"
+msgstr "მცურავმძიმიანი რიცხვების გადაყვანის გახსნა"
+
+#: src/util.cc:976
+msgid "Open calendar conversion"
+msgstr "კალენდრის გადაყვანის გახსნა"
+
+#: src/util.cc:977
+msgid "Open percentage calculation tool"
+msgstr "პროცენტის გამოთვლის ხელსაწყოს გახსნა"
+
+#: src/util.cc:978
+msgid "Open periodic table"
+msgstr "პერიოდული სისტემის გახსნა"
+
+#: src/util.cc:980
+msgid "Copy result"
+msgstr "შედეგის კოპირება"
+
+#: src/util.cc:981
+msgid "Insert result"
+msgstr "შედეგის ჩასმა"
+
+#: src/util.cc:982
+msgid "Save result image"
+msgstr "შედეგი გამოსახულების შენახვა"
+
+#: src/util.cc:983
+msgid "Help"
+msgstr "დახმარება"
+
+#: src/util.cc:984
+msgid "Quit"
+msgstr "გასვლა"
+
+#: src/util.cc:985
+msgid "Toggle chain mode"
+msgstr "ჯაჭვის რეჟიმის გადართვა"
+
+#: src/util.cc:986
+msgid "Toggle keep above"
+msgstr "ზემოთ შენარჩუნების გადართვა"
+
+#: src/util.cc:987
+msgid "Show/hide completion"
+msgstr "დასრულების ჩვენება/დამალვა"
+
+#: src/util.cc:988
+msgid "Perform completion (activate first item)"
+msgstr "დასრულების შესრულება (პირველი ელემენტის აქტივაცია)"
+
+#: src/util.cc:1056
+msgid "Formatted result"
+msgstr "დაფორმატებული შედეგი"
+
+#: src/util.cc:1057
+msgid "Unformatted ASCII result"
+msgstr "დაუფორმატებელი ASCII შედეგი"
+
+#: src/util.cc:1058
+msgid "Unformatted ASCII result without units"
+msgstr "დაუფორმატებელი ASCII შედეგი ერთეულების გარეშე"
+
+#: src/util.cc:1059
+msgid "Formatted expression"
+msgstr "დაფორმატებული გამოსახულება"
+
+#: src/util.cc:1060
+msgid "Unformatted ASCII expression"
+msgstr "დაუფორმატებელი ASCII გამოსახულება"
+
+#: src/util.cc:1061
+msgid "Formatted expression + result"
+msgstr "დაფორმატებული გამოსახულება + შედეგი"
+
+#: src/util.cc:1062
+msgid "Unformatted ASCII expression + result"
+msgstr "დაუფორმატებელი ASCII გამოსახულება + შედეგი"
+
+#: src/variableeditdialog.cc:173
+msgid "Edit Variable (global)"
+msgstr "ცვლადის ჩასწორება (გლობალური)"
+
+#: src/variableeditdialog.cc:175
+msgid "New Variable"
+msgstr "ახალი ცვლადი"
+
+#: src/variableeditdialog.cc:286
+msgid "Empty value field."
+msgstr "ცარიელი მნიშვნელობის ველი."
+
+#: src/variablesdialog.cc:285
+msgid "a matrix"
+msgstr "მატრიცა"
+
+#: src/variablesdialog.cc:287
+msgid "a vector"
+msgstr "ვექტორი"
+
+#: src/variablesdialog.cc:331
+msgid "not matrix"
+msgstr "არა მატრიცა"
