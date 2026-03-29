@@ -1118,7 +1118,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				for(size_t i = 0; i < m.size(); i++) {
 					hetmp = 0;
 					ips_n.wrap = b_cis ? (i == 1 && ((m[1][0].isMultiplication() && m[1][0][1].neededMultiplicationSign(po, ips_n, m[1][0], 2, false, false, false, false) != MULTIPLICATION_SIGN_NONE) || (m[1][0].isNegate() && m[1][0][0].isMultiplication() && m[1][0][0][1].neededMultiplicationSign(po, ips_n, m[1][0][0], 2, false, false, false, false) != MULTIPLICATION_SIGN_NONE))) : m[i].needsParenthesis(po, ips_n, m, i + 1, ips.division_depth > 0 || ips.power_depth > 0, ips.power_depth > 0);
-					if(i == 0 && m.size() && !po.preserve_precision && (m[i].isNumber() || (m[i].isNegate() && m[i][0].isNumber())) && m[1].isUnit() && m[i].isApproximate() && m[i].precision() < 0 && m[1].unit()->isCurrency() && !po.use_max_decimals && !po.use_min_decimals) {
+					if(i == 0 && m.size() == 2 && !po.preserve_precision && (m[i].isNumber() || (m[i].isNegate() && m[i][0].isNumber())) && m[1].isUnit() && m[i].isApproximate() && m[i].precision() < 0 && m[1].unit()->isCurrency() && (!po.use_max_decimals || po.max_decimals < 0) && (!po.use_min_decimals || po.min_decimals <= 0)) {
 						// Set number of decimals for converted currency
 						PrintOptions po2 = po;
 						po2.use_max_decimals = true;

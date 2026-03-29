@@ -2,9 +2,9 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY appversion "5.9.0">
-  <!ENTITY manrevision "5.9.0">
-  <!ENTITY date "January 2026">
+  <!ENTITY appversion "5.10.0">
+  <!ENTITY manrevision "5.10.0">
+  <!ENTITY date "Mars 2026">
   <!ENTITY app "Qalculate!">
   <!ENTITY appendixa SYSTEM "appendixa.xml">
   <!ENTITY appendixb SYSTEM "appendixb.xml">
@@ -15,7 +15,7 @@
 <title>&app; Manual v&manrevision;</title>
 <bookinfo>
 	<copyright>
-		<year>2005-2007, 2016-2025</year>
+		<year>2005-2007, 2016-2026</year>
 		<holder>Hanna Knutsson</holder>
 	</copyright>
 	<publisher> 
@@ -29,7 +29,11 @@
 	</authorgroup>
 
 	<releaseinfo>This manual describes version &appversion; of &app;.
-	</releaseinfo> 
+
+	<para>Instructions for the command line calculator can be found in the <ulink url="qalc.html">qalc manual page</ulink>.</para>
+	<para>This manual is also available as a <ulink url="singlepage.html">single page</ulink>.</para>
+	<!-- <para>This manual is also available as <ulink url="index.html">multiple pages</ulink>.</para> -->
+	</releaseinfo>
 	<legalnotice> 
 		<title>Feedback</title> 
 		<para>
