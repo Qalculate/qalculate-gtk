@@ -180,6 +180,18 @@ bool test_search_result(const MathStructure &m, bool top = true) {
 	return true;
 }
 
+bool contains_temperature_unit_search(const MathStructure &m) {
+	if(m.isUnit()) {
+		return m.unit() == CALCULATOR->getUnitById(UNIT_ID_CELSIUS) || m.unit() == CALCULATOR->getUnitById(UNIT_ID_FAHRENHEIT);
+	}
+	if(!m.isMultiplication()) return false;
+	bool b_ret = false;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_temperature_unit_search(m[i])) b_ret = true;
+		else if(m[i].isUnit_exp()) return false;
+	}
+	return b_ret;
+}
 
 void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 	string expression = joined_terms;
@@ -319,7 +331,7 @@ void handle_terms(gchar *joined_terms, GVariantBuilder &builder) {
 		if(CALCULATOR->aborted()) m.setAborted();
 		if(m.size() > 50 || m.countTotalChildren(false) > 500 || (m.isMatrix() && m.rows() * m.columns() > 50) || !test_search_result(m)) {CALCULATOR->stopControl(); return;}
 
-		if(!b_to && ((eo.approximation == APPROXIMATION_EXACT && eo.auto_post_conversion != POST_CONVERSION_NONE) || eo.auto_post_conversion == POST_CONVERSION_OPTIMAL)) {
+		if(!b_to && ((eo.approximation == APPROXIMATION_EXACT && eo.auto_post_conversion != POST_CONVERSION_NONE) || eo.auto_post_conversion == POST_CONVERSION_OPTIMAL || contains_temperature_unit_search(m))) {
 			convert_unchanged_quantity_with_unit(mparse, m, eo);
 		}
 
