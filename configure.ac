@@ -54,7 +54,7 @@ esac
 
 AM_CONDITIONAL(PLATFORM_LINUX, test "$build_linux" = "yes")
 AM_CONDITIONAL(PLATFORM_WIN32, test "$build_windows" = "yes")
-AM_CONDITIONAL(PLATFORM_MACOS, test "$build_macos" = "yes")
+AM_CONDITIONAL(PLATFORM_MACOS, test "$build_mac" = "yes")
 
 dnl  --------------------------------
 dnl | check for neccessary libraries |-----------------------------------------
