@@ -1071,7 +1071,7 @@ void do_completion(bool to_menu, bool force) {
 		g_free(gstr2);
 		if(unicode_length(str) < (size_t) completion_min) {gtk_widget_hide(completion_window); return;}
 	}
-	if(!force && !str.empty() && !editing_to_expression && current_parsed_function() && current_parsed_function_index() > 0 && current_parsed_function()->getArgumentDefinition(current_parsed_function_index()) && current_parsed_function()->getArgumentDefinition(current_parsed_function_index())->type() == ARGUMENT_TYPE_TEXT && current_parsed_function_index() <= current_parsed_function_struct().size() && current_parsed_function_struct()[current_parsed_function_index() - 1].isSymbolic()) {
+	if(!force && !str.empty() && !editing_to_expression && current_parsed_function() && current_parsed_function_index() > 0 && current_parsed_function()->getArgumentDefinition(current_parsed_function_index()) && current_parsed_function()->getArgumentDefinition(current_parsed_function_index())->type() == ARGUMENT_TYPE_TEXT && current_parsed_function_index() <= current_parsed_function_struct().size() && current_parsed_function_struct()[current_parsed_function_index() - 1].isSymbolic() && (current_parsed_function_index() != 1 || (current_parsed_function()->id() != FUNCTION_ID_BIN && current_parsed_function()->id() != FUNCTION_ID_OCT && current_parsed_function()->id() != FUNCTION_ID_DEC && current_parsed_function()->id() != FUNCTION_ID_FUNCTION))) {
 		gtk_widget_hide(completion_window);
 		return;
 	}

@@ -303,31 +303,30 @@ void set_clipboard(string str, int ascii, bool html, bool is_result, int copy_wi
 	if(ascii > 0 || (ascii < 0 && copy_ascii)) {
 		str = unformat(unhtmlize(str, true));
 		if(copy_without_units > 0 || (copy_without_units < 0 && copy_ascii_without_units && is_result)) {
-			size_t i2 = string::npos;
-			if(!is_result) i2 = str.rfind("=");
-			size_t i = str.rfind(" ");
-			if(i != string::npos && (i2 == string::npos || i < i2)) {
-				MathStructure m;
-				ParseOptions po;
-				po.preserve_format = true;
-				CALCULATOR->beginTemporaryStopMessages();
-				CALCULATOR->parse(&m, str.substr(i + 1, str.length() - (i + 1)), po);
-				if(is_unit_multiexp(m)) {
-					string str2 = (i2 != string::npos ? str.substr(i2 + 1, str.length() - (i2 + 1)) : str);
-					gsub(DOT, "", str2);
-					gsub(COMMA, "", str2);
-					CALCULATOR->parse(&m, str2, po);
-					if(m.isMultiplication() || m.isDivision()) {
-						str = str.substr(0, i);
-					}
-				} else if(m.isNumber() && CALCULATOR->getActiveUnit(str.substr(0, i))) {
-					str = str.substr(i + 1, str.length() - (i + 1));
-				}
-				CALCULATOR->endTemporaryStopMessages();
+			size_t i = str.find_first_of(SPACE NUMBERS);
+			if(i != string::npos && i != 0 && CALCULATOR->getActiveUnit(str.substr(0, i))) {
+				str = str.substr(i, str.length() - i);
+				remove_blank_ends(str);
 			} else {
-				i = str.find_first_of(NUMBERS);
-				if(i != string::npos && i > 0 && CALCULATOR->getActiveUnit(str.substr(0, i)) && str.find_first_not_of(NUMBER_ELEMENTS, i) == string::npos) {
-					str = str.substr(i, str.length() - i);
+				size_t i2 = string::npos;
+				if(!is_result) i2 = str.rfind("=");
+				size_t i = str.rfind(" ");
+				if(i != string::npos && (i2 == string::npos || i < i2)) {
+					MathStructure m;
+					ParseOptions po;
+					po.preserve_format = true;
+					CALCULATOR->beginTemporaryStopMessages();
+					CALCULATOR->parse(&m, str.substr(i + 1, str.length() - (i + 1)), po);
+					if(is_unit_multiexp(m)) {
+						string str2 = (i2 != string::npos ? str.substr(i2 + 1, str.length() - (i2 + 1)) : str);
+						gsub(DOT, "", str2);
+						gsub(COMMA, "", str2);
+						CALCULATOR->parse(&m, str2, po);
+						if(m.isMultiplication() || m.isDivision()) {
+							str = str.substr(0, i);
+						}
+					}
+					CALCULATOR->endTemporaryStopMessages();
 				}
 			}
 		}

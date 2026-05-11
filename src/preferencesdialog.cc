@@ -1163,7 +1163,7 @@ GtkWidget* get_preferences_dialog() {
 				curs.push_back(ellipsize_title(CALCULATOR->units[i]->title(), 20) + string(" (") + CALCULATOR->units[i]->referenceName() + ")");
 			}
 		}
-		std::sort(curs.begin(), curs.end(), std::locale());
+		std::sort(curs.begin(), curs.end(), std::locale(""));
 		string scur;
 		if(CALCULATOR->getLocalCurrency()) scur = CALCULATOR->getLocalCurrency()->referenceName();
 		for(size_t i = 0; i < curs.size(); i++) {

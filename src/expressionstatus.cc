@@ -871,6 +871,8 @@ void display_parse_status() {
 		size_t parse_l = 0;
 		mwhere.clear();
 		if(!str_w.empty()) {
+			CALCULATOR->endTemporaryStopMessages();
+			CALCULATOR->beginTemporaryStopMessages();
 			CALCULATOR->beginTemporaryStopMessages();
 			CALCULATOR->parseExpressionAndWhere(&mparse, &mwhere, str_e, str_w, evalops.parse_options);
 			if(auto_calculable && !test_autocalculatable(mwhere, true)) auto_calculable = 0;
