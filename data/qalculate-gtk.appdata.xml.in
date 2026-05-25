@@ -51,6 +51,35 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.11.0" date="2026-05-25">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Add set functions (union, intersect, setdiff, setxor, isMember, isSubset) and operators (∪, ∩, ∖, ⊖, ∈, ⊆, etc.)</li>
+      <li>Add characters(), count(), digitSum(), and digitalRoot(), find(), popCount(), string(), and while() functions</li>
+      <li>Support negative row and column values in element(), row(), and column() functions</li>
+      <li>Support matrix[row][column] syntax</li>
+      <li>Support text objects in sort() function</li>
+      <li>Add third optional argument to interval() function to allow exclusion of exact endpoints</li>
+      <li>Ignore "to" and "where" (and equivalent symbols) inside quotation marks</li>
+      <li>Ignore dot in front of plus or minus (for consistent behavior in line with entrywise operators)</li>
+      <li>Show "Division by zero" warning for all divisions by zero</li>
+      <li>Make display of expressions with time units in time format more consistent</li>
+      <li>Fix parse status and calculate-as-you-type when "where" expression defines a new symbol</li>
+      <li>Fix removal of currency symbol in immediately in front value when copying result without unit</li>
+      <li>Fix support for vector in argument of many functions (erf, mod, exp, etc.)</li>
+      <li>Fix explicit conversion to mixed units for year variants</li>
+      <li>Fix first digit missing in return value of integerDigits() in some cases</li>
+      <li>Fix segfault when Calculator object is destroyed with uninitialized random state</li>
+      <li>Fix infinite loop when referencing subfunction in another subfunction</li>
+      <li>Fix segfault in replace() with variable specified using where expression, e.g. "replace(v, x, 1) where v = x"</li>
+      <li>Fix segfault when data set function name is followed immediately by a single dot</li>
+      <li>Fix v[i]=a syntax for vector element assignment</li>
+      <li>Convert degree Celsius to Fahrenheit and vice versa in Gnome search provider</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.10.0" date="2026-03-30">
    <description>
     <p>Changes:</p>

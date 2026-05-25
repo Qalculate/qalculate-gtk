@@ -1545,6 +1545,7 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				ips_n.wrap = false;
 				PrintOptions po2 = po;
 				po2.show_ending_zeroes = false;
+				if(m[0].isUnit() && po.base == BASE_TIME) po2.base = 10;
 				cairo_surface_t *surface_exp = draw_structure(m[1], po2, caf, ips_n, &ctmp, scaledown, color);
 				if(!surface_exp) {
 					cairo_surface_destroy(surface_base);

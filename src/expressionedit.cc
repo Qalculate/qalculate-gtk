@@ -837,7 +837,7 @@ extern bool block_input;
 #ifdef EVENT_CONTROLLER_TEST
 gboolean on_expressiontext_key_press_event(GtkEventControllerKey*, guint keyval, guint, GdkModifierType state, gpointer) {
 #else
-gboolean on_expressiontext_key_press_event(GtkWidget *o, GdkEventKey *event, gpointer) {
+gboolean on_expressiontext_key_press_event(GtkWidget*, GdkEventKey *event, gpointer) {
 	GdkModifierType state; guint keyval = 0;
 	gdk_event_get_state((GdkEvent*) event, &state);
 	gdk_event_get_keyval((GdkEvent*) event, &keyval);

@@ -1473,12 +1473,25 @@ void do_completion(bool to_menu, bool force) {
 						if(current_from_struct && str.length() < 3) {
 							if(p_type >= 100 && p_type < 200) {
 								if(to_type == 5 || current_from_struct->containsType(STRUCT_UNIT) <= 0) b_match = 0;
-							} else if((p_type == 294 || p_type == 295 || (p_type == 292 && to_type == 4)) && !current_from_units.empty()) {
+							} else if((p_type == 294 || p_type == 295 || p_type == 293 || (p_type == 292 && to_type == 4)) && !current_from_units.empty()) {
 								bool b = false;
-								for(size_t i = 0; i < current_from_units.size(); i++) {
-									if(current_from_units[i] == CALCULATOR->getDegUnit()) {
+								if(p_type == 293) {
+									if(current_from_struct->isUnit() && current_from_struct->unit()->baseUnit()->referenceName() == "s" && current_from_struct->unit()->baseExponent() == 1) {
 										b = true;
-										break;
+									} else if(current_from_struct->isMultiplication()) {
+										for(size_t i = 0; i < current_from_struct->size(); i++) {
+											if((*current_from_struct)[i].isUnit() && (*current_from_struct)[i].unit()->baseUnit()->referenceName() == "s" && (*current_from_struct)[i].unit()->baseExponent() == 1) {
+												b = true;
+												break;
+											}
+										}
+									}
+								} else {
+									for(size_t i = 0; i < current_from_units.size(); i++) {
+										if(current_from_units[i] == CALCULATOR->getDegUnit()) {
+											b = true;
+											break;
+										}
 									}
 								}
 								if(!b) {

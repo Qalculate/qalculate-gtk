@@ -123,7 +123,7 @@ void on_tShortcutsType_selection_changed(GtkTreeSelection *treeselection, gpoint
 }
 
 GtkWidget *shortcut_label = NULL;
-gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey *event, gpointer) {
+gboolean on_shortcut_key_released(GtkWidget *w, GdkEventKey*, gpointer) {
 	if(current_shortcut_key == 0 || (current_shortcut_key >= GDK_KEY_Shift_L && current_shortcut_key <= GDK_KEY_Hyper_R)) return FALSE;
 	if(current_shortcut_modifier == 0 && current_shortcut_key == GDK_KEY_Escape) {
 		gtk_dialog_response(GTK_DIALOG(w), GTK_RESPONSE_CANCEL);

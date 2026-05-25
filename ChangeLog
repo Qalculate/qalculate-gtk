@@ -1,3 +1,17 @@
+2026-05-11 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix parse status and calculate-as-you-type when "where" expression defines a new variable with previously undefined symbol
+	* Enable completion in first argument of bin(), oct(), dec(), and function()
+	* Fix removal of currency symbol in immediately in front value when copying result without unit
+
+2026-04-08 Michael Hoang <enzime@users.noreply.github.com>
+
+	* Fix PLATFORM_MACOS not being set on macOS
+
+2026-04-01 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Convert degree Celsius to Farhenheit and vice versa in search provider
+
 2026-03-27 Ekaterine Papava <papava.e@gtu.ge>
 
 	* Add Georgian translation

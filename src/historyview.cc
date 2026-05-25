@@ -526,14 +526,14 @@ void write_history(FILE *file) {
 			}
 		}
 	}
-	while(hi >= 0 && inhistory.size() > 0) {
-		if(inhistory_protected[hi] || (inhistory_type[hi] == QALCULATE_HISTORY_BOOKMARK && hi != 0 && inhistory_type[hi - 1] != QALCULATE_HISTORY_OLD)) {
+	while(hi > 0) {
+		if(inhistory_protected[hi] || (inhistory_type[hi] == QALCULATE_HISTORY_BOOKMARK && inhistory_type[hi - 1] != QALCULATE_HISTORY_OLD)) {
 			bool b_first = true;
 			if(inhistory_time[hi] != history_time_prev) {
 				history_time_prev = inhistory_time[hi];
 				fprintf(file, "history_time=%lli\n", (long long int) history_time_prev);
 			}
-			while(hi >= 0) {
+			while(true) {
 				bool do_end = false;
 				switch(inhistory_type[hi]) {
 					case QALCULATE_HISTORY_EXPRESSION: {
@@ -638,7 +638,7 @@ void write_history(FILE *file) {
 			}
 			if(hi > inhistory_type.size()) break;
 		}
-		if(hi == 0) break;
+		if(hi <= 1) break;
 		hi--;
 	}
 }
@@ -3214,7 +3214,7 @@ void update_historyview_popup() {
 	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_history_protect"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_history_protect_toggled, NULL);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_history_protect")), selected_rows.size() > 0 && b_protected);
 	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(main_builder, "popup_menu_item_history_protect"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_popup_menu_item_history_protect_toggled, NULL);
-	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_bookmark")), selected_rows.size() == 1 && hi >= 0 && inhistory_type[hi] != QALCULATE_HISTORY_OLD && (HISTORY_NOT_MESSAGE(hi) || ITEM_NOT_EXPRESSION(hi)));
+	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(main_builder, "popup_menu_item_history_bookmark")), selected_rows.size() == 1 && inhistory_type[hi] != QALCULATE_HISTORY_OLD && (HISTORY_NOT_MESSAGE(hi) || ITEM_NOT_EXPRESSION(hi)));
 	if(selected_rows.size() == 1 && history_protected_by_bookmark(hi)) gtk_menu_item_set_label(GTK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_history_bookmark")), _("Remove Bookmark"));
 	else gtk_menu_item_set_label(GTK_MENU_ITEM(gtk_builder_get_object(main_builder, "popup_menu_item_history_bookmark")), _("Add Bookmark…"));
 	if(selected_rows.size() == 1 && inhistory_time[hi] != 0) {

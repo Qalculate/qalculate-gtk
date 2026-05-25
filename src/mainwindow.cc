@@ -763,23 +763,6 @@ gboolean on_check_version_idle(gpointer) {
 	return FALSE;
 }
 
-bool is_time(const MathStructure &m) {
-	bool b = false;
-	if(m.isUnit() && m.unit()->baseUnit()->referenceName() == "s") {
-		b = true;
-	} else if(m.isMultiplication() && m.size() == 2 && m[0].isNumber() && m[1].isUnit() && m[1].unit()->baseUnit()->referenceName() == "s") {
-		b = true;
-	} else if(m.isAddition() && m.size() > 0) {
-		b = true;
-		for(size_t i = 0; i < m.size(); i++) {
-			if(m[i].isUnit() && m[i].unit()->baseUnit()->referenceName() == "s") {}
-			else if(m[i].isMultiplication() && m[i].size() == 2 && m[i][0].isNumber() && m[i][1].isUnit() && m[i][1].unit()->baseUnit()->referenceName() == "s") {}
-			else {b = false; break;}
-		}
-	}
-	return b;
-}
-
 bool contains_temperature_unit_gtk(const MathStructure &m) {
 	if(m.isUnit()) {
 		return m.unit() == CALCULATOR->getUnitById(UNIT_ID_CELSIUS) || m.unit() == CALCULATOR->getUnitById(UNIT_ID_FAHRENHEIT);
@@ -1220,6 +1203,90 @@ IntervalDisplay get_adaptive_interval_display(const string &expression_str, cons
 	return  INTERVAL_DISPLAY_SIGNIFICANT_DIGITS;
 }
 
+bool is_time_unit_gtk(const MathStructure &m) {
+	return m.isUnit() && m.unit()->baseUnit()->referenceName() == "s" && m.unit()->baseExponent() == 1;
+}
+bool contains_time_unit_gtk(const MathStructure &m) {
+	if(is_time_unit_gtk(m)) return true;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(contains_time_unit_gtk(m[i])) return true;
+	}
+	return false;
+}
+bool convert_for_time_format_gtk(MathStructure &m, const EvaluationOptions &eo, bool top = true) {
+	if(top && (!contains_time_unit_gtk(m) || !CALCULATOR->getActiveUnit("h"))) return false;
+	bool b = false;
+	if(is_time_unit_gtk(m)) {
+		if(top) {
+			b = true;
+		} else if(m.unit()->referenceName() != "h") {
+			m.convert(CALCULATOR->getActiveUnit("h"), false, NULL, true, eo);
+			m.eval(eo);
+			return true;
+		} else {
+			return false;
+		}
+	} else if(m.isMultiplication() && m.size() >= 1 && m[0].isNumber()) {
+		size_t index = 0;
+		for(size_t i = 1; i < m.size(); i++) {
+			if(is_time_unit_gtk(m[i])) {
+				index = i;
+				break;
+			}
+		}
+		if(index == 1 && m.size() == 2) {
+			if(top) {
+				b = true;
+			} else if(m[1].unit()->referenceName() != "h") {
+				m.convert(CALCULATOR->getActiveUnit("h"), false, NULL, true, eo);
+				m.eval(eo);
+				return true;
+			} else {
+				return false;
+			}
+		} else if(index > 0 && m[index].unit()->referenceName() != "h") {
+			CALCULATOR->beginTemporaryStopMessages();
+			MathStructure mnum(m[0]);
+			mnum.multiply(m[index]);
+			Unit *u = CALCULATOR->getActiveUnit("h");
+			mnum.convert(u, false, NULL, true, eo);
+			mnum.eval(eo);
+			if(mnum.isUnit() && mnum.unit() == u) mnum = m_one;
+			else if(mnum.isMultiplication() && mnum.size() == 2 && mnum[1].isUnit() && mnum[1].unit() == u) mnum.setToChild(1, true);
+			CALCULATOR->endTemporaryStopMessages(mnum.isNumber());
+			if(mnum.isNumber()) {
+				m.delChild(1);
+				m.insertChild(mnum, 1);
+				m[index].setUnit(u);
+				return true;
+			}
+			return false;
+		}
+	} else if(top && m.isAddition() && m.size() > 0) {
+		b = true;
+		for(size_t i = 0; i < m.size(); i++) {
+			if(is_time_unit_gtk(m[i])) {}
+			else if(m[i].isMultiplication() && m[i].size() == 2 && m[i][0].isNumber() && is_time_unit_gtk(m[i][1])) {}
+			else {b = false; break;}
+		}
+	}
+	if(b) {
+		EvaluationOptions eo2 = eo;
+		eo2.sync_units = true;
+		m.divide(CALCULATOR->getActiveUnit("h"));
+		m.eval(eo2);
+		return true;
+	}
+	bool b_ret = false;
+	for(size_t i = 0; i < m.size(); i++) {
+		if(convert_for_time_format_gtk(m[i], eo, false)) {
+			b_ret = true;
+			m.childUpdated(i + 1);
+		}
+	}
+	return b_ret;
+}
+
 void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	if(result_blocked() || calculation_blocked()) return;
 
@@ -1641,7 +1708,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		bool error_current_object = false;
 		if(parsed_autocalculable() && origstr && !had_to_expression && !function_in_progress && (!current_parsed_function() || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index()) || !current_parsed_function()->getArgumentDefinition(current_parsed_function_index())->suggestsQuotes()) && !CALCULATOR->hasWhereExpression(str, evalops) && str.find("0x") == string::npos && str.find("0d") == string::npos) {
 			string str_object = current_completion_object();
-			if(!str_object.empty() && (str_object.back() < '0' || str_object.back() > '9')) {
+			if(!str_object.empty() && (str_object[str_object.length() - 1] < '0' || str_object[str_object.length() - 1] > '9')) {
 				MathStructure m;
 				CALCULATOR->beginTemporaryStopMessages();
 				CALCULATOR->parse(&m, str_object, evalops.parse_options);
@@ -1829,13 +1896,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		displayed_mstruct_pre->set(parsed_in_result ? mauto : *mstruct);
 
 		// convert time units to hours when using time format
-		if(printops.base == BASE_TIME && is_time(*displayed_mstruct_pre)) {
-			Unit *u = CALCULATOR->getActiveUnit("h");
-			if(u) {
-				displayed_mstruct_pre->divide(u);
-				displayed_mstruct_pre->eval(evalops);
-			}
-		}
+		if(printops.base == BASE_TIME) convert_for_time_format_gtk(*displayed_mstruct_pre, evalops);
 
 		if(printops.spell_out_logical_operators && parsed_mstruct && test_parsed_comparison_gtk(*parsed_mstruct)) {
 			if(displayed_mstruct_pre->isZero()) {
@@ -2505,13 +2566,7 @@ void ViewThread::run() {
 		}
 
 		// convert time units to hours when using time format
-		if(printops.base == BASE_TIME && is_time(m)) {
-			Unit *u = CALCULATOR->getActiveUnit("h");
-			if(u) {
-				m.divide(u);
-				m.eval(evalops);
-			}
-		}
+		if(printops.base == BASE_TIME) convert_for_time_format_gtk(m, evalops);
 
 		if(printops.spell_out_logical_operators && x && test_parsed_comparison_gtk(*((MathStructure*) x))) {
 			if(m.isZero()) {
@@ -6086,7 +6141,7 @@ void load_preferences() {
 	}
 
 	version_numbers[0] = 5;
-	version_numbers[1] = 10;
+	version_numbers[1] = 11;
 	version_numbers[2] = 0;
 
 	if(file) {
@@ -7183,7 +7238,7 @@ void show_about() {
 	gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(dialog), _("translator-credits"));
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2025 Hanna Knutsson");
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "Copyright © 2003–2007, 2008, 2016–2026 Hanna Knutsson");
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(dialog), "qalculate");
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "Qalculate! (GTK)");
 	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
