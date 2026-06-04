@@ -1364,6 +1364,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					gtk_text_iter_forward_char(&iter);
 					gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &ipos, &iter, FALSE);
 					string c2 = gstr;
+					if(rtl_input) gsub(LTR_MARK, "", c2);
 					g_free(gstr);
 					string c1;
 					if(!gtk_text_iter_is_start(&ipos)) {
@@ -1371,6 +1372,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 						gtk_text_iter_backward_char(&iter);
 						gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &iter, &ipos, FALSE);
 						c1 = gstr;
+						if(rtl_input) gsub(LTR_MARK, "", c1);
 						g_free(gstr);
 					}
 					if((c2.length() == 1 && is_in("*/^|&<>=)]", c2[0]) && (c2[0] != '|' || evalops.parse_options.base != BASE_ROMAN_NUMERALS)) || (c2.length() > 1 && (c2 == "∧" || c2 == "∨" || c2 == "⊻" || c2 == expression_times_sign() || c2 == expression_divide_sign() || c2 == SIGN_NOT_EQUAL || c2 == SIGN_GREATER_OR_EQUAL || c2 == SIGN_LESS_OR_EQUAL))) {
@@ -1425,6 +1427,8 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					remove_blank_ends(to_str1);
 					to_str2 = to_str.substr(ispace + 1);
 					remove_blank_ends(to_str2);
+				} else {
+					to_str1 = "";
 				}
 				if(equalsIgnoreCase(to_str, "hex") || equalsIgnoreCase(to_str, "hexadecimal") || equalsIgnoreCase(to_str, _("hexadecimal"))) {
 					to_base = BASE_HEXADECIMAL;
@@ -4900,6 +4904,8 @@ void execute_expression(bool force, bool do_mathoperation, MathOperation op, Mat
 				remove_blank_ends(to_str1);
 				to_str2 = to_str.substr(ispace + 1);
 				remove_blank_ends(to_str2);
+			} else {
+				to_str1 = "";
 			}
 			if(equalsIgnoreCase(to_str, "hex") || equalsIgnoreCase(to_str, "hexadecimal") || equalsIgnoreCase(to_str, _("hexadecimal"))) {
 				to_base = BASE_HEXADECIMAL;

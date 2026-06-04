@@ -44,6 +44,7 @@ extern bool minimal_mode;
 extern bool repdeci_overline;
 extern std::string themestr;
 extern int version_numbers[3];
+extern bool rtl_input;
 
 extern std::vector<MathFunction*> recent_functions;
 extern std::vector<Variable*> recent_variables;

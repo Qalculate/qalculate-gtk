@@ -676,6 +676,7 @@ void display_parse_status() {
 	gchar *gtext = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 	string text = gtext, str_f;
 	g_free(gtext);
+	if(rtl_input) gsub(LTR_MARK, "", text);
 	bool double_tag = false;
 	string to_str = CALCULATOR->parseComments(text, evalops.parse_options, &double_tag);
 	if(!to_str.empty() && text.empty() && double_tag) {
@@ -764,6 +765,7 @@ void display_parse_status() {
 			if(current_from_struct) {current_from_struct->unref(); current_from_struct = NULL; current_from_units.clear();}
 			gtext = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &ipos, FALSE);
 			str_e = CALCULATOR->unlocalizeExpression(gtext, evalops.parse_options);
+			if(rtl_input) gsub(LTR_MARK, "", str_e);
 			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate || rpn_mode || parsed_in_result);
 			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
 			if(!b) {
@@ -917,6 +919,8 @@ void display_parse_status() {
 					remove_blank_ends(to_str1);
 					to_str2 = str_u.substr(ispace + 1);
 					remove_blank_ends(to_str2);
+				} else {
+					to_str1 = "";
 				}
 				if(equalsIgnoreCase(str_u, "hex") || equalsIgnoreCase(str_u, "hexadecimal") || equalsIgnoreCase(str_u, _("hexadecimal"))) {
 					parsed_expression += _("hexadecimal number");

@@ -84,6 +84,9 @@ void start_expression_spinner();
 void stop_expression_spinner();
 void store_expression_selection();
 void restore_expression_selection();
+void expression_get_start_iter(GtkTextIter*);
+gboolean expression_iter_is_start(GtkTextIter*);
+void test_rtl();
 
 #define EXPRESSION_STOP 1
 #define EXPRESSION_SPINNER 2

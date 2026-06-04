@@ -67,6 +67,7 @@ bool use_custom_expression_font = false, save_custom_expression_font = false;
 string custom_expression_font;
 int replace_expression = KEEP_EXPRESSION;
 bool highlight_background = false;
+bool rtl_input = false;
 
 string sdot, saltdot, sdiv, sslash, stimes, sminus;
 
@@ -159,6 +160,7 @@ int wrap_expression_selection(const char *insert_before, bool return_true_if_who
 	gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 	string str = gstr;
 	g_free(gstr);
+	if(rtl_input) gsub(LTR_MARK, "", str);
 	if(!insert_before && ((gtk_text_iter_is_start(&iend) && gtk_text_iter_is_end(&istart)) || (gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend)))) {
 		if(str.find_first_not_of(NUMBER_ELEMENTS SPACE) == string::npos) {
 			if(gtk_text_iter_is_end(&istart)) gtk_text_buffer_place_cursor(expression_edit_buffer(), &istart);
@@ -204,6 +206,7 @@ string get_expression_text() {
 	gchar *gtext = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 	string text = gtext;
 	g_free(gtext);
+	if(rtl_input) gsub(LTR_MARK, "", text);
 	return text;
 }
 bool expression_modified() {
@@ -241,6 +244,7 @@ string get_selected_expression_text(bool return_all_if_no_sel) {
 	gchar *gtext = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 	string text = gtext;
 	g_free(gtext);
+	if(rtl_input) gsub(LTR_MARK, "", text);
 	return text;
 }
 void add_expression_to_undo() {
@@ -266,13 +270,29 @@ void overwrite_expression_selection(const gchar *text) {
 	} else {
 		gtk_text_buffer_delete_selection(expression_edit_buffer(), FALSE, TRUE);
 	}
+	if(rtl_input) {
+		GtkTextIter iter;
+		gtk_text_buffer_get_start_iter(expression_edit_buffer(), &iter);
+		if(gtk_text_iter_is_end(&iter) || gtk_text_iter_get_char(&iter) != 0x200E) {
+			block_expression_modified();
+			gtk_text_buffer_insert(expression_edit_buffer(), &iter, LTR_MARK, -1);
+			unblock_expression_modified();
+		}
+	}
 	unblock_undo();
 	if(text) gtk_text_buffer_insert_at_cursor(expression_edit_buffer(), text, -1);
 	unblock_completion();
 }
 void set_expression_text(const gchar *text) {
 	block_undo();
-	gtk_text_buffer_set_text(expression_edit_buffer(), text, -1);
+	if(rtl_input) {
+		string str = text;
+		gsub(LTR_MARK, "", str);
+		str.insert(0, LTR_MARK);
+		gtk_text_buffer_set_text(expression_edit_buffer(), str.c_str(), -1);
+	} else {
+		gtk_text_buffer_set_text(expression_edit_buffer(), text, -1);
+	}
 	unblock_undo();
 	if(!block_add_to_undo) add_expression_to_undo();
 }
@@ -284,18 +304,12 @@ void insert_text(const gchar *name) {
 	unblock_completion();
 }
 void clear_expression_text() {
-	gtk_text_buffer_set_text(expression_edit_buffer(), "", -1);
+	gtk_text_buffer_set_text(expression_edit_buffer(), rtl_input ? LTR_MARK : "", -1);
 }
 bool expression_is_empty() {
 	GtkTextIter istart;
 	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
-	return gtk_text_iter_is_end(&istart);
-}
-bool is_at_beginning_of_expression(bool allow_selection) {
-	if(!allow_selection && gtk_text_buffer_get_has_selection(expression_edit_buffer())) return false;
-	GtkTextIter ipos;
-	gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, gtk_text_buffer_get_insert(expression_edit_buffer()));
-	return gtk_text_iter_is_start(&ipos);
+	return gtk_text_iter_is_end(&istart) || (rtl_input && gtk_text_iter_get_char(&istart) == 0x200E && !gtk_text_iter_forward_char(&istart));
 }
 
 void add_to_expression_history(string str) {
@@ -409,9 +423,43 @@ void focus_keeping_selection() {
 void focus_expression() {
 	if(expression_edit_widget() && !gtk_widget_is_focus(expression_edit_widget())) gtk_widget_grab_focus(expression_edit_widget());
 }
+void expression_iter_after_ltr(GtkTextIter *istart) {
+	if(rtl_input && !gtk_text_iter_is_end(istart) && gtk_text_iter_get_char(istart) == 0x200E) {
+		gtk_text_iter_forward_char(istart);
+	}
+
+}
+
+void expression_get_start_iter(GtkTextIter *istart) {
+	gtk_text_buffer_get_start_iter(expression_edit_buffer(), istart);
+	expression_iter_after_ltr(istart);
+}
+gboolean expression_iter_is_start(GtkTextIter *istart) {
+	if(gtk_text_iter_is_start(istart)) return TRUE;
+	if(rtl_input) {
+		GtkTextIter iter;
+		expression_get_start_iter(&iter);
+		return gtk_text_iter_equal(istart, &iter);
+	}
+	return FALSE;
+}
+bool expression_pos_is_start() {
+	GtkTextMark *mpos = gtk_text_buffer_get_insert(expression_edit_buffer());
+	if(mpos) {
+		GtkTextIter ipos;
+		gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mpos);
+		if(expression_iter_is_start(&ipos)) return true;
+	}
+	return false;
+}
+bool is_at_beginning_of_expression(bool allow_selection) {
+	if(!allow_selection && gtk_text_buffer_get_has_selection(expression_edit_buffer())) return false;
+	return expression_pos_is_start();
+}
+
 void expression_select_all() {
 	GtkTextIter istart, iend;
-	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+	expression_get_start_iter(&istart);
 	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
 	gtk_text_buffer_select_range(expression_edit_buffer(), &istart, &iend);
 	gtk_text_buffer_remove_tag(expression_edit_buffer(), expression_par_tag, &istart, &iend);
@@ -423,19 +471,20 @@ void brace_wrap() {
 	gint il = expr.length();
 	if(il == 0) {
 		set_expression_text("()");
-		gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+		expression_get_start_iter(&istart);
 		gtk_text_iter_forward_char(&istart);
 		gtk_text_buffer_place_cursor(expression_edit_buffer(), &istart);
 		return;
 	}
 	GtkTextMark *mpos = gtk_text_buffer_get_insert(expression_edit_buffer());
 	gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mpos);
-	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+	expression_get_start_iter(&istart);
 	iend = istart;
 	bool goto_start = false;
 	if(gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
 		GtkTextMark *mstart = gtk_text_buffer_get_selection_bound(expression_edit_buffer());
 		gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &istart, mstart);
+		expression_iter_after_ltr(&istart);
 		if(gtk_text_iter_compare(&istart, &ipos) > 0) {
 			iend = istart;
 			istart = ipos;
@@ -444,7 +493,7 @@ void brace_wrap() {
 		}
 	} else {
 		iend = ipos;
-		if(!gtk_text_iter_is_start(&iend)) {
+		if(!expression_iter_is_start(&iend)) {
 			gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 			string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
 			g_free(gstr);
@@ -657,10 +706,34 @@ void set_expression_modified(bool b, bool handle, bool autocalc) {
 	add_completion_timeout();
 }
 
+gboolean add_ltr_mark(gpointer) {
+	block_expression_modified();
+	GtkTextIter iter;
+	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &iter);
+	gtk_text_buffer_insert(expression_edit_buffer(), &iter, LTR_MARK, -1);
+	while(!gtk_text_iter_is_end(&iter)) {
+		if(gtk_text_iter_get_char(&iter) == 0x200E) {
+			gtk_text_buffer_delete(expression_edit_buffer(), &iter, &iter);
+		} else if(!gtk_text_iter_forward_char(&iter)) {
+			break;
+		}
+	}
+	unblock_expression_modified();
+	return FALSE;
+}
+
 void on_expressionbuffer_changed(GtkTextBuffer *o, gpointer) {
-	if(block_emodified) return;
-	selstore_end = selstore_start;
-	set_expression_modified(true, true, o != NULL);
+	if(!block_emodified) {
+		selstore_end = selstore_start;
+		set_expression_modified(true, true, o != NULL);
+	}
+	if(rtl_input) {
+		GtkTextIter iter;
+		gtk_text_buffer_get_start_iter(o, &iter);
+		if(gtk_text_iter_is_end(&iter) || gtk_text_iter_get_char(&iter) != 0x200E) {
+			gdk_threads_add_idle(add_ltr_mark, NULL);
+		}
+	}
 }
 
 void on_expressionbuffer_paste_done(GtkTextBuffer*, GtkClipboard *cb, gpointer) {
@@ -850,6 +923,17 @@ return TRUE;}
 		}
 		return TRUE;
 	}
+	if(rtl_input) {
+		GtkTextMark *mpos = gtk_text_buffer_get_insert(expression_edit_buffer());
+		if(mpos) {
+			GtkTextIter ipos;
+			gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mpos);
+			if(gtk_text_iter_is_start(&ipos) && gtk_text_iter_get_char(&ipos) != 0x200E) {
+				gtk_text_iter_forward_char(&ipos);
+				gtk_text_buffer_move_mark(expression_edit_buffer(), mpos, &ipos);
+			}
+		}
+	}
 	if(do_keyboard_shortcut(keyval, state)) return TRUE;
 	FIX_ALT_GR
 	switch(keyval) {
@@ -903,14 +987,9 @@ return TRUE;}
 				brace_wrap();
 				return true;
 			}
-			GtkTextMark *mpos = gtk_text_buffer_get_insert(expression_edit_buffer());
-			if(mpos) {
-				GtkTextIter ipos;
-				gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mpos);
-				if(gtk_text_iter_is_start(&ipos)) {
-					brace_wrap();
-					return true;
-				}
+			if(expression_pos_is_start()) {
+				brace_wrap();
+				return true;
 			}
 			break;
 		}
@@ -1043,7 +1122,7 @@ return TRUE;}
 		}
 		case GDK_KEY_Home: {
 			GtkTextIter istart;
-			gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+			expression_get_start_iter(&istart);
 			if(state & GDK_SHIFT_MASK) {
 				GtkTextIter iselstart, iselend, ipos;
 				GtkTextMark *mark = gtk_text_buffer_get_insert(expression_edit_buffer());
@@ -1115,6 +1194,37 @@ return TRUE;}
 		case GDK_KEY_KP_Separator: {
 			overwrite_expression_selection(CALCULATOR->getDecimalPoint().c_str());
 			return TRUE;
+		}
+		case GDK_KEY_BackSpace: {
+			if(rtl_input && !gtk_text_buffer_get_has_selection(expression_edit_buffer()) && expression_pos_is_start()) return TRUE;
+			break;
+		}
+		case GDK_KEY_KP_Left: {}
+		case GDK_KEY_Left: {
+			if(!rtl_input) break;
+			if(expression_pos_is_start()) {
+				GtkTextIter iter;
+				expression_get_start_iter(&iter);
+				gtk_text_buffer_select_range(expression_edit_buffer(), &iter, &iter);
+				return TRUE;
+			}
+			if(state & GDK_CONTROL_MASK) {
+				GtkTextIter iter;
+				expression_get_start_iter(&iter);
+				if(state & GDK_SHIFT_MASK) {
+					GtkTextMark *mpos = gtk_text_buffer_get_insert(expression_edit_buffer());
+					if(mpos) {
+						GtkTextIter iter;
+						expression_get_start_iter(&iter);
+						gtk_text_buffer_move_mark(expression_edit_buffer(), mpos, &iter);
+						return TRUE;
+					}
+				} else {
+					gtk_text_buffer_place_cursor(expression_edit_buffer(), &iter);
+					return TRUE;
+				}
+			}
+			break;
 		}
 	}
 	if(state & GDK_CONTROL_MASK && keyval == GDK_KEY_c && !gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
@@ -1748,6 +1858,20 @@ const char *expression_font(bool return_default) {
 	return custom_expression_font.c_str();
 }
 
+void test_rtl() {
+	block_expression_modified();
+	string str = get_expression_text();
+	gtk_text_buffer_set_text(expression_edit_buffer(), " ", -1);
+	GtkTextIter iter;
+	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &iter);
+	GdkRectangle rect;
+	gtk_text_view_get_iter_location(GTK_TEXT_VIEW(expression_edit_widget()), &iter, &rect);
+	GtkAllocation alloc;
+	gtk_widget_get_allocation(expression_edit_widget(), &alloc);
+	rtl_input = (rect.x > alloc.width / 2);
+	gtk_text_buffer_set_text(expression_edit_buffer(), str.c_str(), -1);
+	unblock_expression_modified();
+}
 
 void create_expression_edit() {
 

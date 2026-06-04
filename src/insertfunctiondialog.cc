@@ -887,6 +887,7 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 	if(!gtk_text_buffer_get_has_selection(expression_edit_buffer()) && gtk_text_iter_is_end(&ipos)) {
 		if(!rpn_mode && chain_mode) {
 			string str = CALCULATOR->unlocalizeExpression(expr, evalops.parse_options);
+			if(rtl_input) gsub(LTR_MARK, "", str);
 			remove_blanks(str);
 			size_t par_n = 0, vec_n = 0;
 			for(size_t i = 0; i < str.length(); i++) {
@@ -1149,6 +1150,7 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 		//set selection as argument
 		gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 		string str = gstr;
+		if(rtl_input) gsub(LTR_MARK, "", str);
 		remove_blank_ends(str);
 		string sto;
 		bool b_to = false;
@@ -1174,6 +1176,7 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 		}
 		if(b_to) {
 			string sexpr = gstr;
+			if(rtl_input) gsub(LTR_MARK, "", sexpr);
 			sto = sexpr.substr(str.length());
 			insert_text((string(gstr2) + sto).c_str());
 		} else {

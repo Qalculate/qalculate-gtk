@@ -101,6 +101,8 @@ gboolean create_menus_etc(gpointer) {
 
 	test_border();
 
+	test_rtl();
+
 	return FALSE;
 
 }
@@ -139,17 +141,18 @@ void create_application(GtkApplication *app) {
 
 	g_application_set_default(G_APPLICATION(app));
 	gtk_window_set_application(main_window(), app);
+
 #ifdef HAVE_GTK_MAC 
-  GtkosxApplication *osx_app = (GtkosxApplication *)g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
-  GtkWidget *menubar = GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar"));
-  if (menubar) {
-    gtkosx_application_set_menu_bar(osx_app, GTK_MENU_SHELL(menubar));
-    gtk_widget_hide(menubar);
-    gtk_widget_set_no_show_all(menubar, TRUE);
-    gtkosx_application_ready(osx_app);
-  } else {
-    g_print("macOS Menu Integration Warning: Could not find 'menubar' widget in main_builder.\n");
-  }
+	GtkosxApplication *osx_app = (GtkosxApplication*) g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
+	GtkWidget *menubar = GTK_WIDGET(gtk_builder_get_object(main_builder, "menubar"));
+	if(menubar) {
+		gtkosx_application_set_menu_bar(osx_app, GTK_MENU_SHELL(menubar));
+		gtk_widget_hide(menubar);
+		gtk_widget_set_no_show_all(menubar, TRUE);
+		gtkosx_application_ready(osx_app);
+	} else {
+		g_print("macOS Menu Integration Warning: Could not find 'menubar' widget in main_builder.\n");
+	}
 #endif
 
 	while(gtk_events_pending()) gtk_main_iteration();

@@ -37,6 +37,8 @@ enum {
 	COMMAND_EVAL
 };
 
+#define LTR_MARK "‎"
+
 bool string_is_less(std::string str1, std::string str2);
 
 struct tree_struct {
