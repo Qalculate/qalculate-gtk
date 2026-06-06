@@ -300,7 +300,6 @@ void on_tUnits_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 				gtk_text_buffer_get_end_iter(buffer, &iter);
 				gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", NULL);
 				str = "";
-				if(rtl_input) str += LTR_MARK;
 				for(size_t i2 = 1; i2 <= u->countNames(); i2++) {
 					if(&u->getName(i2) != ename) {
 						str += ", ";
@@ -309,7 +308,6 @@ void on_tUnits_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 				}
 				str += "\n\n";
 			}
-			if(rtl_input) str += LTR_MARK;
 			bool is_approximate = false;
 			PrintOptions po = printops;
 			po.can_display_unicode_string_arg = (void*) gtk_builder_get_object(units_builder, "units_textview_description");
@@ -377,6 +375,7 @@ void on_tUnits_selection_changed(GtkTreeSelection *treeselection, gpointer) {
 				str += u->description();
 			}
 			gtk_text_buffer_get_end_iter(buffer, &iter);
+			if(rtl_input) str += LTR_MARK;
 			gtk_text_buffer_insert(buffer, &iter, str.c_str(), -1);
 			gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(units_builder, "units_frame_convert")), TRUE);
 			gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(units_builder, "units_label_from_unit")), u->print(true, printops.abbreviate_names, printops.use_unicode_signs, &can_display_unicode_string_function, (void*) gtk_builder_get_object(units_builder, "units_label_from_unit")).c_str());

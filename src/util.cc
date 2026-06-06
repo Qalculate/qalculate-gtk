@@ -1436,3 +1436,11 @@ bool test_autocalculatable(const MathStructure &m, bool where, bool top) {
 	}
 	return true;
 }
+
+void append_ltr_mark(string &str) {
+	if(str.length() < strlen(LTR_MARK) || str.find(LTR_MARK, str.length() - strlen(LTR_MARK)) == string::npos) str += LTR_MARK;
+}
+string with_ltr_mark(string str) {
+	if(str.length() < strlen(LTR_MARK) || str.find(LTR_MARK, str.length() - strlen(LTR_MARK)) == string::npos) str += LTR_MARK;
+	return str;
+}

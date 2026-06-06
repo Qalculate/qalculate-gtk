@@ -1105,7 +1105,6 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 			string str = "[";
 			str += gstr;
 			str += "]";
-			if(rtl_input) gsub(LTR_MARK, "", str);
 			insert_text(str.c_str());
 			g_free(gstr);
 		} else {
@@ -1148,7 +1147,7 @@ gboolean on_keypad_button_alt(GtkWidget *w, bool b2) {
 				GtkTextIter ipos, iend;
 				gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mpos);
 				iend = ipos;
-				if(gtk_text_iter_backward_char(&ipos) && (!rtl_input || gtk_text_iter_get_char(&ipos) != 0x200E)) {
+				if(gtk_text_iter_backward_char(&ipos)) {
 					gtk_text_buffer_delete(expression_edit_buffer(), &ipos, &iend);
 				}
 				focus_keeping_selection();
@@ -1372,13 +1371,13 @@ gboolean keypad_long_press_timeout(gpointer data) {
 		GtkTextIter iter;
 		gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &iter, gtk_text_buffer_get_insert(expression_edit_buffer()));
 		if(button_press_timeout_side == 2) {
-			if(gtk_text_iter_is_end(&iter)) expression_get_start_iter(&iter);
+			if(expression_iter_is_end(&iter)) expression_get_start_iter(&iter);
 			else gtk_text_iter_forward_char(&iter);
 		} else {
-			if(expression_iter_is_start(&iter)) gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iter);
+			if(expression_iter_is_start(&iter)) expression_get_end_iter(&iter);
 			else gtk_text_iter_backward_char(&iter);
 		}
-		if(!rtl_input || gtk_text_iter_get_char(&iter) != 0x200E) gtk_text_buffer_place_cursor(expression_edit_buffer(), &iter);
+		gtk_text_buffer_place_cursor(expression_edit_buffer(), &iter);
 		button_press_timeout_done = true;
 		return TRUE;
 	} else if(button_press_timeout_w == GTK_WIDGET(gtk_builder_get_object(main_builder, "button_move")) && button_press_timeout_side) {
@@ -1499,7 +1498,7 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 		if(gdk_event_get_event_type((GdkEvent*) event) == GDK_BUTTON_RELEASE) {
 			GtkTextIter iter;
 			if(gdk_event_get_window((GdkEvent*) event) && x > gdk_window_get_width(gdk_event_get_window((GdkEvent*) event)) / 2) {
-				gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iter);
+				expression_get_end_iter(&iter);
 			} else {
 				expression_get_start_iter(&iter);
 			}
@@ -1509,13 +1508,13 @@ gboolean on_button_move2_button_event(GtkWidget *w, GdkEventButton *event, gpoin
 		GtkTextIter iter;
 		gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &iter, gtk_text_buffer_get_insert(expression_edit_buffer()));
 		if(gdk_event_get_window((GdkEvent*) event) && x > gdk_window_get_width(gdk_event_get_window((GdkEvent*) event)) / 2) {
-			if(gtk_text_iter_is_end(&iter)) expression_get_start_iter(&iter);
+			if(expression_iter_is_end(&iter)) expression_get_start_iter(&iter);
 			else gtk_text_iter_forward_char(&iter);
 		} else {
-			if(expression_iter_is_start(&iter)) gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iter);
+			if(expression_iter_is_start(&iter)) expression_get_end_iter(&iter);
 			else gtk_text_iter_backward_char(&iter);
 		}
-		if(!rtl_input || gtk_text_iter_get_char(&iter) != 0x200E) gtk_text_buffer_place_cursor(expression_edit_buffer(), &iter);
+		gtk_text_buffer_place_cursor(expression_edit_buffer(), &iter);
 	}
 	return FALSE;
 }
@@ -1795,17 +1794,17 @@ void on_button_del_clicked(GtkButton*, gpointer) {
 	GtkTextMark *mpos = gtk_text_buffer_get_insert(expression_edit_buffer());
 	GtkTextIter ipos, iend;
 	gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mpos);
-	if(gtk_text_iter_is_end(&ipos)) {
-		gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
-		if(gtk_text_iter_backward_char(&ipos) && (!rtl_input || gtk_text_iter_get_char(&ipos) != 0x200E)) {
+	if(expression_iter_is_end(&ipos)) {
+		expression_get_end_iter(&iend);
+		if(gtk_text_iter_backward_char(&ipos)) {
 			gtk_text_buffer_delete(expression_edit_buffer(), &ipos, &iend);
 		}
 	} else {
 		iend = ipos;
 		if(!gtk_text_iter_forward_char(&iend)) {
-			gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+			expression_get_end_iter(&iend);
 		}
-		if(!rtl_input || gtk_text_iter_get_char(&ipos) != 0x200E) gtk_text_buffer_delete(expression_edit_buffer(), &ipos, &iend);
+		gtk_text_buffer_delete(expression_edit_buffer(), &ipos, &iend);
 	}
 	focus_keeping_selection();
 	unblock_completion();
@@ -1832,7 +1831,7 @@ void on_button_to_clicked(GtkButton*, gpointer) {
 	if(calculator_busy()) return;
 	string to_str;
 	GtkTextIter istart, iend;
-	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+	expression_get_end_iter(&iend);
 	gtk_text_buffer_select_range(expression_edit_buffer(), &iend, &iend);
 	if(!gtk_widget_is_focus(expression_edit_widget())) gtk_widget_grab_focus(expression_edit_widget());
 	if(printops.use_unicode_signs && can_display_unicode_string_function("➞", (void*) expression_edit_widget())) {

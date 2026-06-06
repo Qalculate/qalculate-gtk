@@ -1350,7 +1350,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 				GtkTextIter ipos;
 				gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mark);
 				bool b_to = CALCULATOR->hasToExpression(str, false, evalops) || CALCULATOR->hasWhereExpression(str, evalops);
-				if(gtk_text_iter_is_end(&ipos)) {
+				if(expression_iter_is_end(&ipos)) {
 					if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) {
 						size_t n = 1;
 						while(n < str.length() && (char) str[str.length() - n] < 0 && (unsigned char) str[str.length() - n] < 0xC0) n++;
@@ -1364,15 +1364,14 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					gtk_text_iter_forward_char(&iter);
 					gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &ipos, &iter, FALSE);
 					string c2 = gstr;
-					if(rtl_input) gsub(LTR_MARK, "", c2);
+					if(rtl_input && gtk_text_iter_is_end(&iter) && c2 == LTR_MARK) c2 = "";
 					g_free(gstr);
 					string c1;
-					if(!gtk_text_iter_is_start(&ipos)) {
+					if(!expression_iter_is_start(&ipos)) {
 						iter = ipos;
 						gtk_text_iter_backward_char(&iter);
 						gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &iter, &ipos, FALSE);
 						c1 = gstr;
-						if(rtl_input) gsub(LTR_MARK, "", c1);
 						g_free(gstr);
 					}
 					if((c2.length() == 1 && is_in("*/^|&<>=)]", c2[0]) && (c2[0] != '|' || evalops.parse_options.base != BASE_ROMAN_NUMERALS)) || (c2.length() > 1 && (c2 == "∧" || c2 == "∨" || c2 == "⊻" || c2 == expression_times_sign() || c2 == expression_divide_sign() || c2 == SIGN_NOT_EQUAL || c2 == SIGN_GREATER_OR_EQUAL || c2 == SIGN_LESS_OR_EQUAL))) {
@@ -1702,9 +1701,9 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 		if(function_in_progress) {
 			GtkTextIter ipos;
 			gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, gtk_text_buffer_get_insert(expression_edit_buffer()));
-			if(!gtk_text_iter_is_end(&ipos)) {
+			if(!expression_iter_is_end(&ipos)) {
 				gtk_text_iter_forward_char(&ipos);
-				if(!gtk_text_iter_is_end(&ipos)) {
+				if(!expression_iter_is_end(&ipos)) {
 					function_in_progress = false;
 				}
 			}
@@ -2117,10 +2116,10 @@ bool do_chain_mode(const gchar *op) {
 			GtkTextMark *mstart = gtk_text_buffer_get_selection_bound(expression_edit_buffer());
 			if(mstart) {
 				gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &istart, mstart);
-				if((!gtk_text_iter_is_start(&istart) || !gtk_text_iter_is_end(&iend)) && (!gtk_text_iter_is_end(&istart) || !gtk_text_iter_is_start(&iend))) return false;
+				if((!expression_iter_is_start(&istart) || !expression_iter_is_end(&iend)) && (!expression_iter_is_end(&istart) || !expression_iter_is_start(&iend))) return false;
 			}
 		} else {
-			if(!gtk_text_iter_is_end(&iend)) return false;
+			if(!expression_iter_is_end(&iend)) return false;
 		}
 		string str = CALCULATOR->unlocalizeExpression(get_expression_text(), evalops.parse_options);
 		remove_blanks(str);
@@ -2139,12 +2138,12 @@ bool do_chain_mode(const gchar *op) {
 			block_undo();
 			expression_get_start_iter(&istart);
 			gtk_text_buffer_insert(expression_edit_buffer(), &istart, "(", -1);
-			gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+			expression_get_end_iter(&iend);
 			gtk_text_buffer_insert(expression_edit_buffer(), &iend, ")", -1);
 			gtk_text_buffer_place_cursor(expression_edit_buffer(), &iend);
 			unblock_undo();
 		} else if(gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
-			gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+			expression_get_end_iter(&iend);
 			gtk_text_buffer_place_cursor(expression_edit_buffer(), &iend);
 		}
 		insert_text(op);

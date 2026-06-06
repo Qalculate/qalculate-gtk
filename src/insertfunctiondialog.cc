@@ -880,14 +880,13 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 	bool b_text2 = USE_QUOTES(arg2, f);
 	GtkTextIter istart, iend, ipos;
 	expression_get_start_iter(&istart);
-	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+	expression_get_end_iter(&iend);
 	gchar *expr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 	GtkTextMark *mpos = gtk_text_buffer_get_insert(expression_edit_buffer());
 	gtk_text_buffer_get_iter_at_mark(expression_edit_buffer(), &ipos, mpos);
-	if(!gtk_text_buffer_get_has_selection(expression_edit_buffer()) && gtk_text_iter_is_end(&ipos)) {
+	if(!gtk_text_buffer_get_has_selection(expression_edit_buffer()) && expression_iter_is_end(&ipos)) {
 		if(!rpn_mode && chain_mode) {
 			string str = CALCULATOR->unlocalizeExpression(expr, evalops.parse_options);
-			if(rtl_input) gsub(LTR_MARK, "", str);
 			remove_blanks(str);
 			size_t par_n = 0, vec_n = 0;
 			for(size_t i = 0; i < str.length(); i++) {
@@ -898,7 +897,7 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 			}
 			if(par_n <= 0 && vec_n <= 0 && !str.empty() && str[0] != '/' && !CALCULATOR->hasToExpression(str, true, evalops) && !CALCULATOR->hasWhereExpression(str, evalops) && !last_is_operator(str)) {
 				GtkTextIter ibegin;
-				gtk_text_buffer_get_end_iter(expression_edit_buffer(), &ibegin);
+				expression_get_end_iter(&ibegin);
 				gchar *p = expr + strlen(expr), *prev_p = p;
 				int nr_of_p = 0;
 				bool prev_plusminus = false;
@@ -1146,15 +1145,14 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 	if(gtk_text_buffer_get_has_selection(expression_edit_buffer())) {
 		gtk_text_buffer_get_selection_bounds(expression_edit_buffer(), &istart, &iend);
 		// execute expression, if the whole expression was selected, no need for additional enter
-		bool do_exec = (!str2.empty() || (f->minargs() < 2 && !b_rootlog)) && !rpn_mode && ((gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend)) || (gtk_text_iter_is_start(&iend) && gtk_text_iter_is_end(&istart)));
+		bool do_exec = (!str2.empty() || (f->minargs() < 2 && !b_rootlog)) && !rpn_mode && ((expression_iter_is_start(&istart) && expression_iter_is_end(&iend)) || (expression_iter_is_start(&iend) && expression_iter_is_end(&istart)));
 		//set selection as argument
 		gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 		string str = gstr;
-		if(rtl_input) gsub(LTR_MARK, "", str);
 		remove_blank_ends(str);
 		string sto;
 		bool b_to = false;
-		if(((gtk_text_iter_is_start(&istart) && gtk_text_iter_is_end(&iend)) || (gtk_text_iter_is_start(&iend) && gtk_text_iter_is_end(&istart)))) {
+		if(((expression_iter_is_start(&istart) && expression_iter_is_end(&iend)) || (expression_iter_is_start(&iend) && expression_iter_is_end(&istart)))) {
 			CALCULATOR->separateToExpression(str, sto, evalops, true, true);
 			if(!sto.empty()) b_to = true;
 			CALCULATOR->separateWhereExpression(str, sto, evalops);
@@ -1176,7 +1174,6 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 		}
 		if(b_to) {
 			string sexpr = gstr;
-			if(rtl_input) gsub(LTR_MARK, "", sexpr);
 			sto = sexpr.substr(str.length());
 			insert_text((string(gstr2) + sto).c_str());
 		} else {

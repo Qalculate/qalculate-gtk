@@ -439,7 +439,7 @@ void set_current_object() {
 		current_object_end = -1;
 	} else {
 		gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &ipos, pos);
-		gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+		expression_get_end_iter(&iend);
 		gchar *gstr2 = gtk_text_buffer_get_text(expression_edit_buffer(), &ipos, &iend, FALSE);
 		p = gstr2;
 		while(p[0] != '\0') {
@@ -772,7 +772,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 			}
 			if(auto_calculate && !rpn_mode && !parsed_in_result) {
 				GtkTextIter iter;
-				gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iter);
+				expression_get_end_iter(&iter);
 				gtk_text_buffer_select_range(expression_edit_buffer(), &iter, &iter);
 			}
 			insert_text(str.c_str());
@@ -816,7 +816,7 @@ void on_completion_match_selected(GtkTreeView*, GtkTreePath *path, GtkTreeViewCo
 	current_object_start = cos_bak;
 	gtk_widget_hide(completion_window);
 	unblock_completion();
-	if(!item && !prefix && editing_to_expression && gtk_text_iter_is_end(&ipos)) {
+	if(!item && !prefix && editing_to_expression && expression_iter_is_end(&ipos)) {
 		string str = get_expression_text();
 		if(str[str.length() - 1] != ' ' && str[str.length() - 1] != '/') execute_expression();
 	}

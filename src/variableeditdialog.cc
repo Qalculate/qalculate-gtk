@@ -52,8 +52,7 @@ void on_variablebuffer_cursor_position_notify() {
 	if(mpos) {
 		GtkTextIter ipos;
 		gtk_text_buffer_get_iter_at_mark(buffer, &ipos, mpos);
-		if(gtk_text_iter_is_start(&ipos) && gtk_text_iter_get_char(&ipos) == 0x200E) {
-			gtk_text_iter_forward_char(&ipos);
+		if(gtk_text_iter_is_end(&ipos) && gtk_text_iter_backward_char(&ipos) && gtk_text_iter_get_char(&ipos) == 0x200E) {
 			if(gtk_text_buffer_get_has_selection(buffer)) gtk_text_buffer_move_mark(buffer, mpos, &ipos);
 			else gtk_text_buffer_place_cursor(buffer, &ipos);
 		}
@@ -62,8 +61,8 @@ void on_variablebuffer_cursor_position_notify() {
 void on_variables_edit_textview_value_changed(GtkTextBuffer *o, gpointer) {
 	if(rtl_input) {
 		GtkTextIter iter;
-		gtk_text_buffer_get_start_iter(o, &iter);
-		if(gtk_text_iter_is_end(&iter) || gtk_text_iter_get_char(&iter) != 0x200E) {
+		gtk_text_buffer_get_end_iter(o, &iter);
+		if(!gtk_text_iter_backward_char(&iter) || gtk_text_iter_get_char(&iter) != 0x200E) {
 			add_ltr_mark(o);
 		}
 	}
@@ -247,7 +246,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		} else {
 			value_str = get_value_string(v->get(), 2);
 		}
-		if(rtl_input) value_str.insert(0, LTR_MARK);
+		if(rtl_input) append_ltr_mark(value_str);
 		gtk_text_buffer_set_text(value_buffer, value_str.c_str(), -1);
 		gtk_text_buffer_set_text(description_buffer, v->description().c_str(), -1);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_hidden")), v->isHidden());
@@ -270,11 +269,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		} while(CALCULATOR->nameTaken(v_name));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), v_name.c_str());
 		//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
-		if(mstruct_) {
-			string value_str = get_value_string(*mstruct_, 1);
-			if(rtl_input) value_str.insert(0, LTR_MARK);
-			gtk_text_buffer_set_text(value_buffer, value_str.c_str(), -1);
-		}
+		if(mstruct_) gtk_text_buffer_set_text(value_buffer, rtl_input ? with_ltr_mark(get_value_string(*mstruct_, 1)).c_str() : get_value_string(*mstruct_, 1).c_str(), -1);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_temporary")), !category || CALCULATOR->temporaryCategory() == category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(variableedit_builder, "variable_edit_combo_category")))), !category ? CALCULATOR->temporaryCategory().c_str() : category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_desc")), "");
@@ -296,8 +291,8 @@ run_variable_edit_dialog:
 		string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
 		GtkTextIter v_iter_s, v_iter_e;
 		gtk_text_buffer_get_start_iter(value_buffer, &v_iter_s);
-		if(rtl_input && !gtk_text_iter_is_end(&v_iter_s) && gtk_text_iter_get_char(&v_iter_s) == 0x200E) gtk_text_iter_forward_char(&v_iter_s);
 		gtk_text_buffer_get_end_iter(value_buffer, &v_iter_e);
+		if(rtl_input && gtk_text_iter_backward_char(&v_iter_e) && gtk_text_iter_get_char(&v_iter_e) != 0x200E) gtk_text_buffer_get_end_iter(value_buffer, &v_iter_e);
 		gchar *gstr = gtk_text_buffer_get_text(value_buffer, &v_iter_s, &v_iter_e, FALSE);
 		string str2 = unlocalize_expression(gstr);
 		g_free(gstr);

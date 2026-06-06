@@ -672,11 +672,10 @@ void display_parse_status() {
 	if(!display_expression_status) return;
 	GtkTextIter istart, iend, ipos;
 	expression_get_start_iter(&istart);
-	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
+	expression_get_end_iter(&iend);
 	gchar *gtext = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 	string text = gtext, str_f;
 	g_free(gtext);
-	if(rtl_input) gsub(LTR_MARK, "", text);
 	bool double_tag = false;
 	string to_str = CALCULATOR->parseComments(text, evalops.parse_options, &double_tag);
 	if(!to_str.empty() && text.empty() && double_tag) {
@@ -759,13 +758,12 @@ void display_parse_status() {
 	evalops.parse_options.preserve_format = true;
 	if(!error_blocked()) display_errors();
 	block_error();
-	if(!gtk_text_iter_is_start(&ipos)) {
+	if(!expression_iter_is_start(&ipos)) {
 		evalops.parse_options.unended_function = &mfunc;
-		if(!gtk_text_iter_is_end(&ipos)) {
+		if(!expression_iter_is_end(&ipos)) {
 			if(current_from_struct) {current_from_struct->unref(); current_from_struct = NULL; current_from_units.clear();}
 			gtext = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &ipos, FALSE);
 			str_e = CALCULATOR->unlocalizeExpression(gtext, evalops.parse_options);
-			if(rtl_input) gsub(LTR_MARK, "", str_e);
 			bool b = CALCULATOR->separateToExpression(str_e, str_u, evalops, false, !auto_calculate || rpn_mode || parsed_in_result);
 			b = CALCULATOR->separateWhereExpression(str_e, str_w, evalops) || b;
 			if(!b) {
