@@ -84,9 +84,27 @@ void on_argument_changed() {
 void on_function_changed() {
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), strlen(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")))) > 0);
 }
-void on_subfunction_changed() {
+void on_function_expression_changed(GtkTextBuffer *o) {
+	if(rtl_input) {
+		GtkTextIter iter;
+		gtk_text_buffer_get_start_iter(o, &iter);
+		if(gtk_text_iter_is_end(&iter) || gtk_text_iter_get_char(&iter) != 0x200E) {
+			add_ltr_mark(o);
+		}
+	}
+	on_function_changed();
+}
+void on_subfunction_changed(GtkTextBuffer *o) {
+	if(rtl_input) {
+		GtkTextIter iter;
+		gtk_text_buffer_get_start_iter(o, &iter);
+		if(gtk_text_iter_is_end(&iter) || gtk_text_iter_get_char(&iter) != 0x200E) {
+			add_ltr_mark(o);
+		}
+	}
 	GtkTextIter istart;
 	gtk_text_buffer_get_start_iter(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression"))), &istart);
+	if(rtl_input && !gtk_text_iter_is_end(&istart) && gtk_text_iter_get_char(&istart) == 0x200E) gtk_text_iter_forward_char(&istart);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_subok")), !gtk_text_iter_is_end(&istart));
 }
 void on_function_edit_entry_name_changed(GtkEditable *editable, gpointer) {
@@ -212,13 +230,17 @@ void on_function_edit_button_modify_subfunction_clicked(GtkButton*, gpointer) {
 		gboolean g_b = FALSE;
 		gtk_tree_model_get(GTK_TREE_MODEL(tSubfunctions_store), &iter, 1, &gstr, 2, &g_b, -1);
 		GtkTextBuffer *expression_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression")));
-		gtk_text_buffer_set_text(expression_buffer, gstr, -1);
+		g_signal_handlers_block_matched((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression"))), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_subfunction_changed, NULL);
+		if(rtl_input) gtk_text_buffer_set_text(expression_buffer, (string(LTR_MARK) + gstr).c_str(), -1);
+		else gtk_text_buffer_set_text(expression_buffer, gstr, -1);
+		g_signal_handlers_unblock_matched((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression"))), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_subfunction_changed, NULL);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_precalculate")), g_b);
 		g_free(gstr);
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_subok")), FALSE);
 		if(gtk_dialog_run(GTK_DIALOG(gtk_builder_get_object(functionedit_builder, "subfunction_edit_dialog"))) == GTK_RESPONSE_OK) {
 			GtkTextIter istart, iend;
 			gtk_text_buffer_get_start_iter(expression_buffer, &istart);
+			if(rtl_input && !gtk_text_iter_is_end(&istart) && gtk_text_iter_get_char(&istart) == 0x200E) gtk_text_iter_forward_char(&istart);
 			gtk_text_buffer_get_end_iter(expression_buffer, &iend);
 			gstr = gtk_text_buffer_get_text(expression_buffer, &istart, &iend, FALSE);
 			gtk_list_store_set(tSubfunctions_store, &iter, 1, gstr, 2, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_precalculate"))), -1);
@@ -232,7 +254,7 @@ void on_function_edit_button_add_subfunction_clicked(GtkButton*, gpointer) {
 	gtk_window_set_transient_for(GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "subfunction_edit_dialog")), GTK_WINDOW(gtk_builder_get_object(functionedit_builder, "function_edit_dialog")));
 	update_window_properties(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "subfunction_edit_dialog")));
 	GtkTextBuffer *expression_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression")));
-	gtk_text_buffer_set_text(expression_buffer, "", -1);
+	gtk_text_buffer_set_text(expression_buffer, rtl_input ? LTR_MARK : "", -1);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_precalculate")), FALSE);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_subok")), FALSE);
 	if(gtk_dialog_run(GTK_DIALOG(gtk_builder_get_object(functionedit_builder, "subfunction_edit_dialog"))) == GTK_RESPONSE_OK) {
@@ -243,6 +265,7 @@ void on_function_edit_button_add_subfunction_clicked(GtkButton*, gpointer) {
 		str += i2s(last_subfunction_index);
 		GtkTextIter istart, iend;
 		gtk_text_buffer_get_start_iter(expression_buffer, &istart);
+		if(rtl_input && !gtk_text_iter_is_end(&istart) && gtk_text_iter_get_char(&istart) == 0x200E) gtk_text_iter_forward_char(&istart);
 		gtk_text_buffer_get_end_iter(expression_buffer, &iend);
 		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &istart, &iend, FALSE);
 		gtk_list_store_set(tSubfunctions_store, &iter, 0, str.c_str(), 1, gstr, 3, last_subfunction_index, 2, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_precalculate"))), -1);
@@ -423,6 +446,33 @@ void on_function_edit_button_names_clicked(GtkWidget*, gpointer) {
 	on_function_changed();
 }
 
+void on_functionexpression_cursor_position_notify() {
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression")));
+	GtkTextMark *mpos = gtk_text_buffer_get_insert(buffer);
+	if(mpos) {
+		GtkTextIter ipos;
+		gtk_text_buffer_get_iter_at_mark(buffer, &ipos, mpos);
+		if(gtk_text_iter_is_start(&ipos) && gtk_text_iter_get_char(&ipos) == 0x200E) {
+			gtk_text_iter_forward_char(&ipos);
+			if(gtk_text_buffer_get_has_selection(buffer)) gtk_text_buffer_move_mark(buffer, mpos, &ipos);
+			else gtk_text_buffer_place_cursor(buffer, &ipos);
+		}
+	}
+}
+void on_functionsubexpression_cursor_position_notify() {
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression")));
+	GtkTextMark *mpos = gtk_text_buffer_get_insert(buffer);
+	if(mpos) {
+		GtkTextIter ipos;
+		gtk_text_buffer_get_iter_at_mark(buffer, &ipos, mpos);
+		if(gtk_text_iter_is_start(&ipos) && gtk_text_iter_get_char(&ipos) == 0x200E) {
+			gtk_text_iter_forward_char(&ipos);
+			if(gtk_text_buffer_get_has_selection(buffer)) gtk_text_buffer_move_mark(buffer, mpos, &ipos);
+			else gtk_text_buffer_place_cursor(buffer, &ipos);
+		}
+	}
+}
+
 GtkWidget* get_function_edit_dialog(void) {
 
 	if(!functionedit_builder) {
@@ -484,8 +534,10 @@ GtkWidget* get_function_edit_dialog(void) {
 		g_signal_connect((gpointer) selection, "changed", G_CALLBACK(on_tSubfunctions_selection_changed), NULL);
 
 		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_description"))), "changed", G_CALLBACK(on_function_changed), NULL);
-		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression"))), "changed", G_CALLBACK(on_function_changed), NULL);
+		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression"))), "changed", G_CALLBACK(on_function_expression_changed), NULL);
 		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression"))), "changed", G_CALLBACK(on_subfunction_changed), NULL);
+		if(rtl_input) g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression"))), "notify::cursor-position", G_CALLBACK(on_functionexpression_cursor_position_notify), NULL);
+		if(rtl_input) g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression"))), "notify::cursor-position", G_CALLBACK(on_functionsubexpression_cursor_position_notify), NULL);
 
 		gtk_builder_add_callback_symbols(functionedit_builder, "on_function_changed", G_CALLBACK(on_function_changed), "on_function_edit_entry_name_changed", G_CALLBACK(on_function_edit_entry_name_changed), "on_function_edit_button_names_clicked", G_CALLBACK(on_function_edit_button_names_clicked), "on_function_edit_textview_expression_key_press_event", G_CALLBACK(on_function_edit_textview_expression_key_press_event), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_function_edit_button_add_subfunction_clicked", G_CALLBACK(on_function_edit_button_add_subfunction_clicked), "on_function_edit_button_modify_subfunction_clicked", G_CALLBACK(on_function_edit_button_modify_subfunction_clicked), "on_function_edit_button_remove_subfunction_clicked", G_CALLBACK(on_function_edit_button_remove_subfunction_clicked), "on_function_edit_treeview_arguments_row_activated", G_CALLBACK(on_function_edit_treeview_arguments_row_activated), "on_function_edit_button_add_argument_clicked", G_CALLBACK(on_function_edit_button_add_argument_clicked), "on_function_edit_button_modify_argument_clicked", G_CALLBACK(on_function_edit_button_modify_argument_clicked), "on_function_edit_button_remove_argument_clicked", G_CALLBACK(on_function_edit_button_remove_argument_clicked), "on_subfunction_changed", G_CALLBACK(on_subfunction_changed), NULL);
 		gtk_builder_connect_signals(functionedit_builder, NULL);
@@ -546,6 +598,7 @@ GtkWidget* get_argument_rules_dialog(void) {
 
 void fix_expression(string &str) {
 	ParseOptions pa = evalops.parse_options; pa.base = 10;
+	if(rtl_input) gsub(LTR_MARK, "", str);
 	str = CALCULATOR->unlocalizeExpression(str, pa);
 	if(str.empty()) return;
 	size_t i = 0;
@@ -870,6 +923,8 @@ void edit_function(const char *category, MathFunction *f, GtkWindow *win, const 
 	GtkTextBuffer *description_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_description")));
 	GtkTextBuffer *expression_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression")));
 
+	g_signal_handlers_block_matched((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression"))), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_function_expression_changed, NULL);
+
 	//clear entries
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), "");
@@ -880,7 +935,7 @@ void edit_function(const char *category, MathFunction *f, GtkWindow *win, const 
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_example")), "");
 	gtk_text_buffer_set_text(description_buffer, "", -1);
-	gtk_text_buffer_set_text(expression_buffer, "", -1);
+	gtk_text_buffer_set_text(expression_buffer, rtl_input ? LTR_MARK : "", -1);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_hidden")), false);
 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_add_argument")), !f || !f->isBuiltin());
@@ -904,7 +959,7 @@ void edit_function(const char *category, MathFunction *f, GtkWindow *win, const 
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), localize_expression(f->condition()).c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_example")), localize_expression(f->example()).c_str());
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_hidden")), f->isHidden());
-		gtk_text_buffer_set_text(description_buffer, f->description().c_str(), -1);
+		gtk_text_buffer_set_text(description_buffer, rtl_input ? (string(LTR_MARK) + f->description()).c_str() : f->description().c_str(), -1);
 
 		if(!f->isBuiltin()) {
 			GtkTreeIter iter;
@@ -919,11 +974,13 @@ void edit_function(const char *category, MathFunction *f, GtkWindow *win, const 
 		}
 	}
 	if(name) gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), name);
-	if(expression) gtk_text_buffer_set_text(expression_buffer, expression, -1);
+	if(expression) gtk_text_buffer_set_text(expression_buffer, rtl_input ? (string(LTR_MARK) + expression).c_str() : expression, -1);
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_button_ok")), enable_ok && (name || expression));
 	update_function_arguments_list(f);
 	gtk_widget_grab_focus(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")));
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(functionedit_builder, "function_edit_tabs")), 0);
+
+	g_signal_handlers_unblock_matched((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression"))), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_function_expression_changed, NULL);
 
 run_function_edit_dialog:
 	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -940,6 +997,7 @@ run_function_edit_dialog:
 		}
 		GtkTextIter e_iter_s, e_iter_e;
 		gtk_text_buffer_get_start_iter(expression_buffer, &e_iter_s);
+		if(rtl_input && !gtk_text_iter_is_end(&e_iter_s) && gtk_text_iter_get_char(&e_iter_s) == 0x200E) gtk_text_iter_forward_char(&e_iter_s);
 		gtk_text_buffer_get_end_iter(expression_buffer, &e_iter_e);
 		gchar *gstr = gtk_text_buffer_get_text(expression_buffer, &e_iter_s, &e_iter_e, FALSE);
 		string str2 = gstr;

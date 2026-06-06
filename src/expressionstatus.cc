@@ -671,7 +671,7 @@ void display_parse_status() {
 	mfunc.clear();
 	if(!display_expression_status) return;
 	GtkTextIter istart, iend, ipos;
-	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+	expression_get_start_iter(&istart);
 	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
 	gchar *gtext = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 	string text = gtext, str_f;

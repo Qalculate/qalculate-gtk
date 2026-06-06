@@ -879,7 +879,7 @@ void insert_button_function(MathFunction *f, bool save_to_recent, bool apply_to_
 	bool b_text = USE_QUOTES(arg, f);
 	bool b_text2 = USE_QUOTES(arg2, f);
 	GtkTextIter istart, iend, ipos;
-	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+	expression_get_start_iter(&istart);
 	gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
 	gchar *expr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 	GtkTextMark *mpos = gtk_text_buffer_get_insert(expression_edit_buffer());

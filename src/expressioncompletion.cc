@@ -328,7 +328,7 @@ void set_current_object() {
 		editing_to_expression = false;
 		return;
 	}
-	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+	expression_get_start_iter(&istart);
 	gtk_text_buffer_get_iter_at_offset(expression_edit_buffer(), &ipos, pos);
 	gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &ipos, FALSE);
 	gchar *p = gstr + strlen(gstr);

@@ -268,6 +268,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 			GtkTextIter iter;
 			string str, str2;
 			const ExpressionName *ename = &v->preferredName(printops.abbreviate_names, printops.use_unicode_signs, false, false, &can_display_unicode_string_function, (void*) gtk_builder_get_object(variables_builder, "variables_textview_description"));
+			if(rtl_input) str += LTR_MARK;
 			str += ename->formattedName(TYPE_VARIABLE, true);
 			gtk_text_buffer_get_end_iter(buffer, &iter);
 			gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, str.c_str(), -1, "bold", NULL);
@@ -279,6 +280,7 @@ void on_tVariables_selection_changed(GtkTreeSelection *treeselection, gpointer) 
 				}
 			}
 			str += "\n\n";
+			if(rtl_input) str += LTR_MARK;
 			if(v->isKnown()) {
 				bool is_approximate = false;
 				if(((KnownVariable*) v)->get().isMatrix() && ((KnownVariable*) v)->get().columns() * ((KnownVariable*) v)->get().rows() > 16) {

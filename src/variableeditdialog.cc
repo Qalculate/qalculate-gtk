@@ -46,7 +46,27 @@ KnownVariable *edited_variable = NULL;
 
 bool variable_value_changed = false;
 
-void on_variables_edit_textview_value_changed(GtkTextBuffer*, gpointer) {
+void on_variablebuffer_cursor_position_notify() {
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value")));
+	GtkTextMark *mpos = gtk_text_buffer_get_insert(buffer);
+	if(mpos) {
+		GtkTextIter ipos;
+		gtk_text_buffer_get_iter_at_mark(buffer, &ipos, mpos);
+		if(gtk_text_iter_is_start(&ipos) && gtk_text_iter_get_char(&ipos) == 0x200E) {
+			gtk_text_iter_forward_char(&ipos);
+			if(gtk_text_buffer_get_has_selection(buffer)) gtk_text_buffer_move_mark(buffer, mpos, &ipos);
+			else gtk_text_buffer_place_cursor(buffer, &ipos);
+		}
+	}
+}
+void on_variables_edit_textview_value_changed(GtkTextBuffer *o, gpointer) {
+	if(rtl_input) {
+		GtkTextIter iter;
+		gtk_text_buffer_get_start_iter(o, &iter);
+		if(gtk_text_iter_is_end(&iter) || gtk_text_iter_get_char(&iter) != 0x200E) {
+			add_ltr_mark(o);
+		}
+	}
 	variable_value_changed = true;
 }
 void on_variable_edit_checkbutton_temporary_toggled(GtkToggleButton *w, gpointer) {
@@ -109,6 +129,7 @@ GtkWidget* get_variable_edit_dialog(void) {
 		g_signal_connect(gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value"))), "changed", G_CALLBACK(on_variables_edit_textview_value_changed), NULL);
 		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_description"))), "changed", G_CALLBACK(on_variable_changed), NULL);
 		g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value"))), "changed", G_CALLBACK(on_variable_changed), NULL);
+		if(rtl_input) g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value"))), "notify::cursor-position", G_CALLBACK(on_variablebuffer_cursor_position_notify), NULL);
 
 		gtk_builder_add_callback_symbols(variableedit_builder, "on_variable_changed", G_CALLBACK(on_variable_changed), "on_variable_edit_entry_name_changed", G_CALLBACK(on_variable_edit_entry_name_changed), "on_variable_edit_button_names_clicked", G_CALLBACK(on_variable_edit_button_names_clicked), "on_variable_edit_textview_value_key_press_event", G_CALLBACK(on_variable_edit_textview_value_key_press_event), "on_variable_edit_checkbutton_temporary_toggled", G_CALLBACK(on_variable_edit_checkbutton_temporary_toggled), "on_variable_edit_combo_category_changed", G_CALLBACK(on_variable_edit_combo_category_changed), NULL);
 		gtk_builder_connect_signals(variableedit_builder, NULL);
@@ -181,9 +202,11 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 	gtk_window_get_size(GTK_WINDOW(dialog), &w, NULL);
 	gtk_window_resize(GTK_WINDOW(dialog), w, 1);
 
+	g_signal_handlers_block_matched((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value"))), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_variables_edit_textview_value_changed, NULL);
+
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(gtk_builder_get_object(variableedit_builder, "variable_edit_tabs")), 0);
 	gtk_text_buffer_set_text(description_buffer, "", -1);
-	gtk_text_buffer_set_text(value_buffer, "", -1);
+	gtk_text_buffer_set_text(value_buffer, rtl_input ? LTR_MARK : "", -1);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_hidden")), false);
 
 	bool was_hidden = v && v->isHidden();
@@ -224,6 +247,7 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		} else {
 			value_str = get_value_string(v->get(), 2);
 		}
+		if(rtl_input) value_str.insert(0, LTR_MARK);
 		gtk_text_buffer_set_text(value_buffer, value_str.c_str(), -1);
 		gtk_text_buffer_set_text(description_buffer, v->description().c_str(), -1);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_hidden")), v->isHidden());
@@ -246,12 +270,18 @@ void edit_variable(const char *category, Variable *var, MathStructure *mstruct_,
 		} while(CALCULATOR->nameTaken(v_name));
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")), v_name.c_str());
 		//gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(variableedit_builder, "variable_edit_label_names")), "");
-		if(mstruct_) gtk_text_buffer_set_text(value_buffer, get_value_string(*mstruct_, 1).c_str(), -1);
+		if(mstruct_) {
+			string value_str = get_value_string(*mstruct_, 1);
+			if(rtl_input) value_str.insert(0, LTR_MARK);
+			gtk_text_buffer_set_text(value_buffer, value_str.c_str(), -1);
+		}
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(variableedit_builder, "variable_edit_checkbutton_temporary")), !category || CALCULATOR->temporaryCategory() == category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(variableedit_builder, "variable_edit_combo_category")))), !category ? CALCULATOR->temporaryCategory().c_str() : category);
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_desc")), "");
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(variableedit_builder, "variable_edit_button_ok")), TRUE);
 	}
+
+	g_signal_handlers_unblock_matched((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(variableedit_builder, "variable_edit_textview_value"))), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_variables_edit_textview_value_changed, NULL);
 
 	variable_value_changed = false;
 
@@ -266,6 +296,7 @@ run_variable_edit_dialog:
 		string str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(variableedit_builder, "variable_edit_entry_name")));
 		GtkTextIter v_iter_s, v_iter_e;
 		gtk_text_buffer_get_start_iter(value_buffer, &v_iter_s);
+		if(rtl_input && !gtk_text_iter_is_end(&v_iter_s) && gtk_text_iter_get_char(&v_iter_s) == 0x200E) gtk_text_iter_forward_char(&v_iter_s);
 		gtk_text_buffer_get_end_iter(value_buffer, &v_iter_e);
 		gchar *gstr = gtk_text_buffer_get_text(value_buffer, &v_iter_s, &v_iter_e, FALSE);
 		string str2 = unlocalize_expression(gstr);

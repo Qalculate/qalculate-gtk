@@ -2002,7 +2002,7 @@ void history_operator(string str_sign) {
 		}
 	}
 	block_undo();
-	gtk_text_buffer_set_text(expression_edit_buffer(), "", -1);
+	clear_expression_text();
 	unblock_undo();
 	insert_text(str.c_str());
 	if(!only_one_value && (!auto_calculate || parsed_in_result || rpn_mode)) {
@@ -2062,7 +2062,7 @@ void on_button_history_sqrt_clicked(GtkButton*, gpointer) {
 	}
 	str += ")";
 	block_undo();
-	gtk_text_buffer_set_text(expression_edit_buffer(), "", -1);
+	clear_expression_text();
 	unblock_undo();
 	insert_text(str.c_str());
 	execute_expression();

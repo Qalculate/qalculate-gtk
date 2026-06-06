@@ -2137,7 +2137,7 @@ bool do_chain_mode(const gchar *op) {
 		rpn_mode = true;
 		if(str.find_first_not_of(NUMBER_ELEMENTS SPACE) != string::npos && (!parsed_mstruct || ((!parsed_mstruct->isMultiplication() || op != expression_times_sign()) && (!parsed_mstruct->isAddition() || (op != expression_add_sign() && op != expression_sub_sign())) && (!parsed_mstruct->isBitwiseOr() || strcmp(op, BITWISE_OR) != 0) && (!parsed_mstruct->isBitwiseAnd() || strcmp(op, BITWISE_AND) != 0)))) {
 			block_undo();
-			gtk_text_buffer_get_start_iter(expression_edit_buffer(), &istart);
+			expression_get_start_iter(&istart);
 			gtk_text_buffer_insert(expression_edit_buffer(), &istart, "(", -1);
 			gtk_text_buffer_get_end_iter(expression_edit_buffer(), &iend);
 			gtk_text_buffer_insert(expression_edit_buffer(), &iend, ")", -1);

@@ -38,6 +38,7 @@ enum {
 };
 
 #define LTR_MARK "‎"
+gboolean add_ltr_mark(gpointer p);
 
 bool string_is_less(std::string str1, std::string str2);
 
