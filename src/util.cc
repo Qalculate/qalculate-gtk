@@ -915,6 +915,7 @@ const gchar *shortcut_type_text(int type, bool return_null) {
 		case SHORTCUT_TYPE_DATE: {return _("Insert date"); break;}
 		case SHORTCUT_TYPE_VECTOR: {return _("Insert vector"); break;}
 		case SHORTCUT_TYPE_MATRIX: {return _("Insert matrix"); break;}
+		case SHORTCUT_TYPE_PARENTHESES: {return _("Insert parentheses"); break;}
 		case SHORTCUT_TYPE_SMART_PARENTHESES: {return _("Insert smart parentheses"); break;}
 		case SHORTCUT_TYPE_CONVERT: {return _("Convert to unit"); break;}
 		case SHORTCUT_TYPE_CONVERT_ENTRY: {return _("Convert to unit (entry)"); break;}

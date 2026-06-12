@@ -478,7 +478,7 @@ void expression_select_all() {
 	gtk_text_buffer_remove_tag(expression_edit_buffer(), expression_par_tag, &istart, &iend);
 	gtk_text_buffer_remove_tag(expression_edit_buffer(), expression_par_u_tag, &istart, &iend);
 }
-void brace_wrap() {
+void brace_wrap(bool smart) {
 	string expr = get_expression_text();
 	GtkTextIter istart, iend, ipos;
 	gint il = expr.length();
@@ -506,12 +506,19 @@ void brace_wrap() {
 		if(rtl_input && gtk_text_iter_is_end(&iend)) expression_get_end_iter(&iend);
 	} else {
 		iend = ipos;
-		if(!expression_iter_is_start(&iend)) {
+		if(!smart) {
+			istart = ipos;
+		} else if(!expression_iter_is_start(&iend)) {
 			gchar *gstr = gtk_text_buffer_get_text(expression_edit_buffer(), &istart, &iend, FALSE);
 			string str = CALCULATOR->unlocalizeExpression(gstr, evalops.parse_options);
 			g_free(gstr);
 			CALCULATOR->parseSigns(str);
-			if(str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str[str.length() - 1])) {
+			bool right = str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str[str.length() - 1]);
+			if(!right) {
+				size_t i = str.find_last_of(NOT_IN_NAMES);
+				if((i == string::npos || i < str.length() - 1) && CALCULATOR->getActiveFunction(i == string::npos ? str : str.substr(i + 1, str.length() - (i + 1)))) right = true;;
+			}
+			if(right) {
 				istart = iend;
 				expression_get_end_iter(&iend);
 				if(gtk_text_iter_compare(&istart, &iend) < 0) {

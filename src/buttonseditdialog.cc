@@ -461,6 +461,10 @@ GtkWidget* get_buttons_edit_dialog(void) {
 		gtk_list_store_append(tButtonsEditType_store, &iter);
 		gtk_list_store_set(tButtonsEditType_store, &iter, 0, _("None"), 1, -2, -1);
 		for(int i = 0; i <= SHORTCUT_TYPE_QUIT; i++) {
+			if(i == SHORTCUT_TYPE_SMART_PARENTHESES) {
+				gtk_list_store_append(tButtonsEditType_store, &iter);
+				gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_PARENTHESES), 1, SHORTCUT_TYPE_PARENTHESES, -1);
+			}
 			gtk_list_store_append(tButtonsEditType_store, &iter);
 			gtk_list_store_set(tButtonsEditType_store, &iter, 0, shortcut_type_text(i), 1, i, -1);
 			if(i == SHORTCUT_TYPE_RPN_MODE) {

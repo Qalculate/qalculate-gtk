@@ -607,6 +607,10 @@ GtkWidget* get_shortcuts_dialog(void) {
 
 		for(int i = 0; i <= SHORTCUT_TYPE_QUIT; i++) {
 			GtkTreeIter iter;
+			if(i == SHORTCUT_TYPE_SMART_PARENTHESES) {
+				gtk_list_store_append(tShortcutsType_store, &iter);
+				gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(SHORTCUT_TYPE_PARENTHESES), 1, SHORTCUT_TYPE_PARENTHESES, -1);
+			}
 			gtk_list_store_append(tShortcutsType_store, &iter);
 			gtk_list_store_set(tShortcutsType_store, &iter, 0, shortcut_type_text(i), 1, i, -1);
 			if(i == SHORTCUT_TYPE_RPN_MODE) {
