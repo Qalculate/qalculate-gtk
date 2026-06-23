@@ -124,10 +124,12 @@ AS_IF([test "x$with_local_help" != "xno"], [
 AM_CONDITIONAL(ENABLE_LOCAL_HELP, [test "x$with_local_help" != "xno"])
 
 if test "$build_mac" = "yes"; then
-  PKG_CHECK_MODULES(GTK_MAC, [gtk-mac-integration-gtk3 >= 3.0.1])
-  AC_SUBST(GTK_MAC_CFLAGS)
-  AC_SUBST(GTK_MAC_LIBS)
-  AC_DEFINE([HAVE_GTK_MAC], [1], [Define if gtk-mac-integration is available])
+	PKG_CHECK_MODULES(GTK_MAC, [gtk-mac-integration-gtk3 >= 3.0.1],[with_gtk_mac=yes],[with_gtk_mac=no])
+	AC_SUBST(GTK_MAC_CFLAGS)
+	AC_SUBST(GTK_MAC_LIBS)
+	AS_IF([test "x$with_gtk_mac" = "xyes"], [
+		AC_DEFINE([HAVE_GTK_MAC], [1], [Define if gtk-mac-integration is available])
+	])
 fi
 
 PKG_CHECK_MODULES(QALCULATE, [
