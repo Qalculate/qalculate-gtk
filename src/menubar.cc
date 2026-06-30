@@ -2450,6 +2450,7 @@ void set_mode_items(const mode_struct *mode, bool initial_update) {
 		printops.excessive_parenthesis = mode->po.excessive_parenthesis;
 		evalops.calculate_functions = mode->eo.calculate_functions;
 		evalops.parse_options.base = mode->eo.parse_options.base;
+		evalops.sync_units = mode->eo.sync_units;
 	}
 }
 void update_menu_accels(int type) {

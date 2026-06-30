@@ -1115,7 +1115,7 @@ gboolean do_autocalc_history_timeout(gpointer) {
 	}
 	set_expression_modified(false, false, false);
 	setResult(NULL, true, true, true, "", 0, false, true);
-	update_conversion_view_selection(mstruct);
+	if(minimal_mode || !gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) update_conversion_view_selection(mstruct);
 	result_autocalculated = false;
 	return FALSE;
 }
@@ -2003,6 +2003,8 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 			auto_calculate = true;
 			if(title_type == TITLE_RESULT || title_type == TITLE_APP_RESULT) update_window_title("", true);
 		}
+	} else if(recalculate && !minimal_mode && gtk_expander_get_expanded(GTK_EXPANDER(expander_convert))) {
+		update_conversion_view_selection(&mauto);
 	}
 
 	if(do_to) {
@@ -5941,6 +5943,7 @@ void set_minimal_mode(bool b) {
 			gtk_window_get_size(main_window(), NULL, &h);
 		}
 		gtk_window_resize(main_window(), win_width < 0 ? 1 : win_width, h);
+		if(gtk_expander_get_expanded(GTK_EXPANDER(expander_convert)) && result_autocalculated) update_conversion_view_selection(&mauto);
 	}
 	set_expression_size_request();
 }
@@ -8509,6 +8512,7 @@ void on_expander_stack_expanded(GObject *o, GParamSpec*, gpointer) {
 }
 void on_expander_convert_expanded(GObject *o, GParamSpec*, gpointer) {
 	if(gtk_expander_get_expanded(GTK_EXPANDER(o))) {
+		if(result_autocalculated) update_conversion_view_selection(&mauto);
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 2);
 		show_tabs(true);
 		if(conversionview_continuous_conversion() && !current_conversion_expression().empty() && current_displayed_result() && current_displayed_result()->containsType(STRUCT_UNIT) > 0) {

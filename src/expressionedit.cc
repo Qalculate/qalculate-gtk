@@ -515,8 +515,8 @@ void brace_wrap(bool smart) {
 			CALCULATOR->parseSigns(str);
 			bool right = str.empty() || is_in(OPERATORS SPACES SEXADOT DOT LEFT_VECTOR_WRAP LEFT_PARENTHESIS COMMAS, str[str.length() - 1]);
 			if(!right) {
-				size_t i = str.find_last_of(NOT_IN_NAMES);
-				if((i == string::npos || i < str.length() - 1) && CALCULATOR->getActiveFunction(i == string::npos ? str : str.substr(i + 1, str.length() - (i + 1)))) right = true;;
+				size_t i = str.find_last_of(NOT_IN_NAMES NUMBERS);
+				if((i == string::npos || i < str.length() - 1) && CALCULATOR->getActiveFunction(i == string::npos ? str : str.substr(i + 1, str.length() - (i + 1)))) right = true;
 			}
 			if(right) {
 				istart = iend;
@@ -1341,7 +1341,7 @@ void expression_set_from_undo_buffer() {
 			}
 		}
 		gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(expression_edit_widget()), FALSE);
-		append_ltr_mark(str_new);
+		if(rtl_input) append_ltr_mark(str_new);
 		if(!str_new.empty()) setting_non_empty_text = true;
 		gtk_text_buffer_set_text(expression_edit_buffer(), str_new.c_str(), -1);
 		setting_non_empty_text = false;
