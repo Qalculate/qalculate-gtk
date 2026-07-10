@@ -102,6 +102,7 @@ gboolean on_variable_edit_textview_value_key_press_event(GtkWidget *w, GdkEventK
 		if(gtk_text_view_get_overwrite(GTK_TEXT_VIEW(w)) && !gtk_text_buffer_get_has_selection(expression_buffer)) {
 			GtkTextIter ipos;
 			gtk_text_buffer_get_iter_at_mark(expression_buffer, &ipos, gtk_text_buffer_get_insert(expression_buffer));
+			if(rtl_input && !gtk_text_iter_is_end(&ipos) && gtk_text_iter_get_char(&ipos) == 0x200E && gtk_text_iter_forward_char(&ipos)) gtk_text_iter_backward_char(&ipos);
 			if(!gtk_text_iter_is_end(&ipos)) {
 				GtkTextIter ipos2 = ipos;
 				gtk_text_iter_forward_char(&ipos2);

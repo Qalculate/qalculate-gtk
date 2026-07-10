@@ -51,6 +51,31 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.12.0" date="2026-07-13">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>LaTeX input and output (using latex() function or "$\...$" syntax)</li>
+      <li>Solve a*x^b+c*d^x=0 for real x</li>
+      <li>Solve equations with absolute value and complex x (x*abs(x)=a, x^2*abs(x)=a, and a*f(x)+b*abs(x)=c)</li>
+      <li>Improve simplification of a^(c/d)/b^(c/d) in exact mode (e.g. cbrt(12)/cbrt(4)=cbrt(3))</li>
+      <li>Apply logical and bitwise operation entrywise to vectors and matrices</li>
+      <li>Allow symbols with suffix when input using backslash (e.g. \x_n = "x_n", with n shown as subscript in output)</li>
+      <li>Add argument for reverse conversion to roman(), bijective(), and bcd() functions</li>
+      <li>Add tsp and tbsp abbreviations, change cup to exactly 240 mL (U.S. legal), and add U.S. customary cup, tablespoon, and teaspoon</li>
+      <li>Mixed units conversion improvements/fixes</li>
+      <li>Add "Insert parentheses" shortcut action (default "Ctrl+Shft+("), which always inserts empty parentheses after cursor</li>
+      <li>Update conversion list immediately during calculate-as-you-type (do not wait until added to history)</li>
+      <li>Fix conversion of feet and inches when using ' and " (e.g. 5'2" to cm)</li>
+      <li>Fix a*x+b*ln(x)=c where sgn(a)!=sgn(b) (only one solution were found)</li>
+      <li>Fix segfault when calculating limit for expression with sinh or cosh (also affects integrals with infinite lower or upper limit)</li>
+      <li>Fix RPN syntax for expressions with multiple functions</li>
+      <li>Fix cursor and text position with RTL keyboard layouts</li>
+      <li>Fix duplicated character when using plasma keyboard alternate character popup</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.11.0" date="2026-05-25">
    <description>
     <p>Changes:</p>

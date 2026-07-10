@@ -316,7 +316,7 @@ bool is_digit_q(char c, int base) {
 
 void set_current_object() {
 	if(!current_object_has_changed) return;
-	while(gtk_events_pending()) gtk_main_iteration();
+	//while(gtk_events_pending()) gtk_main_iteration();
 	GtkTextIter ipos, istart, iend;
 	gint pos, pos2;
 	g_object_get(expression_edit_buffer(), "cursor-position", &pos, NULL);
@@ -1040,6 +1040,7 @@ void do_completion(bool to_menu, bool force) {
 		current_object_has_changed = true;
 		completion_to_menu = true;
 	} else {
+		while(gtk_events_pending()) gtk_main_iteration();
 		set_current_object();
 		completion_to_menu = false;
 	}

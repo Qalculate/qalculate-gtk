@@ -1,3 +1,28 @@
+2026-07-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix output of result with symbol (quoted text) when result is temporarily displayed in status field
+	* Do not automatically calculate integral with only lower limit defined
+
+2026-07-03 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix duplicated character when using plasma keyboard alternate character popup
+
+2026-06-29 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Update conversion list immediately during calculate-as-you-type (do not wait until added to history)
+
+2026-06-23 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not fail configure on macOS if gtk-mac-integration-gtk3 is not found
+
+2026-06-12 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Add "Insert parentheses" shortcut action (default "Ctrl+Shft+("), which always inserts empty parentheses after cursor (unless text is selected), as alternative to "smart" parentheses
+
+2026-06-04 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix cursor and text position (using LTR Unicode mark) with RTL keyboard layouts
+
 2026-05-11 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix parse status and calculate-as-you-type when "where" expression defines a new variable with previously undefined symbol

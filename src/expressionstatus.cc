@@ -1223,6 +1223,7 @@ void display_parse_status() {
 					string str_autocalc = equalsstr;
 					str_autocalc += current_result_text();
 					FIX_SUPSUB(str_autocalc)
+					fix_history_string_new2(str_autocalc);
 					set_status_text(str_autocalc, false);
 					status_text_source = STATUS_TEXT_AUTOCALC;
 				} else if((!autocalculation_stopped_at_operator() || !result_is_autocalculated()) && message_n >= 1 && !b_func && !last_is_operator(str_e)) {

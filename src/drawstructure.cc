@@ -844,7 +844,12 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 				} else {
 					str = "<i>";
 					TTBP(str)
-					str += m.symbol();
+					if(m.type() == STRUCT_SYMBOLIC && unicode_length(m.symbol()) == 3 && m.symbol().find('_', 1) < m.symbol().length() - 1) {
+						str += sub_suffix_html(m.symbol());
+						FIX_SUB_RESULT(str)
+					} else {
+						str += m.symbol();
+					}
 					TTE(str)
 					str += "</i>";
 				}
