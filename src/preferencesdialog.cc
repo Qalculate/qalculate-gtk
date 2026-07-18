@@ -1173,6 +1173,29 @@ GtkWidget* get_preferences_dialog() {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_highlight_background")), get_expression_highlight_background());
 		gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_checkbutton_highlight_background")), get_expression_enable_highlight_background());
 
+		GdkRectangle area;
+		GdkWindow *window = gtk_widget_get_window(GTK_WIDGET(main_window()));
+		GdkDisplay *display = gtk_widget_get_display(GTK_WIDGET(main_window()));
+#if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 22
+		GdkMonitor *monitor = gdk_display_get_monitor_at_window(display, window);
+		gdk_monitor_get_workarea(monitor, &area);
+#else
+		GdkScreen *screen = gdk_display_get_default_screen(display);
+		gdk_screen_get_monitor_workarea(screen, gdk_screen_get_monitor_at_window(screen, window), &area);
+#endif
+		int h = 0, w = 0;
+		gtk_widget_get_preferred_height(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog")), NULL, &h);
+		gtk_widget_get_preferred_width(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog")), NULL, &w);
+		if(area.height > 0 && area.height < h + 50) h = area.height - 50;
+		if(area.width > 0 && area.width < w + 50) h = area.width - 50;
+		gtk_window_set_default_size(GTK_WINDOW(gtk_builder_get_object(preferences_builder, "preferences_dialog")), w, h);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(gtk_builder_get_object(preferences_builder, "scrolled_behavior")), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(gtk_builder_get_object(preferences_builder, "scrolled_appearance")), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(gtk_builder_get_object(preferences_builder, "scrolled_numbers")), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(gtk_builder_get_object(preferences_builder, "scrolled_units")), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(gtk_builder_get_object(preferences_builder, "scrolled_completion")), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(gtk_builder_get_object(preferences_builder, "scrolled_fonts")), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+
 		gtk_builder_add_callback_symbols(preferences_builder, "on_preferences_checkbutton_save_defs_toggled", G_CALLBACK(on_preferences_checkbutton_save_defs_toggled), "on_preferences_checkbutton_clear_history_toggled", G_CALLBACK(on_preferences_checkbutton_clear_history_toggled), "on_preferences_max_history_lines_spin_button_value_changed",
 		G_CALLBACK(on_preferences_max_history_lines_spin_button_value_changed), "on_preferences_checkbutton_save_history_separately_toggled",
 		G_CALLBACK(on_preferences_checkbutton_save_history_separately_toggled), "on_preferences_checkbutton_allow_multiple_instances_toggled",
