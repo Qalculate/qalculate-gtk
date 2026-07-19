@@ -1187,7 +1187,7 @@ GtkWidget* get_preferences_dialog() {
 		gtk_widget_get_preferred_height(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog")), NULL, &h);
 		gtk_widget_get_preferred_width(GTK_WIDGET(gtk_builder_get_object(preferences_builder, "preferences_dialog")), NULL, &w);
 		if(area.height > 0 && area.height < h + 50) h = area.height - 50;
-		if(area.width > 0 && area.width < w + 50) h = area.width - 50;
+		if(area.width > 0 && area.width < w + 50) w = area.width - 50;
 		gtk_window_set_default_size(GTK_WINDOW(gtk_builder_get_object(preferences_builder, "preferences_dialog")), w, h);
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(gtk_builder_get_object(preferences_builder, "scrolled_behavior")), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(gtk_builder_get_object(preferences_builder, "scrolled_appearance")), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
