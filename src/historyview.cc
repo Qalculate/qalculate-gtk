@@ -2399,7 +2399,7 @@ void on_popup_menu_item_history_delete_activate(GtkMenuItem*, gpointer) {
 			bool b = false;
 			while(gtk_tree_model_iter_next(model, &iter3)) {
 				gtk_tree_model_get(model, &iter3, 1, &hindex2, -1);
-				if(hindex2 >= 0 && (ITEM_IS_EXPRESSION(hindex2) || inhistory_type[hindex2] == QALCULATE_HISTORY_OLD)) break;
+				if(hindex2 >= 0 && (ITEM_IS_EXPRESSION(hindex2) || inhistory_type[hindex2] == QALCULATE_HISTORY_OLD || inhistory_type[hindex2] == QALCULATE_HISTORY_BOOKMARK)) break;
 				b = true;
 				iter2 = iter3;
 			}
@@ -2623,11 +2623,19 @@ void add_history_bookmark(string history_message) {
 		if(!b) history_bookmarks.push_back(history_message);
 		if(HISTORY_IS_PARSE(hindex)) hindex++;
 		hindex++;
-		inhistory.insert(inhistory.begin() + hindex, history_message);
-		inhistory_type.insert(inhistory_type.begin() + hindex, QALCULATE_HISTORY_BOOKMARK);
-		inhistory_time.insert(inhistory_time.begin() + hindex, inhistory_time[hindex]);
-		inhistory_protected.insert(inhistory_protected.begin() + hindex, false);
-		inhistory_value.insert(inhistory_value.begin() + hindex, 0);
+		if((size_t) hindex >= inhistory.size()) {
+			inhistory.push_back(history_message);
+			inhistory_type.push_back(QALCULATE_HISTORY_BOOKMARK);
+			inhistory_time.push_back(inhistory_time[hindex - 1]);
+			inhistory_protected.push_back(false);
+			inhistory_value.push_back(0);
+		} else {
+			inhistory.insert(inhistory.begin() + hindex, history_message);
+			inhistory_type.insert(inhistory_type.begin() + hindex, QALCULATE_HISTORY_BOOKMARK);
+			inhistory_time.insert(inhistory_time.begin() + hindex, inhistory_time[hindex]);
+			inhistory_protected.insert(inhistory_protected.begin() + hindex, false);
+			inhistory_value.insert(inhistory_value.begin() + hindex, 0);
+		}
 		fix_history_string2(history_message);
 		add_line_breaks(history_message, false);
 		string history_str = "<span foreground=\"";
