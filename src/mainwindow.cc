@@ -1152,7 +1152,7 @@ bool contains_fraction_gtk(const MathStructure &m) {
 
 bool contains_extreme_number(const MathStructure &m) {
 	if(m.isNumber()) {
-		if(m.number().isFloatingPoint() && (mpfr_get_exp(m.number().internalUpperFloat()) > 10000000L || mpfr_get_exp(m.number().internalLowerFloat()) < -10000000L)) {
+		if(m.number().isFloatingPoint() && (mpfr_get_exp(m.number().internalUpperFloat()) > 10000000L || (m.number().isNonZero() && mpfr_get_exp(m.number().internalUpperFloat()) < -10000000L && mpfr_get_exp(m.number().internalLowerFloat()) < -10000000L))) {
 			return true;
 		} else if(m.number().isInteger() && ::abs(m.number().integerLength()) > 10000000L) {
 			return true;
