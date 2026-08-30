@@ -77,7 +77,7 @@
             <property name="can-focus">True</property>
             <property name="border-width">6</property>
             <child>
-              <!-- n-columns=2 n-rows=3 -->
+              <!-- n-columns=2 n-rows=4 -->
               <object class="GtkGrid" id="grid1">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -154,7 +154,23 @@
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
+                  <object class="GtkCheckButton" id="function_edit_checkbutton_temporary">
+                    <property name="label" translatable="yes">Temporary</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="halign">end</property>
+                    <property name="valign">start</property>
+                    <property name="use-underline">True</property>
+                    <property name="active">False</property>
+                    <property name="draw-indicator">True</property>
+                    <signal name="toggled" handler="on_function_changed" swapped="no"/>
+                    <signal name="toggled" handler="on_function_edit_checkbutton_temporary_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">3</property>
+                  </packing>
                 </child>
               </object>
             </child>
@@ -462,6 +478,7 @@
                       <object class="GtkEntry" id="ientry1">
                         <property name="can-focus">True</property>
                         <property name="width-chars">20</property>
+			<signal name="changed" handler="on_function_edit_entry_category_changed" swapped="no"/>
                         <signal name="changed" handler="on_function_changed" swapped="no"/>
                       </object>
                     </child>

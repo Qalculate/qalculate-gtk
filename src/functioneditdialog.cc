@@ -94,6 +94,14 @@ void on_function_expression_changed(GtkTextBuffer *o) {
 	}
 	on_function_changed();
 }
+void on_function_edit_checkbutton_temporary_toggled(GtkToggleButton *w, gpointer) {
+	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), gtk_toggle_button_get_active(w) ? CALCULATOR->temporaryCategory().c_str() : "");
+}
+void on_function_edit_entry_category_changed(GtkEditable *w, gpointer) {
+	g_signal_handlers_block_matched((gpointer) gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_temporary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_function_edit_checkbutton_temporary_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_temporary")), CALCULATOR->temporaryCategory() == gtk_entry_get_text(GTK_ENTRY(w)));
+	g_signal_handlers_unblock_matched((gpointer) gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_temporary"), G_SIGNAL_MATCH_FUNC, 0, 0, NULL, (gpointer) on_function_edit_checkbutton_temporary_toggled, NULL);
+}
 void on_subfunction_changed(GtkTextBuffer *o) {
 	if(rtl_input) {
 		GtkTextIter iter;
@@ -537,7 +545,8 @@ GtkWidget* get_function_edit_dialog(void) {
 		if(rtl_input) g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression"))), "notify::cursor-position", G_CALLBACK(on_functionexpression_cursor_position_notify), NULL);
 		if(rtl_input) g_signal_connect((gpointer) gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(functionedit_builder, "function_edit_textview_subexpression"))), "notify::cursor-position", G_CALLBACK(on_functionsubexpression_cursor_position_notify), NULL);
 
-		gtk_builder_add_callback_symbols(functionedit_builder, "on_function_changed", G_CALLBACK(on_function_changed), "on_function_edit_entry_name_changed", G_CALLBACK(on_function_edit_entry_name_changed), "on_function_edit_button_names_clicked", G_CALLBACK(on_function_edit_button_names_clicked), "on_function_edit_textview_expression_key_press_event", G_CALLBACK(on_function_edit_textview_expression_key_press_event), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_function_edit_button_add_subfunction_clicked", G_CALLBACK(on_function_edit_button_add_subfunction_clicked), "on_function_edit_button_modify_subfunction_clicked", G_CALLBACK(on_function_edit_button_modify_subfunction_clicked), "on_function_edit_button_remove_subfunction_clicked", G_CALLBACK(on_function_edit_button_remove_subfunction_clicked), "on_function_edit_treeview_arguments_row_activated", G_CALLBACK(on_function_edit_treeview_arguments_row_activated), "on_function_edit_button_add_argument_clicked", G_CALLBACK(on_function_edit_button_add_argument_clicked), "on_function_edit_button_modify_argument_clicked", G_CALLBACK(on_function_edit_button_modify_argument_clicked), "on_function_edit_button_remove_argument_clicked", G_CALLBACK(on_function_edit_button_remove_argument_clicked), "on_subfunction_changed", G_CALLBACK(on_subfunction_changed), NULL);
+		gtk_builder_add_callback_symbols(functionedit_builder, "on_function_changed", G_CALLBACK(on_function_changed), "on_function_edit_entry_name_changed", G_CALLBACK(on_function_edit_entry_name_changed), "on_function_edit_button_names_clicked", G_CALLBACK(on_function_edit_button_names_clicked), "on_function_edit_textview_expression_key_press_event", G_CALLBACK(on_function_edit_textview_expression_key_press_event), "on_math_entry_key_press_event", G_CALLBACK(on_math_entry_key_press_event), "on_function_edit_button_add_subfunction_clicked", G_CALLBACK(on_function_edit_button_add_subfunction_clicked), "on_function_edit_button_modify_subfunction_clicked", G_CALLBACK(on_function_edit_button_modify_subfunction_clicked), "on_function_edit_button_remove_subfunction_clicked", G_CALLBACK(on_function_edit_button_remove_subfunction_clicked), "on_function_edit_treeview_arguments_row_activated", G_CALLBACK(on_function_edit_treeview_arguments_row_activated), "on_function_edit_button_add_argument_clicked", G_CALLBACK(on_function_edit_button_add_argument_clicked), "on_function_edit_button_modify_argument_clicked", G_CALLBACK(on_function_edit_button_modify_argument_clicked), "on_function_edit_button_remove_argument_clicked", G_CALLBACK(on_function_edit_button_remove_argument_clicked), "on_subfunction_changed", G_CALLBACK(on_subfunction_changed),
+		"on_function_edit_checkbutton_temporary_toggled", G_CALLBACK(on_function_edit_checkbutton_temporary_toggled), "on_function_edit_entry_category_changed", G_CALLBACK(on_function_edit_entry_category_changed), NULL);
 		gtk_builder_connect_signals(functionedit_builder, NULL);
 
 	}
@@ -929,6 +938,7 @@ void edit_function(const char *category, MathFunction *f, GtkWindow *win, const 
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_entry_name")), !f || !f->isBuiltin());
 	gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(functionedit_builder, "function_edit_textview_expression")), !f || !f->isBuiltin());
 	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), category ? category : "");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_temporary")), category && CALCULATOR->temporaryCategory() == category);
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc")), "");
 	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_example")), "");
 	gtk_text_buffer_set_text(description_buffer, "", -1);
@@ -952,6 +962,7 @@ void edit_function(const char *category, MathFunction *f, GtkWindow *win, const 
 			gtk_text_buffer_set_text(expression_buffer, localize_expression(((UserFunction*) f)->formula()).c_str(), -1);
 		}
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gtk_builder_get_object(functionedit_builder, "function_edit_combo_category")))), f->category().c_str());
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(functionedit_builder, "function_edit_checkbutton_temporary")), f->category() == CALCULATOR->temporaryCategory());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_desc")), f->title(false).c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_condition")), localize_expression(f->condition()).c_str());
 		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(functionedit_builder, "function_edit_entry_example")), localize_expression(f->example()).c_str());
