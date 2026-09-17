@@ -161,11 +161,11 @@ int wrap_expression_selection(const char *insert_before, bool return_true_if_who
 	string str = gstr;
 	g_free(gstr);
 	if(!insert_before && ((expression_iter_is_start(&iend) && expression_iter_is_end(&istart)) || (expression_iter_is_start(&istart) && expression_iter_is_end(&iend)))) {
-		if(str.find_first_not_of(NUMBER_ELEMENTS SPACE) == string::npos) {
+		if(str.find_first_not_of(CALCULATOR->getDecimalPoint() == "," || evalops.parse_options.comma_as_separator ? NUMBER_ELEMENTS SPACE "_" COMMA : NUMBER_ELEMENTS SPACE "_") == string::npos) {
 			if(expression_iter_is_end(&istart)) gtk_text_buffer_place_cursor(expression_edit_buffer(), &istart);
 			else gtk_text_buffer_place_cursor(expression_edit_buffer(), &iend);
 			return true;
-		} else if((str.length() > 1 && str[0] == '/' && str.find_first_not_of(NUMBER_ELEMENTS SPACES, 1) != string::npos) || CALCULATOR->hasToExpression(str, true, evalops) || CALCULATOR->hasWhereExpression(str, evalops)) {
+		} else if((str.length() > 1 && str[0] == '/' && str.find_first_not_of(CALCULATOR->getDecimalPoint() == "," || evalops.parse_options.comma_as_separator ? NUMBER_ELEMENTS SPACE "_" COMMA : NUMBER_ELEMENTS SPACE "_", 1) == string::npos) || CALCULATOR->hasToExpression(str, true, evalops) || CALCULATOR->hasWhereExpression(str, evalops)) {
 			return -1;
 		}
 	}

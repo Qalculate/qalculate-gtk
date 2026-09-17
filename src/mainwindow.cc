@@ -1287,6 +1287,8 @@ bool convert_for_time_format_gtk(MathStructure &m, const EvaluationOptions &eo, 
 	return b_ret;
 }
 
+extern int replace_expression;
+
 void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 	if(result_blocked() || calculation_blocked()) return;
 
@@ -1354,7 +1356,7 @@ void do_auto_calc(int recalculate = 1, std::string str = std::string()) {
 					if(last_is_operator(str, evalops.parse_options.base == 10) && (evalops.parse_options.base != BASE_ROMAN_NUMERALS || str[str.length() - 1] != '|' || str.find('|') == str.length() - 1)) {
 						size_t n = 1;
 						while(n < str.length() && (char) str[str.length() - n] < 0 && (unsigned char) str[str.length() - n] < 0xC0) n++;
-						if((b_to && n == 1 && (str[str.length() - 1] != ' ' || str[str.length() - 1] != '/')) || n == str.length() || (display_expression_status && !b_to && parsed_mstruct->equals(current_parsed_expression(), true, true)) || ((!display_expression_status || b_to) && str.length() - n == prev_autocalc_str.length() && str.substr(0, str.length() - n) == prev_autocalc_str)) {
+						if((b_to && n == 1 && (str[str.length() - 1] != ' ' || str[str.length() - 1] != '/')) || n == str.length() || (display_expression_status && !b_to && parsed_mstruct->equals(current_parsed_expression(), true, true)) || (!result_autocalculated && (replace_expression == REPLACE_EXPRESSION_WITH_RESULT || replace_expression == REPLACE_EXPRESSION_WITH_RESULT_IF_SHORTER) && mstruct->equals(current_parsed_expression(), true, true)) || ((!display_expression_status || b_to) && str.length() - n == prev_autocalc_str.length() && str.substr(0, str.length() - n) == prev_autocalc_str)) {
 							auto_calc_stopped_at_operator = true;
 							return;
 						}
@@ -4277,8 +4279,6 @@ bool is_equation_solutions(const MathStructure &m) {
 	}
 	return false;
 }
-
-extern int replace_expression;
 
 /*
 	calculate entered expression and display result
@@ -7243,6 +7243,7 @@ void show_about() {
 	GtkWidget *dialog = gtk_about_dialog_new();
 	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(dialog), always_on_top);
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
+	// replace with list of translators
 	gtk_about_dialog_set_translator_credits(GTK_ABOUT_DIALOG(dialog), _("translator-credits"));
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), _("Powerful and easy to use calculator"));
 	gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(dialog), GTK_LICENSE_GPL_2_0);
