@@ -108,7 +108,7 @@ void autocalc_result_bases();
 
 bool display_errors(GtkWindow *win = NULL, int type = 0, bool add_to_history = false);
 
-void handle_expression_modified(bool autocalc);
+void handle_expression_modified(bool autocalc, bool disable_add_to_history = false);
 
 MathStructure *current_result();
 void replace_current_result(MathStructure*);

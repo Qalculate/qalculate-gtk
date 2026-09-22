@@ -2091,7 +2091,11 @@ void autocalc_result_bases() {
 	}
 }
 
-void handle_expression_modified(bool autocalc) {
+void handle_expression_modified(bool autocalc, bool disable_add_to_history) {
+	int ahd_bak = autocalc_history_delay;
+	if(autocalc && disable_add_to_history && autocalc_history_timeout_id == 0) {
+		autocalc_history_delay = -1;
+	}
 	show_parsed_instead_of_result = false;
 	if(!parsed_in_result || rpn_mode) display_parse_status();
 	if(autocalc && !rpn_mode && auto_calculate && !parsed_in_result) do_auto_calc(2);
@@ -2100,6 +2104,7 @@ void handle_expression_modified(bool autocalc) {
 			clear_result_bases();
 			autocalc_result_bases();
 		}
+		if(disable_add_to_history) autocalc_history_delay = ahd_bak;
 		return;
 	}
 	if((!autocalc || !auto_calculate || parsed_in_result) && !rpn_mode) {
@@ -2110,6 +2115,7 @@ void handle_expression_modified(bool autocalc) {
 		if(autocalc && auto_calculate) do_auto_calc(2);
 	}
 	if(autocalc && !rpn_mode && !auto_calculate && (visible_keypad & PROGRAMMING_KEYPAD)) autocalc_result_bases();
+	if(disable_add_to_history) autocalc_history_delay = ahd_bak;
 }
 
 bool do_chain_mode(const gchar *op) {

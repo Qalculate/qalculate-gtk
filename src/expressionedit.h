@@ -65,7 +65,7 @@ int wrap_expression_selection(const char *insert_before = NULL, bool return_true
 void focus_keeping_selection();
 void focus_expression();
 bool expression_modified();
-void set_expression_modified(bool b, bool handle = true, bool autocalc = true);
+void set_expression_modified(bool b, bool handle = true, bool autocalc = true, bool disable_add_to_history = false);
 void brace_wrap(bool smart = true);
 void insert_angle_symbol();
 void insert_text(const gchar *text);

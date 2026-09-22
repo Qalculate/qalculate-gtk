@@ -715,7 +715,8 @@ void block_expression_modified() {
 void unblock_expression_modified() {
 	block_emodified--;
 }
-void set_expression_modified(bool b, bool handle, bool autocalc) {
+extern int autocalc_history_delay;
+void set_expression_modified(bool b, bool handle, bool autocalc, bool disable_add_to_history) {
 	if(!b || !handle) {
 		expression_has_changed = b;
 		return;
@@ -733,7 +734,7 @@ void set_expression_modified(bool b, bool handle, bool autocalc) {
 	highlight_parentheses();
 	showhide_expression_button();
 	if(!dont_change_index) expression_history_index = -1;
-	handle_expression_modified(autocalc);
+	handle_expression_modified(autocalc, disable_add_to_history);
 	add_completion_timeout();
 }
 
