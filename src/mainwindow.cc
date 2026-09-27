@@ -8963,12 +8963,8 @@ void create_main_window() {
 			string flag_s = flags_r[i];
 			size_t i_ext = flag_s.find(".", 1);
 			if(i_ext != string::npos) {
-				GdkPixbuf *flagbuf = gdk_pixbuf_new_from_resource_at_scale((string("/qalculate-gtk/flags/") + flag_s).c_str(), -1, flagheight * scalefactor, TRUE, NULL);
-				if(flagbuf) {
-					cairo_surface_t *s = gdk_cairo_surface_create_from_pixbuf(flagbuf, scalefactor, NULL);
-					flag_surfaces[flag_s.substr(0, i_ext)] = s;
-					g_object_unref(flagbuf);
-				}
+				cairo_surface_t *s = flag_surface_from_resource((string("/qalculate-gtk/flags/") + flag_s).c_str(), flagheight * scalefactor, scalefactor);
+				if(s) flag_surfaces[flag_s.substr(0, i_ext)] = s;
 			}
 		}
 		g_strfreev(flags_r);

@@ -1278,12 +1278,10 @@ cairo_surface_t *draw_structure(MathStructure &m, PrintOptions po, bool caf, Int
 					}
 					string imagefile = "/qalculate-gtk/flags/"; imagefile += m[i_unit].unit()->referenceName(); imagefile += ".png";
 					h = hpt[flag_i];
-					GdkPixbuf *pixbuf = gdk_pixbuf_new_from_resource_at_scale(imagefile.c_str(), -1, h / 2.5 * scalefactor, TRUE, NULL);
-					if(pixbuf) {
-						flag_s = gdk_cairo_surface_create_from_pixbuf(pixbuf, scalefactor, NULL);
+					flag_s = flag_surface_from_resource(imagefile.c_str(), h / 2.5 * scalefactor, scalefactor);
+					if(flag_s) {
 						flag_width = cairo_image_surface_get_width(flag_s);
 						w += flag_width + 2;
-						g_object_unref(pixbuf);
 					}
 				}
 				central_point = dh;

@@ -146,6 +146,7 @@ GtkBuilder *getBuilder(const char *filename);
 std::string unformat(std::string str);
 
 void get_image_blank_width(cairo_surface_t *surface, int *x1, int *x2);
+cairo_surface_t *flag_surface_from_resource(const char *path, int height, int scalefactor);
 void get_image_blank_height(cairo_surface_t *surface, int *y1, int *y2);
 
 void set_tooltips_enabled(GtkWidget *w, bool b);
