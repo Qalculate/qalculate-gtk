@@ -1446,3 +1446,51 @@ string with_ltr_mark(string str) {
 	if(str.length() < strlen(LTR_MARK) || str.find(LTR_MARK, str.length() - strlen(LTR_MARK)) == string::npos) str += LTR_MARK;
 	return str;
 }
+
+struct png_resource_reader {
+	const guchar *data;
+	gsize left;
+};
+static cairo_status_t read_png_resource(void *closure, unsigned char *out, unsigned int length) {
+	png_resource_reader *r = (png_resource_reader*) closure;
+	if(length > r->left) return CAIRO_STATUS_READ_ERROR;
+	memcpy(out, r->data, length);
+	r->data += length;
+	r->left -= length;
+	return CAIRO_STATUS_SUCCESS;
+}
+/*
+	Loads a flag PNG from the resource bundle, scaled to height (in device pixels) with the aspect ratio kept.
+	Decoded with cairo instead of gdk-pixbuf, because gdk-pixbuf >= 2.44 decodes every image in a separate
+	sandboxed glycin process, which made loading all flags at startup slow.
+*/
+cairo_surface_t *flag_surface_from_resource(const char *path, int height, int scalefactor) {
+	if(height <= 0) return NULL;
+	GBytes *bytes = g_resources_lookup_data(path, G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
+	if(!bytes) return NULL;
+	png_resource_reader r;
+	r.data = (const guchar*) g_bytes_get_data(bytes, &r.left);
+	cairo_surface_t *png = cairo_image_surface_create_from_png_stream(read_png_resource, &r);
+	g_bytes_unref(bytes);
+	if(cairo_surface_status(png) != CAIRO_STATUS_SUCCESS) {
+		cairo_surface_destroy(png);
+		return NULL;
+	}
+	int w = cairo_image_surface_get_width(png), h = cairo_image_surface_get_height(png);
+	if(w <= 0 || h <= 0) {
+		cairo_surface_destroy(png);
+		return NULL;
+	}
+	int new_w = (int) (w * ((double) height / h) + 0.5);
+	if(new_w < 1) new_w = 1;
+	cairo_surface_t *s = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, new_w, height);
+	cairo_t *cr = cairo_create(s);
+	cairo_scale(cr, (double) new_w / w, (double) height / h);
+	cairo_set_source_surface(cr, png, 0, 0);
+	cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_GOOD);
+	cairo_paint(cr);
+	cairo_destroy(cr);
+	cairo_surface_destroy(png);
+	cairo_surface_set_device_scale(s, scalefactor, scalefactor);
+	return s;
+}
