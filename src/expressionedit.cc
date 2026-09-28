@@ -1863,8 +1863,10 @@ const char *expression_font(bool return_default) {
 }
 
 void test_rtl() {
+	block_status();
 	block_expression_modified();
 	string str = get_expression_text();
+	bool has_sel = gtk_text_buffer_get_has_selection(expression_edit_buffer());
 	gtk_text_buffer_set_text(expression_edit_buffer(), " ", -1);
 	GtkTextIter iter;
 	gtk_text_buffer_get_start_iter(expression_edit_buffer(), &iter);
@@ -1874,7 +1876,9 @@ void test_rtl() {
 	gtk_widget_get_allocation(expression_edit_widget(), &alloc);
 	rtl_input = (rect.x > alloc.width / 2);
 	gtk_text_buffer_set_text(expression_edit_buffer(), str.c_str(), -1);
+	if(has_sel) expression_select_all();
 	unblock_expression_modified();
+	unblock_status();
 }
 
 void create_expression_edit() {

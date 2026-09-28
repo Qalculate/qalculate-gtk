@@ -23,6 +23,8 @@ bool has_systray_icon();
 void test_border(void);
 void restore_window(GtkWindow *win = NULL);
 
+void load_flags();
+
 void create_main_window(void);
 
 GtkWindow *main_window();

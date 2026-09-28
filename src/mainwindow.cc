@@ -8924,6 +8924,30 @@ void set_expression_pos(int i) {
 
 }
 
+void load_flags() {
+	char **flags_r = g_resources_enumerate_children("/qalculate-gtk/flags", G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
+	if(flags_r) {
+		PangoFontDescription *font_desc;
+		gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(main_window())), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
+		PangoFontset *fontset = pango_context_load_fontset(gtk_widget_get_pango_context(GTK_WIDGET(main_window())), font_desc, pango_context_get_language(gtk_widget_get_pango_context(GTK_WIDGET(main_window()))));
+		PangoFontMetrics *metrics = pango_fontset_get_metrics(fontset);
+		flagheight = (pango_font_metrics_get_ascent(metrics) + pango_font_metrics_get_descent(metrics)) / PANGO_SCALE;
+		pango_font_metrics_unref(metrics);
+		g_object_unref(fontset);
+		pango_font_description_free(font_desc);
+		gint scalefactor = gtk_widget_get_scale_factor(GTK_WIDGET(main_window()));
+		for(size_t i = 0; flags_r[i] != NULL; i++) {
+			string flag_s = flags_r[i];
+			size_t i_ext = flag_s.find(".", 1);
+			if(i_ext != string::npos) {
+				cairo_surface_t *s = flag_surface_from_resource((string("/qalculate-gtk/flags/") + flag_s).c_str(), flagheight * scalefactor, scalefactor);
+				if(s) flag_surfaces[flag_s.substr(0, i_ext)] = s;
+			}
+		}
+		g_strfreev(flags_r);
+	}
+}
+
 void create_main_window() {
 
 	mstruct = new MathStructure();
@@ -8947,28 +8971,6 @@ void create_main_window() {
 #if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 14
 	gtk_image_set_from_icon_name(GTK_IMAGE(gtk_builder_get_object(main_builder, "image_swap")), "object-flip-vertical-symbolic", GTK_ICON_SIZE_BUTTON);
 #endif
-
-	char **flags_r = g_resources_enumerate_children("/qalculate-gtk/flags", G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
-	if(flags_r) {
-		PangoFontDescription *font_desc;
-		gtk_style_context_get(gtk_widget_get_style_context(GTK_WIDGET(main_window())), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
-		PangoFontset *fontset = pango_context_load_fontset(gtk_widget_get_pango_context(GTK_WIDGET(main_window())), font_desc, pango_context_get_language(gtk_widget_get_pango_context(GTK_WIDGET(main_window()))));
-		PangoFontMetrics *metrics = pango_fontset_get_metrics(fontset);
-		flagheight = (pango_font_metrics_get_ascent(metrics) + pango_font_metrics_get_descent(metrics)) / PANGO_SCALE;
-		pango_font_metrics_unref(metrics);
-		g_object_unref(fontset);
-		pango_font_description_free(font_desc);
-		gint scalefactor = gtk_widget_get_scale_factor(GTK_WIDGET(main_window()));
-		for(size_t i = 0; flags_r[i] != NULL; i++) {
-			string flag_s = flags_r[i];
-			size_t i_ext = flag_s.find(".", 1);
-			if(i_ext != string::npos) {
-				cairo_surface_t *s = flag_surface_from_resource((string("/qalculate-gtk/flags/") + flag_s).c_str(), flagheight * scalefactor, scalefactor);
-				if(s) flag_surfaces[flag_s.substr(0, i_ext)] = s;
-			}
-		}
-		g_strfreev(flags_r);
-	}
 
 	tabs = GTK_WIDGET(gtk_builder_get_object(main_builder, "tabs"));
 

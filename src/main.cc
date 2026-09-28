@@ -71,6 +71,8 @@ static GOptionEntry options[] = {
 
 gboolean create_menus_etc(gpointer) {
 
+	expression_select_all();
+
 	test_border();
 
 	generate_units_tree_struct();
@@ -82,6 +84,8 @@ gboolean create_menus_etc(gpointer) {
 	block_calculation();
 	create_button_menus();
 	unblock_calculation();
+
+	load_flags();
 
 	//create dynamic menus
 	create_fmenu();
