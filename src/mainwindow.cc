@@ -6155,7 +6155,7 @@ void load_preferences() {
 	}
 
 	version_numbers[0] = 5;
-	version_numbers[1] = 12;
+	version_numbers[1] = 13;
 	version_numbers[2] = 0;
 
 	if(file) {

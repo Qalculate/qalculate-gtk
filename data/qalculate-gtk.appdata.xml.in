@@ -51,6 +51,29 @@
  </provides>
  <translation type="gettext">qalculate-gtk</translation>
  <releases>
+  <release version="5.13.0" date="2026-10-05">
+   <description>
+    <p>Changes:</p>
+     <ul>
+      <li>Add temporary check box to function edit dialog</li>
+      <li>Fix bookmark removed when deleting history item immediately above</li>
+      <li>Fix segfault when adding bookmark to most recent history item</li>
+      <li>Fix calculate as you type result cleared or added to history again when history is modified</li>
+      <li>Fix result containing interval with zero as lower value not displayed automatically</li>
+      <li>New function: ymd() (returns the number of calendar years, months, and days between two dates)</li>
+      <li>Return exact value for more argument values in lambertw() function</li>
+      <li>Integrate sqrt(ax + b)/x and 1/(x × sqrt(ax² + bx + c))</li>
+      <li>Do not use same "n" variable for different unknown integer values in equation result (e.g. e^e^x = 1)</li>
+      <li>Solve e^x = ln(x), a × sin(x) = a × tan(x), and a × sin(x) = −a × tan(x)</li>
+      <li>Solve f(x) = f(x²) and f(x) = −f(x²) for trigonometric functions, and exponentiation</li>
+      <li>Do not return x = −infinity as solution for a^x = 0</li>
+      <li>Fix a = 1 and b = 1 solution for a^x = b when the value of a and b are unknown</li>
+      <li>Fix uncertainty propagation with duplicate equal data set functions</li>
+      <li>Fix division by zero warning for some expressions with zero quantity (e.g. "1 m × 0 kg")</li>
+      <li>Minor bug fixes and feature enhancements</li>
+     </ul>
+   </description>
+  </release>
   <release version="5.12.0" date="2026-07-13">
    <description>
     <p>Changes:</p>

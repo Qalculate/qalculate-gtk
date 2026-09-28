@@ -6,7 +6,7 @@ dnl  ----------------------
 dnl | initialize autotools |---------------------------------------------------
 dnl  ----------------------
 
-AC_INIT([Qalculate! (GTK UI)],[5.12.0],[],[qalculate-gtk])
+AC_INIT([Qalculate! (GTK UI)],[5.13.0],[],[qalculate-gtk])
 AC_CONFIG_SRCDIR([src/main.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS(config.h)
@@ -77,7 +77,6 @@ QALCULATE_GTK="qalculate-gtk${EXEEXT}"
 
 PKG_CHECK_MODULES(GTK, [
 	gtk+-3.0 >= 3.10
-	gdk-pixbuf-2.0
 	])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)

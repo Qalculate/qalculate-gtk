@@ -75,6 +75,8 @@ gboolean create_menus_etc(gpointer) {
 
 	test_border();
 
+	load_flags();
+
 	generate_units_tree_struct();
 	update_unit_selector_tree();
 	generate_functions_tree_struct();
@@ -84,8 +86,6 @@ gboolean create_menus_etc(gpointer) {
 	block_calculation();
 	create_button_menus();
 	unblock_calculation();
-
-	load_flags();
 
 	//create dynamic menus
 	create_fmenu();

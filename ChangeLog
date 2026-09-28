@@ -1,3 +1,32 @@
+2026-09-28 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Delay the loading of flag images (after the window has been shown)
+	* Fix selection and status after calculation of expression from command line
+
+2026-09-27 Nicolas Falesy <nfalesy@gmail.com>
+
+	* Decode currency flags with cairo instead of gdk-pixbuf
+
+2026-09-22 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix calculate as you type result cleared or added to history again when history is modified
+
+2026-09-17 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Do not use parenthesis for number with comma as decimal point, or separator, on input of operator
+	* Do not automatically calculate expression on input of operator directly after expression replaced by result
+
+2026-08-30 Hanna Knutsson <hanna.knutsson@protonmail.com>
+
+	* Fix bookmark removed when deleting history item immediately above
+	* Fix segfault when adding bookmark to most recent history item
+	* Add temporary check box to function edit dialog (as in variable edit dialog but disabled by default)
+	* Fix result containing interval with zero as lower value not displayed automatically
+
+2026-07-18 Balló György <ballogyor@gmail.com>
+
+	* Make preferences dialog scrollable (allows smaller size)
+
 2026-07-08 Hanna Knutsson <hanna.knutsson@protonmail.com>
 
 	* Fix output of result with symbol (quoted text) when result is temporarily displayed in status field
