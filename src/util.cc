@@ -1484,6 +1484,11 @@ cairo_surface_t *flag_surface_from_resource(const char *path, int height, int sc
 	int new_w = (int) (w * ((double) height / h) + 0.5);
 	if(new_w < 1) new_w = 1;
 	cairo_surface_t *s = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, new_w, height);
+	if(cairo_surface_status(s) != CAIRO_STATUS_SUCCESS) {
+		cairo_surface_destroy(s);
+		cairo_surface_destroy(png);
+		return NULL;
+	}
 	cairo_t *cr = cairo_create(s);
 	cairo_scale(cr, (double) new_w / w, (double) height / h);
 	cairo_set_source_surface(cr, png, 0, 0);
