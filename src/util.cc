@@ -657,22 +657,23 @@ bool string_is_less(string str1, string str2) {
 	return str1 < str2;
 }
 
-bool contains_plot_or_save(const string &str) {
-	if(expression_contains_save_function(str, evalops.parse_options, false)) return true;
-	for(size_t f_i = 0; f_i < 4; f_i++) {
+bool contains_plot_or_save(const string &str, bool user_formula, bool top_expression) {
+	if(top_expression && expression_contains_save_function(str, evalops.parse_options, false)) return true;
+	for(size_t f_i = 0; f_i < (user_formula ? 4 : 5); f_i++) {
 		int id = 0;
 		if(f_i == 0) id = FUNCTION_ID_PLOT;
 		else if(f_i == 1) id = FUNCTION_ID_EXPORT;
 		else if(f_i == 2) id = FUNCTION_ID_LOAD;
-		else if(f_i == 3) id = FUNCTION_ID_COMMAND;
+		else if(f_i == 3) id = FUNCTION_ID_SAVE;
+		else if(f_i == 4) id = FUNCTION_ID_COMMAND;
 		MathFunction *f = CALCULATOR->getFunctionById(id);
 		for(size_t i = 1; f && i <= f->countNames(); i++) {
 			if(str.find(f->getName(i).name) != string::npos) {
 				MathStructure mtest;
 				CALCULATOR->beginTemporaryStopMessages();
-				CALCULATOR->parse(&mtest, str, evalops.parse_options);
+				CALCULATOR->parse(&mtest, str, user_formula ? default_parse_options : evalops.parse_options);
 				CALCULATOR->endTemporaryStopMessages();
-				if(mtest.containsFunctionId(FUNCTION_ID_PLOT) || mtest.containsFunctionId(FUNCTION_ID_EXPORT) || mtest.containsFunctionId(FUNCTION_ID_LOAD) || mtest.containsFunctionId(FUNCTION_ID_COMMAND)) return true;
+				if(mtest.containsFunctionId(FUNCTION_ID_PLOT) || mtest.containsFunctionId(FUNCTION_ID_EXPORT) || mtest.containsFunctionId(FUNCTION_ID_LOAD) || mtest.containsFunctionId(FUNCTION_ID_SAVE) || (!user_formula && mtest.containsFunctionId(FUNCTION_ID_COMMAND))) return true;
 				return false;
 			}
 		}
@@ -1424,13 +1425,14 @@ bool test_autocalculatable(const MathStructure &m, bool where, bool top) {
 			return false;
 		}
 		if(m.function()->id() == FUNCTION_ID_INTEGRATE && m.size() >= 3 && m[2].isUndefined() && !m[1].isUndefined()) return false;
-		if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND || m.function() == f_title || (m.function()->subtype() == SUBTYPE_USER_FUNCTION && ((UserFunction*) m.function())->formula().find("plot(") != string::npos)) return false;
+		if(m.function()->id() == FUNCTION_ID_SAVE || m.function()->id() == FUNCTION_ID_PLOT || m.function()->id() == FUNCTION_ID_EXPORT || m.function()->id() == FUNCTION_ID_LOAD || m.function()->id() == FUNCTION_ID_COMMAND || m.function() == f_title) return false;
+		if(m.function()->subtype() == SUBTYPE_USER_FUNCTION && contains_plot_or_save(((UserFunction*) m.function())->formula(), true, false)) return false;
 		if(m.size() > 0 && (m.function()->id() == FUNCTION_ID_FACTORIAL || m.function()->id() == FUNCTION_ID_DOUBLE_FACTORIAL || m.function()->id() == FUNCTION_ID_MULTI_FACTORIAL) && m[0].isInteger() && m[0].number().integerLength() > 17) {
 			return false;
 		}
 		if(m.function()->id() == FUNCTION_ID_LOGN && m.size() == 2 && m[0].isUndefined() && m[1].isNumber()) return false;
 		if(top && m.function()->subtype() == SUBTYPE_DATA_SET && m.size() >= 2 && m[1].isSymbolic() && equalsIgnoreCase(m[1].symbol(), "info")) return false;
-	} else if(m.isSymbolic() && contains_plot_or_save(m.symbol())) {
+	} else if(m.isSymbolic() && contains_plot_or_save(m.symbol(), false, false)) {
 		return false;
 	}
 	for(size_t i = 0; i < m.size(); i++) {

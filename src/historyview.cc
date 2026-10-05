@@ -913,6 +913,9 @@ void add_line_breaks(string &str, int expr, size_t first_i) {
 		gtk_style_context_get(gtk_widget_get_style_context(history_view_widget()), GTK_STATE_FLAG_NORMAL, GTK_STYLE_PROPERTY_FONT, &font_desc, NULL);
 		gint size = pango_font_description_get_size(font_desc);
 		if(expr == 3) pango_font_description_set_style(font_desc, PANGO_STYLE_ITALIC);
+#if PANGO_VERSION >= 15600
+		pango_font_description_set_features(font_desc, "tnum");
+#endif
 		if(pango_version() >= 15000) {
 			if(expr == 4) size *= 0.9;
 			else if(expr == 2) size *= 1.1;
@@ -3518,11 +3521,14 @@ void history_scroll_on_realized() {
 	}
 }
 
-void on_history_resize(GtkWidget*, GdkRectangle *alloc, gpointer) {
+GdkRectangle history_alloc;
+guint history_resize_timeout_id = 0;
+gboolean do_history_resize_timeout(gpointer) {
+	history_resize_timeout_id = 0;
 	gint hsep = 0;
 	gtk_widget_style_get(history_view_widget(), "horizontal-separator", &hsep, NULL);
 	int prev_hw = history_width_a;
-	history_width_a = alloc->width - gtk_tree_view_column_get_width(history_index_column) - hsep * 4;
+	history_width_a = history_alloc.width - gtk_tree_view_column_get_width(history_index_column) - hsep * 4;
 	PangoLayout *layout = gtk_widget_create_pango_layout(history_view_widget(), "");
 	if(can_display_unicode_string_function_exact("🔒", history_view_widget())) pango_layout_set_markup(layout, "<span size=\"small\"><sup> 🔒</sup></span>", -1);
 	else pango_layout_set_markup(layout, "<span size=\"x-small\"><sup> P</sup></span>", -1);
@@ -3535,7 +3541,14 @@ void on_history_resize(GtkWidget*, GdkRectangle *alloc, gpointer) {
 		gtk_tree_view_column_set_max_width(history_column, history_width_a + history_scroll_width * 2);
 		reload_history();
 	}
+	return FALSE;
 }
+void on_history_resize(GtkWidget*, GdkRectangle *alloc, gpointer) {
+	history_alloc = *alloc;
+	if(history_resize_timeout_id != 0) g_source_remove(history_resize_timeout_id);
+	history_resize_timeout_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE, 0, do_history_resize_timeout, NULL, NULL);
+}
+
 void update_history_button_text() {
 	if(printops.use_unicode_signs) {
 		if(can_display_unicode_string_function(SIGN_MINUS, (void*) gtk_builder_get_object(main_builder, "label_history_sub"))) gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(main_builder, "label_history_sub")), SIGN_MINUS);

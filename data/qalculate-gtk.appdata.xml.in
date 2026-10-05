@@ -60,6 +60,8 @@
       <li>Fix segfault when adding bookmark to most recent history item</li>
       <li>Fix calculate as you type result cleared or added to history again when history is modified</li>
       <li>Fix result containing interval with zero as lower value not displayed automatically</li>
+      <li>Fix too long lines in history with some fonts</li>
+      <li>Fix number of decimals for currency quantity when currency is placed before quantity</li>
       <li>New function: ymd() (returns the number of calendar years, months, and days between two dates)</li>
       <li>Return exact value for more argument values in lambertw() function</li>
       <li>Integrate sqrt(ax + b)/x and 1/(x × sqrt(ax² + bx + c))</li>
@@ -69,7 +71,9 @@
       <li>Do not return x = −infinity as solution for a^x = 0</li>
       <li>Fix a = 1 and b = 1 solution for a^x = b when the value of a and b are unknown</li>
       <li>Fix uncertainty propagation with duplicate equal data set functions</li>
+      <li>Fix trigonometric functions with function in argument not calculated when angle unit is not radians</li>
       <li>Fix division by zero warning for some expressions with zero quantity (e.g. "1 m × 0 kg")</li>
+      <li>Fix inconsistent (over)use of secondary exchanges rate sources</li>
       <li>Minor bug fixes and feature enhancements</li>
      </ul>
    </description>

@@ -206,7 +206,7 @@ bool contains_polynomial_division(MathStructure &m);
 bool contains_imaginary_number(MathStructure &m);
 bool contains_rational_number(MathStructure &m);
 bool contains_fraction(MathStructure &m, bool in_div = false);
-bool contains_plot_or_save(const std::string &str);
+bool contains_plot_or_save(const std::string &str, bool user_formula = false, bool top_expression = true);
 bool contains_convertible_unit(MathStructure &m);
 bool contains_prefix(const MathStructure &m);
 void fix_expression(std::string &str);
