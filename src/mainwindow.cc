@@ -22,6 +22,9 @@
 #ifndef _MSC_VER
 #	include <unistd.h>
 #endif
+#ifndef _WIN32
+#	include <fcntl.h>
+#endif
 #include <time.h>
 #include <limits>
 #include <fstream>
@@ -6597,35 +6600,105 @@ void add_recent_items() {
 	}
 }
 
+/*
+	The configuration and history files are first written to a temporary file in the same directory,
+	which then replaces the old file. A full disk, a crash or a power loss during the save then leaves
+	the old file as it was, instead of an empty or truncated file (with all preferences and the whole
+	history lost). The file is written in place, as before, if it is a symbolic link, has more than one
+	hard link or is not writable (so these cases behave as they did), if the temporary file cannot be
+	created (e.g. a read-only directory with a writable file), and on Windows.
+*/
+static FILE *open_save_file(const gchar *path, gchar **tmp_path) {
+	*tmp_path = NULL;
+#ifndef _WIN32
+	GStatBuf stat;
+	bool exists = (g_lstat(path, &stat) == 0);
+	if(!exists || (S_ISREG(stat.st_mode) && stat.st_nlink == 1 && g_access(path, W_OK) == 0)) {
+		gchar *tmp = g_strconcat(path, ".XXXXXX", NULL);
+		// 0666 minus umask, the same as a new file created by fopen()
+		int fd = g_mkstemp_full(tmp, O_WRONLY, 0666);
+		if(fd >= 0) {
+			// keep the permissions of the old file
+			if(exists) fchmod(fd, stat.st_mode & 07777);
+			FILE *file = fdopen(fd, "w");
+			if(file) {
+				*tmp_path = tmp;
+				return file;
+			}
+			close(fd);
+			g_unlink(tmp);
+		}
+		g_free(tmp);
+	}
+#endif
+	return fopen(path, "w+");
+}
+/*
+	Closes a file opened with open_save_file() and, if a temporary file was used, moves it over the old
+	file. Returns false if any write failed (the stream error flag covers every earlier fprintf()), or if
+	the flush, sync, close or rename failed. On failure the temporary file is removed and the old file
+	is left untouched.
+*/
+static bool close_save_file(FILE *file, const gchar *path, gchar *tmp_path) {
+	bool b_ok = !ferror(file) && fflush(file) == 0;
+#ifndef _WIN32
+	if(b_ok && fsync(fileno(file)) != 0) b_ok = false;
+#endif
+	if(fclose(file) != 0) b_ok = false;
+	if(tmp_path) {
+		if(b_ok && g_rename(tmp_path, path) != 0) b_ok = false;
+		if(!b_ok) g_unlink(tmp_path);
+#ifndef _WIN32
+		if(b_ok) {
+			// make the rename itself durable
+			gchar *dir = g_path_get_dirname(path);
+			int dfd = open(dir, O_RDONLY);
+			if(dfd >= 0) {
+				fsync(dfd);
+				close(dfd);
+			}
+			g_free(dir);
+		}
+#endif
+		g_free(tmp_path);
+	}
+	return b_ok;
+}
+static int save_error_dialog(const gchar *message, bool allow_cancel) {
+	GtkWidget *edialog = gtk_message_dialog_new(main_window(), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_NONE, "%s", message);
+	if(allow_cancel) {
+		gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Cancel"), GTK_RESPONSE_CANCEL, _("Retry"), GTK_RESPONSE_APPLY, NULL);
+	} else {
+		gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Retry"), GTK_RESPONSE_APPLY, NULL);
+	}
+	if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
+	int ret = gtk_dialog_run(GTK_DIALOG(edialog));
+	gtk_widget_destroy(edialog);
+	return ret;
+}
+
 bool save_history(bool allow_cancel) {
 	if(!save_history_separately) return true;
 	FILE *file = NULL;
 	string homedir = getLocalDir();
 	recursiveMakeDir(homedir);
 	gchar *gstr2 = g_build_filename(homedir.c_str(), "qalculate-gtk.history", NULL);
-	file = fopen(gstr2, "w+");
-	if(file == NULL) {
-		GtkWidget *edialog = gtk_message_dialog_new(main_window(), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_NONE, _("Couldn't write history to\n%s"), gstr2);
-		if(allow_cancel) {
-			gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Cancel"), GTK_RESPONSE_CANCEL, _("Retry"), GTK_RESPONSE_APPLY, NULL);
-		} else {
-			gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Retry"), GTK_RESPONSE_APPLY, NULL);
+	gchar *tmp_path = NULL;
+	file = open_save_file(gstr2, &tmp_path);
+	if(file) {
+		write_expression_history(file);
+		write_history(file);
+		if(close_save_file(file, gstr2, tmp_path)) {
+			g_free(gstr2);
+			return true;
 		}
-		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
-		int ret = gtk_dialog_run(GTK_DIALOG(edialog));
-		gtk_widget_destroy(edialog);
-		g_free(gstr2);
-		if(ret == GTK_RESPONSE_CANCEL) return false;
-		if(ret == GTK_RESPONSE_APPLY) return save_history(allow_cancel);
-		return true;
 	}
+	gchar *message = g_strdup_printf(_("Couldn't write history to\n%s"), gstr2);
 	g_free(gstr2);
-
-	write_expression_history(file);
-	write_history(file);
-
-	fclose(file);
-
+	int ret = save_error_dialog(message, allow_cancel);
+	g_free(message);
+	if(ret == GTK_RESPONSE_CANCEL) return false;
+	if(ret == GTK_RESPONSE_APPLY) return save_history(allow_cancel);
 	return true;
 
 }
@@ -6641,7 +6714,8 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	string homedir = getLocalDir();
 	recursiveMakeDir(homedir);
 	gchar *gstr2 = g_build_filename(homedir.c_str(), "qalculate-gtk.cfg", NULL);
-	file = fopen(gstr2, "w+");
+	gchar *tmp_path = NULL;
+	file = open_save_file(gstr2, &tmp_path);
 	if(file == NULL) {
 #ifndef _WIN32
 		GStatBuf stat;
@@ -6650,21 +6724,14 @@ bool save_preferences(bool mode, bool allow_cancel) {
 			return true;
 		}
 #endif
-		GtkWidget *edialog = gtk_message_dialog_new(main_window(), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_NONE, _("Couldn't write preferences to\n%s"), gstr2);
-		if(allow_cancel) {
-			gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Cancel"), GTK_RESPONSE_CANCEL, _("Retry"), GTK_RESPONSE_APPLY, NULL);
-		} else {
-			gtk_dialog_add_buttons(GTK_DIALOG(edialog), _("Ignore"), GTK_RESPONSE_CLOSE, _("Retry"), GTK_RESPONSE_APPLY, NULL);
-		}
-		if(always_on_top) gtk_window_set_keep_above(GTK_WINDOW(edialog), always_on_top);
-		int ret = gtk_dialog_run(GTK_DIALOG(edialog));
-		gtk_widget_destroy(edialog);
+		gchar *message = g_strdup_printf(_("Couldn't write preferences to\n%s"), gstr2);
 		g_free(gstr2);
+		int ret = save_error_dialog(message, allow_cancel);
+		g_free(message);
 		if(ret == GTK_RESPONSE_CANCEL) return false;
 		if(ret == GTK_RESPONSE_APPLY) return save_preferences(mode, allow_cancel);
 		return true;
 	}
-	g_free(gstr2);
 	gtk_revealer_set_reveal_child(GTK_REVEALER(gtk_builder_get_object(main_builder, "message_revealer")), FALSE);
 	gint w, h;
 	update_variables_settings();
@@ -6884,7 +6951,16 @@ bool save_preferences(bool mode, bool allow_cancel) {
 	fprintf(file, "\n[Plotting]\n");
 	write_plot_settings(file);
 
-	fclose(file);
+	if(!close_save_file(file, gstr2, tmp_path)) {
+		gchar *message = g_strdup_printf(_("Couldn't write preferences to\n%s"), gstr2);
+		g_free(gstr2);
+		int ret = save_error_dialog(message, allow_cancel);
+		g_free(message);
+		if(ret == GTK_RESPONSE_CANCEL) return false;
+		if(ret == GTK_RESPONSE_APPLY) return save_preferences(mode, allow_cancel);
+		return true;
+	}
+	g_free(gstr2);
 
 	return true;
 
