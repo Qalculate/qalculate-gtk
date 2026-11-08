@@ -61,6 +61,7 @@ qalculate_gtk_SOURCES = \
 	floatingpointdialog.cc floatingpointdialog.h \
 	insertfunctiondialog.cc insertfunctiondialog.h \
 	preferencesdialog.cc preferencesdialog.h \
+	colorscheme.cc colorscheme.h \
 	conversionview.cc conversionview.h \
 	historyview.cc historyview.h \
 	stackview.cc stackview.h \

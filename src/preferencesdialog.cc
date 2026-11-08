@@ -41,6 +41,7 @@
 #include "expressionstatus.h"
 #include "expressioncompletion.h"
 #include "preferencesdialog.h"
+#include "colorscheme.h"
 
 using std::string;
 using std::cout;
@@ -581,6 +582,7 @@ void on_preferences_combo_theme_changed(GtkComboBox *w, gpointer) {
 		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider_theme), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	}
 	gtk_theme = gtk_combo_box_get_active(w) - 1;
+	color_scheme_follow_system(gtk_theme == THEME_SYSTEM);
 	switch(gtk_theme) {
 		case 0: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained.css"); break;}
 		case 1: {gtk_css_provider_load_from_resource(app_provider_theme, "/org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css"); break;}
