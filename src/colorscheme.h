@@ -10,11 +10,9 @@
 #ifndef COLOR_SCHEME_H
 #define COLOR_SCHEME_H
 
-// gtk_theme value (last item of the theme combo) that follows the light/dark preference of the desktop
-#define THEME_SYSTEM 4
-
 // Follow (or stop following) the light/dark preference of the XDG desktop portal
-// (org.freedesktop.appearance color-scheme), using gtk-application-prefer-dark-theme
+// (org.freedesktop.appearance color-scheme), using gtk-application-prefer-dark-theme.
+// Nothing is done if gtk-application-prefer-dark-theme is already enabled by the user's GTK configuration.
 void color_scheme_follow_system(bool follow);
 
 #endif /* COLOR_SCHEME_H */

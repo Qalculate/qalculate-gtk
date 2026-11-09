@@ -8996,9 +8996,9 @@ void create_main_window() {
 	gtk_css_provider_load_from_data(topframe_provider, topframe_css.c_str(), -1, NULL);
 
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
-	if(gtk_theme < 0 || gtk_theme == THEME_SYSTEM) {
+	if(gtk_theme < 0) {
 		app_provider_theme = NULL;
-		if(gtk_theme == THEME_SYSTEM) color_scheme_follow_system(true);
+		color_scheme_follow_system(true);
 	} else {
 		app_provider_theme = gtk_css_provider_new();
 		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider_theme), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);

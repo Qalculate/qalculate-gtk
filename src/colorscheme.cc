@@ -33,7 +33,6 @@ extern bool b_busy_result;
 
 static GDBusConnection *session_bus = NULL;
 static guint setting_changed_id = 0;
-static gboolean original_prefer_dark = FALSE;
 
 // No preference is treated as light, like libadwaita does
 static void apply_color_scheme(GVariant *value) {
@@ -78,13 +77,16 @@ void color_scheme_follow_system(bool follow) {
 	if(!follow) {
 		g_dbus_connection_signal_unsubscribe(session_bus, setting_changed_id);
 		setting_changed_id = 0;
-		g_object_set(settings, "gtk-application-prefer-dark-theme", original_prefer_dark, NULL);
+		// following only starts when the setting is disabled
+		g_object_set(settings, "gtk-application-prefer-dark-theme", FALSE, NULL);
 		return;
 	}
+	// keep a dark variant requested by the user's GTK configuration (e.g. settings.ini)
+	gboolean prefer_dark = FALSE;
+	g_object_get(settings, "gtk-application-prefer-dark-theme", &prefer_dark, NULL);
+	if(prefer_dark) return;
 	if(!session_bus) session_bus = g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, NULL);
 	if(!session_bus) return;
-	// restored when following stops
-	g_object_get(settings, "gtk-application-prefer-dark-theme", &original_prefer_dark, NULL);
 	setting_changed_id = g_dbus_connection_signal_subscribe(session_bus, PORTAL_BUS_NAME, PORTAL_SETTINGS_INTERFACE, "SettingChanged", PORTAL_OBJECT_PATH, APPEARANCE_NAMESPACE, G_DBUS_SIGNAL_FLAGS_NONE, on_setting_changed, NULL, NULL);
 	// Read is deprecated in favour of ReadOne, but supported by all versions of the portal
 	GVariant *reply = g_dbus_connection_call_sync(session_bus, PORTAL_BUS_NAME, PORTAL_OBJECT_PATH, PORTAL_SETTINGS_INTERFACE, "Read", g_variant_new("(ss)", APPEARANCE_NAMESPACE, COLOR_SCHEME_KEY), G_VARIANT_TYPE("(v)"), G_DBUS_CALL_FLAGS_NONE, 1000, NULL, NULL);
