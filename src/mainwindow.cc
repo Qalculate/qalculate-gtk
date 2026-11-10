@@ -205,6 +205,7 @@ enum {
 #include "buttonseditdialog.h"
 #include "setbasedialog.h"
 #include "preferencesdialog.h"
+#include "colorscheme.h"
 #include "matrixdialog.h"
 #include "importcsvdialog.h"
 #include "exportcsvdialog.h"
@@ -8997,6 +8998,7 @@ void create_main_window() {
 #if GTK_MAJOR_VERSION > 3 || GTK_MINOR_VERSION >= 16
 	if(gtk_theme < 0) {
 		app_provider_theme = NULL;
+		color_scheme_follow_system(true);
 	} else {
 		app_provider_theme = gtk_css_provider_new();
 		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(app_provider_theme), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
