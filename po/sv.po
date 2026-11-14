@@ -1,14 +1,16 @@
+# Swedish translations for qalculate-gtk.
 # This file is distributed under the same license as the PACKAGE package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
 # Hanna Knutsson <hanna.knutsson@protonmail.com>, 2003.
+# Jonatan Nyberg, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: sv\n"
+"Project-Id-Version: qalculate-gtk\n"
 "Report-Msgid-Bugs-To: https://github.com/Qalculate/qalculate-gtk/issues\n"
 "POT-Creation-Date: 2026-09-28 10:48+0200\n"
-"PO-Revision-Date: 2006-05-04 12:29+0200\n"
-"Last-Translator: Hanna Knutsson <hanna.knutsson@protonmail.com>\n"
+"PO-Revision-Date: 2026-11-13 20:14+0200\n"
+"Last-Translator: Jonatan Nyberg\n"
 "Language-Team: Swedish\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
@@ -32,11 +34,11 @@ msgstr "Kraftfull och användarvänlig miniräknare"
 
 #: data/qalculate-gtk.desktop.in:14
 msgid "calculation;arithmetic;scientific;financial;"
-msgstr ""
+msgstr "beräkning;aritmetik;vetenskaplig;finansiell;"
 
 #: data/qalculate-gtk.noinst.appdata.xml:7
 msgid "Qalculate! (GTK UI)"
-msgstr "Qalculate! (GTK UI)"
+msgstr "Qalculate! (GTK-gränssnitt)"
 
 #: data/qalculate-gtk.noinst.appdata.xml:10
 msgid ""
@@ -45,6 +47,11 @@ msgid ""
 "complicated math packages, as well as useful tools for everyday needs (such "
 "as currency conversion and percent calculation)."
 msgstr ""
+"Qalculate! är en mångsidig skrivbordskalkylator som fungerar på flera "
+"plattformar. Den är enkel att använda men erbjuder kraftfulla och flexibla "
+"funktioner som vanligtvis bara finns i avancerade matematikprogram, samt "
+"praktiska verktyg för vardagen (till exempel valutaomvandling och "
+"procentberäkning)."
 
 #: data/qalculate-gtk.noinst.appdata.xml:16
 msgid ""
@@ -53,14 +60,19 @@ msgid ""
 "(including integrals and equations), arbitrary precision, uncertainty "
 "propagation, interval arithmetic, plotting, and a user-friendly interface."
 msgstr ""
+"Bland funktionerna finns ett stort bibliotek med anpassningsbara funktioner,"
+" beräkningar med och omvandling av enheter, fysikaliska konstanter, "
+"symboliska beräkningar (inklusive integraler och ekvationer), godtycklig "
+"precision, fortplantning av osäkerhet, intervallaritmetik, diagramritning "
+"och ett användarvänligt gränssnitt."
 
 #: data/qalculate-gtk.noinst.appdata.xml:26
 msgid "The main window with history visible"
-msgstr ""
+msgstr "Huvudfönstret med synlig historik"
 
 #: data/qalculate-gtk.noinst.appdata.xml:30
 msgid "The main window with keypad visible"
-msgstr ""
+msgstr "Huvudfönstret med synlig knappsats"
 
 #: data/argumentrules.ui:22 data/functionedit.ui:635
 msgid "Argument Rules"
@@ -108,7 +120,7 @@ msgstr "Valfri"
 #: data/argumentrules.ui:103 data/datasetedit.ui:213 data/main.ui:277
 #: data/main.ui:430 data/main.ui:578 data/main.ui:2406 data/unknownedit.ui:144
 msgid "Number"
-msgstr "Nummer"
+msgstr "Tal"
 
 #: data/argumentrules.ui:104 data/main.ui:312 data/main.ui:465 data/main.ui:613
 #: data/main.ui:2445 data/unknownedit.ui:147
@@ -140,15 +152,15 @@ msgstr "Matris"
 
 #: data/argumentrules.ui:110
 msgid "Positive number"
-msgstr "Positivt nummer"
+msgstr "Positivt tal"
 
 #: data/argumentrules.ui:111
 msgid "Non-zero number"
-msgstr "Icke-noll nummer"
+msgstr "Tal skilt från noll"
 
 #: data/argumentrules.ui:112
 msgid "Non-negative number"
-msgstr "Icke-negativt nummer"
+msgstr "Icke-negativt tal"
 
 #: data/argumentrules.ui:113
 msgid "Positive integer"
@@ -156,11 +168,11 @@ msgstr "Positivt heltal"
 
 #: data/argumentrules.ui:114
 msgid "Non-zero integer"
-msgstr "Icke-noll heltal"
+msgstr "Heltal skilt från noll"
 
 #: data/argumentrules.ui:115
 msgid "Non-negative integer"
-msgstr "Icke-negativt nummer"
+msgstr "Icke-negativt heltal"
 
 #: data/argumentrules.ui:116 data/main.ui:321 data/main.ui:474 data/main.ui:622
 #: data/main.ui:2455 data/unknownedit.ui:148
@@ -202,7 +214,7 @@ msgstr "Dataegenskap"
 
 #: data/argumentrules.ui:136
 msgid "Enable rules and type test"
-msgstr "Aktivera villkor- och klass-test"
+msgstr "Aktivera regler och typkontroll"
 
 #: data/argumentrules.ui:154
 msgid "Custom condition"
@@ -213,7 +225,7 @@ msgid ""
 "For example if argument is a matrix that must have equal number of rows and "
 "columns: rows(\\x) = columns(\\x)"
 msgstr ""
-"Till exempel om parametern är en matris och måste ha lika antal rader och "
+"Till exempel om parametern är en matris som måste ha lika många rader och "
 "kolumner: rows(\\x) = columns(\\x)"
 
 #: data/argumentrules.ui:186
@@ -230,7 +242,7 @@ msgstr "Hantera vektor"
 
 #: data/argumentrules.ui:223
 msgid "Calculate function for each separate element in vector."
-msgstr "Beräkna funktionen för varje separat element i vektor."
+msgstr "Beräkna funktionen för varje separat element i vektorn."
 
 #: data/argumentrules.ui:236
 msgid "Min"
@@ -412,7 +424,7 @@ msgstr "Inkluderar kolumnnamn"
 
 #: data/csvimport.ui:275
 msgid "If the first row contains column headings"
-msgstr "Huruvida den första raden är kolumnrubriker"
+msgstr "Huruvida den första raden innehåller kolumnrubriker"
 
 #: data/csvimport.ui:290
 msgid "Delimiter used to separate columns in the file"
@@ -442,7 +454,7 @@ msgstr "Använd som nyckel"
 
 #: data/datasetedit.ui:133
 msgid "Case sensitive value"
-msgstr "Storlekskänsligt värde"
+msgstr "Skiftlägeskänsligt värde"
 
 #: data/datasetedit.ui:149
 msgid "Approximate value"
@@ -450,7 +462,7 @@ msgstr "Approximerat värde"
 
 #: data/datasetedit.ui:165
 msgid "Value uses brackets"
-msgstr "Värdet använder klammrar"
+msgstr "Värdet använder klamrar"
 
 #: data/datasetedit.ui:180
 msgid "Hide"
@@ -635,7 +647,7 @@ msgstr "Hexadecimal representation"
 
 #: data/floatingpoint.ui:119
 msgid "Conversion error"
-msgstr "Förlorad precision"
+msgstr "Omvandlingsfel"
 
 #: data/floatingpoint.ui:132
 msgid "Binary representation"
@@ -651,31 +663,31 @@ msgstr "Format"
 
 #: data/floatingpoint.ui:172
 msgid "16-bit (half precision)"
-msgstr ""
+msgstr "16 bitar (halv precision)"
 
 #: data/floatingpoint.ui:173
 msgid "32-bit (single precision)"
-msgstr ""
+msgstr "32 bitar (enkel precision)"
 
 #: data/floatingpoint.ui:174
 msgid "64-bit (double precision)"
-msgstr ""
+msgstr "64 bitar (dubbel precision)"
 
 #: data/floatingpoint.ui:175
 msgid "80-bit (x86 extended format)"
-msgstr ""
+msgstr "80 bitar (utökat x86-format)"
 
 #: data/floatingpoint.ui:176
 msgid "128-bit (quadruple precision)"
-msgstr ""
+msgstr "128 bitar (fyrdubbel precision)"
 
 #: data/floatingpoint.ui:177
 msgid "Microchip 24-bit"
-msgstr ""
+msgstr "Microchip 24 bitar"
 
 #: data/floatingpoint.ui:178
 msgid "Microchip 32-bit"
-msgstr ""
+msgstr "Microchip 32 bitar"
 
 #: data/functionedit.ui:8 src/functioneditdialog.cc:922
 msgid "Edit Function"
@@ -717,8 +729,8 @@ msgid ""
 "Condition that must be true for the function (e.g. if the second argument "
 "must be greater than the first: \"\\y > \\x\")"
 msgstr ""
-"Förutsättning som måste infrias för funktionen (t.ex. om den andra "
-"parametern måste var större än den första: \"\\y > \\x\")"
+"Förutsättning som måste vara uppfylld för funktionen (t.ex. om den andra "
+"parametern måste vara större än den första: \"\\y > \\x\")"
 
 #: data/functionedit.ui:231
 msgid "Sub-functions"
@@ -837,7 +849,7 @@ msgstr "Radianer"
 #: data/main.ui:87 data/main.ui:169 data/main.ui:219 data/main.ui:2354
 #: data/main.ui:9405
 msgid "Gradians"
-msgstr "Gradienter"
+msgstr "Nygrader"
 
 #: data/main.ui:246 data/main.ui:399 data/main.ui:547
 #: src/variablesdialog.cc:337
@@ -913,7 +925,7 @@ msgstr "_Spara resultatet…"
 
 #: data/main.ui:823
 msgid "Save Result Image…"
-msgstr "Spara resulatbild…"
+msgstr "Spara resultatbild…"
 
 #: data/main.ui:838
 msgid "Save local functions, variables and units"
@@ -1158,11 +1170,11 @@ msgstr "Sortera minus sist"
 
 #: data/main.ui:1428
 msgid "Round Halfway Numbers Away from Zero"
-msgstr "Avrunda mittemellan-tal bort från noll"
+msgstr "Avrunda tal mitt emellan bort från noll"
 
 #: data/main.ui:1439
 msgid "Round Halfway Numbers to Even"
-msgstr "Avrunda mittemellan-tal till jämn"
+msgstr "Avrunda tal mitt emellan till jämnt"
 
 #: data/main.ui:1449
 msgid "Other Rounding Methods"
@@ -1170,23 +1182,23 @@ msgstr "Andra avrundningsmetoder"
 
 #: data/main.ui:1459
 msgid "Round Halfway Numbers to Odd"
-msgstr "Avrunda mittemellan-tal till udda"
+msgstr "Avrunda tal mitt emellan till udda"
 
 #: data/main.ui:1470
 msgid "Round Halfway Numbers Toward Zero"
-msgstr "Avrunda mittemellan-tal mot noll"
+msgstr "Avrunda tal mitt emellan mot noll"
 
 #: data/main.ui:1481
 msgid "Round Halfway Numbers to Random"
-msgstr "Avrunda mittemellan-tal till slumpmässig"
+msgstr "Avrunda tal mitt emellan slumpmässigt"
 
 #: data/main.ui:1492
 msgid "Round Halfway Numbers Up"
-msgstr "Avrunda mittemellan-tal till uppåt"
+msgstr "Avrunda tal mitt emellan uppåt"
 
 #: data/main.ui:1503
 msgid "Round Halfway Numbers Down"
-msgstr "Avrunda mittemellan-tal nedåt"
+msgstr "Avrunda tal mitt emellan nedåt"
 
 #: data/main.ui:1514
 msgid "Round Toward Zero"
@@ -1295,15 +1307,15 @@ msgstr "Koncis"
 
 #: data/main.ui:1885
 msgid "Midpoint"
-msgstr "Medelpunkt"
+msgstr "Mittpunkt"
 
 #: data/main.ui:1916
 msgid "Allow concise uncertainty input"
-msgstr "Tillåt koncist fel vid inmatning"
+msgstr "Tillåt inmatning av osäkerhet i koncis form"
 
 #: data/main.ui:1928
 msgid "Unit Display"
-msgstr "Enehetsvisning"
+msgstr "Enhetsvisning"
 
 #: data/main.ui:1937 data/main.ui:9105
 msgid "Do not use any prefixes in result"
@@ -1311,7 +1323,7 @@ msgstr "Använd inga prefix i resultatet"
 
 #: data/main.ui:1946 data/main.ui:9114
 msgid "Show prefixes for primarily SI and CGS units."
-msgstr "Visa prefix för huvudsakligen SI och CGS enheter."
+msgstr "Visa prefix för huvudsakligen SI- och CGS-enheter."
 
 #: data/main.ui:1947 data/main.ui:9115
 msgid "Use prefixes for selected units"
@@ -1342,7 +1354,7 @@ msgid ""
 "Enables automatic setting of prefix for denominator in addition to the "
 "numerator"
 msgstr ""
-"Aktiverar automatisk användande av prefix för nämnaren utöver i täljaren"
+"Aktiverar automatisk användning av prefix för nämnaren utöver täljaren"
 
 #: data/main.ui:1991 data/main.ui:9157
 msgid "Enable Denominator Prefixes"
@@ -1408,7 +1420,7 @@ msgstr "Okända"
 
 #: data/main.ui:2152
 msgid "Units in Physical Constants"
-msgstr "Enheter i fysiska konstanter"
+msgstr "Enheter i fysikaliska konstanter"
 
 #: data/main.ui:2161
 msgid "If not enabled, treats all variables as unknown"
@@ -1424,7 +1436,7 @@ msgstr "(Av)aktiverar komplexa tal i resultat"
 
 #: data/main.ui:2179
 msgid "Allow Complex Result"
-msgstr "Tillåt complext resultat"
+msgstr "Tillåt komplext resultat"
 
 #: data/main.ui:2189
 msgid "Disables/enables infinite numbers in result"
@@ -1493,7 +1505,7 @@ msgstr "Algebraiskt läge"
 
 #: data/main.ui:2571 data/main.ui:8722
 msgid "Assume that unknown denominators are non-zero"
-msgstr "Anta att nämnare ej är noll"
+msgstr "Anta att okända nämnare är skilda från noll"
 
 #: data/main.ui:2572 data/main.ui:8723
 msgid "Non-Zero Denominators"
@@ -1501,11 +1513,11 @@ msgstr "Nämnare ej noll"
 
 #: data/main.ui:2581
 msgid "Warn when unknown denominators are assumed non-zero"
-msgstr "Varna när okända nämnare är antagna som ej noll"
+msgstr "Varna när okända nämnare antas vara skilda från noll"
 
 #: data/main.ui:2582
 msgid "Warn About Denominators Assumed Non-Zero"
-msgstr "Varna om nämnare antagna som ej noll"
+msgstr "Varna om nämnare som antas vara skilda från noll"
 
 #: data/main.ui:2601 src/expressionedit.cc:1567 src/mainwindow.cc:1002
 msgid "Parsing Mode"
@@ -1583,7 +1595,7 @@ msgstr "_Decimaler"
 
 #: data/main.ui:2738
 msgid "Calculate As You Type"
-msgstr "Fortgående beräkningar"
+msgstr "Beräkna medan du skriver"
 
 #: data/main.ui:2747
 msgid "Chain Mode"
@@ -1679,7 +1691,7 @@ msgstr "Infoga valt värde"
 
 #: data/main.ui:3591
 msgid "Insert the selected text"
-msgstr "Infoga valt värde som text"
+msgstr "Infoga vald text"
 
 #: data/main.ui:3624
 msgid "Copy the selected text"
@@ -1699,11 +1711,11 @@ msgstr "Multiplicera valda värden"
 
 #: data/main.ui:3718
 msgid "Divide the the selected value(s)"
-msgstr "Dela valda värden"
+msgstr "Dividera valda värden"
 
 #: data/main.ui:3740
 msgid "Raise to the power of the selected value"
-msgstr "Höj med det valda värdet"
+msgstr "Upphöj till det valda värdet"
 
 #: data/main.ui:3763
 msgid "Calculate the square root of the selected value"
@@ -1733,7 +1745,7 @@ msgstr "Dividera det andra med det översta värdet"
 
 #: data/main.ui:3924
 msgid "Raise the second value to the power of the top value"
-msgstr "Höj det andra värdet med det översta värdet"
+msgstr "Upphöj det andra värdet till det översta värdet"
 
 #: data/main.ui:3964
 msgid "Negate the top value (Ctrl+-)"
@@ -1749,7 +1761,7 @@ msgstr "Beräkna kvadratroten av det översta värdet"
 
 #: data/main.ui:4045
 msgid "Calculate the sum of all values"
-msgstr "Beräkna summa av alla värden"
+msgstr "Beräkna summan av alla värden"
 
 #: data/main.ui:4113 src/stackview.cc:687 src/stackview.cc:747
 msgid "Rotate the stack or move selected register up"
@@ -1763,8 +1775,8 @@ msgstr "Rotera stacken eller flytta markerat register nedåt"
 msgid ""
 "Swap the two top values or move the selected value to the top of the stack"
 msgstr ""
-"Byt plats på de två översta värdena eller flytta markerat värdet till toppen "
-"av stacken"
+"Byt plats på de två översta värdena eller flytta det markerade värdet till "
+"toppen av stacken"
 
 #: data/main.ui:4196 src/stackview.cc:711 src/stackview.cc:750
 msgid "Copy the selected or top value to the top of the stack"
@@ -1819,7 +1831,7 @@ msgid ""
 msgstr ""
 "Om enhetsuttrycket saknar prefix, sätt optimalt prefix.\n"
 "\n"
-"Detta kan åsidosättas med \"?\" or \"0\" framför enhetsuttrycket."
+"Detta kan åsidosättas med \"?\" eller \"0\" framför enhetsuttrycket."
 
 #: data/main.ui:4569
 msgid "Conversion"
@@ -1924,7 +1936,7 @@ msgstr "u"
 
 #: data/main.ui:5863
 msgid "Conversion operator"
-msgstr "Omvandlingsoperand"
+msgstr "Omvandlingsoperator"
 
 #: data/main.ui:5873 src/keypad.cc:3610
 msgctxt "Button for convert to operator"
@@ -1965,11 +1977,11 @@ msgstr "Bitvist exklusivt OR"
 
 #: data/main.ui:6382 data/nbases.ui:966 src/keypad.cc:689
 msgid "Bitwise Left Shift"
-msgstr "Bitvist högerskift"
+msgstr "Bitvist vänsterskift"
 
 #: data/main.ui:6404 data/nbases.ui:988 src/keypad.cc:690
 msgid "Bitwise Right Shift"
-msgstr "Bitvist vänsterskift"
+msgstr "Bitvist högerskift"
 
 #: data/main.ui:6882
 msgid "Floating point conversion"
@@ -2416,7 +2428,7 @@ msgid ""
 "Enter two values, of which at most one is a percentage, and the others will "
 "be calculated for you."
 msgstr ""
-"Ange två värden, av vilka högst en får vara ett procenttal, och de övriga "
+"Ange två värden, av vilka högst ett får vara ett procenttal, och de övriga "
 "kommer att beräknas åt dig."
 
 #: data/percentage.ui:11
@@ -2491,7 +2503,7 @@ msgstr "X-variabel"
 
 #: data/plot.ui:330
 msgid "The variable name used in expression"
-msgstr "Variabel namn använt i uttryck"
+msgstr "Variabelnamnet som används i uttrycket"
 
 #: data/plot.ui:360
 msgid "Style"
@@ -2579,7 +2591,7 @@ msgstr "Högsta x-värde"
 
 #: data/plot.ui:710
 msgid "Sampling rate"
-msgstr "Frekvens"
+msgstr "Samplingsfrekvens"
 
 #: data/plot.ui:756
 msgid "Step size"
@@ -2603,7 +2615,7 @@ msgstr "Lägsta y-värde"
 
 #: data/plot.ui:983
 msgid "Maximum y value"
-msgstr "Högst y-värde"
+msgstr "Högsta y-värde"
 
 #: data/plot.ui:1030
 msgid "Logarithmic x scale"
@@ -2639,7 +2651,7 @@ msgstr "Monokrom"
 
 #: data/plot.ui:1315
 msgid "Legend placement"
-msgstr "Textplacering"
+msgstr "Placering av teckenförklaring"
 
 #: data/plot.ui:1330
 msgid "Top-left"
@@ -2686,8 +2698,8 @@ msgid ""
 "The number of significant digits to display/calculate (simple arithmetics "
 "are always calculated exact)"
 msgstr ""
-"Antal signifikanta enheter som skall visas/beräknas (enkel aritmetik "
-"beräknas alltid exakt)"
+"Antal signifikanta siffror som ska visas/beräknas (enkel aritmetik beräknas "
+"alltid exakt)"
 
 #: data/preferences.ui:89
 msgid "Preferences"
@@ -2721,7 +2733,6 @@ msgid "Allow multiple instances"
 msgstr "Tillåt flera instanser"
 
 #: data/preferences.ui:242
-#, fuzzy
 #| msgid ""
 #| "Allow multiple instances of the Qalculate! main window to be open at the "
 #| "same time.\n"
@@ -2735,11 +2746,9 @@ msgid ""
 "Note that only the mode, history and definitions of the last closed instance "
 "will be saved."
 msgstr ""
-"Tillåt flera instanser av Qalculate!:s huvudfönster att vara öppna "
-"samtidigt. \n"
+"Tillåt flera instanser av Qalculate!:s huvudfönster att vara öppna samtidigt.\n"
 "\n"
-"Notera att läge, historik och definitioner enbart sparas för den sist "
-"stängda instansen."
+"Observera att läge, historik och definitioner endast sparas för den instans som stängs sist."
 
 #: data/preferences.ui:257
 msgid "Notify when a new version is available"
@@ -2768,7 +2777,8 @@ msgstr "Använd tangentbordet för RPN"
 
 #: data/preferences.ui:311
 msgid "Use keyboard operator keys for RPN operations (+-*/^)."
-msgstr "Använd tangenter med matematiska operatorer för RPN-operation (+-*/^)"
+msgstr ""
+"Använd tangenter med matematiska operatorer för RPN-operationer (+-*/^)."
 
 #: data/preferences.ui:325
 msgid "Use caret for bitwise XOR"
@@ -2828,7 +2838,7 @@ msgstr "Fördröjning:"
 
 #: data/preferences.ui:482
 msgid "Time limit for plot:"
-msgstr "Tidsgräns for diagram:"
+msgstr "Tidsgräns för diagram:"
 
 #: data/preferences.ui:521
 msgid "Behavior"
@@ -2859,7 +2869,7 @@ msgid ""
 "Keep the main window above other windows (depending on platform and settings "
 "this might not work)"
 msgstr ""
-"Behåll huvudfönstret placerat över andra fönstret (beroende på plattform och "
+"Behåll huvudfönstret ovanför andra fönster (beroende på plattform och "
 "inställningar är det möjligt att detta inte fungerar)"
 
 #: data/preferences.ui:608
@@ -2972,7 +2982,7 @@ msgstr "Visa uttrycksstatus"
 msgid ""
 "If as-you-type expression status shall be displayed below the expression "
 "entry"
-msgstr "Om uttrycksstatus skall visas under uttrycksfältet medans text skrivs"
+msgstr "Om uttrycksstatus ska visas under uttrycksfältet medan du skriver"
 
 #: data/preferences.ui:986
 msgid "Show parsed expression in result field"
@@ -2982,7 +2992,8 @@ msgstr "Visa tolkat uttryck i resultatfältet"
 msgid ""
 "If as-you-type expression interpretation shall be displayed in the result "
 "field"
-msgstr "Om progressiv uttryckstolkning skall visas i resultatfältet"
+msgstr ""
+"Om tolkningen av uttrycket ska visas i resultatfältet medan du skriver"
 
 #: data/preferences.ui:1004
 msgid "Persistent keypad"
@@ -2990,7 +3001,7 @@ msgstr "Beständig knappsats"
 
 #: data/preferences.ui:1020
 msgid "Disable cursor blinking"
-msgstr "Inaktivera blinkade markör"
+msgstr "Inaktivera blinkande markör"
 
 #: data/preferences.ui:1047
 msgid "Look & Feel"
@@ -3013,9 +3024,9 @@ msgid ""
 "numbers. All binary numbers starting with 1 are negative, unless binary bits "
 "is set."
 msgstr ""
-"Aktiverar tvåkomplementsform för inmatning av negative binära tal. Alla "
-"binära tal som startar med 1 antas vara negativa, såvida inte antal binära "
-"bitar är angivet."
+"Aktiverar tvåkomplementsform för inmatning av negativa binära tal. Alla "
+"binära tal som börjar med 1 är negativa, såvida inte antalet binära bitar "
+"har angetts."
 
 #: data/preferences.ui:1153
 msgid ""
@@ -3023,9 +3034,9 @@ msgid ""
 "numbers. All hexadecimal numbers starting with 8 or higher are negative, "
 "unless binary bits is set."
 msgstr ""
-"Aktiverar tvåkomplementsform för inmatning av negative hexadecimala tal. "
+"Aktiverar tvåkomplementsform för inmatning av negativa hexadecimala tal. "
 "Alla hexadecimala tal som börjar med 8 eller högre är negativa, såvida inte "
-"antal binära bitar är angivet."
+"antalet binära bitar har angetts."
 
 #: data/preferences.ui:1168
 msgid "Binary bits"
@@ -3037,11 +3048,11 @@ msgstr "Automatisk"
 
 #: data/preferences.ui:1208
 msgid "Use lower case letters in non-decimal numbers"
-msgstr "Använd små bokstäver i icke-decimala nummer"
+msgstr "Använd små bokstäver i icke-decimala tal"
 
 #: data/preferences.ui:1212
 msgid "If lower case letters should be used in numbers with non-decimal base"
-msgstr "Huruvida små bokstäver skall användas i nummer med icke-decimal bas"
+msgstr "Huruvida små bokstäver skall användas i tal med icke-decimal bas"
 
 #: data/preferences.ui:1225
 msgid "Use special duodecimal symbols"
@@ -3086,7 +3097,7 @@ msgstr "Använd litet \"e\" (som i 1e10)"
 
 #: data/preferences.ui:1306
 msgid "If \"e\" shall be used instead of \"E\" in numbers"
-msgstr "Om \"e\" skall användas istället för \"E\" i nummer"
+msgstr "Om \"e\" skall användas istället för \"E\" i tal"
 
 #: data/preferences.ui:1319
 msgid "Use comma as decimal separator"
@@ -3094,7 +3105,7 @@ msgstr "Använd komma som decimaltecken"
 
 #: data/preferences.ui:1336
 msgid "Ignore comma in numbers"
-msgstr "Bortse från komma i nummer"
+msgstr "Bortse från komma i tal"
 
 #: data/preferences.ui:1340
 msgid ""
@@ -3106,7 +3117,7 @@ msgstr ""
 
 #: data/preferences.ui:1353
 msgid "Ignore dots in numbers"
-msgstr "Bortse från punkter i nummer"
+msgstr "Bortse från punkter i tal"
 
 #: data/preferences.ui:1357
 msgid ""
@@ -3170,7 +3181,7 @@ msgstr "Divisionstecken"
 
 #: data/preferences.ui:1695
 msgid "Numbers & Operators"
-msgstr "Nummer och operatorer"
+msgstr "Tal och operatorer"
 
 #: data/preferences.ui:1718
 msgid "Use binary prefixes for information units"
@@ -3301,7 +3312,7 @@ msgstr "Textfärg"
 
 #: data/preferences.ui:2340
 msgid "Highlight parenthesis background"
-msgstr "Färglägg parentesisbakgrund"
+msgstr "Färglägg parentesernas bakgrund"
 
 #: data/preferences.ui:2393
 msgid "Custom application font"
@@ -3458,7 +3469,7 @@ msgid ""
 "in \"3 × 3 ft = 9 ft\" (instead of \"3 yd\") and \"4 × 3 ft = 4 yd\"."
 msgstr ""
 "Exempel: minsta antal av basenhet för yd (yard) är 12, vilket resulterar i "
-"\"3 × 3 ft = 9 ft\" (istället for \"3 yd\") och \"4 × 3 ft = 4 yd\"."
+"\"3 × 3 ft = 9 ft\" (istället för \"3 yd\") och \"4 × 3 ft = 4 yd\"."
 
 #: data/unitedit.ui:468
 msgid "Exponent of the base unit"
@@ -3469,8 +3480,8 @@ msgid ""
 "Unit (for named derived unit) or unit expression (for unnamed derived unit) "
 "that this unit is defined in relation to"
 msgstr ""
-"Enhet (för namngivna härledda enheter) eller enheter (för icke namngivna "
-"härledda enheter) som enheten är definierad i förhållande till"
+"Enhet (för en namngiven härledd enhet) eller enhetsuttryck (för en icke "
+"namngiven härledd enhet) som enheten är definierad i förhållande till"
 
 #: data/unitedit.ui:501
 msgid ""
@@ -3480,12 +3491,9 @@ msgid ""
 "For non-linear relations use \\x for the factor and \\y for the exponent "
 "(e.g. \"\\x + 273.15\" for the relation between degrees Celsius and Kelvin)."
 msgstr ""
-"Förhållande till baseenheten. Utgör för linjära förhållanden enbart ett "
-"nummer.\n"
+"Relation till basenheten. För linjära relationer ska detta bara vara ett tal.\n"
 "\n"
-"För icke-linjära förhållanden, används \\x för faktorn och \\y för "
-"exponenten (t.ex. \"\\x + 273,15\" för relationen mellan grader Celsius och "
-"Kelvin)"
+"För icke-linjära relationer används \\x för faktorn och \\y för exponenten (t.ex. \"\\x + 273,15\" för relationen mellan grader Celsius och kelvin)."
 
 #: data/unitedit.ui:519
 msgid "Specify for non-linear relation, for conversion back to the base unit."
@@ -3510,7 +3518,7 @@ msgstr "Omvan_dling"
 
 #: data/units.ui:123
 msgid "Converted value"
-msgstr "Omvandla"
+msgstr "Omvandlat värde"
 
 #: data/units.ui:141
 msgid "Value to convert from"
@@ -3550,7 +3558,7 @@ msgstr "Omvandla resultatet till vald enhet"
 
 #: data/units.ui:640
 msgid "Type anywhere"
-msgstr "Skriv varsomhelst"
+msgstr "Skriv var som helst"
 
 #: data/unknownedit.ui:8 src/unknowneditdialog.cc:118
 msgid "Edit Unknown Variable"
@@ -3714,7 +3722,7 @@ msgstr "Upphöj"
 #: src/buttonseditdialog.cc:372 src/expressionstatus.cc:721 src/keypad.cc:517
 #: src/keypad.cc:2757 src/util.cc:970
 msgid "M+ (memory plus)"
-msgstr "M+ (minnesoperation)"
+msgstr "M+ (addera till minnet)"
 
 #: src/buttonseditdialog.cc:376 src/expressionstatus.cc:709 src/keypad.cc:522
 #: src/keypad.cc:2754 src/util.cc:967
@@ -3728,7 +3736,7 @@ msgstr "Backsteg"
 #: src/buttonseditdialog.cc:377 src/expressionstatus.cc:727 src/keypad.cc:523
 #: src/keypad.cc:2758 src/util.cc:971
 msgid "M− (memory minus)"
-msgstr "M− (minnesoperation)"
+msgstr "M− (subtrahera från minnet)"
 
 #: src/buttonseditdialog.cc:378 src/keypad.cc:524
 msgid "Previous result (static)"
@@ -3742,7 +3750,7 @@ msgstr "Beräkna uttrycket"
 #: src/buttonseditdialog.cc:379 src/keypad.cc:532 src/keypad.cc:2755
 #: src/util.cc:968
 msgid "MR (memory recall)"
-msgstr "MR (återkalla minne)"
+msgstr "MR (hämta från minnet)"
 
 #: src/buttonseditdialog.cc:379 src/expressionstatus.cc:715 src/keypad.cc:532
 #: src/keypad.cc:2756 src/util.cc:969
@@ -3760,7 +3768,7 @@ msgstr "Det valda kinesiska året finns inte."
 
 #: src/calendarconversiondialog.cc:65
 msgid "Conversion to Gregorian calendar failed."
-msgstr "Omvandling to gregoriansk kalender misslyckades"
+msgstr "Omvandling till gregoriansk kalender misslyckades."
 
 #: src/calendarconversiondialog.cc:90
 #, c-format
@@ -3773,7 +3781,7 @@ msgstr "Gregoriansk"
 
 #: src/calendarconversiondialog.cc:106
 msgid "Revised Julian (Milanković)"
-msgstr "Reviderad juliansk"
+msgstr "Reviderad juliansk (Milanković)"
 
 #: src/calendarconversiondialog.cc:107
 msgid "Julian"
@@ -3781,7 +3789,7 @@ msgstr "Juliansk"
 
 #: src/calendarconversiondialog.cc:108
 msgid "Islamic (Hijri)"
-msgstr "Muslimsk"
+msgstr "Muslimsk (hijri)"
 
 #: src/calendarconversiondialog.cc:109
 msgid "Hebrew"
@@ -3793,7 +3801,7 @@ msgstr "Kinesisk"
 
 #: src/calendarconversiondialog.cc:111
 msgid "Persian (Solar Hijri)"
-msgstr "Persisk"
+msgstr "Persisk (solbaserad hijri)"
 
 #: src/calendarconversiondialog.cc:112
 msgid "Coptic"
@@ -3842,7 +3850,7 @@ msgstr "approximerat"
 #: src/dataseteditdialog.cc:97 src/expressioncompletion.cc:2027
 #: src/variablesdialog.cc:330
 msgid "number"
-msgstr "nummer"
+msgstr "tal"
 
 #: src/dataseteditdialog.cc:105 src/historyview.cc:170
 msgid "expression"
@@ -4074,7 +4082,7 @@ msgstr "Duodecimalt tal"
 
 #: src/expressioncompletion.cc:2233
 msgid "Engineering Notation"
-msgstr "Tekniskt form"
+msgstr "Teknisk form"
 
 #: src/expressioncompletion.cc:2237
 msgid "Factors"
@@ -4082,23 +4090,23 @@ msgstr "Faktorer"
 
 #: src/expressioncompletion.cc:2239
 msgid "16-bit Floating Point Binary Format"
-msgstr "16-bit binärt flyttal"
+msgstr "16-bitars binärt flyttalsformat"
 
 #: src/expressioncompletion.cc:2241
 msgid "32-bit Floating Point Binary Format"
-msgstr "32-bit binärt flyttal"
+msgstr "32-bitars binärt flyttalsformat"
 
 #: src/expressioncompletion.cc:2243
 msgid "64-bit Floating Point Binary Format"
-msgstr "64-bit binärt flyttal"
+msgstr "64-bitars binärt flyttalsformat"
 
 #: src/expressioncompletion.cc:2245
 msgid "80-bit (x86) Floating Point Binary Format"
-msgstr "80-bit (x86) binärt flyttal"
+msgstr "80-bitars binärt flyttalsformat (x86)"
 
 #: src/expressioncompletion.cc:2247
 msgid "128-bit Floating Point Binary Format"
-msgstr "128-bit binärt flyttal"
+msgstr "128-bitars binärt flyttalsformat"
 
 #: src/expressioncompletion.cc:2253
 msgid "Hexadecimal Number"
@@ -4228,7 +4236,7 @@ msgstr "RPN"
 #. Chain mode
 #: src/expressionstatus.cc:385
 msgid "CHN"
-msgstr ""
+msgstr "KED"
 
 #: src/expressionstatus.cc:413
 msgid "ROMAN"
@@ -4369,23 +4377,23 @@ msgstr "longitud"
 
 #: src/expressionstatus.cc:948
 msgid "32-bit floating point"
-msgstr "32-bit flyttal"
+msgstr "32-bitars flyttal"
 
 #: src/expressionstatus.cc:950
 msgid "64-bit floating point"
-msgstr "64-bit flyttal"
+msgstr "64-bitars flyttal"
 
 #: src/expressionstatus.cc:952
 msgid "16-bit floating point"
-msgstr "16-bit flyttal"
+msgstr "16-bitars flyttal"
 
 #: src/expressionstatus.cc:954
 msgid "80-bit (x86) floating point"
-msgstr "80-bit (x86) flyttal"
+msgstr "80-bitars flyttal (x86)"
 
 #: src/expressionstatus.cc:956
 msgid "128-bit floating point"
-msgstr "128-bit flyttal"
+msgstr "128-bitars flyttal"
 
 #: src/expressionstatus.cc:957 src/mainwindow.cc:1500 src/mainwindow.cc:4983
 msgid "time"
@@ -4409,7 +4417,7 @@ msgstr "teknisk"
 
 #: src/expressionstatus.cc:964
 msgid "engineering notation"
-msgstr "tekniskt form"
+msgstr "teknisk form"
 
 #: src/expressionstatus.cc:965 src/mainwindow.cc:1512 src/mainwindow.cc:4995
 msgid "simple"
@@ -4568,7 +4576,7 @@ msgstr "Ny funktion"
 
 #: src/functioneditdialog.cc:1023
 msgid "Empty expression field."
-msgstr "Tom uttrycksfält."
+msgstr "Tomt uttrycksfält."
 
 #: src/functioneditdialog.cc:1029
 msgid "Conversion (using \"to\") is not supported in functions."
@@ -4596,8 +4604,8 @@ msgid ""
 "\"info\" is typed as property, a dialog window will pop up with all "
 "properties of the object."
 msgstr ""
-"Hämtar data från dataset %s för ett givet objekt och egenskap. Om \"info\" "
-"är angivet som egenskap, ett dialogfönster öppnas med alla objektets "
+"Hämtar data från dataset %s för ett givet objekt och en given egenskap. Om "
+"\"info\" anges som egenskap öppnas ett dialogfönster med alla objektets "
 "egenskaper."
 
 #: src/functionsdialog.cc:312 src/insertfunctiondialog.cc:794
@@ -4613,7 +4621,7 @@ msgstr "frivillig"
 #. argument default, in description
 #: src/functionsdialog.cc:362
 msgid "default: "
-msgstr "förval:"
+msgstr "förval: "
 
 #: src/functionsdialog.cc:376
 msgid "Requirement"
@@ -4655,8 +4663,8 @@ msgid ""
 "It took too long to generate the plot data. Please decrease the sampling "
 "rate or increase the time limit in preferences."
 msgstr ""
-"Det tog för lång tid att generera data till diagrammet. Vänligen minska "
-"frekvensen eller höj tidsgränsen i inställningar."
+"Det tog för lång tid att generera data till diagrammet. Minska "
+"samplingsfrekvensen eller höj tidsgränsen i inställningarna."
 
 #: src/historyview.cc:2154 src/mainwindow.cc:2698
 msgid "RPN Register Moved"
@@ -4664,7 +4672,7 @@ msgstr "RPN-register flyttades"
 
 #: src/historyview.cc:2160 src/mainwindow.cc:2699 src/mainwindow.cc:5496
 msgid "RPN Operation"
-msgstr "RPN operation"
+msgstr "RPN-operation"
 
 #: src/historyview.cc:2800
 msgid "Search"
@@ -4688,7 +4696,7 @@ msgid ""
 "Do you want to overwrite it?"
 msgstr ""
 "Ett bokmärke med samma namn finns redan.\n"
-"Vill du ersätta den?"
+"Vill du ersätta det?"
 
 #: src/historyview.cc:2976 src/historyview.cc:3219
 msgid "Edit Comment…"
@@ -4813,7 +4821,7 @@ msgstr "Öppna meny med lagrade variabler"
 
 #: src/keypad.cc:2012
 msgid "log10 function not found."
-msgstr "Kunde inte finna log10 funktionen."
+msgstr "Kunde inte hitta log10-funktionen."
 
 #: src/keypad.cc:2594
 msgid "All functions"
@@ -4827,7 +4835,7 @@ msgstr "Alla variabler"
 #: src/variablesdialog.cc:418 src/variablesdialog.cc:433
 #: src/variablesdialog.cc:449 src/variablesdialog.cc:469
 msgid "Variable does not exist anymore."
-msgstr "Variabel existerar inte längre."
+msgstr "Variabeln finns inte längre."
 
 #. RPN Enter (calculate and add to stack)
 #: src/keypad.cc:3530
@@ -4886,18 +4894,15 @@ msgid ""
 "Do you, despite this, want to change the default behavior and allow multiple "
 "simultaneous instances?"
 msgstr ""
-"Enligt förinställningar tillåts enbart en instans av %s.\n"
+"Som standard tillåts endast en instans (ett huvudfönster) av %s.\n"
 "\n"
-"Om flera instanser är öppna samtidigt, kommer enbart definitioner "
-"(variabler, funktioner, etc.) , läge, inställningar och historik för det "
-"sist stängda fönstret att sparas.\n"
+"Om flera instanser är öppna samtidigt sparas endast definitioner (variabler, funktioner osv.), läge, inställningar och historik från det fönster som stängs sist.\n"
 "\n"
-"Vill du trots det ändra förinställt beteende och tillåta flera samtidiga "
-"instanser?"
+"Vill du trots detta ändra standardbeteendet och tillåta flera samtidiga instanser?"
 
 #: src/mainwindow.cc:254
 msgid "Set Window Title"
-msgstr "Angle fönstertitel"
+msgstr "Ange fönstertitel"
 
 #: src/mainwindow.cc:529
 msgid "Exchange rate source:"
@@ -4937,7 +4942,7 @@ msgid ""
 "Failed to run update script.\n"
 "%s"
 msgstr ""
-"Misslyckades med att köra sriptet.\n"
+"Misslyckades med att köra uppdateringsskriptet.\n"
 "%s"
 
 #: src/mainwindow.cc:710
@@ -4946,7 +4951,7 @@ msgstr "Misslyckades med att söka efter uppdateringar."
 
 #: src/mainwindow.cc:710
 msgid "No updates found."
-msgstr "Inga uppdatering hittades."
+msgstr "Inga uppdateringar hittades."
 
 #: src/mainwindow.cc:724
 msgid "_Download"
@@ -4961,7 +4966,7 @@ msgid ""
 msgstr ""
 "En ny version av %s finns tillgänglig på %s.\n"
 "\n"
-"Vill du uppdatera till version %s."
+"Vill du uppdatera till version %s?"
 
 #: src/mainwindow.cc:738
 #, c-format
@@ -5089,7 +5094,7 @@ msgstr "Addera procent av ursprungligt värde"
 
 #: src/mainwindow.cc:1079
 msgid "Add percentage multiplied by 1/100"
-msgstr "Addera procentenheter multiplicerade med 1/100"
+msgstr "Addera procenttalet multiplicerat med 1/100"
 
 #: src/mainwindow.cc:2264
 msgid "My Variables"
@@ -5198,7 +5203,9 @@ msgstr "Kunde inte kopiera fil till %s."
 #. replace with list of translators
 #: src/mainwindow.cc:7253
 msgid "translator-credits"
-msgstr "Hanna Knutsson <hanna.knutsson@protonmail.com>"
+msgstr ""
+"Hanna Knutsson <hanna.knutsson@protonmail.com>\n"
+"Jonatan Nyberg"
 
 #: src/mainwindow.cc:7787 src/menubar.cc:1687 src/util.cc:1313 src/util.cc:1314
 #: src/variablesdialog.cc:143 src/variablesdialog.cc:144
@@ -5238,9 +5245,9 @@ msgid ""
 "equation is represented as a vector. Access separate solutions using ans(n) "
 "(e.g. ans(1) for the first solution)."
 msgstr ""
-"Håller värdet av den senaste beräkningen. Multipla resultat av en ekvation "
-"representeras av en vektor. För åtkomst till separata lösningar använd "
-"ans(n) (t.ex. ans(1) för den först lösningen)."
+"Innehåller resultatet av den senaste beräkningen. Flera lösningar till en "
+"ekvation representeras som en vektor. Använd ans(n) för att komma åt "
+"enskilda lösningar (t.ex. ans(1) för den första lösningen)."
 
 #: src/mainwindow.cc:8850
 msgid "Answer 2"
@@ -5307,8 +5314,8 @@ msgid ""
 "Deactivation of interval arithmetic might result in inaccurate output. Do "
 "you want to deactivate it anyway?"
 msgstr ""
-"Om intervallaritmetik avaktiveras kan det leda till oprecisa svar. Vill "
-"avaktivera det ändå?"
+"Om intervallaritmetik avaktiveras kan det leda till felaktiga resultat. Vill"
+" du avaktivera den ändå?"
 
 #: src/menubar.cc:1217
 msgid "Save Mode"
@@ -5346,7 +5353,7 @@ msgstr "Förvalt läge som läses in vid första start för nya användare"
 
 #: src/modes.cc:133
 msgid "Mode loaded at each startup and, by default, saved at exit"
-msgstr "Läge som läses vid varje start och, som förval, sparas vid avslut"
+msgstr "Läge som läses in vid varje start och, som förval, sparas vid avslut"
 
 #: src/nameseditdialog.cc:101
 msgid "Illegal name"
@@ -5372,7 +5379,7 @@ msgstr "Pluralform"
 
 #: src/nameseditdialog.cc:180
 msgid "Avoid input"
-msgstr "Undvik input"
+msgstr "Undvik vid inmatning"
 
 #: src/nameseditdialog.cc:186
 msgid "Suffix"
@@ -5380,7 +5387,7 @@ msgstr "Suffix"
 
 #: src/nameseditdialog.cc:192
 msgid "Case sensitive"
-msgstr "Storlekskänslig"
+msgstr "Skiftlägeskänslig"
 
 #: src/nameseditdialog.cc:198
 msgid "Completion only"
@@ -5390,7 +5397,7 @@ msgstr "Enbart komplettering"
 #: src/numberbasesdialog.cc:156 src/numberbasesdialog.cc:164
 #: src/numberbasesdialog.cc:187
 msgid "result is too long"
-msgstr "resultet är för långt"
+msgstr "resultatet är för långt"
 
 #: src/openhelp.cc:379
 msgid "Could not display help for Qalculate!."
@@ -5475,7 +5482,7 @@ msgstr "Tomt uttryck."
 
 #: src/plotdialog.cc:523 src/plotdialog.cc:606
 msgid "Empty x variable."
-msgstr "Tom x-variabel"
+msgstr "Tom x-variabel."
 
 #: src/plotdialog.cc:807
 msgid "Gnuplot was not found."
@@ -5487,8 +5494,8 @@ msgid ""
 "%s (%s) needs to be installed separately, and found in the executable search "
 "path, for plotting to work."
 msgstr ""
-"%s (%s) måste installeras separat, och hittas i sökvägen för binärer, för "
-"att för att diagram ska kunna visas."
+"%s (%s) måste installeras separat och finnas i sökvägen för körbara filer "
+"för att diagramritning ska fungera."
 
 #: src/preferencesdialog.cc:120 src/preferencesdialog.cc:133
 msgid "never"
@@ -5507,7 +5514,7 @@ msgstr[1] "%i dagar"
 
 #: src/preferencesdialog.cc:296
 msgid "Please restart the program for the language change to take effect."
-msgstr "Vängligen starta om programmet för att språkändringen skall ha effekt."
+msgstr "Starta om programmet för att språkändringen ska träda i kraft."
 
 #: src/resultview.cc:225 src/resultview.cc:462
 msgid "result processing was aborted"
@@ -5518,12 +5525,12 @@ msgid ""
 "result is too long\n"
 "see history"
 msgstr ""
-"resultet är för långt\n"
+"resultatet är för långt\n"
 "se historiken"
 
 #: src/resultview.cc:246 src/resultview.cc:526
 msgid "calculation was aborted"
-msgstr "beräkningarna avbröts"
+msgstr "beräkningen avbröts"
 
 #: src/resultview.cc:346
 msgid ""
@@ -5535,7 +5542,7 @@ msgstr ""
 
 #: src/resultview.cc:552 src/resultview.cc:554
 msgid "Select file to save PNG image to"
-msgstr "Välj fil att att spara PNG bild till"
+msgstr "Välj fil att spara PNG-bilden till"
 
 #. Result was copied
 #: src/resultview.cc:1207
@@ -5556,8 +5563,8 @@ msgid ""
 "Press the key combination you wish to use for the action\n"
 "(press Escape to cancel)."
 msgstr ""
-"Tryck tangentkombinationen som du önskar använda för åtgärden\n"
-"(tryck Escape för att avbryta)."
+"Tryck på tangentkombinationen som du vill använda för åtgärden\n"
+"(tryck på Escape för att avbryta)."
 
 #: src/shortcutsdialog.cc:168
 msgid "No keys"
@@ -5722,15 +5729,15 @@ msgstr "(Av)aktivera exakt läge"
 
 #: src/util.cc:941
 msgid "Set angle unit to degrees"
-msgstr "Ange vinkelenhet till grader"
+msgstr "Ange grader som vinkelenhet"
 
 #: src/util.cc:942
 msgid "Set angle unit to radians"
-msgstr "Ange vinkelenhet till radianer"
+msgstr "Ange radianer som vinkelenhet"
 
 #: src/util.cc:943
 msgid "Set angle unit to gradians"
-msgstr "Ange vinkelenhet till gradienter"
+msgstr "Ange nygrader som vinkelenhet"
 
 #: src/util.cc:944
 msgid "Toggle simple fractions"
@@ -5822,11 +5829,11 @@ msgstr "Ny funktion"
 
 #: src/util.cc:974
 msgid "Open plot functions/data"
-msgstr "Öppna rita funktions-/datadiagram"
+msgstr "Öppna dialogen för funktions-/datadiagram"
 
 #: src/util.cc:975
 msgid "Open convert number bases"
-msgstr "Öppna omvandla mellan talbaser"
+msgstr "Öppna omvandling mellan talbaser"
 
 #: src/util.cc:976
 msgid "Open floating point conversion"
@@ -5854,7 +5861,7 @@ msgstr "Infoga resultat"
 
 #: src/util.cc:983
 msgid "Save result image"
-msgstr "Spara resulatbild"
+msgstr "Spara resultatbild"
 
 #: src/util.cc:984
 msgid "Help"
@@ -5870,7 +5877,7 @@ msgstr "(Av)aktivera kedjeläge"
 
 #: src/util.cc:987
 msgid "Toggle keep above"
-msgstr "(Av)aktivera placera överst"
+msgstr "(Av)aktivera placering överst"
 
 #: src/util.cc:988
 msgid "Show/hide completion"
